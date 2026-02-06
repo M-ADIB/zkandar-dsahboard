@@ -14,7 +14,7 @@
 - [x] User flows mapped
 - [x] UI/UX guidelines established
 - [x] Role permissions documented
-- [ ] Lovable project initialization
+- [x] Lovable project initialization
 - [ ] Supabase schema deployed
 
 ---
@@ -29,16 +29,16 @@
 - [ ] Test data seeding (1 company, 5 users, 1 cohort)
 
 #### 1.2 Core Authentication
-- [ ] Login/signup flow
-- [ ] Role detection (owner/admin/executive/participant)
-- [ ] Route protection by role
+- [x] Login/signup flow
+- [x] Role detection (owner/admin/executive/participant)
+- [x] Route protection by role
 - [ ] Session persistence
 
 #### 1.3 Basic UI Shell
-- [ ] Sidebar navigation (role-aware)
-- [ ] Top navbar (user profile, notifications bell)
-- [ ] Responsive layout (desktop-first, mobile-friendly)
-- [ ] Dark theme + futuristic styling
+- [x] Sidebar navigation (role-aware)
+- [x] Top navbar (user profile, notifications bell)
+- [x] Responsive layout (desktop-first, mobile-friendly)
+- [x] Dark theme + futuristic styling
 
 **Deliverable:** Users can sign up, log in, and see role-specific empty dashboards
 
@@ -247,7 +247,7 @@
 
 **Must-Have (P0):**
 - [x] Authentication (login/signup)
-- [ ] Onboarding survey
+- [x] Onboarding survey
 - [ ] Session materials upload
 - [ ] Real-time chat
 - [ ] Assignment submission
