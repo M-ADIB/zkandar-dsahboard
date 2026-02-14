@@ -4,9 +4,11 @@ import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Sparkles, Mail, Lock, User, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import toast from 'react-hot-toast'
+import logo from '@/assets/logo.png'
+import skenderImg from '@/assets/skender.png'
 
 const signupSchema = z.object({
     fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -54,31 +56,38 @@ export function SignupPage() {
             {/* Left - Visual */}
             <div className="hidden lg:flex lg:w-1/2 bg-bg-elevated relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-green/10 via-transparent to-lime/10" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className="relative"
-                    >
-                        <div className="h-64 w-64 rounded-3xl gradient-lime opacity-20 blur-3xl" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <Sparkles className="h-32 w-32 text-lime" />
-                        </div>
-                    </motion.div>
+
+                {/* Skender Image */}
+                <div className="absolute bottom-0 right-[-10%] w-[90%] max-w-3xl">
+                    <motion.img
+                        src={skenderImg}
+                        alt="Skender"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="w-full h-auto object-contain opacity-90 mix-blend-normal transition-all duration-700"
+                    />
                 </div>
-                <div className="absolute bottom-12 left-12 right-12">
+
+                {/* Gradients moved to parent scope to prevent borders */}
+                <div className="absolute inset-0 bg-gradient-to-t from-bg-elevated via-bg-elevated/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-bg-elevated/90 via-bg-elevated/20 to-transparent" />
+
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    {/* Glow removed to prevent artifacts */}
+                </div>
+                <div className="absolute bottom-12 left-12 right-12 z-10">
                     <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.3 }}
                     >
-                        <h2 className="hero-text text-4xl mb-4">
+                        <h2 className="hero-text text-5xl mb-6 drop-shadow-xl leading-tight">
                             JOIN THE
                             <br />
                             <span className="text-gradient">REVOLUTION</span>
                         </h2>
-                        <p className="text-gray-400 max-w-md">
+                        <p className="text-gray-200 max-w-md drop-shadow-md font-medium text-lg shadow-black/50">
                             Create your account to access the Zkandar AI Masterclass and
                             start your transformation journey.
                         </p>
@@ -95,9 +104,7 @@ export function SignupPage() {
                 >
                     {/* Logo */}
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="h-12 w-12 rounded-xl gradient-lime flex items-center justify-center">
-                            <Sparkles className="h-6 w-6 text-black" />
-                        </div>
+                        <img src={logo} alt="Zkandar AI" className="h-20 w-auto object-contain" />
                         <div>
                             <h1 className="font-heading text-xl font-bold tracking-wide">
                                 ZKANDAR AI

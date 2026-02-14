@@ -35,6 +35,14 @@ export default {
                     800: '#1A2F0E',
                     900: '#0A1306',
                 },
+                dashboard: {
+                    bg: '#0F1219',
+                    card: '#151925',
+                    'card-hover': '#1A1F2E',
+                    accent: '#D0FF71',
+                    'accent-bright': '#E0FF99',
+                    'accent-hover': '#B8F23E',
+                },
                 bg: {
                     primary: '#000000',
                     elevated: '#0A0A0A',

@@ -1,9 +1,45 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Bell, Lock } from 'lucide-react'
+import { User, Bell, Lock, Loader2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { supabase } from '@/lib/supabase'
+import { userProfileSchema } from '@/lib/validation'
+import toast from 'react-hot-toast'
 
 export function SettingsPage() {
-    const { user } = useAuth()
+    const { user, refreshUser } = useAuth()
+    const [fullName, setFullName] = useState(user?.full_name || '')
+    const [isSaving, setIsSaving] = useState(false)
+
+    const handleSave = async () => {
+        if (!user) return
+
+        // Validate
+        const validation = userProfileSchema.safeParse({ full_name: fullName })
+        if (!validation.success) {
+            toast.error(validation.error.errors[0].message)
+            return
+        }
+
+        setIsSaving(true)
+        try {
+            const { error } = await supabase
+                .from('users')
+                // @ts-expect-error - Supabase update type inference failing
+                .update({ full_name: fullName })
+                .eq('id', user.id)
+
+            if (error) throw error
+
+            await refreshUser()
+            toast.success('Profile updated successfully')
+        } catch (error) {
+            console.error('Error updating profile:', error)
+            toast.error('Failed to update profile')
+        } finally {
+            setIsSaving(false)
+        }
+    }
 
     return (
         <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
@@ -43,7 +79,8 @@ export function SettingsPage() {
                             <label className="block text-sm text-gray-400 mb-2">Full Name</label>
                             <input
                                 type="text"
-                                defaultValue={user?.full_name}
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
                                 className="w-full px-4 py-3 bg-bg-elevated border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50"
                             />
                         </div>
@@ -128,7 +165,12 @@ export function SettingsPage() {
 
             {/* Save Button */}
             <div className="flex justify-end">
-                <button className="px-8 py-3 gradient-lime text-black font-bold rounded-xl hover:opacity-90 transition">
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-8 py-3 gradient-lime text-black font-bold rounded-xl hover:opacity-90 transition flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                    {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
                     Save Changes
                 </button>
             </div>

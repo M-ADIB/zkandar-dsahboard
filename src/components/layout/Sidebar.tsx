@@ -1,3 +1,4 @@
+import logo from '@/assets/logo.png'
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,7 +12,9 @@ import {
     Users,
     Menu,
     X,
-    Sparkles,
+    Building2,
+    GraduationCap,
+    TrendingUp,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
 
@@ -37,6 +40,30 @@ const navItems: NavItem[] = [
         icon: LayoutDashboard,
         label: 'Admin Panel',
         path: '/admin',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: Building2,
+        label: 'Companies',
+        path: '/admin/companies',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: TrendingUp,
+        label: 'Leads',
+        path: '/admin/leads',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: GraduationCap,
+        label: 'Cohorts',
+        path: '/admin/cohorts',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: Users,
+        label: 'Users',
+        path: '/admin/users',
         roles: ['owner', 'admin'],
     },
     {
@@ -107,31 +134,24 @@ export function Sidebar({ userRole }: SidebarProps) {
             </AnimatePresence>
 
             {/* Sidebar */}
-            <motion.aside
-                initial={false}
-                animate={{
-                    x: isOpen ? 0 : '-100%',
-                }}
+            <aside
                 className={`
           fixed top-0 left-0 h-screen w-64 z-50
           bg-bg-elevated border-r border-border
           flex flex-col
+          transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:z-30
         `}
             >
                 {/* Logo */}
                 <div className="p-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl gradient-lime flex items-center justify-center">
-                            <Sparkles className="h-5 w-5 text-black" />
-                        </div>
+                        <img src={logo} alt="Skender AI" className="h-12 w-auto object-contain" />
                         <div>
                             <h1 className="font-heading text-lg font-bold tracking-wide">
-                                ZKANDAR
+                                ZKANDAR AI
                             </h1>
-                            <p className="text-xs text-gray-500 tracking-widest uppercase">
-                                AI Hub
-                            </p>
                         </div>
                     </div>
                     <button
@@ -188,7 +208,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                         </p>
                     </div>
                 </div>
-            </motion.aside>
+            </aside>
         </>
     )
 }

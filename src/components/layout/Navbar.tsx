@@ -2,18 +2,15 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Search, LogOut, User, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { NotificationsMenu } from '@/components/notifications/NotificationsMenu'
+import { useNotifications } from '@/context/NotificationContext'
 
 export function Navbar() {
     const { user, signOut } = useAuth()
+    const { unreadCount } = useNotifications()
     const [isProfileOpen, setIsProfileOpen] = useState(false)
     const [isNotifOpen, setIsNotifOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
-
-    const notifications = [
-        { id: 1, message: 'New message in #cohort-jan-2026', time: '5m ago' },
-        { id: 2, message: 'Session 3 materials now available', time: '1h ago' },
-        { id: 3, message: 'Assignment due in 2 days', time: '3h ago' },
-    ]
 
     return (
         <header className="sticky top-0 z-20 bg-bg-primary/80 backdrop-blur-xl border-b border-border">
@@ -39,46 +36,16 @@ export function Navbar() {
                     {/* Notifications */}
                     <div className="relative">
                         <button
-                            onClick={() => setIsNotifOpen(!isNotifOpen)}
+                            onClick={() => setIsNotifOpen(true)}
                             className="relative p-2 rounded-xl hover:bg-white/5 transition-colors"
                         >
                             <Bell className="h-5 w-5" />
-                            {notifications.length > 0 && (
-                                <span className="absolute top-1 right-1 h-2 w-2 bg-lime rounded-full" />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-1 right-1 h-2 w-2 bg-lime rounded-full shadow-[0_0_8px_rgba(202,246,26,0.5)] animate-pulse" />
                             )}
                         </button>
 
-                        <AnimatePresence>
-                            {isNotifOpen && (
-                                <>
-                                    <div
-                                        className="fixed inset-0 z-40"
-                                        onClick={() => setIsNotifOpen(false)}
-                                    />
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="absolute right-0 top-full mt-2 w-80 bg-bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden"
-                                    >
-                                        <div className="p-3 border-b border-border">
-                                            <h3 className="font-semibold text-sm">Notifications</h3>
-                                        </div>
-                                        <div className="max-h-80 overflow-y-auto">
-                                            {notifications.map((notif) => (
-                                                <button
-                                                    key={notif.id}
-                                                    className="w-full p-3 text-left hover:bg-white/5 transition-colors border-b border-border last:border-0"
-                                                >
-                                                    <p className="text-sm text-gray-200">{notif.message}</p>
-                                                    <p className="text-xs text-gray-500 mt-1">{notif.time}</p>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                </>
-                            )}
-                        </AnimatePresence>
+                        <NotificationsMenu isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                     </div>
 
                     {/* Profile Dropdown */}
@@ -116,7 +83,10 @@ export function Navbar() {
                                         </div>
                                         <div className="p-1">
                                             <button
-                                                onClick={() => signOut()}
+                                                onClick={() => {
+                                                    setIsProfileOpen(false)
+                                                    signOut()
+                                                }}
                                                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                             >
                                                 <LogOut className="h-4 w-4" />

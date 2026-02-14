@@ -1,4 +1,5 @@
 export type UserRole = 'owner' | 'admin' | 'executive' | 'participant'
+export type UserType = 'management' | 'team'
 export type CohortStatus = 'upcoming' | 'active' | 'completed'
 export type SessionStatus = 'scheduled' | 'completed'
 export type SubmissionStatus = 'pending' | 'reviewed'
@@ -11,10 +12,12 @@ export interface User {
     email: string
     full_name: string
     role: UserRole
+    user_type: UserType | null
     company_id: string | null
     onboarding_completed: boolean
     ai_readiness_score: number
     profile_data: Record<string, unknown> | null
+    onboarding_data: Record<string, unknown> | null
     created_at: string
 }
 
@@ -27,6 +30,80 @@ export interface Company {
     executive_user_id: string | null
     team_size: number
 }
+
+export interface Notification {
+    id: string
+    user_id: string
+    title: string
+    message: string | null
+    type: 'info' | 'success' | 'warning' | 'error'
+    read: boolean
+    action_url: string | null
+    created_at: string
+}
+
+export interface Lead {
+    id: string;
+    created_at: string;
+    updated_at: string;
+
+    // Contact Info
+    record_id?: string | null;
+    full_name: string;
+    email?: string | null;
+    phone?: string | null;
+    instagram?: string | null;
+    company_name?: string | null;
+    job_title?: string | null;
+    country?: string | null;
+    city?: string | null;
+    description?: string | null;
+
+    // Deal Info
+    priority?: 'ACTIVE' | 'HOT' | 'COLD' | 'LAVA' | 'COMPLETED' | 'NOT INTERESTED' | null;
+    discovery_call_date?: string | null;
+    offering_type?: string | null;
+    session_type?: string | null;
+
+    // Financial
+    payment_amount?: number | null;
+    seats?: number | null;
+    balance?: number | null;
+    balance_2?: number | null;
+    coupon_percent?: number | null;
+    coupon_code?: string | null;
+    paid_deposit?: boolean | null;
+    amount_paid?: number | null;
+    amount_paid_2?: number | null;
+    date_of_payment?: string | null;
+    date_of_payment_2?: string | null;
+    date_of_payment_3?: string | null;
+    payment_plan?: string | null;
+    paid_full?: boolean | null;
+    balance_dop?: string | null;
+
+    // Schedule
+    day_slot?: string | null;
+    time_slot?: string | null;
+    start_date?: string | null;
+    end_date?: string | null;
+    sessions_done?: number | null;
+
+    // Support
+    booked_support?: string | null;
+    support_date_booked?: string | null;
+
+    // Notes
+    notes?: string | null;
+
+    // Metadata
+    priority_changed_at?: string | null;
+    priority_previous_values?: string[] | null;
+
+    // Ownership
+    owner_id?: string | null;
+}
+
 
 export interface Cohort {
     id: string
@@ -147,17 +224,27 @@ export interface Database {
                     id: string
                     email: string
                     full_name: string
-                    role: UserRole
+                    role?: UserRole
                     company_id?: string | null
+                    user_type?: UserType | null
                     onboarding_completed?: boolean
                     ai_readiness_score?: number
                     profile_data?: Record<string, unknown> | null
+                    onboarding_data?: Record<string, unknown> | null
+                    created_at?: string
                 }
                 Update: Partial<Omit<User, 'id' | 'created_at'>>
             }
             companies: {
                 Row: Company
-                Insert: Omit<Company, 'id'>
+                Insert: {
+                    name: string
+                    industry?: string | null
+                    enrollment_date?: string
+                    cohort_id?: string | null
+                    executive_user_id?: string | null
+                    team_size?: number
+                }
                 Update: Partial<Omit<Company, 'id'>>
             }
             cohorts: {
@@ -200,6 +287,24 @@ export interface Database {
                 Insert: Omit<Invitation, 'id' | 'created_at'>
                 Update: Partial<Omit<Invitation, 'id'>>
             }
+            notifications: {
+                Row: Notification
+                Insert: {
+                    user_id: string
+                    title: string
+                    message?: string | null
+                    type?: 'info' | 'success' | 'warning' | 'error'
+                    read?: boolean
+                    action_url?: string | null
+                    created_at?: string
+                }
+                Update: Partial<Omit<Notification, 'id' | 'created_at'>>
+            }
+            leads: {
+                Row: Lead
+                Insert: Omit<Lead, 'id' | 'created_at' | 'updated_at'>
+                Update: Partial<Omit<Lead, 'id' | 'created_at'>>
+            }
         }
         Views: {
             [_ in never]: never
@@ -209,6 +314,7 @@ export interface Database {
         }
         Enums: {
             user_role: UserRole
+            user_type: UserType
             cohort_status: CohortStatus
             session_status: SessionStatus
             submission_status: SubmissionStatus

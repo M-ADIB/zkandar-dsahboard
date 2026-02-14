@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from '@/context/AuthContext'
+import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoginPage } from '@/pages/LoginPage'
@@ -13,67 +13,100 @@ import { AnalyticsDashboard } from '@/pages/AnalyticsDashboard'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { OnboardingSurvey } from '@/components/onboarding/OnboardingSurvey'
 
+import { NotificationProvider } from '@/context/NotificationContext'
+import { NotificationsPage } from '@/pages/NotificationsPage'
+import { CompaniesPage } from '@/pages/admin/CompaniesPage'
+import { LeadsPage } from '@/pages/admin/LeadsPage'
+
 function App() {
     return (
         <AuthProvider>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/signup/:token" element={<SignupPage />} />
+            <NotificationProvider>
+                <Routes>
+                    {/* Public Routes */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/signup/:token" element={<SignupPage />} />
 
-                {/* Protected Routes */}
-                <Route
-                    path="/"
-                    element={
-                        <ProtectedRoute>
-                            <AppShell />
-                        </ProtectedRoute>
-                    }
-                >
-                    {/* Dashboard - Role-based redirect */}
-                    <Route index element={<DashboardRedirect />} />
-
-                    {/* Owner/Admin Routes */}
+                    {/* Protected Routes */}
                     <Route
-                        path="admin"
+                        path="/"
                         element={
-                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                                <OwnerDashboard />
+                            <ProtectedRoute>
+                                <AppShell />
                             </ProtectedRoute>
                         }
-                    />
-                    <Route
-                        path="analytics"
-                        element={
-                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                                <AnalyticsDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
+                    >
+                        {/* Dashboard - Role-based redirect */}
+                        <Route index element={<DashboardRedirect />} />
 
-                    {/* Shared Routes (All authenticated users) */}
-                    <Route path="dashboard" element={<ParticipantDashboard />} />
-                    <Route path="sessions" element={<SessionsPage />} />
-                    <Route path="assignments" element={<AssignmentsPage />} />
-                    <Route path="chat" element={<ChatPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
+                        {/* Owner/Admin Routes */}
+                        <Route
+                            path="admin"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <OwnerDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="admin/companies"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <CompaniesPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="admin/leads"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <LeadsPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="analytics"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <AnalyticsDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
 
-                    {/* Onboarding */}
-                    <Route path="onboarding" element={<OnboardingSurvey />} />
-                </Route>
+                        {/* Shared Routes (All authenticated users) */}
+                        <Route path="dashboard" element={<ParticipantDashboard />} />
+                        <Route path="sessions" element={<SessionsPage />} />
+                        <Route path="assignments" element={<AssignmentsPage />} />
+                        <Route path="chat" element={<ChatPage />} />
+                        <Route path="settings" element={<SettingsPage />} />
+                        <Route path="notifications" element={<NotificationsPage />} />
 
-                {/* Catch all */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                        {/* Onboarding */}
+                        <Route path="onboarding" element={<OnboardingSurvey />} />
+                    </Route>
+
+                    {/* Catch all */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </NotificationProvider>
         </AuthProvider>
     )
 }
 
 // Helper component to redirect based on user role
 function DashboardRedirect() {
-    // This will be implemented with auth context
-    // For now, redirect to participant dashboard
+    const { user, loading } = useAuth()
+
+    if (loading) {
+        return null
+    }
+
+    // Redirect based on role
+    if (user?.role === 'owner' || user?.role === 'admin') {
+        return <Navigate to="/admin" replace />
+    }
+
     return <Navigate to="/dashboard" replace />
 }
 

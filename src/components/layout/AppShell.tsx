@@ -2,6 +2,8 @@ import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Navbar } from './Navbar'
 import { useAuth } from '@/context/AuthContext'
+import { PageTransition } from './PageTransition'
+import { AnimatePresence } from 'framer-motion'
 
 export function AppShell() {
     const { user } = useAuth()
@@ -18,7 +20,11 @@ export function AppShell() {
 
                 {/* Page Content */}
                 <main className="flex-1 p-4 md:p-6 lg:p-8">
-                    <Outlet />
+                    <AnimatePresence mode="wait">
+                        <PageTransition>
+                            <Outlet />
+                        </PageTransition>
+                    </AnimatePresence>
                 </main>
             </div>
         </div>
