@@ -215,17 +215,16 @@ export function ChatPage() {
                     const row = payload.new as ChatMessage
                     if (!row) return
 
-                    const isAnnouncement = selectedChannel.type === 'announcements'
-                    const isCompanyChannel = selectedChannel.type === 'company'
-                    const isCohortChannel = selectedChannel.type === 'cohort'
+                    const matchesChannel = selectedChannel.type === 'company'
+                        ? row.company_id === selectedChannel.companyId
+                        : selectedChannel.type === 'announcements'
+                            ? row.cohort_id === selectedChannel.cohortId && row.company_id === null && row.is_pinned
+                            : row.cohort_id === selectedChannel.cohortId && row.company_id === null
 
-                    if (isAnnouncement) {
-                        if (!row.is_pinned || row.company_id !== null) return
+                    if (!matchesChannel) {
+                        setMessages((prev) => prev.filter((msg) => msg.id !== row.id))
+                        return
                     }
-
-                    if (isCohortChannel && row.company_id !== null) return
-
-                    if (isCompanyChannel && row.company_id !== selectedChannel.companyId) return
 
                     const cached = senderCache.current.get(row.sender_id)
                     const senderName = row.sender_id === user.id
