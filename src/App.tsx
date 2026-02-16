@@ -12,6 +12,7 @@ import { ChatPage } from '@/pages/ChatPage'
 import { AnalyticsDashboard } from '@/pages/AnalyticsDashboard'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { OnboardingSurvey } from '@/components/onboarding/OnboardingSurvey'
+import { SprintWorkshopOnboarding } from '@/pages/onboarding/SprintWorkshopOnboarding'
 
 import { NotificationProvider } from '@/context/NotificationContext'
 import { NotificationsPage } from '@/pages/NotificationsPage'
@@ -111,6 +112,7 @@ function App() {
 
                         {/* Onboarding */}
                         <Route path="onboarding" element={<OnboardingSurvey />} />
+                        <Route path="onboarding/sprint-workshop" element={<SprintWorkshopOnboarding />} />
                     </Route>
 
                     {/* Catch all */}

@@ -74,6 +74,16 @@ export function UserModal({
         return { sprint, master };
     }, [programs]);
 
+    const masterClassIds = useMemo(() => {
+        return new Set(programGroups.master.map((program) => program.id));
+    }, [programGroups.master]);
+
+    const hasMasterClassSelection = useMemo(() => {
+        return selectedPrograms.some((id) => masterClassIds.has(id));
+    }, [selectedPrograms, masterClassIds]);
+
+    const isCompanyMissing = !formData.company_id;
+
     const handleProgramToggle = (programId: string) => {
         setSelectedPrograms((prev) =>
             prev.includes(programId)
@@ -88,6 +98,11 @@ export function UserModal({
         if (!user) return;
         if (!formData.full_name.trim()) {
             setError('Full name is required.');
+            return;
+        }
+
+        if (hasMasterClassSelection && isCompanyMissing) {
+            setError('Master Class participants must be assigned to a company.');
             return;
         }
 
@@ -259,13 +274,19 @@ export function UserModal({
                         {programGroups.master.length > 0 && (
                             <div className="space-y-2">
                                 <p className="text-xs uppercase tracking-wide text-gray-500">Master Classes</p>
+                                {isCompanyMissing && (
+                                    <p className="text-xs text-amber-400">
+                                        Select a company to assign Master Class programs.
+                                    </p>
+                                )}
                                 {programGroups.master.map((program) => (
                                     <label key={program.id} className="flex items-start gap-2 text-sm text-gray-300">
                                         <input
                                             type="checkbox"
                                             checked={selectedPrograms.includes(program.id)}
+                                            disabled={isCompanyMissing && !selectedPrograms.includes(program.id)}
                                             onChange={() => handleProgramToggle(program.id)}
-                                            className="mt-1 h-4 w-4 rounded border-gray-600 bg-[#0F1219] text-dashboard-accent focus:ring-dashboard-accent"
+                                            className="mt-1 h-4 w-4 rounded border-gray-600 bg-[#0F1219] text-dashboard-accent focus:ring-dashboard-accent disabled:opacity-40"
                                         />
                                         <span>{program.name}</span>
                                     </label>
