@@ -22,6 +22,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    const sortByCreatedAt = (items: Notification[]) => {
+        return [...items].sort((a, b) => {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        })
+    }
+
     const fetchNotifications = async () => {
         if (!user) {
             setNotifications([])
@@ -51,6 +57,51 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (authLoading) return
         fetchNotifications()
+    }, [authLoading, user?.id])
+
+    useEffect(() => {
+        if (authLoading || !user) return
+
+        const channel = supabase
+            .channel(`notifications:${user.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${user.id}`,
+                },
+                (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        const newNotification = payload.new as Notification
+                        setNotifications((prev) => {
+                            if (prev.some((n) => n.id === newNotification.id)) return prev
+                            return sortByCreatedAt([newNotification, ...prev])
+                        })
+                        return
+                    }
+
+                    if (payload.eventType === 'UPDATE') {
+                        const updated = payload.new as Notification
+                        setNotifications((prev) => {
+                            const next = prev.map((n) => (n.id === updated.id ? updated : n))
+                            return sortByCreatedAt(next)
+                        })
+                        return
+                    }
+
+                    if (payload.eventType === 'DELETE') {
+                        const removed = payload.old as Notification
+                        setNotifications((prev) => prev.filter((n) => n.id !== removed.id))
+                    }
+                }
+            )
+            .subscribe()
+
+        return () => {
+            void supabase.removeChannel(channel)
+        }
     }, [authLoading, user?.id])
 
     const unreadCount = notifications.filter((n) => !n.read).length

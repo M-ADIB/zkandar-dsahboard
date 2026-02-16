@@ -200,6 +200,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
+    useEffect(() => {
+        if (!authUser) return
+
+        const channel = supabase
+            .channel(`user:${authUser.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'users',
+                    filter: `id=eq.${authUser.id}`,
+                },
+                (payload) => {
+                    if (!mountedRef.current) return
+
+                    if (payload.eventType === 'DELETE') {
+                        setUser(null)
+                        return
+                    }
+
+                    if (payload.new) {
+                        setUser(payload.new as User)
+                    }
+                }
+            )
+            .subscribe()
+
+        return () => {
+            void supabase.removeChannel(channel)
+        }
+    }, [authUser?.id])
+
     const signIn = async (email: string, password: string) => {
         // Don't set loading=true — avoids race condition with ProtectedRoute
         const { error } = await supabase.auth.signInWithPassword({

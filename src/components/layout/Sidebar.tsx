@@ -56,8 +56,8 @@ const navItems: NavItem[] = [
     },
     {
         icon: GraduationCap,
-        label: 'Cohorts',
-        path: '/admin/cohorts',
+        label: 'Programs',
+        path: '/admin/programs',
         roles: ['owner', 'admin'],
     },
     {

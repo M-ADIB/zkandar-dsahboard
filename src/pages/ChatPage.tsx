@@ -3,9 +3,10 @@ import { motion } from 'framer-motion'
 import { Send, Paperclip, Hash, Users, Pin } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useCompany } from '@/hooks/useCompany'
+import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { supabase } from '@/lib/supabase'
 import { formatTimeLabel } from '@/lib/time'
-import type { ChatMessage, Cohort } from '@/types/database'
+import type { ChatMessage } from '@/types/database'
 
 interface Message {
     id: string
@@ -20,44 +21,69 @@ interface Message {
     isOwn?: boolean
 }
 
+type ChannelType = 'cohort' | 'company' | 'announcements'
+
 interface Channel {
-    id: 'cohort' | 'company' | 'announcements'
+    id: string
     name: string
-    type: 'public' | 'private'
+    type: ChannelType
     unread: number
+    cohortId?: string
+    companyId?: string
 }
 
 export function ChatPage() {
     const { user, loading: authLoading } = useAuth()
     const { company, loading: companyLoading } = useCompany()
-    const [cohort, setCohort] = useState<Cohort | null>(null)
-    const [cohortLoading, setCohortLoading] = useState(false)
-    const [cohortError, setCohortError] = useState<string | null>(null)
-    const [selectedChannel, setSelectedChannel] = useState<Channel['id']>('cohort')
+    const { cohorts, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
+    const [selectedChannelId, setSelectedChannelId] = useState<string>('')
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<Message[]>([])
     const [loadingMessages, setLoadingMessages] = useState(true)
     const [messagesError, setMessagesError] = useState<string | null>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const senderCache = useRef(new Map<string, { name: string; isAdmin: boolean }>())
 
     const channels = useMemo<Channel[]>(() => {
         const list: Channel[] = []
-        if (cohort?.name) {
-            list.push({ id: 'cohort', name: cohort.name, type: 'public', unread: 0 })
-            list.push({ id: 'announcements', name: 'Announcements', type: 'public', unread: 0 })
-        }
+        cohorts.forEach((cohort) => {
+            list.push({
+                id: `cohort:${cohort.id}`,
+                name: cohort.name,
+                type: 'cohort',
+                unread: 0,
+                cohortId: cohort.id,
+            })
+            list.push({
+                id: `announcements:${cohort.id}`,
+                name: `Announcements · ${cohort.name}`,
+                type: 'announcements',
+                unread: 0,
+                cohortId: cohort.id,
+            })
+        })
         if (company?.name) {
-            list.push({ id: 'company', name: company.name, type: 'private', unread: 0 })
+            list.push({
+                id: `company:${company.id}`,
+                name: company.name,
+                type: 'company',
+                unread: 0,
+                companyId: company.id,
+            })
         }
         return list
-    }, [company?.name, cohort?.name])
+    }, [company?.id, company?.name, cohorts])
+
+    const selectedChannel = useMemo(() => {
+        return channels.find((channel) => channel.id === selectedChannelId) ?? null
+    }, [channels, selectedChannelId])
 
     useEffect(() => {
         if (channels.length === 0) return
-        if (!channels.find((channel) => channel.id === selectedChannel)) {
-            setSelectedChannel(channels[0].id)
+        if (!channels.find((channel) => channel.id === selectedChannelId)) {
+            setSelectedChannelId(channels[0].id)
         }
-    }, [channels, selectedChannel])
+    }, [channels, selectedChannelId])
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -68,51 +94,9 @@ export function ChatPage() {
     }, [messages])
 
     useEffect(() => {
-        const cohortId = company?.cohort_id
-        if (!cohortId) {
-            setCohort(null)
-            setCohortLoading(false)
-            return
-        }
+        if (authLoading || companyLoading || cohortsLoading) return
 
-        let ignore = false
-
-        const fetchCohort = async () => {
-            setCohortLoading(true)
-            setCohortError(null)
-
-            const { data, error } = await supabase
-                .from('cohorts')
-                .select('*')
-                .eq('id', cohortId)
-                .single()
-
-            if (ignore) return
-
-            if (error) {
-                setCohortError(error.message)
-                setCohort(null)
-            } else {
-                setCohort(data as Cohort)
-            }
-
-            setCohortLoading(false)
-        }
-
-        fetchCohort()
-
-        return () => {
-            ignore = true
-        }
-    }, [company?.cohort_id])
-
-    useEffect(() => {
-        if (authLoading || companyLoading) return
-
-        const cohortId = company?.cohort_id
-        const companyId = company?.id
-
-        if (!user || (!cohortId && !companyId)) {
+        if (!user || !selectedChannel) {
             setMessages([])
             setLoadingMessages(false)
             return
@@ -129,27 +113,27 @@ export function ChatPage() {
                 .select('id, message, is_pinned, created_at, sender_id, company_id, cohort_id, sender:users(id, full_name, role)')
                 .order('created_at', { ascending: true })
 
-            if (selectedChannel === 'company') {
-                if (!companyId) {
+            if (selectedChannel.type === 'company') {
+                if (!selectedChannel.companyId) {
                     setMessages([])
                     setLoadingMessages(false)
                     return
                 }
-                query = query.eq('company_id', companyId)
-            } else if (selectedChannel === 'announcements') {
-                if (!cohortId) {
+                query = query.eq('company_id', selectedChannel.companyId)
+            } else if (selectedChannel.type === 'announcements') {
+                if (!selectedChannel.cohortId) {
                     setMessages([])
                     setLoadingMessages(false)
                     return
                 }
-                query = query.eq('cohort_id', cohortId).eq('is_pinned', true).is('company_id', null)
+                query = query.eq('cohort_id', selectedChannel.cohortId).eq('is_pinned', true).is('company_id', null)
             } else {
-                if (!cohortId) {
+                if (!selectedChannel.cohortId) {
                     setMessages([])
                     setLoadingMessages(false)
                     return
                 }
-                query = query.eq('cohort_id', cohortId).is('company_id', null)
+                query = query.eq('cohort_id', selectedChannel.cohortId).is('company_id', null)
             }
 
             const { data, error } = await query
@@ -161,17 +145,32 @@ export function ChatPage() {
                 setMessages([])
             } else {
                 const rows = (data as ChatMessage[]) ?? []
-                const mapped = rows.map((row) => ({
-                    id: row.id,
-                    sender: {
-                        name: row.sender?.full_name ?? 'Member',
-                        isAdmin: row.sender?.role === 'owner' || row.sender?.role === 'admin',
-                    },
-                    message: row.message,
-                    timestamp: formatTimeLabel(row.created_at) || '—',
-                    isPinned: row.is_pinned,
-                    isOwn: row.sender_id === user.id,
-                }))
+                rows.forEach((row) => {
+                    if (row.sender) {
+                        senderCache.current.set(row.sender_id, {
+                            name: row.sender.full_name,
+                            isAdmin: row.sender.role === 'owner' || row.sender.role === 'admin',
+                        })
+                    }
+                })
+                const mapped = rows.map((row) => {
+                    const cached = senderCache.current.get(row.sender_id)
+                    const senderName = row.sender_id === user.id
+                        ? user.full_name
+                        : cached?.name ?? 'Member'
+
+                    return {
+                        id: row.id,
+                        sender: {
+                            name: senderName,
+                            isAdmin: cached?.isAdmin ?? (row.sender_id === user.id ? user.role === 'owner' || user.role === 'admin' : false),
+                        },
+                        message: row.message,
+                        timestamp: formatTimeLabel(row.created_at) || '—',
+                        isPinned: row.is_pinned,
+                        isOwn: row.sender_id === user.id,
+                    }
+                })
                 setMessages(mapped)
             }
 
@@ -183,22 +182,104 @@ export function ChatPage() {
         return () => {
             ignore = true
         }
-    }, [authLoading, companyLoading, user?.id, company?.id, company?.cohort_id, selectedChannel])
+    }, [authLoading, companyLoading, cohortsLoading, user?.id, selectedChannel])
+
+    useEffect(() => {
+        if (authLoading || companyLoading || cohortsLoading) return
+        if (!user || !selectedChannel) return
+
+        if (selectedChannel.type === 'company' && !selectedChannel.companyId) return
+        if (selectedChannel.type !== 'company' && !selectedChannel.cohortId) return
+
+        const filter = selectedChannel.type === 'company'
+            ? `company_id=eq.${selectedChannel.companyId}`
+            : `cohort_id=eq.${selectedChannel.cohortId}`
+
+        const channel = supabase
+            .channel(`chat:${selectedChannel.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter,
+                },
+                (payload) => {
+                    if (payload.eventType === 'DELETE') {
+                        const removed = payload.old as ChatMessage
+                        setMessages((prev) => prev.filter((msg) => msg.id !== removed.id))
+                        return
+                    }
+
+                    const row = payload.new as ChatMessage
+                    if (!row) return
+
+                    const isAnnouncement = selectedChannel.type === 'announcements'
+                    const isCompanyChannel = selectedChannel.type === 'company'
+                    const isCohortChannel = selectedChannel.type === 'cohort'
+
+                    if (isAnnouncement) {
+                        if (!row.is_pinned || row.company_id !== null) return
+                    }
+
+                    if (isCohortChannel && row.company_id !== null) return
+
+                    if (isCompanyChannel && row.company_id !== selectedChannel.companyId) return
+
+                    const cached = senderCache.current.get(row.sender_id)
+                    const senderName = row.sender_id === user.id
+                        ? user.full_name
+                        : cached?.name ?? 'Member'
+
+                    const messageEntry: Message = {
+                        id: row.id,
+                        sender: {
+                            name: senderName,
+                            isAdmin: cached?.isAdmin ?? (row.sender_id === user.id ? user.role === 'owner' || user.role === 'admin' : false),
+                        },
+                        message: row.message,
+                        timestamp: formatTimeLabel(row.created_at) || '—',
+                        isPinned: row.is_pinned,
+                        isOwn: row.sender_id === user.id,
+                    }
+
+                    setMessages((prev) => {
+                        const existingIndex = prev.findIndex((msg) => msg.id === row.id)
+                        if (existingIndex === -1) {
+                            return [...prev, messageEntry]
+                        }
+
+                        const next = [...prev]
+                        next[existingIndex] = messageEntry
+                        return next
+                    })
+                }
+            )
+            .subscribe()
+
+        return () => {
+            void supabase.removeChannel(channel)
+        }
+    }, [authLoading, companyLoading, cohortsLoading, user, selectedChannel])
 
     const canSend = Boolean(
         user &&
+        selectedChannel &&
         !loadingMessages &&
-        selectedChannel !== 'announcements' &&
-        (selectedChannel === 'company' ? company?.id : company?.cohort_id)
+        selectedChannel.type !== 'announcements' &&
+        (selectedChannel.type === 'company' ? selectedChannel.companyId : selectedChannel.cohortId)
     )
 
     const handleSend = async () => {
         if (!message.trim() || !user || !canSend) return
 
-        const cohortId = company?.cohort_id ?? null
-        const companyId = selectedChannel === 'company' ? company?.id ?? null : null
+        if (!selectedChannel) return
 
-        if (!cohortId && selectedChannel !== 'company') {
+        const cohortId = selectedChannel.type === 'company' ? null : selectedChannel.cohortId ?? null
+        const companyId = selectedChannel.type === 'company' ? selectedChannel.companyId ?? null : null
+
+        if (!cohortId && selectedChannel.type !== 'company') {
             setMessagesError('No cohort assigned for this channel.')
             return
         }
@@ -224,6 +305,12 @@ export function ChatPage() {
 
         if (data) {
             const row = data as ChatMessage
+            if (row.sender) {
+                senderCache.current.set(row.sender_id, {
+                    name: row.sender.full_name,
+                    isAdmin: row.sender.role === 'owner' || row.sender.role === 'admin',
+                })
+            }
             const newMessage: Message = {
                 id: row.id,
                 sender: {
@@ -261,8 +348,8 @@ export function ChatPage() {
                         channels.map((channel) => (
                             <button
                                 key={channel.id}
-                                onClick={() => setSelectedChannel(channel.id)}
-                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition ${selectedChannel === channel.id
+                                onClick={() => setSelectedChannelId(channel.id)}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition ${selectedChannelId === channel.id
                                     ? 'bg-lime/10 text-lime'
                                     : 'hover:bg-white/5 text-gray-400'
                                     }`}
@@ -288,10 +375,10 @@ export function ChatPage() {
                         <Hash className="h-5 w-5 text-lime" />
                         <div>
                             <h3 className="font-semibold">
-                                {channels.find((c) => c.id === selectedChannel)?.name ?? 'Chat'}
+                                {selectedChannel?.name ?? 'Chat'}
                             </h3>
                             <p className="text-xs text-gray-500">
-                                {cohortLoading ? 'Loading cohort...' : cohortError ? 'Cohort unavailable' : '24 members online'}
+                                {cohortsLoading ? 'Loading channels...' : cohortsError ? 'Channels unavailable' : '24 members online'}
                             </p>
                         </div>
                     </div>
@@ -375,7 +462,7 @@ export function ChatPage() {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
-                            placeholder={selectedChannel === 'announcements' ? 'Announcements are read-only' : 'Type a message...'}
+                            placeholder={selectedChannel?.type === 'announcements' ? 'Announcements are read-only' : 'Type a message...'}
                             className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-gray-500"
                             disabled={!canSend}
                         />

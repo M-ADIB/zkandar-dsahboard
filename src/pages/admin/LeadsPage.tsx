@@ -6,6 +6,51 @@ import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
 import { QuickAddLead } from '@/components/admin/leads/QuickAddLead';
 
+const EXPORT_COLUMNS: { key: keyof Lead; label: string }[] = [
+    { key: 'record_id', label: 'Record ID' },
+    { key: 'full_name', label: 'Full Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'instagram', label: 'Instagram' },
+    { key: 'company_name', label: 'Company Name' },
+    { key: 'job_title', label: 'Job Title' },
+    { key: 'country', label: 'Country' },
+    { key: 'city', label: 'City' },
+    { key: 'description', label: 'Description' },
+    { key: 'priority', label: 'Priority' },
+    { key: 'discovery_call_date', label: 'Discovery Call Date' },
+    { key: 'offering_type', label: 'Offering Type' },
+    { key: 'session_type', label: 'Session Type' },
+    { key: 'payment_amount', label: 'Payment Amount' },
+    { key: 'seats', label: 'Seats' },
+    { key: 'balance', label: 'Balance' },
+    { key: 'balance_2', label: 'Balance 2' },
+    { key: 'coupon_percent', label: 'Coupon Percent' },
+    { key: 'coupon_code', label: 'Coupon Code' },
+    { key: 'paid_deposit', label: 'Paid Deposit' },
+    { key: 'amount_paid', label: 'Amount Paid' },
+    { key: 'amount_paid_2', label: 'Amount Paid 2' },
+    { key: 'date_of_payment', label: 'Date of Payment' },
+    { key: 'date_of_payment_2', label: 'Date of Payment 2' },
+    { key: 'date_of_payment_3', label: 'Date of Payment 3' },
+    { key: 'payment_plan', label: 'Payment Plan' },
+    { key: 'paid_full', label: 'Paid Full' },
+    { key: 'balance_dop', label: 'Balance DOP' },
+    { key: 'day_slot', label: 'Day Slot' },
+    { key: 'time_slot', label: 'Time Slot' },
+    { key: 'start_date', label: 'Start Date' },
+    { key: 'end_date', label: 'End Date' },
+    { key: 'sessions_done', label: 'Sessions Done' },
+    { key: 'booked_support', label: 'Booked Support' },
+    { key: 'support_date_booked', label: 'Support Date Booked' },
+    { key: 'notes', label: 'Notes' },
+    { key: 'priority_changed_at', label: 'Priority Changed At' },
+    { key: 'priority_previous_values', label: 'Priority Previous Values' },
+    { key: 'owner_id', label: 'Owner ID' },
+    { key: 'created_at', label: 'Created At' },
+    { key: 'updated_at', label: 'Updated At' },
+];
+
 export function LeadsPage() {
     const supabase = useSupabase();
     const [leads, setLeads] = useState<Lead[]>([]);
@@ -13,6 +58,7 @@ export function LeadsPage() {
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
+    const [isExporting, setIsExporting] = useState(false);
 
     const fetchLeads = async () => {
         setIsLoading(true);
@@ -133,6 +179,50 @@ export function LeadsPage() {
         }
     };
 
+    const formatCsvValue = (value: Lead[keyof Lead]) => {
+        if (value === null || value === undefined) return '';
+        if (Array.isArray(value)) return value.join('; ');
+        if (typeof value === 'boolean') return value ? 'true' : 'false';
+        if (typeof value === 'object') return JSON.stringify(value);
+        return String(value);
+    };
+
+    const escapeCsvValue = (value: string) => {
+        if (value.includes('"')) {
+            value = value.replace(/"/g, '""');
+        }
+        if (value.includes(',') || value.includes('\n') || value.includes('\r') || value.includes('"')) {
+            return `"${value}"`;
+        }
+        return value;
+    };
+
+    const handleExport = () => {
+        if (leads.length === 0) return;
+
+        setIsExporting(true);
+
+        const headers = EXPORT_COLUMNS.map((column) => escapeCsvValue(column.label));
+        const rows = leads.map((lead) => {
+            return EXPORT_COLUMNS
+                .map((column) => escapeCsvValue(formatCsvValue(lead[column.key])))
+                .join(',');
+        });
+
+        const csvContent = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        setIsExporting(false);
+    };
+
     const stats = {
         total: leads.length,
         active: leads.filter((l: Lead) => l.priority === 'ACTIVE').length,
@@ -161,11 +251,12 @@ export function LeadsPage() {
                 </div>
                 <div className="flex gap-3">
                     <button
-                        onClick={() => console.log('Export CSV')}
-                        className="flex items-center gap-2 px-4 py-2 bg-dashboard-card hover:bg-dashboard-card-hover text-white rounded-lg transition-colors font-medium border border-gray-700"
+                        onClick={handleExport}
+                        disabled={isExporting || leads.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 bg-dashboard-card hover:bg-dashboard-card-hover text-white rounded-lg transition-colors font-medium border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Download className="h-5 w-5" />
-                        Export
+                        {isExporting ? 'Exporting...' : 'Export'}
                     </button>
                     <button
                         onClick={() => {

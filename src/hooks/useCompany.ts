@@ -51,5 +51,36 @@ export function useCompany() {
         }
     }, [authLoading, user?.company_id])
 
+    useEffect(() => {
+        if (authLoading) return
+        const companyId = user?.company_id
+        if (!companyId) return
+
+        const channel = supabase
+            .channel(`company:${companyId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'companies',
+                    filter: `id=eq.${companyId}`,
+                },
+                (payload) => {
+                    if (payload.eventType === 'DELETE') {
+                        setCompany(null)
+                        return
+                    }
+
+                    setCompany(payload.new as Company)
+                }
+            )
+            .subscribe()
+
+        return () => {
+            void supabase.removeChannel(channel)
+        }
+    }, [authLoading, user?.company_id])
+
     return { company, loading, error }
 }

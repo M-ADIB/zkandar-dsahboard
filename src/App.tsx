@@ -17,6 +17,9 @@ import { NotificationProvider } from '@/context/NotificationContext'
 import { NotificationsPage } from '@/pages/NotificationsPage'
 import { CompaniesPage } from '@/pages/admin/CompaniesPage'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
+import { ProgramsPage } from '@/pages/admin/ProgramsPage'
+import { ProgramSessionsPage } from '@/pages/admin/ProgramSessionsPage'
+import { UsersPage } from '@/pages/admin/UsersPage'
 
 function App() {
     return (
@@ -62,6 +65,30 @@ function App() {
                             element={
                                 <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                     <LeadsPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="admin/programs"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <ProgramsPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="admin/programs/:programId/sessions"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <ProgramSessionsPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="admin/users"
+                            element={
+                                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                    <UsersPage />
                                 </ProtectedRoute>
                             }
                         />

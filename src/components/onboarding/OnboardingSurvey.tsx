@@ -378,7 +378,7 @@ export function OnboardingSurvey() {
             if (error) throw error
 
             await refreshUser()
-            toast.success('Welcome to Zkandar AI Masterclass!')
+            toast.success('Welcome to Zkandar AI Master Class!')
             navigate('/dashboard')
         } catch (error) {
             console.error('Error submitting survey:', error)
@@ -424,9 +424,22 @@ export function OnboardingSurvey() {
                 >
                     {/* Header */}
                     <div className="text-center mb-12">
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-lime/10 text-lime text-xs uppercase tracking-widest">
+                                Master Class Onboarding
+                            </span>
+                            <button
+                                type="button"
+                                disabled
+                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border text-xs text-gray-500 uppercase tracking-widest opacity-60 cursor-not-allowed"
+                                title="Sprint Workshop onboarding is coming soon"
+                            >
+                                Sprint Workshop (Coming Soon)
+                            </button>
+                        </div>
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm mb-6">
                             <Sparkles className="h-4 w-4" />
-                            Zkandar AI Masterclass
+                            Zkandar AI Master Class
                         </div>
                         <h1 className="hero-text text-4xl mb-4">Welcome!</h1>
                         <p className="text-gray-400 text-lg">

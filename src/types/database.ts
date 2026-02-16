@@ -1,6 +1,7 @@
 export type UserRole = 'owner' | 'admin' | 'executive' | 'participant'
 export type UserType = 'management' | 'team'
 export type CohortStatus = 'upcoming' | 'active' | 'completed'
+export type OfferingType = 'sprint_workshop' | 'master_class'
 export type SessionStatus = 'scheduled' | 'completed'
 export type SubmissionStatus = 'pending' | 'reviewed'
 export type SubmissionFormat = 'file' | 'link' | 'text'
@@ -111,7 +112,15 @@ export interface Cohort {
     start_date: string
     end_date: string
     status: CohortStatus
+    offering_type: OfferingType
     miro_board_url: string | null
+    created_at: string
+}
+
+export interface CohortMembership {
+    id: string
+    user_id: string
+    cohort_id: string
     created_at: string
 }
 
@@ -252,6 +261,15 @@ export interface Database {
                 Insert: Omit<Cohort, 'id' | 'created_at'>
                 Update: Partial<Omit<Cohort, 'id'>>
             }
+            cohort_memberships: {
+                Row: CohortMembership
+                Insert: {
+                    user_id: string
+                    cohort_id: string
+                    created_at?: string
+                }
+                Update: Partial<Omit<CohortMembership, 'id' | 'created_at'>>
+            }
             sessions: {
                 Row: Session
                 Insert: Omit<Session, 'id' | 'created_at'>
@@ -316,6 +334,7 @@ export interface Database {
             user_role: UserRole
             user_type: UserType
             cohort_status: CohortStatus
+            offering_type: OfferingType
             session_status: SessionStatus
             submission_status: SubmissionStatus
             submission_format: SubmissionFormat

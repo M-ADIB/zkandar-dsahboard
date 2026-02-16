@@ -3,33 +3,49 @@ import { motion } from 'framer-motion'
 import { Calendar, Play, FileText, CheckCircle2, Clock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
-import { useCompany } from '@/hooks/useCompany'
+import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { formatDateLabel, formatTimeLabel } from '@/lib/time'
-import type { Session } from '@/types/database'
+import type { OfferingType, Session } from '@/types/database'
 
 type SessionCard = {
     id: string
     number: number
     title: string
+    programLabel?: string
     date: string
     duration: string
     status: 'completed' | 'scheduled' | 'upcoming'
     materialsCount: number
 }
 
+const offeringLabels: Record<OfferingType, string> = {
+    sprint_workshop: 'Sprint Workshop',
+    master_class: 'Master Class',
+}
+
 export function SessionsPage() {
     const [filter, setFilter] = useState<'all' | 'completed' | 'upcoming'>('all')
     const { user, loading: authLoading } = useAuth()
-    const { company, loading: companyLoading } = useCompany()
+    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
     const [sessions, setSessions] = useState<Session[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        if (authLoading || companyLoading) return
-        const cohortId = company?.cohort_id
+    const sortSessions = (items: Session[]) => {
+        return [...items].sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
+    }
 
-        if (!user || !cohortId) {
+    useEffect(() => {
+        if (authLoading || cohortsLoading) return
+
+        if (cohortsError) {
+            setError(cohortsError)
+            setSessions([])
+            setLoading(false)
+            return
+        }
+
+        if (!user || cohortIds.length === 0) {
             setSessions([])
             setLoading(false)
             return
@@ -44,8 +60,8 @@ export function SessionsPage() {
             const { data, error: fetchError } = await supabase
                 .from('sessions')
                 .select('*')
-                .eq('cohort_id', cohortId)
-                .order('session_number', { ascending: true })
+                .in('cohort_id', cohortIds)
+                .order('scheduled_date', { ascending: true })
 
             if (ignore) return
 
@@ -53,7 +69,7 @@ export function SessionsPage() {
                 setError(fetchError.message)
                 setSessions([])
             } else {
-                setSessions((data as Session[]) ?? [])
+                setSessions(sortSessions((data as Session[]) ?? []))
             }
 
             setLoading(false)
@@ -64,9 +80,57 @@ export function SessionsPage() {
         return () => {
             ignore = true
         }
-    }, [authLoading, companyLoading, user?.id, company?.cohort_id])
+    }, [authLoading, cohortsLoading, cohortsError, user?.id, cohortIds])
+
+    useEffect(() => {
+        if (authLoading || cohortsLoading) return
+        if (!user || cohortIds.length === 0) return
+
+        const channels = cohortIds.map((cohortId) => {
+            return supabase
+                .channel(`sessions:${cohortId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'sessions',
+                        filter: `cohort_id=eq.${cohortId}`,
+                    },
+                    (payload) => {
+                        if (payload.eventType === 'DELETE') {
+                            const removed = payload.old as Session
+                            setSessions((prev) => prev.filter((session) => session.id !== removed.id))
+                            return
+                        }
+
+                        const row = payload.new as Session
+                        if (!row) return
+
+                        setSessions((prev) => {
+                            const index = prev.findIndex((session) => session.id === row.id)
+                            if (index === -1) {
+                                return sortSessions([...prev, row])
+                            }
+
+                            const next = [...prev]
+                            next[index] = row
+                            return sortSessions(next)
+                        })
+                    }
+                )
+                .subscribe()
+        })
+
+        return () => {
+            channels.forEach((channel) => {
+                void supabase.removeChannel(channel)
+            })
+        }
+    }, [authLoading, cohortsLoading, user?.id, cohortIds])
 
     const sessionCards = useMemo<SessionCard[]>(() => {
+        const cohortMap = new Map(cohorts.map((cohort) => [cohort.id, cohort]))
         return sessions.map((session) => {
             const scheduledAt = new Date(session.scheduled_date)
             const isPast = scheduledAt.getTime() < Date.now()
@@ -79,17 +143,23 @@ export function SessionsPage() {
 
             const materialsCount = Array.isArray(session.materials) ? session.materials.length : 0
 
+            const cohort = cohortMap.get(session.cohort_id)
+            const programLabel = cohort
+                ? `${offeringLabels[cohort.offering_type]} · ${cohort.name}`
+                : undefined
+
             return {
                 id: session.id,
                 number: session.session_number,
                 title: session.title,
+                programLabel,
                 date: formatDateLabel(session.scheduled_date) || 'TBD',
                 duration: formatTimeLabel(session.scheduled_date) || 'TBD',
                 status: derivedStatus,
                 materialsCount,
             }
         })
-    }, [sessions])
+    }, [sessions, cohorts])
 
     const filteredSessions = sessionCards.filter((session) => {
         if (filter === 'all') return true
@@ -189,6 +259,9 @@ export function SessionsPage() {
 
                             {/* Content */}
                             <div className="p-5">
+                                {session.programLabel && (
+                                    <p className="text-xs text-gray-500 mb-1">{session.programLabel}</p>
+                                )}
                                 <p className="text-xs text-lime mb-2">Session {session.number}</p>
                                 <h3 className="font-semibold mb-2 line-clamp-2">{session.title}</h3>
                                 <div className="flex items-center justify-between text-sm text-gray-500">

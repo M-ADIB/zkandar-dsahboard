@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FileText, Clock, CheckCircle2, Upload, Link as LinkIcon, ArrowRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
-import { useCompany } from '@/hooks/useCompany'
+import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { formatDateLabel } from '@/lib/time'
 import type { Assignment, Session, Submission, SubmissionFormat } from '@/types/database'
 
@@ -21,127 +21,203 @@ type AssignmentCard = {
 export function AssignmentsPage() {
     const [filter, setFilter] = useState<'all' | 'pending' | 'submitted'>('all')
     const { user, loading: authLoading } = useAuth()
-    const { company, loading: companyLoading } = useCompany()
+    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
     const [assignments, setAssignments] = useState<AssignmentCard[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const refreshTimerRef = useRef<number | null>(null)
 
-    useEffect(() => {
-        if (authLoading || companyLoading) return
+    const refreshAssignments = useCallback(async () => {
+        if (authLoading || cohortsLoading) return
 
-        const cohortId = company?.cohort_id
-        if (!user || !cohortId) {
+        if (cohortsError) {
+            setError(cohortsError)
             setAssignments([])
             setLoading(false)
             return
         }
 
-        let ignore = false
-
-        const fetchAssignments = async () => {
-            setLoading(true)
-            setError(null)
-
-            const { data: sessionsData, error: sessionsError } = await supabase
-                .from('sessions')
-                .select('id, title, session_number, scheduled_date')
-                .eq('cohort_id', cohortId)
-
-            if (ignore) return
-
-            if (sessionsError) {
-                setError(sessionsError.message)
-                setAssignments([])
-                setLoading(false)
-                return
-            }
-
-            const sessions = (sessionsData as Session[]) ?? []
-            const sessionMap = new Map(sessions.map((session) => [session.id, session]))
-            const sessionIds = sessions.map((session) => session.id)
-
-            if (sessionIds.length === 0) {
-                setAssignments([])
-                setLoading(false)
-                return
-            }
-
-            const { data: assignmentsData, error: assignmentsError } = await supabase
-                .from('assignments')
-                .select('*')
-                .in('session_id', sessionIds)
-                .order('due_date', { ascending: true })
-
-            if (ignore) return
-
-            if (assignmentsError) {
-                setError(assignmentsError.message)
-                setAssignments([])
-                setLoading(false)
-                return
-            }
-
-            const assignmentRows = (assignmentsData as Assignment[]) ?? []
-            const assignmentIds = assignmentRows.map((assignment) => assignment.id)
-
-            if (assignmentIds.length === 0) {
-                setAssignments([])
-                setLoading(false)
-                return
-            }
-
-            const { data: submissionsData, error: submissionsError } = await supabase
-                .from('submissions')
-                .select('*')
-                .eq('user_id', user.id)
-                .in('assignment_id', assignmentIds)
-
-            if (ignore) return
-
-            if (submissionsError) {
-                setError(submissionsError.message)
-                setAssignments([])
-                setLoading(false)
-                return
-            }
-
-            const submissions = (submissionsData as Submission[]) ?? []
-            const submissionsByAssignment = new Map(submissions.map((submission) => [submission.assignment_id, submission]))
-
-            const cards = assignmentRows.map((assignment) => {
-                const session = sessionMap.get(assignment.session_id)
-                const submission = submissionsByAssignment.get(assignment.id)
-                const dueDate = assignment.due_date ? new Date(assignment.due_date) : null
-                const isOverdue = dueDate ? dueDate.getTime() < Date.now() : false
-
-                const status: AssignmentCard['status'] = submission
-                    ? 'submitted'
-                    : isOverdue
-                        ? 'pending'
-                        : 'upcoming'
-
-                return {
-                    id: assignment.id,
-                    title: assignment.title,
-                    description: assignment.description ?? 'No description provided.',
-                    session: session ? `Session ${session.session_number}: ${session.title}` : 'Session',
-                    dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
-                    submissionFormat: assignment.submission_format,
-                    status,
-                    feedback: submission?.admin_feedback ?? undefined,
-                }
-            })
-
-            setAssignments(cards)
+        if (!user || cohortIds.length === 0) {
+            setAssignments([])
             setLoading(false)
+            return
         }
 
-        fetchAssignments()
+        setLoading(true)
+        setError(null)
+
+        const { data: sessionsData, error: sessionsError } = await supabase
+            .from('sessions')
+            .select('id, title, session_number, scheduled_date, cohort_id')
+            .in('cohort_id', cohortIds)
+
+        if (sessionsError) {
+            setError(sessionsError.message)
+            setAssignments([])
+            setLoading(false)
+            return
+        }
+
+        const sessions = (sessionsData as Session[]) ?? []
+        const sessionMap = new Map(sessions.map((session) => [session.id, session]))
+        const sessionIds = sessions.map((session) => session.id)
+
+        if (sessionIds.length === 0) {
+            setAssignments([])
+            setLoading(false)
+            return
+        }
+
+        const { data: assignmentsData, error: assignmentsError } = await supabase
+            .from('assignments')
+            .select('*')
+            .in('session_id', sessionIds)
+            .order('due_date', { ascending: true })
+
+        if (assignmentsError) {
+            setError(assignmentsError.message)
+            setAssignments([])
+            setLoading(false)
+            return
+        }
+
+        const assignmentRows = (assignmentsData as Assignment[]) ?? []
+        const assignmentIds = assignmentRows.map((assignment) => assignment.id)
+
+        if (assignmentIds.length === 0) {
+            setAssignments([])
+            setLoading(false)
+            return
+        }
+
+        const { data: submissionsData, error: submissionsError } = await supabase
+            .from('submissions')
+            .select('*')
+            .eq('user_id', user.id)
+            .in('assignment_id', assignmentIds)
+
+        if (submissionsError) {
+            setError(submissionsError.message)
+            setAssignments([])
+            setLoading(false)
+            return
+        }
+
+        const submissions = (submissionsData as Submission[]) ?? []
+        const submissionsByAssignment = new Map(submissions.map((submission) => [submission.assignment_id, submission]))
+
+        const cohortMap = new Map(cohorts.map((cohort) => [cohort.id, cohort]))
+
+        const cards = assignmentRows.map((assignment) => {
+            const session = sessionMap.get(assignment.session_id)
+            const submission = submissionsByAssignment.get(assignment.id)
+            const dueDate = assignment.due_date ? new Date(assignment.due_date) : null
+            const isOverdue = dueDate ? dueDate.getTime() < Date.now() : false
+
+            const cohort = session ? cohortMap.get(session.cohort_id) : undefined
+            const programLabel = cohort ? cohort.name : null
+
+            const status: AssignmentCard['status'] = submission
+                ? 'submitted'
+                : isOverdue
+                    ? 'pending'
+                    : 'upcoming'
+
+            return {
+                id: assignment.id,
+                title: assignment.title,
+                description: assignment.description ?? 'No description provided.',
+                session: session
+                    ? `${programLabel ? `${programLabel} · ` : ''}Session ${session.session_number}: ${session.title}`
+                    : 'Session',
+                dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
+                submissionFormat: assignment.submission_format,
+                status,
+                feedback: submission?.admin_feedback ?? undefined,
+            }
+        })
+
+        setAssignments(cards)
+        setLoading(false)
+    }, [authLoading, cohortsLoading, cohortsError, user, cohortIds, cohorts])
+
+    const scheduleRefresh = useCallback(() => {
+        if (refreshTimerRef.current !== null) return
+        refreshTimerRef.current = window.setTimeout(() => {
+            refreshAssignments()
+            refreshTimerRef.current = null
+        }, 300)
+    }, [refreshAssignments])
+
+    useEffect(() => {
+        refreshAssignments()
+    }, [refreshAssignments])
+
+    useEffect(() => {
+        if (authLoading || cohortsLoading) return
+        if (!user || cohortIds.length === 0) return
+
+        const channels = cohortIds.map((cohortId) => {
+            return supabase
+                .channel(`assignments:sessions:${cohortId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'sessions',
+                        filter: `cohort_id=eq.${cohortId}`,
+                    },
+                    () => {
+                        scheduleRefresh()
+                    }
+                )
+                .subscribe()
+        })
+
+        const assignmentsChannel = supabase
+            .channel('assignments:all')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'assignments',
+                },
+                () => {
+                    scheduleRefresh()
+                }
+            )
+            .subscribe()
+
+        const submissionsChannel = supabase
+            .channel(`submissions:${user.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'submissions',
+                    filter: `user_id=eq.${user.id}`,
+                },
+                () => {
+                    scheduleRefresh()
+                }
+            )
+            .subscribe()
 
         return () => {
-            ignore = true
+            channels.forEach((channel) => {
+                void supabase.removeChannel(channel)
+            })
+            void supabase.removeChannel(assignmentsChannel)
+            void supabase.removeChannel(submissionsChannel)
+            if (refreshTimerRef.current) {
+                window.clearTimeout(refreshTimerRef.current)
+                refreshTimerRef.current = null
+            }
         }
-    }, [authLoading, companyLoading, user?.id, company?.cohort_id])
+    }, [authLoading, cohortsLoading, user?.id, cohortIds, scheduleRefresh])
 
     const filteredAssignments = useMemo(() => assignments.filter((assignment) => {
         if (filter === 'all') return true
