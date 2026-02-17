@@ -313,6 +313,8 @@ export function OnboardingSurvey() {
     const [answers, setAnswers] = useState<Record<string, string | string[] | number | Record<string, number>>>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [companies, setCompanies] = useState<Company[]>([])
+    const [companiesLoading, setCompaniesLoading] = useState(true)
+    const [companiesError, setCompaniesError] = useState<string | null>(null)
     const [companySearch, setCompanySearch] = useState('')
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false)
 
@@ -323,8 +325,19 @@ export function OnboardingSurvey() {
     // Fetch companies on mount
     useEffect(() => {
         async function fetchCompanies() {
-            const { data } = await supabase.from('companies').select('id, name').order('name')
-            if (data) setCompanies(data)
+            setCompaniesLoading(true)
+            setCompaniesError(null)
+            const { data, error } = await supabase
+                .from('companies')
+                .select('id, name')
+                .order('name')
+            if (error) {
+                setCompaniesError(error.message)
+                setCompanies([])
+            } else if (data) {
+                setCompanies(data)
+            }
+            setCompaniesLoading(false)
         }
         fetchCompanies()
     }, [])
@@ -346,6 +359,13 @@ export function OnboardingSurvey() {
 
     const handleSubmit = async () => {
         if (!user) return
+
+        const basicInfoValidation = onboardingBasicInfoSchema.safeParse(basicInfo)
+        if (!basicInfoValidation.success) {
+            toast.error(basicInfoValidation.error.errors[0]?.message || 'Please check your basic information.')
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
@@ -368,21 +388,25 @@ export function OnboardingSurvey() {
                     onboarding_completed: true,
                     ai_readiness_score: Math.round(avgScore),
                     onboarding_data: {
-                        basic_info: onboardingBasicInfoSchema.parse(basicInfo),
+                        basic_info: basicInfoValidation.data,
                         survey_answers: answers,
                         completed_at: new Date().toISOString(),
                     },
                 } as any)
                 .eq('id', user.id)
 
-            if (error) throw error
+            if (error) {
+                console.error('Onboarding update error:', error)
+                throw error
+            }
 
             await refreshUser()
             toast.success('Welcome to Zkandar AI Master Class!')
             navigate('/dashboard')
         } catch (error) {
             console.error('Error submitting survey:', error)
-            toast.error('Failed to submit survey. Please try again.')
+            const message = error instanceof Error ? error.message : 'Failed to submit survey.'
+            toast.error(message)
         } finally {
             setIsSubmitting(false)
         }
@@ -648,7 +672,15 @@ export function OnboardingSurvey() {
                         </div>
                     </div>
 
-                    {basicInfoError && (
+                    {companiesLoading && (
+                        <div className="mt-4 text-sm text-gray-500">Loading companies...</div>
+                    )}
+                    {companiesError && (
+                        <div className="mt-4 text-sm text-red-400">
+                            {companiesError}
+                        </div>
+                    )}
+                    {!companiesError && basicInfoError && (
                         <div className="mt-4 text-sm text-amber-400">
                             {basicInfoError}
                         </div>
