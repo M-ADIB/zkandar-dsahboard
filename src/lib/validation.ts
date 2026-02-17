@@ -7,7 +7,7 @@ export const onboardingBasicInfoSchema = z.object({
     full_name: z.string().min(2, 'Full name must be at least 2 characters'),
     email: z.string().email('Invalid email address'),
     company_id: z.string().uuid('Invalid company selection'),
-    age: z.coerce.number().min(18, 'You must be at least 18 years old').max(100, 'Invalid age'),
+    age: z.coerce.number().min(18, 'You must be at least 18 years old').max(120, 'Please enter a valid age'),
     nationality: z.string().min(1, 'Nationality is required'),
 });
 

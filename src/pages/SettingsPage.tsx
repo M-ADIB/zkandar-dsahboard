@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Bell, Lock, Loader2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { User, Bell, Lock, Loader2, Sparkles, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { userProfileSchema } from '@/lib/validation'
@@ -10,6 +11,9 @@ export function SettingsPage() {
     const { user, refreshUser } = useAuth()
     const [fullName, setFullName] = useState(user?.full_name || '')
     const [isSaving, setIsSaving] = useState(false)
+    const [isResetting, setIsResetting] = useState(false)
+    const navigate = useNavigate()
+    const isDev = import.meta.env.DEV
 
     const handleSave = async () => {
         if (!user) return
@@ -38,6 +42,30 @@ export function SettingsPage() {
             toast.error('Failed to update profile')
         } finally {
             setIsSaving(false)
+        }
+    }
+
+    const handleRestartOnboarding = async () => {
+        if (!user) return
+
+        setIsResetting(true)
+        try {
+            const { error } = await supabase
+                .from('users')
+                // @ts-expect-error - Supabase update type inference failing
+                .update({ user_type: null })
+                .eq('id', user.id)
+
+            if (error) throw error
+
+            await refreshUser()
+            toast.success('Onboarding reset. Redirecting...')
+            navigate('/onboarding')
+        } catch (error) {
+            console.error('Error resetting onboarding:', error)
+            toast.error('Failed to reset onboarding')
+        } finally {
+            setIsResetting(false)
         }
     }
 
@@ -162,6 +190,58 @@ export function SettingsPage() {
                     </button>
                 </div>
             </motion.div>
+
+            {/* Developer Shortcuts */}
+            {isDev && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-bg-card border border-border rounded-2xl p-6"
+                >
+                    <div className="flex items-center gap-3 mb-6">
+                        <Sparkles className="h-5 w-5 text-lime" />
+                        <h2 className="font-heading font-bold">Developer Shortcuts</h2>
+                    </div>
+                    <div className="space-y-3">
+                        <Link
+                            to="/onboarding"
+                            className="w-full flex items-center justify-between p-4 bg-bg-elevated rounded-xl hover:bg-white/5 transition"
+                        >
+                            <div>
+                                <p className="font-medium text-sm">Open Master Class Onboarding</p>
+                                <p className="text-xs text-gray-500">Preview the team/management flow</p>
+                            </div>
+                            <ArrowRight className="h-4 w-4 text-gray-400" />
+                        </Link>
+                        <Link
+                            to="/onboarding/sprint-workshop"
+                            className="w-full flex items-center justify-between p-4 bg-bg-elevated rounded-xl hover:bg-white/5 transition"
+                        >
+                            <div>
+                                <p className="font-medium text-sm">Open Sprint Workshop Placeholder</p>
+                                <p className="text-xs text-gray-500">Coming soon screen</p>
+                            </div>
+                            <ArrowRight className="h-4 w-4 text-gray-400" />
+                        </Link>
+                        <button
+                            onClick={handleRestartOnboarding}
+                            disabled={isResetting}
+                            className="w-full flex items-center justify-between p-4 bg-bg-elevated rounded-xl hover:bg-white/5 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            <div>
+                                <p className="font-medium text-sm">Restart onboarding (dev)</p>
+                                <p className="text-xs text-gray-500">Clears user type to re-trigger onboarding</p>
+                            </div>
+                            {isResetting ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                            ) : (
+                                <ArrowRight className="h-4 w-4 text-gray-400" />
+                            )}
+                        </button>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Save Button */}
             <div className="flex justify-end">

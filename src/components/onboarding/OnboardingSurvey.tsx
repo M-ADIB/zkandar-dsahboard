@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ChevronLeft, Sparkles, CheckCircle2, Users, Briefcase, Search } from 'lucide-react'
+import { ChevronRight, ChevronLeft, ChevronDown, Sparkles, CheckCircle2, Users, Briefcase, Search } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -388,10 +388,23 @@ export function OnboardingSurvey() {
         }
     }
 
+    const basicInfoValidation = onboardingBasicInfoSchema.safeParse(basicInfo)
+    const companySelectionError = !basicInfo.company_id
+        ? (companySearch.trim().length === 0
+            ? 'Select your company from the list to continue.'
+            : filteredCompanies.length === 0
+                ? 'No matching company found. Ask an admin to add your company.'
+                : 'Select your company from the list to continue.')
+        : null
+
+    const basicInfoError = step === 1
+        ? companySelectionError || (basicInfoValidation.success ? null : basicInfoValidation.error.errors[0]?.message)
+        : null
+
     const canProceed = () => {
         if (step === 0) return userType !== null
         if (step === 1) {
-            return onboardingBasicInfoSchema.safeParse(basicInfo).success
+            return basicInfoValidation.success
         }
         // Check current question
         const questionIndex = step - 2
@@ -424,26 +437,13 @@ export function OnboardingSurvey() {
                 >
                     {/* Header */}
                     <div className="text-center mb-12">
-                        <div className="flex items-center justify-center gap-3 mb-4">
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-lime/10 text-lime text-xs uppercase tracking-widest">
-                                Master Class Onboarding
-                            </span>
-                            <button
-                                type="button"
-                                disabled
-                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border text-xs text-gray-500 uppercase tracking-widest opacity-60 cursor-not-allowed"
-                                title="Sprint Workshop onboarding is coming soon"
-                            >
-                                Sprint Workshop (Coming Soon)
-                            </button>
-                        </div>
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm mb-6">
                             <Sparkles className="h-4 w-4" />
-                            Zkandar AI Master Class
+                            Zkandar AI
                         </div>
-                        <h1 className="hero-text text-4xl mb-4">Welcome!</h1>
+                        <h1 className="hero-text text-4xl mb-4">Welcome to Zkandar AI</h1>
                         <p className="text-gray-400 text-lg">
-                            Let's personalize your learning experience. Are you joining as...
+                            Before we get started, are you team or management?
                         </p>
                     </div>
 
@@ -556,11 +556,12 @@ export function OnboardingSurvey() {
                             <input
                                 type="email"
                                 value={basicInfo.email}
-                                onChange={(e) => setBasicInfo(prev => ({ ...prev, email: e.target.value }))}
+                                readOnly
                                 placeholder="your@email.com"
-                                className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl
+                                className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl text-gray-400
                                     focus:outline-none focus:border-lime/50 transition-colors"
                             />
+                            <p className="text-xs text-gray-500 mt-2">Email matches your login account.</p>
                         </div>
 
                         {/* Company */}
@@ -620,28 +621,38 @@ export function OnboardingSurvey() {
                                 onChange={(e) => setBasicInfo(prev => ({ ...prev, age: e.target.value }))}
                                 placeholder="Your age"
                                 min="18"
-                                max="100"
+                                max="120"
                                 className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl
                                     focus:outline-none focus:border-lime/50 transition-colors"
                             />
+                            <p className="text-xs text-gray-500 mt-2">Age must be between 18 and 120.</p>
                         </div>
 
                         {/* Nationality */}
                         <div>
                             <label className="block text-sm font-medium mb-2">Nationality *</label>
-                            <select
-                                value={basicInfo.nationality}
-                                onChange={(e) => setBasicInfo(prev => ({ ...prev, nationality: e.target.value }))}
-                                className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl
-                                    focus:outline-none focus:border-lime/50 transition-colors"
-                            >
-                                <option value="">Select your nationality</option>
-                                {nationalities.map(n => (
-                                    <option key={n} value={n}>{n}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={basicInfo.nationality}
+                                    onChange={(e) => setBasicInfo(prev => ({ ...prev, nationality: e.target.value }))}
+                                    className="w-full px-4 py-3 pr-12 bg-bg-card border border-border rounded-xl appearance-none
+                                        focus:outline-none focus:border-lime/50 transition-colors"
+                                >
+                                    <option value="">Select your nationality</option>
+                                    {nationalities.map(n => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                            </div>
                         </div>
                     </div>
+
+                    {basicInfoError && (
+                        <div className="mt-4 text-sm text-amber-400">
+                            {basicInfoError}
+                        </div>
+                    )}
 
                     {/* Navigation */}
                     <div className="flex gap-4 mt-8">

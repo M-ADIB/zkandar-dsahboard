@@ -32,6 +32,24 @@ function App() {
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/signup/:token" element={<SignupPage />} />
 
+                    {/* Onboarding (full-screen) */}
+                    <Route
+                        path="/onboarding"
+                        element={
+                            <ProtectedRoute>
+                                <OnboardingSurvey />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/onboarding/sprint-workshop"
+                        element={
+                            <ProtectedRoute>
+                                <SprintWorkshopOnboarding />
+                            </ProtectedRoute>
+                        }
+                    />
+
                     {/* Protected Routes */}
                     <Route
                         path="/"
@@ -110,9 +128,6 @@ function App() {
                         <Route path="settings" element={<SettingsPage />} />
                         <Route path="notifications" element={<NotificationsPage />} />
 
-                        {/* Onboarding */}
-                        <Route path="onboarding" element={<OnboardingSurvey />} />
-                        <Route path="onboarding/sprint-workshop" element={<SprintWorkshopOnboarding />} />
                     </Route>
 
                     {/* Catch all */}

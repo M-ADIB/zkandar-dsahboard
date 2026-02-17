@@ -31,12 +31,13 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
         return <Navigate to="/dashboard" replace />
     }
 
-    // Check if onboarding is required
-    if (
-        !user.onboarding_completed &&
+    const isOnboardingRoute = location.pathname.startsWith('/onboarding')
+    const needsOnboarding =
         user.role === 'participant' &&
-        location.pathname !== '/onboarding'
-    ) {
+        (!user.onboarding_completed || !user.user_type)
+
+    // Check if onboarding is required
+    if (needsOnboarding && !isOnboardingRoute) {
         return <Navigate to="/onboarding" replace />
     }
 
