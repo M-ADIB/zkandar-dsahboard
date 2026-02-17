@@ -116,7 +116,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const getSessionWithRetry = async (attempt = 0): Promise<Session | null> => {
         const MAX_RETRIES = 3
         try {
-            const { data: { session: s }, error } = await supabase.auth.getSession()
+            const timeoutMs = 3000
+            const timeoutPromise = new Promise<{ data: { session: Session | null }; error: Error }>((resolve) => {
+                setTimeout(() => {
+                    resolve({ data: { session: null }, error: new Error('getSession timeout') })
+                }, timeoutMs)
+            })
+
+            const { data: { session: s }, error } = await Promise.race([
+                supabase.auth.getSession(),
+                timeoutPromise,
+            ])
             if (error) {
                 if (isAbortError(error) && attempt < MAX_RETRIES) {
                     await delay(300 * (attempt + 1))
@@ -138,6 +148,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         mountedRef.current = true
+
+        const loadingTimeout = setTimeout(() => {
+            if (mountedRef.current && loading) {
+                console.warn('[Auth] Initialization timeout — forcing loading=false')
+                setLoading(false)
+            }
+        }, 8000)
 
         const initialize = async () => {
             console.log('[Auth] Initializing...')
@@ -196,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         return () => {
             mountedRef.current = false
+            clearTimeout(loadingTimeout)
             subscription.unsubscribe()
         }
     }, [])
