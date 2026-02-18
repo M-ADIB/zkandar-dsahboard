@@ -47,7 +47,7 @@ export function EditableTextCell({ value, onUpdate, className = '', placeholder 
                 onChange={(e) => setLocalValue(e.target.value)}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className={`w-full bg-dashboard-bg border border-dashboard-accent rounded px-2 py-1 text-sm text-white focus:outline-none ${className}`}
+                className={`w-full bg-bg-elevated border border-border rounded-md px-2 py-1 text-sm text-white focus:outline-none focus:border-lime/60 ${className}`}
             />
         );
     }
@@ -55,7 +55,7 @@ export function EditableTextCell({ value, onUpdate, className = '', placeholder 
     return (
         <div
             onClick={() => setIsEditing(true)}
-            className={`cursor-pointer hover:bg-white/5 rounded px-2 py-1 min-h-[28px] flex items-center transition-colors ${!value ? 'text-gray-500 italic' : 'text-white'} ${className}`}
+            className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors hover:bg-white/5 ${!value ? 'text-gray-500 italic' : 'text-gray-200'} ${className}`}
         >
             {value || placeholder}
         </div>

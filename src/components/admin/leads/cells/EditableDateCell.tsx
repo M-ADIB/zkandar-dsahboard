@@ -57,7 +57,7 @@ export function EditableDateCell({ value, onUpdate, className = '' }: EditableDa
                 onChange={(e) => setDateValue(e.target.value)}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className={`w-full bg-dashboard-bg border border-dashboard-accent rounded px-2 py-1 text-white focus:outline-none ${className}`}
+                className={`w-full bg-bg-elevated border border-border rounded-md px-2 py-1 text-white focus:outline-none focus:border-lime/60 ${className}`}
             />
         );
     }
@@ -65,10 +65,10 @@ export function EditableDateCell({ value, onUpdate, className = '' }: EditableDa
     return (
         <div
             onClick={() => setIsEditing(true)}
-            className={`cursor-pointer hover:bg-white/5 px-2 py-1 rounded flex items-center gap-2 group ${className}`}
+            className={`cursor-text px-2 py-1 rounded flex items-center gap-2 group hover:bg-white/5 ${className}`}
         >
-            <Calendar className="h-3 w-3 text-gray-500 group-hover:text-dashboard-accent" />
-            <span className={dateValue ? 'text-gray-300' : 'text-gray-600 italic'}>
+            <Calendar className="h-3 w-3 text-gray-500 group-hover:text-lime" />
+            <span className={dateValue ? 'text-gray-200' : 'text-gray-600 italic'}>
                 {dateValue ? new Date(dateValue).toLocaleDateString() : 'Set Date'}
             </span>
         </div>

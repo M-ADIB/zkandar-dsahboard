@@ -55,6 +55,7 @@ export function LeadsPage() {
     const supabase = useSupabase();
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
@@ -62,17 +63,40 @@ export function LeadsPage() {
 
     const fetchLeads = async () => {
         setIsLoading(true);
-        const { data, error } = await supabase
-            .from('leads')
-            .select('*')
-            .order('updated_at', { ascending: false });
+        setLoadError(null);
+        const timeoutMs = 8000;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-        if (error) {
+        const timeoutPromise = new Promise<{ data: Lead[] | null; error: Error }>((resolve) => {
+            timeoutId = setTimeout(() => {
+                resolve({ data: null, error: new Error('Leads fetch timeout') });
+            }, timeoutMs);
+        });
+
+        try {
+            const query = supabase
+                .from('leads')
+                .select('*')
+                .order('updated_at', { ascending: false });
+
+            const result = await Promise.race([query, timeoutPromise]) as { data: Lead[] | null; error: Error | null };
+
+            if (timeoutId) clearTimeout(timeoutId);
+
+            if (result.error) {
+                console.error('Error fetching leads:', result.error);
+                setLoadError('Unable to load leads. Please try again.');
+                setLeads([]);
+            } else {
+                setLeads(result.data || []);
+            }
+        } catch (error) {
             console.error('Error fetching leads:', error);
-        } else {
-            setLeads(data || []);
+            setLoadError('Unable to load leads. Please try again.');
+            setLeads([]);
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -237,6 +261,20 @@ export function LeadsPage() {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dashboard-accent"></div>
+            </div>
+        );
+    }
+
+    if (loadError) {
+        return (
+            <div className="rounded-xl border border-border bg-bg-card/60 px-6 py-8 text-center text-gray-300">
+                <p className="text-sm">{loadError}</p>
+                <button
+                    onClick={fetchLeads}
+                    className="mt-4 inline-flex items-center justify-center rounded-lg border border-border bg-bg-primary/60 px-4 py-2 text-sm text-gray-100 hover:border-gray-500/60"
+                >
+                    Retry
+                </button>
             </div>
         );
     }

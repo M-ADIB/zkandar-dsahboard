@@ -27,7 +27,55 @@ function isAbortError(err: unknown): boolean {
     return false
 }
 
+function isTimeoutError(err: unknown): boolean {
+    if (!err) return false
+    if (err instanceof Error && err.message) {
+        return err.message.toLowerCase().includes('timeout')
+    }
+    if (err && typeof err === 'object' && 'message' in err) {
+        const msg = String((err as { message: string }).message)
+        return msg.toLowerCase().includes('timeout')
+    }
+    return false
+}
+
 const delay = (ms: number) => new Promise(r => setTimeout(r, ms))
+
+type SupabaseResponse<T> = { data: T | null; error: any | null }
+
+async function withTimeout<T>(
+    promise: Promise<SupabaseResponse<T>>,
+    timeoutMs: number,
+    label: string
+): Promise<SupabaseResponse<T>> {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const timeoutPromise = new Promise<SupabaseResponse<T>>((resolve) => {
+        timeoutId = setTimeout(() => {
+            resolve({ data: null, error: new Error(`${label} timeout`) })
+        }, timeoutMs)
+    })
+
+    const result = await Promise.race([promise, timeoutPromise])
+    if (timeoutId) clearTimeout(timeoutId)
+    return result
+}
+
+function clearAuthStorage() {
+    if (typeof window === 'undefined') return
+    const removeAuthKeys = (storage: Storage) => {
+        try {
+            const keys = Object.keys(storage)
+            keys
+                .filter((key) => key.startsWith('sb-') && key.endsWith('-auth-token'))
+                .forEach((key) => storage.removeItem(key))
+        } catch (error) {
+            console.warn('[Auth] Failed to clear auth storage:', error)
+        }
+    }
+
+    removeAuthKeys(window.localStorage)
+    removeAuthKeys(window.sessionStorage)
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [authUser, setAuthUser] = useState<AuthUser | null>(null)
@@ -44,24 +92,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         attempt = 0
     ): Promise<User | null> => {
         const MAX_RETRIES = 3
+        const REQUEST_TIMEOUT_MS = 5000
 
         try {
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .single()
+            const { data, error } = await withTimeout(
+                supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single() as unknown as Promise<SupabaseResponse<User>>,
+                REQUEST_TIMEOUT_MS,
+                'fetchUserProfile'
+            )
 
             if (error) {
-                // On AbortError, retry instead of giving up
-                if (isAbortError(error) && attempt < MAX_RETRIES) {
-                    console.log(`[Auth] Fetch aborted, retrying (${attempt + 1}/${MAX_RETRIES})...`)
+                const shouldRetry = isAbortError(error) || isTimeoutError(error)
+                if (shouldRetry && attempt < MAX_RETRIES) {
+                    console.log(`[Auth] Fetch failed, retrying (${attempt + 1}/${MAX_RETRIES})...`)
                     await delay(300 * (attempt + 1))
                     return fetchUserProfile(userId, email, attempt + 1)
                 }
 
-                if (isAbortError(error)) {
-                    console.warn('[Auth] Fetch aborted after all retries')
+                if (shouldRetry) {
+                    console.warn('[Auth] Fetch failed after all retries')
                     return null
                 }
 
@@ -70,18 +123,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // User doesn't exist yet — create one
                 if (error.code === 'PGRST116' && email) {
                     console.log('[Auth] Creating missing user profile for', email)
-                    const { data: newUser, error: insertError } = await supabase
-                        .from('users')
-                        // @ts-ignore - Insert type resolves to never
-                        .insert({
-                            id: userId,
-                            email: email,
-                            full_name: email.split('@')[0],
-                            role: 'participant',
-                            onboarding_completed: false,
-                        })
-                        .select()
-                        .single()
+                    const { data: newUser, error: insertError } = await withTimeout(
+                        supabase
+                            .from('users')
+                            // @ts-ignore - Insert type resolves to never
+                            .insert({
+                                id: userId,
+                                email: email,
+                                full_name: email.split('@')[0],
+                                role: 'participant',
+                                onboarding_completed: false,
+                            })
+                            .select()
+                            .single() as unknown as Promise<SupabaseResponse<User>>,
+                        REQUEST_TIMEOUT_MS,
+                        'insertUserProfile'
+                    )
 
                     if (insertError) {
                         console.error('[Auth] Error creating user profile:', insertError)
@@ -102,8 +159,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
             return null
         } catch (err) {
-            if (isAbortError(err) && attempt < MAX_RETRIES) {
-                console.log(`[Auth] Fetch threw abort, retrying (${attempt + 1}/${MAX_RETRIES})...`)
+            if ((isAbortError(err) || isTimeoutError(err)) && attempt < MAX_RETRIES) {
+                console.log(`[Auth] Fetch threw error, retrying (${attempt + 1}/${MAX_RETRIES})...`)
                 await delay(300 * (attempt + 1))
                 return fetchUserProfile(userId, email, attempt + 1)
             }
@@ -128,16 +185,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 timeoutPromise,
             ])
             if (error) {
-                if (isAbortError(error) && attempt < MAX_RETRIES) {
+                const shouldRetry = isAbortError(error) || isTimeoutError(error)
+                if (shouldRetry && attempt < MAX_RETRIES) {
                     await delay(300 * (attempt + 1))
                     return getSessionWithRetry(attempt + 1)
                 }
                 console.error('[Auth] getSession error:', error)
+                if (shouldRetry) {
+                    clearAuthStorage()
+                }
                 return null
             }
             return s
         } catch (err) {
-            if (isAbortError(err) && attempt < MAX_RETRIES) {
+            if ((isAbortError(err) || isTimeoutError(err)) && attempt < MAX_RETRIES) {
                 await delay(300 * (attempt + 1))
                 return getSessionWithRetry(attempt + 1)
             }
@@ -252,17 +313,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [authUser?.id])
 
     const signIn = async (email: string, password: string) => {
-        // Don't set loading=true — avoids race condition with ProtectedRoute
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
+        setLoading(true)
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
 
-        if (error) {
-            return { error: error as Error | null }
+            if (error) {
+                return { error: error as Error | null }
+            }
+
+            if (mountedRef.current) {
+                setSession(data.session ?? null)
+                setAuthUser(data.user ?? null)
+            }
+
+            if (data.user) {
+                const profile = await fetchUserProfile(
+                    data.user.id,
+                    data.user.email
+                )
+
+                if (!mountedRef.current) return { error: null }
+
+                if (!profile) {
+                    try {
+                        await supabase.auth.signOut()
+                        await supabase.auth.signOut({ scope: 'local' })
+                        clearAuthStorage()
+                    } catch (signOutError) {
+                        console.error('[Auth] Error clearing session after profile failure:', signOutError)
+                    }
+                    if (mountedRef.current) {
+                        setSession(null)
+                        setAuthUser(null)
+                        setUser(null)
+                    }
+                    return { error: new Error('Unable to load user profile') }
+                }
+
+                setUser(profile)
+            }
+
+            return { error: null }
+        } catch (err) {
+            console.error('[Auth] signIn error:', err)
+            return { error: err as Error }
+        } finally {
+            if (mountedRef.current) {
+                setLoading(false)
+            }
         }
-
-        return { error: null }
     }
 
     const signUp = async (
@@ -272,37 +374,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: UserRole = 'participant'
     ) => {
         setLoading(true)
-        const { data, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-        })
+        try {
+            const { data, error: authError } = await supabase.auth.signUp({
+                email,
+                password,
+            })
 
-        if (authError) {
-            setLoading(false)
-            return { error: authError as Error }
-        }
+            if (authError) {
+                return { error: authError as Error }
+            }
 
-        if (data.user) {
-            const { error: profileError } = await supabase
-                .from('users')
-                // @ts-ignore - Insert type resolves to never
-                .insert({
-                    id: data.user.id,
-                    email,
-                    full_name: fullName,
-                    role,
-                    onboarding_completed: false,
-                    ai_readiness_score: 0,
-                })
+            if (data.user) {
+                const { error: profileError } = await supabase
+                    .from('users')
+                    // @ts-ignore - Insert type resolves to never
+                    .insert({
+                        id: data.user.id,
+                        email,
+                        full_name: fullName,
+                        role,
+                        onboarding_completed: false,
+                        ai_readiness_score: 0,
+                    })
 
-            if (profileError) {
-                console.error('[Auth] Error creating user profile:', profileError)
+                if (profileError) {
+                    console.error('[Auth] Error creating user profile:', profileError)
+                    return { error: profileError as Error }
+                }
+            }
+
+            return { error: null }
+        } finally {
+            if (mountedRef.current) {
                 setLoading(false)
-                return { error: profileError as Error }
             }
         }
-
-        return { error: null }
     }
 
     const signOut = async () => {
@@ -313,6 +419,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
             console.error('[Auth] Error signing out:', error)
         } finally {
+            try {
+                await supabase.auth.signOut({ scope: 'local' })
+            } catch (error) {
+                console.error('[Auth] Error clearing local auth session:', error)
+            }
+            clearAuthStorage()
             setSession(null)
             setAuthUser(null)
             setUser(null)

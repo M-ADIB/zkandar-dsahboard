@@ -17,8 +17,7 @@ import {
     Trash2,
     Search,
     Filter,
-    ChevronDown,
-    ChevronUp
+    ChevronDown
 } from 'lucide-react';
 import { EditableTextCell } from './cells/EditableTextCell';
 import { EditableSelectCell } from './cells/EditableSelectCell';
@@ -26,22 +25,12 @@ import { EditableMoneyCell } from './cells/EditableMoneyCell';
 import { EditableDateCell } from './cells/EditableDateCell';
 
 const PRIORITY_OPTIONS = [
-    { value: 'ACTIVE', label: 'ACTIVE', color: 'blue' },
+    { value: 'ACTIVE', label: 'ACTIVE', color: 'lime' },
     { value: 'HOT', label: 'HOT', color: 'red' },
-    { value: 'COLD', label: 'COLD', color: 'gray' },
     { value: 'LAVA', label: 'LAVA', color: 'orange' },
+    { value: 'COLD', label: 'COLD', color: 'gray' },
     { value: 'COMPLETED', label: 'COMPLETED', color: 'green' },
     { value: 'NOT INTERESTED', label: 'NOT INTERESTED', color: 'gray' },
-];
-
-const PRIORITY_GROUPS = [
-    { value: 'ACTIVE', label: 'Active', tone: 'text-blue-300' },
-    { value: 'HOT', label: 'Hot', tone: 'text-red-300' },
-    { value: 'LAVA', label: 'Lava', tone: 'text-orange-300' },
-    { value: 'COLD', label: 'Cold', tone: 'text-gray-300' },
-    { value: 'COMPLETED', label: 'Completed', tone: 'text-green-300' },
-    { value: 'NOT INTERESTED', label: 'Not Interested', tone: 'text-gray-500' },
-    { value: 'UNKNOWN', label: 'Uncategorized', tone: 'text-gray-400' },
 ];
 
 const BOOLEAN_OPTIONS = [
@@ -83,16 +72,15 @@ export function LeadsTable({
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const [denseMode, setDenseMode] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState<RowsPerPage>(() => {
-        const stored = localStorage.getItem(ROWS_PER_PAGE_STORAGE_KEY);
-        if (stored === 'all') return 'all';
-        const numeric = stored ? Number(stored) : NaN;
-        return Number.isFinite(numeric) ? (numeric as RowsPerPage) : 100;
-    });
-    const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(() => {
-        return PRIORITY_GROUPS.reduce((acc, group) => {
-            acc[group.value] = true;
-            return acc;
-        }, {} as Record<string, boolean>);
+        if (typeof window === 'undefined') return 100;
+        try {
+            const stored = localStorage.getItem(ROWS_PER_PAGE_STORAGE_KEY);
+            if (stored === 'all') return 'all';
+            const numeric = stored ? Number(stored) : NaN;
+            return Number.isFinite(numeric) ? (numeric as RowsPerPage) : 100;
+        } catch {
+            return 100;
+        }
     });
 
     // Custom Filters State (mapped to column filters)
@@ -100,7 +88,7 @@ export function LeadsTable({
     const [offeringFilter, setOfferingFilter] = useState<string>('ALL');
 
     // Update column filters when custom filters change
-    useMemo(() => {
+    useEffect(() => {
         const filters = [];
         if (priorityFilter !== 'ALL') filters.push({ id: 'priority', value: priorityFilter });
         if (offeringFilter !== 'ALL') filters.push({ id: 'offering_type', value: offeringFilter });
@@ -108,7 +96,12 @@ export function LeadsTable({
     }, [priorityFilter, offeringFilter]);
 
     useEffect(() => {
-        localStorage.setItem(ROWS_PER_PAGE_STORAGE_KEY, String(rowsPerPage));
+        if (typeof window === 'undefined') return;
+        try {
+            localStorage.setItem(ROWS_PER_PAGE_STORAGE_KEY, String(rowsPerPage));
+        } catch {
+            // Ignore storage errors (private mode, disabled storage)
+        }
     }, [rowsPerPage]);
 
     const toText = (value: unknown) => {
@@ -160,7 +153,7 @@ export function LeadsTable({
             cell: ({ row }) => {
                 const priority = (row.getValue('priority') as string) || 'COLD';
                 const colorConfig: Record<string, string> = {
-                    'ACTIVE': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+                    'ACTIVE': 'bg-lime/10 text-lime border-lime/30',
                     'HOT': 'bg-red-500/20 text-red-300 border-red-500/30',
                     'COLD': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
                     'LAVA': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
@@ -489,8 +482,8 @@ export function LeadsTable({
             accessorKey: 'balance_dop',
             header: 'Balance DOP',
             cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('balance_dop'))}
+                <EditableDateCell
+                    value={row.getValue('balance_dop') as string}
                     onUpdate={(val) => onUpdateLead(row.original.id, 'balance_dop', val)}
                 />
             ),
@@ -616,10 +609,38 @@ export function LeadsTable({
             accessorKey: 'priority_previous_values',
             header: 'Priority History',
             cell: ({ row }) => {
-                const values = row.original.priority_previous_values;
+                const values = row.original.priority_previous_values as unknown;
+                let label = '-';
+
+                if (Array.isArray(values)) {
+                    label = values.filter(Boolean).join(', ') || '-';
+                } else if (typeof values === 'string') {
+                    const trimmed = values.trim();
+                    if (trimmed) {
+                        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                            const inner = trimmed.slice(1, -1);
+                            label = inner ? inner.split(',').filter(Boolean).join(', ') : '-';
+                        } else if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                            try {
+                                const parsed = JSON.parse(trimmed);
+                                label = Array.isArray(parsed)
+                                    ? parsed.filter(Boolean).join(', ') || '-'
+                                    : trimmed;
+                            } catch {
+                                label = trimmed;
+                            }
+                        } else {
+                            label = trimmed;
+                        }
+                    }
+                } else if (values && typeof values === 'object') {
+                    const list = Object.values(values as Record<string, string>).filter(Boolean);
+                    label = list.length > 0 ? list.join(', ') : '-';
+                }
+
                 return (
                     <span className="text-xs text-gray-500">
-                        {values && values.length > 0 ? values.join(', ') : '-'}
+                        {label}
                     </span>
                 );
             },
@@ -693,22 +714,6 @@ export function LeadsTable({
         return sortedRows.slice(0, rowsPerPage);
     }, [sortedRows, rowsPerPage]);
 
-    const groupedRows = useMemo(() => {
-        const groups: Record<string, typeof visibleRows> = {};
-        PRIORITY_GROUPS.forEach((group) => {
-            groups[group.value] = [];
-        });
-
-        visibleRows.forEach((row) => {
-            const priority = (row.original.priority || 'COLD').toString().toUpperCase();
-            const groupKey = PRIORITY_GROUPS.some((group) => group.value === priority) ? priority : 'UNKNOWN';
-            groups[groupKey] = groups[groupKey] || [];
-            groups[groupKey].push(row);
-        });
-
-        return groups;
-    }, [visibleRows]);
-
     const totalFilteredRows = table.getFilteredRowModel().rows.length;
     const visibleCount = visibleRows.length;
 
@@ -720,20 +725,20 @@ export function LeadsTable({
     const getStickyHeaderClass = (columnId: string) => {
         const sticky = stickyColumns[columnId];
         if (!sticky) return '';
-        return `sticky ${sticky.left} z-30 ${sticky.width} bg-[#151C2B] border-r border-white/5`;
+        return `sticky ${sticky.left} z-30 ${sticky.width} bg-bg-elevated border-r border-border`;
     };
 
     const getStickyCellClass = (columnId: string, rowIndex: number) => {
         const sticky = stickyColumns[columnId];
         if (!sticky) return '';
-        const rowTone = rowIndex % 2 === 0 ? 'bg-[#0F1219]/90' : 'bg-[#121827]/90';
-        return `sticky ${sticky.left} z-10 ${sticky.width} ${rowTone} border-r border-white/5`;
+        const rowTone = rowIndex % 2 === 0 ? 'bg-bg-primary/80' : 'bg-bg-card/80';
+        return `sticky ${sticky.left} z-10 ${sticky.width} ${rowTone} border-r border-border`;
     };
 
     return (
         <div className="space-y-4">
             {/* Toolbar */}
-            <div className="rounded-2xl border border-dashboard-accent/10 bg-dashboard-card/80 p-4 shadow-[0_0_0_1px_rgba(208,255,113,0.08)]">
+            <div className="rounded-xl border border-border bg-bg-card/60 p-4">
                 <div className="flex flex-wrap items-center gap-3">
                     {/* Search */}
                     <div className="flex-1 min-w-[260px]">
@@ -744,67 +749,76 @@ export function LeadsTable({
                                 placeholder="Search all columns..."
                                 value={globalFilter ?? ''}
                                 onChange={(e) => setGlobalFilter(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-dashboard-bg border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-dashboard-accent"
+                                className="w-full pl-10 pr-4 py-2 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
                             />
                         </div>
                     </div>
 
                     {/* Priority Filter */}
                     <div className="min-w-[180px]">
-                        <select
-                            value={priorityFilter}
-                            onChange={(e) => setPriorityFilter(e.target.value)}
-                            className="w-full px-4 py-2 bg-dashboard-bg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-dashboard-accent"
-                        >
-                            <option value="ALL">All Priorities</option>
-                            {PRIORITY_OPTIONS.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <select
+                                value={priorityFilter}
+                                onChange={(e) => setPriorityFilter(e.target.value)}
+                                className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
+                            >
+                                <option value="ALL">All Priorities</option>
+                                {PRIORITY_OPTIONS.map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        </div>
                     </div>
 
                     {/* Offering Filter */}
                     <div className="min-w-[180px]">
-                        <select
-                            value={offeringFilter}
-                            onChange={(e) => setOfferingFilter(e.target.value)}
-                            className="w-full px-4 py-2 bg-dashboard-bg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-dashboard-accent"
-                        >
-                            <option value="ALL">All Offerings</option>
-                            {OFFERING_OPTIONS.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <select
+                                value={offeringFilter}
+                                onChange={(e) => setOfferingFilter(e.target.value)}
+                                className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
+                            >
+                                <option value="ALL">All Offerings</option>
+                                {OFFERING_OPTIONS.map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        </div>
                     </div>
 
                     {/* Rows per page */}
                     <div className="min-w-[140px]">
-                        <select
-                            value={rowsPerPage}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setRowsPerPage(val === 'all' ? 'all' : (Number(val) as RowsPerPage));
-                            }}
-                            className="w-full px-4 py-2 bg-dashboard-bg border border-gray-700 rounded-xl text-white focus:outline-none focus:border-dashboard-accent"
-                        >
-                            {ROWS_PER_PAGE_OPTIONS.map((option) => (
-                                <option key={option} value={option}>
-                                    {option === 'all' ? 'All rows' : `${option} rows`}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setRowsPerPage(val === 'all' ? 'all' : (Number(val) as RowsPerPage));
+                                }}
+                                className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
+                            >
+                                {ROWS_PER_PAGE_OPTIONS.map((option) => (
+                                    <option key={option} value={option}>
+                                        {option === 'all' ? 'All rows' : `${option} rows`}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        </div>
                     </div>
 
                     {/* Density toggle */}
                     <button
                         onClick={() => setDenseMode((prev) => !prev)}
                         className={`px-4 py-2 rounded-xl border text-sm transition-colors ${denseMode
-                            ? 'border-dashboard-accent/60 text-dashboard-accent'
-                            : 'border-gray-700 text-gray-300 hover:text-white hover:border-dashboard-accent/40'
+                            ? 'border-gray-500/60 text-gray-100 bg-white/5'
+                            : 'border-border text-gray-400 hover:text-white hover:border-gray-500/60'
                             }`}
                     >
                         {denseMode ? 'Compact rows' : 'Comfort rows'}
@@ -817,12 +831,12 @@ export function LeadsTable({
                         <Filter className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-400">Active filters:</span>
                         {priorityFilter !== 'ALL' && (
-                            <span className="px-2 py-1 bg-dashboard-accent/20 text-dashboard-accent rounded">
+                            <span className="px-2 py-1 bg-bg-primary/60 text-gray-200 rounded border border-border/60">
                                 Priority: {priorityFilter}
                             </span>
                         )}
                         {offeringFilter !== 'ALL' && (
-                            <span className="px-2 py-1 bg-dashboard-accent/20 text-dashboard-accent rounded">
+                            <span className="px-2 py-1 bg-bg-primary/60 text-gray-200 rounded border border-border/60">
                                 Offering: {offeringFilter}
                             </span>
                         )}
@@ -845,10 +859,10 @@ export function LeadsTable({
             </div>
 
             {/* Table */}
-            <div className={`rounded-2xl border border-dashboard-accent/10 bg-dashboard-card/80 shadow-[0_0_0_1px_rgba(208,255,113,0.08)] ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
-                <div className="overflow-x-auto">
-                    <table className={`min-w-[3200px] divide-y divide-white/5 ${denseMode ? 'text-xs' : 'text-sm'}`}>
-                        <thead className="bg-[#151C2B] sticky top-0 z-20">
+            <div className={`w-full max-w-full overflow-hidden rounded-xl border border-border bg-bg-card/80 ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
+                <div className="w-full max-w-full max-h-[60vh] overflow-auto">
+                    <table className={`min-w-[3200px] w-max border-separate border-spacing-0 ${denseMode ? 'text-xs' : 'text-sm'}`}>
+                        <thead className="sticky top-0 z-20 bg-bg-elevated">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
@@ -856,7 +870,7 @@ export function LeadsTable({
                                         return (
                                             <th
                                                 key={header.id}
-                                                className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-gray-300 ${meta?.headerClassName || ''} ${getStickyHeaderClass(header.column.id)}`}
+                                                className={`px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border ${meta?.headerClassName || ''} ${getStickyHeaderClass(header.column.id)}`}
                                             >
                                                 {header.isPlaceholder
                                                     ? null
@@ -871,79 +885,45 @@ export function LeadsTable({
                             ))}
                         </thead>
 
-                        {visibleRows.length === 0 ? (
-                            <tbody>
+                        <tbody>
+                            {visibleRows.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={table.getVisibleLeafColumns().length}
-                                        className="h-24 text-center text-gray-400"
+                                        className="h-24 text-center text-gray-500"
                                     >
                                         No results.
                                     </td>
                                 </tr>
-                            </tbody>
-                        ) : (
-                            PRIORITY_GROUPS.map((group) => {
-                                const rows = groupedRows[group.value] || [];
-                                if (rows.length === 0) return null;
-                                const isCollapsed = collapsedGroups[group.value];
-                                return (
-                                    <tbody key={group.value} className="divide-y divide-white/5">
-                                        <tr className="bg-[#111827]/80">
-                                            <td
-                                                colSpan={table.getVisibleLeafColumns().length}
-                                                className="px-4 py-3"
-                                            >
-                                                <button
-                                                    onClick={() =>
-                                                        setCollapsedGroups((prev) => ({
-                                                            ...prev,
-                                                            [group.value]: !prev[group.value],
-                                                        }))
-                                                    }
-                                                    className="flex items-center gap-3 text-sm text-gray-200"
-                                                >
-                                                    {isCollapsed ? (
-                                                        <ChevronDown className="h-4 w-4 text-gray-400" />
-                                                    ) : (
-                                                        <ChevronUp className="h-4 w-4 text-gray-400" />
-                                                    )}
-                                                    <span className={`font-semibold ${group.tone}`}>{group.label}</span>
-                                                    <span className="text-xs text-gray-500">{rows.length} leads</span>
-                                                </button>
-                                            </td>
+                            ) : (
+                                visibleRows.map((row, rowIndex) => {
+                                    const rowTone = rowIndex % 2 === 0 ? 'bg-bg-primary/60' : 'bg-bg-card/60';
+                                    return (
+                                        <tr
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                            className={`${rowTone} hover:bg-white/5 transition-colors`}
+                                        >
+                                            {row.getVisibleCells().map((cell) => {
+                                                const meta = cell.column.columnDef.meta as { cellClassName?: string } | undefined;
+                                                const stickyClass = getStickyCellClass(cell.column.id, rowIndex);
+                                                return (
+                                                    <td
+                                                        key={cell.id}
+                                                        className={`whitespace-nowrap border-b border-border px-4 ${denseMode ? 'py-2' : 'py-3'} text-gray-200 ${meta?.cellClassName || ''} ${stickyClass}`}
+                                                    >
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </td>
+                                                );
+                                            })}
                                         </tr>
-
-                                        {!isCollapsed && rows.map((row, rowIndex) => {
-                                            const rowTone = rowIndex % 2 === 0 ? 'bg-[#0F1219]/70' : 'bg-[#121827]/70';
-                                            return (
-                                                <tr
-                                                    key={row.id}
-                                                    data-state={row.getIsSelected() && "selected"}
-                                                    className={`${rowTone} hover:bg-[#1A2233] transition-colors`}
-                                                >
-                                                    {row.getVisibleCells().map((cell) => {
-                                                        const meta = cell.column.columnDef.meta as { cellClassName?: string } | undefined;
-                                                        const stickyClass = getStickyCellClass(cell.column.id, rowIndex);
-                                                        return (
-                                                            <td
-                                                                key={cell.id}
-                                                                className={`whitespace-nowrap px-4 ${denseMode ? 'py-2' : 'py-4'} ${meta?.cellClassName || ''} ${stickyClass}`}
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column.columnDef.cell,
-                                                                    cell.getContext()
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    })}
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                );
-                            })
-                        )}
+                                    );
+                                })
+                            )}
+                        </tbody>
                     </table>
                 </div>
             </div>
