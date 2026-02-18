@@ -319,7 +319,7 @@ export function LeadsTable({
                     className="flex items-center gap-1 hover:text-white transition-colors"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    Payment
+                    Payment (AED)
                     <ArrowUpDown className="h-4 w-4" />
                 </button>
             ),
@@ -344,7 +344,7 @@ export function LeadsTable({
         },
         {
             accessorKey: 'balance',
-            header: 'Balance',
+            header: 'Balance (AED)',
             cell: ({ row }) => (
                 <EditableMoneyCell
                     value={row.original.balance ?? undefined}
@@ -355,7 +355,7 @@ export function LeadsTable({
         },
         {
             accessorKey: 'balance_2',
-            header: 'Balance 2',
+            header: 'Balance 2 (AED)',
             cell: ({ row }) => (
                 <EditableMoneyCell
                     value={row.original.balance_2 ?? undefined}
@@ -414,7 +414,7 @@ export function LeadsTable({
         },
         {
             accessorKey: 'amount_paid',
-            header: 'Amount Paid',
+            header: 'Amount Paid (AED)',
             cell: ({ row }) => (
                 <EditableMoneyCell
                     value={row.original.amount_paid ?? undefined}
@@ -425,7 +425,7 @@ export function LeadsTable({
         },
         {
             accessorKey: 'amount_paid_2',
-            header: 'Amount Paid 2',
+            header: 'Amount Paid 2 (AED)',
             cell: ({ row }) => (
                 <EditableMoneyCell
                     value={row.original.amount_paid_2 ?? undefined}

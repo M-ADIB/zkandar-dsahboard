@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 
+const currencyFormatter = new Intl.NumberFormat('en-AE', {
+    style: 'currency',
+    currency: 'AED',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
+
 interface EditableMoneyCellProps {
     value: number | undefined;
     onUpdate: (value: number) => void;
@@ -48,7 +55,7 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
     if (isEditing) {
         return (
             <div className="relative w-full">
-                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">$</span>
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">AED</span>
                 <input
                     ref={inputRef}
                     type="number"
@@ -56,18 +63,19 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
                     onChange={(e) => setLocalValue(e.target.value)}
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
-                    className={`w-full bg-bg-elevated border border-border rounded-md pl-5 pr-2 py-1 text-sm text-white focus:outline-none focus:border-lime/60 ${className}`}
+                    className={`w-full bg-bg-elevated border border-border rounded-md pl-11 pr-2 py-1 text-sm text-white focus:outline-none focus:border-lime/60 ${className}`}
                 />
             </div>
         );
     }
 
+    const hasValue = value !== undefined && value !== null;
     return (
         <div
             onClick={() => setIsEditing(true)}
-            className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors hover:bg-white/5 ${!value ? 'text-gray-500' : 'text-gray-200'} ${className}`}
+            className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors hover:bg-white/5 ${!hasValue ? 'text-gray-500' : 'text-gray-200'} ${className}`}
         >
-            {value ? `$${value.toLocaleString()}` : '-'}
+            {hasValue ? currencyFormatter.format(value) : '-'}
         </div>
     );
 }

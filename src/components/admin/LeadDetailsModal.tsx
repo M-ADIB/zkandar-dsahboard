@@ -217,31 +217,31 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <label className="block">
-                                            <span className="text-sm text-gray-400 mb-1 block">Total Payment</span>
+                                            <span className="text-sm text-gray-400 mb-1 block">Total Payment (AED)</span>
                                             <div className="relative">
-                                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">AED</span>
                                                 <input
                                                     type="number"
                                                     value={formData.payment_amount ?? 0}
                                                     onChange={e => handleInputChange('payment_amount', e.target.value === '' ? null : parseFloat(e.target.value))}
-                                                    className="w-full bg-dashboard-card border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-white focus:outline-none focus:border-dashboard-accent"
+                                                    className="w-full bg-dashboard-card border border-gray-700 rounded-lg pl-12 pr-4 py-2 text-white focus:outline-none focus:border-dashboard-accent"
                                                 />
                                             </div>
                                         </label>
                                         <label className="block">
-                                            <span className="text-sm text-gray-400 mb-1 block">Balance</span>
+                                            <span className="text-sm text-gray-400 mb-1 block">Balance (AED)</span>
                                             <div className="relative">
-                                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">AED</span>
                                                 <input
                                                     type="number"
                                                     value={formData.balance || 0}
                                                     onChange={e => handleInputChange('balance', parseFloat(e.target.value))}
-                                                    className="w-full bg-dashboard-card border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-white focus:outline-none focus:border-dashboard-accent"
+                                                    className="w-full bg-dashboard-card border border-gray-700 rounded-lg pl-12 pr-4 py-2 text-white focus:outline-none focus:border-dashboard-accent"
                                                 />
                                             </div>
                                         </label>
                                         <label className="block">
-                                            <span className="text-sm text-gray-400 mb-1 block">Amount Paid (1st)</span>
+                                            <span className="text-sm text-gray-400 mb-1 block">Amount Paid (1st) (AED)</span>
                                             <input
                                                 type="number"
                                                 value={formData.amount_paid || 0}
@@ -250,6 +250,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                             />
                                         </label>
                                         <label className="block">
+                                            <span className="text-sm text-gray-400 mb-1 block">Amount Paid (2nd) (AED)</span>
                                             <input
                                                 type="number"
                                                 value={formData.amount_paid_2 || 0}
@@ -258,7 +259,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                             />
                                         </label>
                                         <label className="block">
-                                            <span className="text-sm text-gray-400 mb-1 block">Balance (2nd)</span>
+                                            <span className="text-sm text-gray-400 mb-1 block">Balance (2nd) (AED)</span>
                                             <input
                                                 type="number"
                                                 value={formData.balance_2 || 0}

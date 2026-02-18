@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { Plus, Download, Users, Target, Flame, DollarSign } from 'lucide-react';
 import type { Lead } from '@/types/database';
@@ -257,6 +257,17 @@ export function LeadsPage() {
             .reduce((sum: number, l: Lead) => sum + (l.payment_amount || 0), 0),
     };
 
+    const currencyFormatter = useMemo(
+        () =>
+            new Intl.NumberFormat('en-AE', {
+                style: 'currency',
+                currency: 'AED',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+            }),
+        []
+    );
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
@@ -310,42 +321,44 @@ export function LeadsPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-gray-400 text-sm">Total Leads</div>
-                        <Users className="h-4 w-4 text-gray-500" />
+            <div className="max-w-full overflow-x-auto">
+                <div className="grid grid-flow-col auto-cols-[220px] gap-4 min-w-max pb-2">
+                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-gray-400 text-sm">Total Leads</div>
+                            <Users className="h-4 w-4 text-gray-500" />
+                        </div>
+                        <div className="text-2xl font-bold text-white">{stats.total}</div>
                     </div>
-                    <div className="text-2xl font-bold text-white">{stats.total}</div>
-                </div>
-                <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-gray-400 text-sm">Active</div>
-                        <Target className="h-4 w-4 text-blue-500" />
+                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-gray-400 text-sm">Active</div>
+                            <Target className="h-4 w-4 text-blue-500" />
+                        </div>
+                        <div className="text-2xl font-bold text-blue-400">{stats.active}</div>
                     </div>
-                    <div className="text-2xl font-bold text-blue-400">{stats.active}</div>
-                </div>
-                <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-gray-400 text-sm">Hot</div>
-                        <Flame className="h-4 w-4 text-red-500" />
+                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-gray-400 text-sm">Hot</div>
+                            <Flame className="h-4 w-4 text-red-500" />
+                        </div>
+                        <div className="text-2xl font-bold text-red-400">{stats.hot}</div>
                     </div>
-                    <div className="text-2xl font-bold text-red-400">{stats.hot}</div>
-                </div>
-                <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-gray-400 text-sm">Completed</div>
-                        <div className="h-4 w-4 text-green-500">✓</div>
+                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-gray-400 text-sm">Completed</div>
+                            <div className="h-4 w-4 text-green-500">✓</div>
+                        </div>
+                        <div className="text-2xl font-bold text-green-400">{stats.completed}</div>
                     </div>
-                    <div className="text-2xl font-bold text-green-400">{stats.completed}</div>
-                </div>
-                <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-gray-400 text-sm">Total Revenue</div>
-                        <DollarSign className="h-4 w-4 text-dashboard-accent" />
-                    </div>
-                    <div className="text-2xl font-bold text-dashboard-accent">
-                        ${stats.totalRevenue.toLocaleString()}
+                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="text-gray-400 text-sm">Total Revenue (AED)</div>
+                            <DollarSign className="h-4 w-4 text-dashboard-accent" />
+                        </div>
+                        <div className="text-2xl font-bold text-dashboard-accent">
+                            {currencyFormatter.format(stats.totalRevenue)}
+                        </div>
                     </div>
                 </div>
             </div>
