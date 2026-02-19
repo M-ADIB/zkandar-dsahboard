@@ -8,9 +8,10 @@ interface ModalFormProps {
     children: React.ReactNode;
     onSubmit?: (e: React.FormEvent) => void;
     isLoading?: boolean;
+    showActions?: boolean;
 }
 
-export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoading }: ModalFormProps) {
+export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoading, showActions = true }: ModalFormProps) {
     if (!isOpen) return null;
 
     return (
@@ -50,22 +51,24 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                             {children}
                         </div>
 
-                        <div className="mt-8 flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="px-4 py-2 text-sm font-medium text-white bg-dashboard-accent hover:bg-dashboard-accent-bright rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isLoading ? 'Saving...' : 'Save Changes'}
-                            </button>
-                        </div>
+                        {showActions && (
+                            <div className="mt-8 flex justify-end space-x-3">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-dashboard-accent hover:bg-dashboard-accent-bright rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? 'Saving...' : 'Save Changes'}
+                                </button>
+                            </div>
+                        )}
                     </form>
                 </motion.div>
             </div>

@@ -268,6 +268,9 @@ export function LeadsPage() {
         []
     );
 
+    const metricCardClass = 'bg-bg-card/60 border border-border rounded-xl p-4';
+    const metricLabelClass = 'text-[11px] uppercase tracking-widest text-gray-500';
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
@@ -291,7 +294,7 @@ export function LeadsPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-full min-w-0 overflow-x-hidden">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -323,40 +326,40 @@ export function LeadsPage() {
             {/* Stats Cards */}
             <div className="max-w-full overflow-x-auto">
                 <div className="grid grid-flow-col auto-cols-[220px] gap-4 min-w-max pb-2">
-                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                    <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className="text-gray-400 text-sm">Total Leads</div>
+                            <div className={metricLabelClass}>Total Leads</div>
                             <Users className="h-4 w-4 text-gray-500" />
                         </div>
-                        <div className="text-2xl font-bold text-white">{stats.total}</div>
+                        <div className="text-2xl font-semibold text-gray-100">{stats.total}</div>
                     </div>
-                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                    <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className="text-gray-400 text-sm">Active</div>
-                            <Target className="h-4 w-4 text-blue-500" />
+                            <div className={metricLabelClass}>Active</div>
+                            <Target className="h-4 w-4 text-lime" />
                         </div>
-                        <div className="text-2xl font-bold text-blue-400">{stats.active}</div>
+                        <div className="text-2xl font-semibold text-lime">{stats.active}</div>
                     </div>
-                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                    <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className="text-gray-400 text-sm">Hot</div>
-                            <Flame className="h-4 w-4 text-red-500" />
+                            <div className={metricLabelClass}>Hot</div>
+                            <Flame className="h-4 w-4 text-red-400" />
                         </div>
-                        <div className="text-2xl font-bold text-red-400">{stats.hot}</div>
+                        <div className="text-2xl font-semibold text-red-400">{stats.hot}</div>
                     </div>
-                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                    <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className="text-gray-400 text-sm">Completed</div>
-                            <div className="h-4 w-4 text-green-500">✓</div>
+                            <div className={metricLabelClass}>Completed</div>
+                            <div className="h-4 w-4 text-green-400">✓</div>
                         </div>
-                        <div className="text-2xl font-bold text-green-400">{stats.completed}</div>
+                        <div className="text-2xl font-semibold text-green-400">{stats.completed}</div>
                     </div>
-                    <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4">
+                    <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className="text-gray-400 text-sm">Total Revenue (AED)</div>
-                            <DollarSign className="h-4 w-4 text-dashboard-accent" />
+                            <div className={metricLabelClass}>Total Revenue (AED)</div>
+                            <DollarSign className="h-4 w-4 text-lime" />
                         </div>
-                        <div className="text-2xl font-bold text-dashboard-accent">
+                        <div className="text-2xl font-semibold text-lime">
                             {currencyFormatter.format(stats.totalRevenue)}
                         </div>
                     </div>

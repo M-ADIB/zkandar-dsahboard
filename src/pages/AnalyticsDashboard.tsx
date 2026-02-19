@@ -30,7 +30,7 @@ export function AnalyticsDashboard() {
             const since = new Date()
             since.setDate(since.getDate() - 7)
 
-            const [usersResult, cohortsResult, membershipsResult, companiesResult, sessionsResult, chatResult] = await Promise.all([
+            const [usersResult, cohortsResult, membershipsResult, chatResult] = await Promise.all([
                 supabase
                     .from('users')
                     .select('id, full_name, role, user_type, company_id, ai_readiness_score, onboarding_completed, onboarding_data, created_at'),
@@ -41,16 +41,65 @@ export function AnalyticsDashboard() {
                     .from('cohort_memberships')
                     .select('user_id, cohort_id'),
                 supabase
-                    .from('companies')
-                    .select('id, cohort_id'),
-                supabase
-                    .from('sessions')
-                    .select('id, cohort_id, status, scheduled_date'),
-                supabase
                     .from('chat_messages')
                     .select('id, cohort_id, company_id, created_at')
                     .gte('created_at', since.toISOString()),
             ])
+
+            const companiesResult = await (async () => {
+                const result = await supabase
+                    .from('companies')
+                    .select('id, cohort_id')
+
+                if (!result.error) return result
+                if (!result.error.message.includes('cohort_id')) return result
+
+                const fallback = await supabase
+                    .from('companies')
+                    .select('id')
+
+                if (fallback.error) return fallback
+
+                return {
+                    data: ((fallback.data as Company[]) ?? []).map((row) => ({
+                        ...row,
+                        cohort_id: null,
+                    })),
+                    error: null,
+                }
+            })()
+
+            const sessionsResult = await (async () => {
+                const result = await supabase
+                    .from('sessions')
+                    .select('id, cohort_id, status, scheduled_date')
+
+                if (!result.error) return result
+
+                const missingScheduledDate = result.error.message.includes('scheduled_date')
+                const missingCohortId = result.error.message.includes('cohort_id')
+
+                if (!missingScheduledDate && !missingCohortId) return result
+
+                const fallbackSelect = missingCohortId
+                    ? 'id, status, created_at'
+                    : 'id, cohort_id, status, created_at'
+
+                const fallback = await supabase
+                    .from('sessions')
+                    .select(fallbackSelect)
+
+                if (fallback.error) return fallback
+
+                return {
+                    data: ((fallback.data as Session[]) ?? []).map((row) => ({
+                        ...row,
+                        cohort_id: row.cohort_id ?? '',
+                        scheduled_date: row.created_at,
+                    })),
+                    error: null,
+                }
+            })()
 
             if (ignore) return
 

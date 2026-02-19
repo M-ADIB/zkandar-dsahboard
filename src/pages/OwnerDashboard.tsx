@@ -34,16 +34,13 @@ export function OwnerDashboard() {
             setLoading(true)
             setError(null)
 
-            const [usersResult, cohortsResult, sessionsResult, assignmentsResult, submissionsResult] = await Promise.all([
+            const [usersResult, cohortsResult, assignmentsResult, submissionsResult] = await Promise.all([
                 supabase
                     .from('users')
                     .select('id, full_name, role, onboarding_completed, onboarding_data, created_at'),
                 supabase
                     .from('cohorts')
                     .select('id, name, status, start_date, end_date'),
-                supabase
-                    .from('sessions')
-                    .select('id, scheduled_date, status'),
                 supabase
                     .from('assignments')
                     .select('id, title'),
@@ -53,6 +50,29 @@ export function OwnerDashboard() {
                     .order('submitted_at', { ascending: false })
                     .limit(20),
             ])
+
+            const sessionsResult = await (async () => {
+                const result = await supabase
+                    .from('sessions')
+                    .select('id, scheduled_date, status, created_at')
+
+                if (!result.error) return result
+                if (!result.error.message.includes('scheduled_date')) return result
+
+                const fallback = await supabase
+                    .from('sessions')
+                    .select('id, status, created_at')
+
+                if (fallback.error) return fallback
+
+                return {
+                    data: ((fallback.data as Session[]) ?? []).map((row) => ({
+                        ...row,
+                        scheduled_date: row.created_at,
+                    })),
+                    error: null,
+                }
+            })()
 
             if (ignore) return
 
@@ -105,7 +125,10 @@ export function OwnerDashboard() {
     const upcomingSessions = useMemo(() => {
         const now = Date.now()
         return sessions.filter((session) => {
-            const date = new Date(session.scheduled_date).getTime()
+            const dateValue = session.scheduled_date ?? session.created_at
+            if (!dateValue) return false
+            const date = new Date(dateValue).getTime()
+            if (Number.isNaN(date)) return false
             return date > now && session.status !== 'completed'
         })
     }, [sessions])
@@ -114,8 +137,13 @@ export function OwnerDashboard() {
         if (upcomingSessions.length === 0) return 'No upcoming sessions'
         const next = upcomingSessions
             .slice()
-            .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())[0]
-        return formatDateLabel(next.scheduled_date) || 'Upcoming session'
+            .sort((a, b) => {
+                const aDateValue = a.scheduled_date ?? a.created_at
+                const bDateValue = b.scheduled_date ?? b.created_at
+                return new Date(aDateValue).getTime() - new Date(bDateValue).getTime()
+            })[0]
+        const labelDate = next.scheduled_date ?? next.created_at
+        return labelDate ? formatDateLabel(labelDate) || 'Upcoming session' : 'Upcoming session'
     }, [upcomingSessions])
 
     const stats = useMemo(() => ([

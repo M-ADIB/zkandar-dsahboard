@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Paperclip, Hash, Users, Pin } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import { useCompany } from '@/hooks/useCompany'
 import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { supabase } from '@/lib/supabase'
@@ -34,6 +35,7 @@ interface Channel {
 
 export function ChatPage() {
     const { user, loading: authLoading } = useAuth()
+    const { isPreviewing } = useViewMode()
     const { company, loading: companyLoading } = useCompany()
     const { cohorts, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
     const [selectedChannelId, setSelectedChannelId] = useState<string>('')
@@ -266,9 +268,16 @@ export function ChatPage() {
         user &&
         selectedChannel &&
         !loadingMessages &&
+        !isPreviewing &&
         selectedChannel.type !== 'announcements' &&
         (selectedChannel.type === 'company' ? selectedChannel.companyId : selectedChannel.cohortId)
     )
+
+    const inputPlaceholder = isPreviewing
+        ? 'Preview mode: sending disabled'
+        : selectedChannel?.type === 'announcements'
+            ? 'Announcements are read-only'
+            : 'Type a message...'
 
     const handleSend = async () => {
         if (!message.trim() || !user || !canSend) return
@@ -461,7 +470,7 @@ export function ChatPage() {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
-                            placeholder={selectedChannel?.type === 'announcements' ? 'Announcements are read-only' : 'Type a message...'}
+                            placeholder={inputPlaceholder}
                             className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-gray-500"
                             disabled={!canSend}
                         />

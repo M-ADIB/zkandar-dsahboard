@@ -17,6 +17,7 @@ import {
     TrendingUp,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
+import { useViewMode } from '@/context/ViewModeContext'
 
 interface SidebarProps {
     userRole: UserRole
@@ -29,16 +30,10 @@ interface NavItem {
     roles: UserRole[]
 }
 
-const navItems: NavItem[] = [
+const adminNavItems: NavItem[] = [
     {
         icon: LayoutDashboard,
         label: 'Dashboard',
-        path: '/dashboard',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
-        icon: LayoutDashboard,
-        label: 'Admin Panel',
         path: '/admin',
         roles: ['owner', 'admin'],
     },
@@ -61,10 +56,43 @@ const navItems: NavItem[] = [
         roles: ['owner', 'admin'],
     },
     {
+        icon: Calendar,
+        label: 'Sessions',
+        path: '/admin/sessions',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: FileText,
+        label: 'Assignments',
+        path: '/admin/assignments',
+        roles: ['owner', 'admin'],
+    },
+    {
         icon: Users,
         label: 'Users',
         path: '/admin/users',
         roles: ['owner', 'admin'],
+    },
+    {
+        icon: BarChart3,
+        label: 'Analytics',
+        path: '/analytics',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: Settings,
+        label: 'Settings',
+        path: '/settings',
+        roles: ['owner', 'admin'],
+    },
+]
+
+const memberNavItems: NavItem[] = [
+    {
+        icon: LayoutDashboard,
+        label: 'Dashboard',
+        path: '/dashboard',
+        roles: ['owner', 'admin', 'executive', 'participant'],
     },
     {
         icon: Calendar,
@@ -91,12 +119,6 @@ const navItems: NavItem[] = [
         roles: ['executive'],
     },
     {
-        icon: BarChart3,
-        label: 'Analytics',
-        path: '/analytics',
-        roles: ['owner', 'admin'],
-    },
-    {
         icon: Settings,
         label: 'Settings',
         path: '/settings',
@@ -107,8 +129,10 @@ const navItems: NavItem[] = [
 export function Sidebar({ userRole }: SidebarProps) {
     const [isOpen, setIsOpen] = useState(false)
     const location = useLocation()
+    const { isPreviewing, canPreview, setPreviewing } = useViewMode()
 
-    const filteredItems = navItems.filter((item) => item.roles.includes(userRole))
+    const activeItems = canPreview && !isPreviewing ? adminNavItems : memberNavItems
+    const filteredItems = activeItems.filter((item) => item.roles.includes(userRole))
 
     return (
         <>
@@ -167,6 +191,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                     {filteredItems.map((item) => {
                         const Icon = item.icon
                         const isActive = location.pathname === item.path
+                            || (item.path !== '/admin' && location.pathname.startsWith(`${item.path}/`))
 
                         return (
                             <NavLink
@@ -201,6 +226,24 @@ export function Sidebar({ userRole }: SidebarProps) {
 
                 {/* Footer */}
                 <div className="p-4 border-t border-border">
+                    {canPreview && (
+                        <button
+                            onClick={() => setPreviewing(!isPreviewing)}
+                            className="mb-3 w-full rounded-xl border border-border bg-bg-card px-4 py-3 text-left text-xs font-medium text-gray-300 hover:border-lime/40"
+                        >
+                            <div className="flex items-center justify-between">
+                                <span>Preview Member View</span>
+                                <span className={`h-4 w-8 rounded-full border border-border p-0.5 ${isPreviewing ? 'bg-lime/20' : 'bg-white/5'}`}>
+                                    <span
+                                        className={`block h-3 w-3 rounded-full bg-lime transition-transform ${isPreviewing ? 'translate-x-4' : 'translate-x-0'}`}
+                                    />
+                                </span>
+                            </div>
+                            <div className="mt-1 text-[11px] text-gray-500">
+                                {isPreviewing ? 'Showing member navigation' : 'Switch to member navigation'}
+                            </div>
+                        </button>
+                    )}
                     <div className="px-4 py-3 rounded-xl bg-lime/5 border border-lime/20">
                         <p className="text-xs text-lime font-medium mb-1">Pro Tip</p>
                         <p className="text-xs text-gray-400">

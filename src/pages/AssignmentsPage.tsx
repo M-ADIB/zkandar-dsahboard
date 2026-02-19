@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { FileText, Clock, CheckCircle2, Upload, Link as LinkIcon, ArrowRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { formatDateLabel } from '@/lib/time'
 import type { Assignment, Session, Submission, SubmissionFormat } from '@/types/database'
@@ -21,6 +22,7 @@ type AssignmentCard = {
 export function AssignmentsPage() {
     const [filter, setFilter] = useState<'all' | 'pending' | 'submitted'>('all')
     const { user, loading: authLoading } = useAuth()
+    const { isPreviewing } = useViewMode()
     const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
     const [assignments, setAssignments] = useState<AssignmentCard[]>([])
     const [loading, setLoading] = useState(true)
@@ -348,8 +350,12 @@ export function AssignmentsPage() {
 
                                 {/* Action */}
                                 {assignment.status !== 'submitted' && (
-                                    <button className="px-5 py-2.5 gradient-lime text-black font-medium rounded-xl hover:opacity-90 transition shrink-0 flex items-center gap-2">
-                                        Submit <ArrowRight className="h-4 w-4" />
+                                    <button
+                                        disabled={isPreviewing}
+                                        className="px-5 py-2.5 gradient-lime text-black font-medium rounded-xl hover:opacity-90 transition shrink-0 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isPreviewing ? 'Preview mode' : 'Submit'}
+                                        <ArrowRight className="h-4 w-4" />
                                     </button>
                                 )}
                             </div>
