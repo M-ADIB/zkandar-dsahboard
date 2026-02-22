@@ -19,12 +19,14 @@ import { SprintWorkshopOnboarding } from '@/pages/onboarding/SprintWorkshopOnboa
 import { NotificationProvider } from '@/context/NotificationContext'
 import { NotificationsPage } from '@/pages/NotificationsPage'
 import { CompaniesPage } from '@/pages/admin/CompaniesPage'
+import { CompanyWorkspacePage } from '@/pages/admin/CompanyWorkspacePage'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { ProgramsPage } from '@/pages/admin/ProgramsPage'
 import { ProgramSessionsPage } from '@/pages/admin/ProgramSessionsPage'
 import { UsersPage } from '@/pages/admin/UsersPage'
 import { SessionsAdminPage } from '@/pages/admin/SessionsAdminPage'
 import { AssignmentsAdminPage } from '@/pages/admin/AssignmentsAdminPage'
+import { ToolboxPage } from '@/pages/ToolboxPage'
 
 function App() {
     return (
@@ -81,6 +83,14 @@ function App() {
                                 element={
                                     <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                         <CompaniesPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/companies/:id"
+                                element={
+                                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                        <CompanyWorkspacePage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -176,6 +186,14 @@ function App() {
                             />
                             <Route path="settings" element={<SettingsPage />} />
                             <Route path="notifications" element={<NotificationsPage />} />
+                            <Route
+                                path="toolbox"
+                                element={
+                                    <MemberRoute>
+                                        <ToolboxPage />
+                                    </MemberRoute>
+                                }
+                            />
 
                         </Route>
 

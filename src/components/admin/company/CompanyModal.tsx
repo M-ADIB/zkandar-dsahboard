@@ -127,7 +127,7 @@ export function CompanyModal({
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     placeholder="e.g. Acme Studio"
                 />
             </div>
@@ -138,7 +138,7 @@ export function CompanyModal({
                     type="text"
                     value={formData.industry}
                     onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     placeholder="e.g. Architecture"
                 />
             </div>
@@ -151,7 +151,7 @@ export function CompanyModal({
                         min="0"
                         value={formData.team_size}
                         onChange={(e) => setFormData({ ...formData, team_size: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                         placeholder="e.g. 12"
                     />
                 </div>
@@ -161,7 +161,7 @@ export function CompanyModal({
                         type="date"
                         value={formData.enrollment_date}
                         onChange={(e) => setFormData({ ...formData, enrollment_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     />
                 </div>
             </div>
@@ -171,7 +171,7 @@ export function CompanyModal({
                 <select
                     value={formData.cohort_id}
                     onChange={(e) => setFormData({ ...formData, cohort_id: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="">Unassigned</option>
                     {programs.map((program) => (
@@ -187,7 +187,7 @@ export function CompanyModal({
                 <select
                     value={formData.executive_user_id}
                     onChange={(e) => setFormData({ ...formData, executive_user_id: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="">Unassigned</option>
                     {users.map((user) => (

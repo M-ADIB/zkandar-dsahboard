@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { formatDateLabel } from '@/lib/time'
+import { SubmitAssignmentModal } from '@/components/assignments/SubmitAssignmentModal'
 import type { Assignment, Session, Submission, SubmissionFormat } from '@/types/database'
 
 type AssignmentCard = {
@@ -28,6 +29,7 @@ export function AssignmentsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const refreshTimerRef = useRef<number | null>(null)
+    const [submitTarget, setSubmitTarget] = useState<AssignmentCard | null>(null)
 
     const refreshAssignments = useCallback(async () => {
         if (authLoading || cohortsLoading) return
@@ -241,8 +243,8 @@ export function AssignmentsPage() {
                     <button
                         onClick={() => setFilter('all')}
                         className={`px-4 py-2 rounded-xl text-sm transition ${filter === 'all'
-                                ? 'bg-lime/10 text-lime border border-lime/20'
-                                : 'bg-bg-card border border-border hover:border-lime/20'
+                            ? 'bg-lime/10 text-lime border border-lime/20'
+                            : 'bg-bg-card border border-border hover:border-lime/20'
                             }`}
                     >
                         All
@@ -250,8 +252,8 @@ export function AssignmentsPage() {
                     <button
                         onClick={() => setFilter('pending')}
                         className={`px-4 py-2 rounded-xl text-sm transition ${filter === 'pending'
-                                ? 'bg-lime/10 text-lime border border-lime/20'
-                                : 'bg-bg-card border border-border hover:border-lime/20'
+                            ? 'bg-lime/10 text-lime border border-lime/20'
+                            : 'bg-bg-card border border-border hover:border-lime/20'
                             }`}
                     >
                         Pending
@@ -259,8 +261,8 @@ export function AssignmentsPage() {
                     <button
                         onClick={() => setFilter('submitted')}
                         className={`px-4 py-2 rounded-xl text-sm transition ${filter === 'submitted'
-                                ? 'bg-lime/10 text-lime border border-lime/20'
-                                : 'bg-bg-card border border-border hover:border-lime/20'
+                            ? 'bg-lime/10 text-lime border border-lime/20'
+                            : 'bg-bg-card border border-border hover:border-lime/20'
                             }`}
                     >
                         Submitted
@@ -284,10 +286,10 @@ export function AssignmentsPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`bg-bg-card border rounded-2xl p-6 transition-colors ${assignment.status === 'pending'
-                                    ? 'border-yellow-500/30 hover:border-yellow-500/50'
-                                    : assignment.status === 'submitted'
-                                        ? 'border-lime/20 hover:border-lime/40'
-                                        : 'border-border hover:border-lime/20'
+                                ? 'border-yellow-500/30 hover:border-yellow-500/50'
+                                : assignment.status === 'submitted'
+                                    ? 'border-lime/20 hover:border-lime/40'
+                                    : 'border-border hover:border-lime/20'
                                 }`}
                         >
                             <div className="flex flex-col lg:flex-row lg:items-start gap-4">
@@ -352,6 +354,7 @@ export function AssignmentsPage() {
                                 {assignment.status !== 'submitted' && (
                                     <button
                                         disabled={isPreviewing}
+                                        onClick={() => !isPreviewing && setSubmitTarget(assignment)}
                                         className="px-5 py-2.5 gradient-lime text-black font-medium rounded-xl hover:opacity-90 transition shrink-0 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isPreviewing ? 'Preview mode' : 'Submit'}
@@ -363,6 +366,17 @@ export function AssignmentsPage() {
                     ))}
                 </div>
             )}
+
+            <SubmitAssignmentModal
+                isOpen={!!submitTarget}
+                assignment={submitTarget}
+                userId={user?.id ?? ''}
+                onClose={() => setSubmitTarget(null)}
+                onSuccess={() => {
+                    setSubmitTarget(null)
+                    // Real-time subscription auto-refreshes the card
+                }}
+            />
         </div>
     )
 }

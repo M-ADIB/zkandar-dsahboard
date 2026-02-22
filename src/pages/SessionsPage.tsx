@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, Play, FileText, CheckCircle2, Clock } from 'lucide-react'
+import { Calendar, Play, FileText, CheckCircle2, Clock, ExternalLink } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
@@ -16,6 +16,7 @@ type SessionCard = {
     duration: string
     status: 'completed' | 'scheduled' | 'upcoming'
     materialsCount: number
+    recordingUrl: string | null
 }
 
 const offeringLabels: Record<OfferingType, string> = {
@@ -157,6 +158,7 @@ export function SessionsPage() {
                 duration: formatTimeLabel(session.scheduled_date) || 'TBD',
                 status: derivedStatus,
                 materialsCount,
+                recordingUrl: session.recording_url ?? null,
             }
         })
     }, [sessions, cohorts])
@@ -228,7 +230,10 @@ export function SessionsPage() {
                             {/* Thumbnail */}
                             <div className="aspect-video bg-bg-elevated relative">
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="h-16 w-16 rounded-full bg-lime/10 flex items-center justify-center group-hover:bg-lime/20 transition">
+                                    <div className={`h-16 w-16 rounded-full flex items-center justify-center transition ${session.recordingUrl
+                                            ? 'bg-lime/20 group-hover:bg-lime/30'
+                                            : 'bg-lime/10 group-hover:bg-lime/20'
+                                        }`}>
                                         {session.status === 'completed' ? (
                                             <Play className="h-6 w-6 text-lime ml-1" />
                                         ) : (
@@ -273,6 +278,18 @@ export function SessionsPage() {
                                         <FileText className="h-3 w-3" />
                                         {session.materialsCount} materials
                                     </div>
+                                )}
+                                {session.recordingUrl && (
+                                    <a
+                                        href={session.recordingUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="mt-3 flex items-center gap-1.5 text-xs text-lime hover:text-lime/80 transition-colors"
+                                    >
+                                        <ExternalLink className="h-3 w-3" />
+                                        Watch recording
+                                    </a>
                                 )}
                             </div>
                         </motion.div>

@@ -149,7 +149,7 @@ export function ProgramSessionsPage() {
                         setSelectedSession(null);
                         setIsModalOpen(true);
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-dashboard-accent hover:bg-dashboard-accent-bright text-white rounded-lg transition-colors font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-dashboard-accent hover:bg-dashboard-accent-bright text-black rounded-lg transition-colors font-medium"
                 >
                     <Plus className="h-5 w-5" />
                     Add Session

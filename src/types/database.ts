@@ -7,6 +7,22 @@ export type SubmissionStatus = 'pending' | 'reviewed'
 export type SubmissionFormat = 'file' | 'link' | 'text'
 export type SurveyTrigger = 'onboarding' | 'mid_program' | 'post_program'
 export type InvitationStatus = 'pending' | 'accepted' | 'expired'
+export type ToolboxImportance = 'essential' | 'recommended' | 'optional'
+export type ToolboxToolType = 'image_generation' | 'video_generation' | 'text_generation' | 'automation' | 'analytics' | 'other'
+
+export interface ToolboxItem {
+    id: string
+    title: string
+    url: string
+    description: string | null
+    importance: ToolboxImportance
+    category: string
+    tool_type: ToolboxToolType
+    order_index: number
+    is_active: boolean
+    created_at: string
+    updated_at: string
+}
 
 export interface User {
     id: string
@@ -130,7 +146,7 @@ export interface Session {
     session_number: number
     title: string
     scheduled_date: string
-    zoom_recording_url: string | null
+    recording_url: string | null
     materials: SessionMaterial[]
     attendance: string[]
     status: SessionStatus
@@ -322,6 +338,20 @@ export interface Database {
                 Row: Lead
                 Insert: Omit<Lead, 'id' | 'created_at' | 'updated_at'>
                 Update: Partial<Omit<Lead, 'id' | 'created_at'>>
+            }
+            toolbox_items: {
+                Row: ToolboxItem
+                Insert: {
+                    title: string
+                    url: string
+                    description?: string | null
+                    importance?: ToolboxImportance
+                    category?: string
+                    tool_type?: ToolboxToolType
+                    order_index?: number
+                    is_active?: boolean
+                }
+                Update: Partial<Omit<ToolboxItem, 'id' | 'created_at'>>
             }
         }
         Views: {

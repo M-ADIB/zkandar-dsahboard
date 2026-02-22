@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSupabase } from '@/hooks/useSupabase';
-import { Plus, Download, Users, Target, Flame, DollarSign } from 'lucide-react';
+import { Plus, Download, Users, Target, Flame, DollarSign, CheckCircle } from 'lucide-react';
 import type { Lead } from '@/types/database';
 import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
-import { QuickAddLead } from '@/components/admin/leads/QuickAddLead';
+// BUG-10 fix: QuickAddLead removed – "Add Lead" button opens the modal instead
 
 const EXPORT_COLUMNS: { key: keyof Lead; label: string }[] = [
     { key: 'record_id', label: 'Record ID' },
@@ -60,6 +60,13 @@ export function LeadsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
+    // BUG-8: success toast state
+    const [toast, setToast] = useState<{ message: string } | null>(null);
+
+    const showToast = useCallback((message: string) => {
+        setToast({ message });
+        setTimeout(() => setToast(null), 3000);
+    }, []);
 
     const fetchLeads = async () => {
         setIsLoading(true);
@@ -141,33 +148,6 @@ export function LeadsPage() {
         }
     };
 
-    const handleQuickAdd = async (name: string, company: string) => {
-        try {
-            const { data: user } = await supabase.auth.getUser();
-            if (!user.user) return false;
-
-            const newLead: Partial<Lead> = {
-                full_name: name,
-                company_name: company,
-                priority: 'COLD', // default
-                offering_type: 'TBA', // default
-                owner_id: user.user.id
-            };
-
-            const { data, error } = await (supabase.from('leads') as any)
-                .insert([newLead])
-                .select()
-                .single();
-
-            if (error) throw error;
-
-            setLeads(prev => [data, ...prev]);
-            return true;
-        } catch (error) {
-            console.error('Error adding lead:', error);
-            return false;
-        }
-    };
 
     const handleSaveLead = async (updatedLead: Lead) => {
         const { error } = await (supabase.from('leads') as any)
@@ -182,14 +162,15 @@ export function LeadsPage() {
             console.error('Error saving lead:', error);
             throw error;
         } else {
-            fetchLeads();
+            await fetchLeads();
             setIsModalOpen(false);
+            // BUG-8 fix: show success toast after save
+            showToast(updatedLead.id ? 'Lead updated successfully' : 'Lead created successfully');
         }
     };
 
     const handleDeleteLead = async (lead: Lead) => {
-        if (!confirm(`Are you sure you want to delete ${lead.full_name}?`)) return;
-
+        // BUG-6 fix: confirmation is now handled in-modal, so directly delete
         const { error } = await (supabase.from('leads') as any)
             .delete()
             .eq('id', lead.id);
@@ -200,6 +181,8 @@ export function LeadsPage() {
             setLeads((prev: Lead[]) => prev.filter((l: Lead) => l.id !== lead.id));
             setIsModalOpen(false);
             setSelectedLead(null);
+            // BUG-8 fix: also show toast after delete
+            showToast('Lead deleted');
         }
     };
 
@@ -251,9 +234,17 @@ export function LeadsPage() {
         total: leads.length,
         active: leads.filter((l: Lead) => l.priority === 'ACTIVE').length,
         hot: leads.filter((l: Lead) => l.priority === 'HOT').length,
+        lava: leads.filter((l: Lead) => l.priority === 'LAVA').length,
+        cold: leads.filter((l: Lead) => l.priority === 'COLD').length,
         completed: leads.filter((l: Lead) => l.priority === 'COMPLETED').length,
+        notInterested: leads.filter((l: Lead) => l.priority === 'NOT INTERESTED').length,
+        // Revenue = sum of what was actually paid for COMPLETED leads
         totalRevenue: leads
             .filter((l: Lead) => l.priority === 'COMPLETED')
+            .reduce((sum: number, l: Lead) => sum + (l.amount_paid || 0) + (l.amount_paid_2 || 0), 0),
+        // Pipeline value = payment_amount for active/hot/lava leads
+        pipelineValue: leads
+            .filter((l: Lead) => l.priority === 'HOT' || l.priority === 'ACTIVE' || l.priority === 'LAVA')
             .reduce((sum: number, l: Lead) => sum + (l.payment_amount || 0), 0),
     };
 
@@ -295,6 +286,14 @@ export function LeadsPage() {
 
     return (
         <div className="space-y-6 max-w-full min-w-0 overflow-x-hidden">
+            {/* BUG-8 fix: success toast notification */}
+            {toast && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-5 py-3 bg-bg-elevated border border-lime/30 rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <CheckCircle className="h-5 w-5 text-lime flex-shrink-0" />
+                    <span className="text-sm font-medium text-white">{toast.message}</span>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -315,7 +314,7 @@ export function LeadsPage() {
                             setSelectedLead(null);
                             setIsModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-dashboard-accent hover:bg-dashboard-accent-bright text-white rounded-lg transition-colors font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-dashboard-accent hover:bg-dashboard-accent-bright text-black rounded-lg transition-colors font-medium"
                     >
                         <Plus className="h-5 w-5" />
                         Add Lead
@@ -325,7 +324,7 @@ export function LeadsPage() {
 
             {/* Stats Cards */}
             <div className="max-w-full overflow-x-auto">
-                <div className="grid grid-flow-col auto-cols-[220px] gap-4 min-w-max pb-2">
+                <div className="grid grid-flow-col auto-cols-[200px] gap-4 min-w-max pb-2">
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
                             <div className={metricLabelClass}>Total Leads</div>
@@ -343,9 +342,23 @@ export function LeadsPage() {
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
                             <div className={metricLabelClass}>Hot</div>
-                            <Flame className="h-4 w-4 text-red-400" />
+                            <Flame className="h-4 w-4 text-orange-400" />
                         </div>
-                        <div className="text-2xl font-semibold text-red-400">{stats.hot}</div>
+                        <div className="text-2xl font-semibold text-orange-400">{stats.hot}</div>
+                    </div>
+                    <div className={metricCardClass}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className={metricLabelClass}>Lava</div>
+                            <Flame className="h-4 w-4 text-purple-400" />
+                        </div>
+                        <div className="text-2xl font-semibold text-purple-400">{stats.lava}</div>
+                    </div>
+                    <div className={metricCardClass}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className={metricLabelClass}>Cold</div>
+                            <span className="text-blue-400 text-sm">❄</span>
+                        </div>
+                        <div className="text-2xl font-semibold text-blue-400">{stats.cold}</div>
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
@@ -356,32 +369,44 @@ export function LeadsPage() {
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Total Revenue (AED)</div>
+                            <div className={metricLabelClass}>Not Interested</div>
+                            <span className="text-red-400 text-sm">✗</span>
+                        </div>
+                        <div className="text-2xl font-semibold text-red-400">{stats.notInterested}</div>
+                    </div>
+                    <div className={metricCardClass}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className={metricLabelClass}>Pipeline (AED)</div>
+                            <DollarSign className="h-4 w-4 text-yellow-400" />
+                        </div>
+                        <div className="text-xl font-semibold text-yellow-400">
+                            {currencyFormatter.format(stats.pipelineValue)}
+                        </div>
+                    </div>
+                    <div className={metricCardClass}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className={metricLabelClass}>Revenue (AED)</div>
                             <DollarSign className="h-4 w-4 text-lime" />
                         </div>
-                        <div className="text-2xl font-semibold text-lime">
+                        <div className="text-xl font-semibold text-lime">
                             {currencyFormatter.format(stats.totalRevenue)}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Quick Add and Table */}
-            <div className="space-y-4">
-                <QuickAddLead onAdd={handleQuickAdd} />
-
-                <LeadsTable
-                    data={leads}
-                    onEdit={(lead) => {
-                        setSelectedLead(lead);
-                        setIsModalOpen(true);
-                    }}
-                    onDelete={handleDeleteLead}
-                    onUpdatePriority={handleUpdatePriority}
-                    onUpdateLead={handleUpdateLead}
-                    isUpdating={isUpdating}
-                />
-            </div>
+            {/* Table */}
+            <LeadsTable
+                data={leads}
+                onEdit={(lead) => {
+                    setSelectedLead(lead);
+                    setIsModalOpen(true);
+                }}
+                onDelete={handleDeleteLead}
+                onUpdatePriority={handleUpdatePriority}
+                onUpdateLead={handleUpdateLead}
+                isUpdating={isUpdating}
+            />
 
             {/* Modal */}
             <LeadDetailsModal

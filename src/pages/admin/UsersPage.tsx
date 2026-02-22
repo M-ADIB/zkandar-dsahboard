@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, UserPlus, Mail, Clock } from 'lucide-react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { UserModal } from '@/components/admin/users/UserModal';
+import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
 import type { Cohort, CohortMembership, Company, User, UserRole, UserType } from '@/types/database';
 
 type RoleFilter = 'all' | UserRole;
@@ -26,18 +27,21 @@ export function UsersPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
     const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+    const [invitations, setInvitations] = useState<{ id: string; email: string; role: string; status: string; created_at: string }[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isInviteOpen, setIsInviteOpen] = useState(false);
 
     const fetchUsers = async () => {
         setIsLoading(true);
         setError(null);
 
-        const [usersResult, companiesResult, programsResult, membershipsResult] = await Promise.all([
+        const [usersResult, companiesResult, programsResult, membershipsResult, invitationsResult] = await Promise.all([
             supabase.from('users').select('*').order('full_name'),
             supabase.from('companies').select('*').order('name'),
             supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
             supabase.from('cohort_memberships').select('*'),
+            supabase.from('invitations').select('id,email,role,status,created_at').eq('status', 'pending').order('created_at', { ascending: false }),
         ]);
 
         if (usersResult.error) {
@@ -66,6 +70,10 @@ export function UsersPage() {
             setMemberships([]);
         } else {
             setMemberships((membershipsResult.data as CohortMembership[]) ?? []);
+        }
+
+        if (!invitationsResult.error) {
+            setInvitations((invitationsResult.data as { id: string; email: string; role: string; status: string; created_at: string }[]) ?? []);
         }
 
         setIsLoading(false);
@@ -165,6 +173,13 @@ export function UsersPage() {
                     <h1 className="text-2xl font-bold text-white">Users</h1>
                     <p className="text-gray-400 mt-1">Manage roles, companies, and program memberships</p>
                 </div>
+                <button
+                    onClick={() => setIsInviteOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium gradient-lime text-black hover:opacity-90 transition"
+                >
+                    <UserPlus className="h-4 w-4" />
+                    Invite User
+                </button>
             </div>
 
             <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4 flex flex-wrap gap-4">
@@ -244,6 +259,42 @@ export function UsersPage() {
                     memberships={membershipMap.get(selectedUser.id) ?? []}
                 />
             )}
+
+            {invitations.length > 0 && (
+                <div className="bg-dashboard-card border border-gray-800 rounded-lg overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-800">
+                        <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-lime" />
+                            Pending Invitations ({invitations.length})
+                        </h2>
+                    </div>
+                    <div className="divide-y divide-gray-800">
+                        {invitations.map((inv) => (
+                            <div key={inv.id} className="flex items-center gap-3 px-4 py-3">
+                                <div className="h-8 w-8 rounded-full bg-lime/10 flex items-center justify-center shrink-0">
+                                    <Mail className="h-3.5 w-3.5 text-lime" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-white truncate">{inv.email}</p>
+                                    <p className="text-xs text-gray-500 capitalize mt-0.5">{inv.role} &bull; Invited {new Date(inv.created_at).toLocaleDateString()}</p>
+                                </div>
+                                <span className="px-2 py-0.5 rounded-full text-xs border border-yellow-500/30 bg-yellow-500/10 text-yellow-400">Pending</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <InviteUserModal
+                isOpen={isInviteOpen}
+                onClose={() => setIsInviteOpen(false)}
+                onSuccess={() => {
+                    setIsInviteOpen(false);
+                    fetchUsers();
+                }}
+                companies={companies}
+                programs={programs}
+            />
         </div>
     );
 }

@@ -569,11 +569,12 @@ export function LeadsTable({
         {
             accessorKey: 'notes',
             header: 'Notes',
+            // BUG-2 fix: use multiline textarea for the notes cell
             cell: ({ row }) => (
                 <EditableTextCell
                     value={toText(row.getValue('notes'))}
                     onUpdate={(val) => onUpdateLead(row.original.id, 'notes', val)}
-                    className="truncate"
+                    multiline
                 />
             ),
             meta: { headerClassName: 'min-w-[240px]', cellClassName: 'min-w-[240px]' }
@@ -581,11 +582,11 @@ export function LeadsTable({
         {
             accessorKey: 'record_id',
             header: 'Record ID',
+            // BUG-11 fix: record_id is a unique identifier – make it read-only to prevent DB integrity issues
             cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('record_id'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'record_id', val)}
-                />
+                <span className="text-xs text-gray-500 px-2 py-1 select-all font-mono">
+                    {toText(row.getValue('record_id')) || '-'}
+                </span>
             ),
             meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
         },
@@ -708,11 +709,12 @@ export function LeadsTable({
         },
     });
 
-    const sortedRows = table.getSortedRowModel().rows;
+    // BUG-3 fix: use getRowModel() which applies filter + sort pipeline (not getSortedRowModel which ignores filters)
+    const allProcessedRows = table.getRowModel().rows;
     const visibleRows = useMemo(() => {
-        if (rowsPerPage === 'all') return sortedRows;
-        return sortedRows.slice(0, rowsPerPage);
-    }, [sortedRows, rowsPerPage]);
+        if (rowsPerPage === 'all') return allProcessedRows;
+        return allProcessedRows.slice(0, rowsPerPage);
+    }, [allProcessedRows, rowsPerPage]);
 
     const totalFilteredRows = table.getFilteredRowModel().rows.length;
     const visibleCount = visibleRows.length;
@@ -725,13 +727,15 @@ export function LeadsTable({
     const getStickyHeaderClass = (columnId: string) => {
         const sticky = stickyColumns[columnId];
         if (!sticky) return '';
+        // BUG-13 fix: use bg-bg-elevated (fully opaque) so header never bleeds
         return `sticky ${sticky.left} z-30 ${sticky.width} bg-bg-elevated border-r border-border`;
     };
 
     const getStickyCellClass = (columnId: string, rowIndex: number) => {
         const sticky = stickyColumns[columnId];
         if (!sticky) return '';
-        const rowTone = rowIndex % 2 === 0 ? 'bg-bg-primary/80' : 'bg-bg-card/80';
+        // BUG-13 fix: fully opaque solid colours – no /80 opacity that causes bleed-through on scroll
+        const rowTone = rowIndex % 2 === 0 ? 'bg-[#000000]' : 'bg-[#111111]';
         return `sticky ${sticky.left} z-10 ${sticky.width} ${rowTone} border-r border-border`;
     };
 
@@ -827,9 +831,15 @@ export function LeadsTable({
 
                 {/* Active Filters Summary */}
                 {(priorityFilter !== 'ALL' || offeringFilter !== 'ALL' || globalFilter) && (
-                    <div className="mt-3 flex items-center gap-2 text-sm">
+                    <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                         <Filter className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-400">Active filters:</span>
+                        {/* BUG-7 fix: show a chip for active global search text */}
+                        {globalFilter && (
+                            <span className="px-2 py-1 bg-bg-primary/60 text-gray-200 rounded border border-border/60">
+                                Search: &quot;{globalFilter}&quot;
+                            </span>
+                        )}
                         {priorityFilter !== 'ALL' && (
                             <span className="px-2 py-1 bg-bg-primary/60 text-gray-200 rounded border border-border/60">
                                 Priority: {priorityFilter}
@@ -859,7 +869,8 @@ export function LeadsTable({
             </div>
 
             {/* Table */}
-            <div className={`w-full max-w-full overflow-hidden rounded-xl border border-border bg-bg-card/80 ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
+            {/* BUG-13 fix: bg-bg-card (solid, no opacity) so sticky cols are never transparent */}
+            <div className={`w-full max-w-full overflow-hidden rounded-xl border border-border bg-bg-card ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
                 <div className="w-full max-w-full max-h-[60vh] overflow-auto">
                     <table className={`min-w-[3200px] w-max border-separate border-spacing-0 ${denseMode ? 'text-xs' : 'text-sm'}`}>
                         <thead className="sticky top-0 z-20 bg-bg-elevated">
@@ -897,7 +908,8 @@ export function LeadsTable({
                                 </tr>
                             ) : (
                                 visibleRows.map((row, rowIndex) => {
-                                    const rowTone = rowIndex % 2 === 0 ? 'bg-bg-primary/60' : 'bg-bg-card/60';
+                                    // BUG-13 fix: solid row backgrounds so sticky cols have correct background on scroll
+                                    const rowTone = rowIndex % 2 === 0 ? 'bg-[#000000]' : 'bg-[#111111]';
                                     return (
                                         <tr
                                             key={row.id}

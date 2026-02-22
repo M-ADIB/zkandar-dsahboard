@@ -183,7 +183,7 @@ export function UserModal({
                     required
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 />
             </div>
 
@@ -193,7 +193,7 @@ export function UserModal({
                     type="email"
                     value={user?.email ?? ''}
                     readOnly
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-gray-400 focus:outline-none"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-gray-400 focus:outline-none"
                 />
             </div>
 
@@ -203,7 +203,7 @@ export function UserModal({
                     <select
                         value={formData.role}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
-                        className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     >
                         {roleOptions.map((role) => (
                             <option key={role.value} value={role.value}>
@@ -217,7 +217,7 @@ export function UserModal({
                     <select
                         value={formData.user_type}
                         onChange={(e) => setFormData({ ...formData, user_type: e.target.value as UserType | '' })}
-                        className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     >
                         {userTypeOptions.map((type) => (
                             <option key={type.value || 'none'} value={type.value}>
@@ -233,7 +233,7 @@ export function UserModal({
                 <select
                     value={formData.company_id}
                     onChange={(e) => setFormData({ ...formData, company_id: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="">Unassigned</option>
                     {companies.map((company) => (

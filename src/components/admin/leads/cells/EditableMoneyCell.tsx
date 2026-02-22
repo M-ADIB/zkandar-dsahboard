@@ -9,7 +9,8 @@ const currencyFormatter = new Intl.NumberFormat('en-AE', {
 
 interface EditableMoneyCellProps {
     value: number | undefined;
-    onUpdate: (value: number) => void;
+    // BUG-4 fix: allow null so clearing a field saves null instead of 0
+    onUpdate: (value: number | null) => void;
     className?: string;
 }
 
@@ -31,14 +32,18 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
 
     const handleBlur = () => {
         setIsEditing(false);
+        if (localValue.trim() === '') {
+            // Empty field → save null (not 0)
+            if (value !== undefined && value !== null) {
+                onUpdate(null);
+            }
+            return;
+        }
         const numValue = parseFloat(localValue);
         if (!isNaN(numValue) && numValue !== value) {
             onUpdate(numValue);
-        } else if (localValue === '' && value !== undefined) {
-            // Handle clearing the value if needed, for now let's persist 0 or previous
-            if (value !== 0) onUpdate(0);
-        }
-        else {
+        } else if (isNaN(numValue)) {
+            // Restore display value if not a valid number
             setLocalValue(value?.toString() || '');
         }
     };

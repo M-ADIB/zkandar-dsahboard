@@ -120,7 +120,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     placeholder="e.g. Spring Sprint Workshop"
                 />
             </div>
@@ -130,7 +130,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 <select
                     value={formData.offering_type}
                     onChange={(e) => setFormData({ ...formData, offering_type: e.target.value as OfferingType })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="sprint_workshop">Sprint Workshop</option>
                     <option value="master_class">Master Class</option>
@@ -142,7 +142,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as CohortStatus })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="upcoming">Upcoming</option>
                     <option value="active">Active</option>
@@ -158,7 +158,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         required
                         value={formData.start_date}
                         onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     />
                 </div>
                 <div>
@@ -168,7 +168,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         required
                         value={formData.end_date}
                         onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     />
                 </div>
             </div>
@@ -179,7 +179,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     type="url"
                     value={formData.miro_board_url}
                     onChange={(e) => setFormData({ ...formData, miro_board_url: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     placeholder="https://miro.com/..."
                 />
             </div>

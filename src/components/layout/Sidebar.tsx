@@ -15,6 +15,7 @@ import {
     Building2,
     GraduationCap,
     TrendingUp,
+    Wrench,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -56,24 +57,6 @@ const adminNavItems: NavItem[] = [
         roles: ['owner', 'admin'],
     },
     {
-        icon: Calendar,
-        label: 'Sessions',
-        path: '/admin/sessions',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: FileText,
-        label: 'Assignments',
-        path: '/admin/assignments',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: Users,
-        label: 'Users',
-        path: '/admin/users',
-        roles: ['owner', 'admin'],
-    },
-    {
         icon: BarChart3,
         label: 'Analytics',
         path: '/analytics',
@@ -110,6 +93,12 @@ const memberNavItems: NavItem[] = [
         icon: MessageSquare,
         label: 'Chat',
         path: '/chat',
+        roles: ['owner', 'admin', 'executive', 'participant'],
+    },
+    {
+        icon: Wrench,
+        label: 'Toolbox',
+        path: '/toolbox',
         roles: ['owner', 'admin', 'executive', 'participant'],
     },
     {

@@ -142,7 +142,7 @@ export function AssignmentModal({
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     placeholder="e.g. Workflow audit"
                 />
             </div>
@@ -152,7 +152,7 @@ export function AssignmentModal({
                 <select
                     value={formData.session_id}
                     onChange={(e) => setFormData({ ...formData, session_id: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="">Select a session</option>
                     {sessions.map((session) => {
@@ -174,7 +174,7 @@ export function AssignmentModal({
                     required
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 />
             </div>
 
@@ -183,7 +183,7 @@ export function AssignmentModal({
                 <select
                     value={formData.submission_format}
                     onChange={(e) => setFormData({ ...formData, submission_format: e.target.value as SubmissionFormat })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                 >
                     <option value="file">File upload</option>
                     <option value="link">Link</option>
@@ -196,7 +196,7 @@ export function AssignmentModal({
                 <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0F1219] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
                     rows={4}
                     placeholder="Add context or instructions for participants."
                 />
