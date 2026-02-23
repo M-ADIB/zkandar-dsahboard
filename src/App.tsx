@@ -179,9 +179,9 @@ function App() {
                             <Route
                                 path="chat"
                                 element={
-                                    <MemberRoute>
+                                    <ProtectedRoute allowedRoles={['owner', 'admin', 'executive', 'participant']}>
                                         <ChatPage />
-                                    </MemberRoute>
+                                    </ProtectedRoute>
                                 }
                             />
                             <Route path="settings" element={<SettingsPage />} />

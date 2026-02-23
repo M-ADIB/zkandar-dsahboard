@@ -1,0 +1,505 @@
+
+-- Insert Finasi mock users
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '77395786-ed2f-433f-9168-67849d44ec41', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'j.sababan@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('77395786-ed2f-433f-9168-67849d44ec41', 'j.sababan@finasi.ae', 'Jerome Sababan', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '77395786-ed2f-433f-9168-67849d44ec41')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'acae15f3-d7d9-4731-9961-05a67a9fe357', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'technical1@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('acae15f3-d7d9-4731-9961-05a67a9fe357', 'technical1@finasi.ae', 'MOHAMMED SHABIK TK', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'acae15f3-d7d9-4731-9961-05a67a9fe357')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'ebcf144a-963a-4f7d-b6ec-85a2fa5e2264', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'm.ashique@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('ebcf144a-963a-4f7d-b6ec-85a2fa5e2264', 'm.ashique@finasi.ae', 'Muhammed Ashique', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'ebcf144a-963a-4f7d-b6ec-85a2fa5e2264')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '7e825cce-d301-485e-b6db-62981225f152', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'k.obenieta@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('7e825cce-d301-485e-b6db-62981225f152', 'k.obenieta@finasi.ae', 'Kimberly Mae Obenieta', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '7e825cce-d301-485e-b6db-62981225f152')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '8ca6da86-c0f9-4ca2-9ff4-239793414401', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'estimation@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('8ca6da86-c0f9-4ca2-9ff4-239793414401', 'estimation@finasi.ae', 'Yeye Alvarez', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '8ca6da86-c0f9-4ca2-9ff4-239793414401')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'dd14209b-6afb-4d04-a77c-e81e542d4ea4', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'n.aoun@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('dd14209b-6afb-4d04-a77c-e81e542d4ea4', 'n.aoun@finasi.ae', 'Nancy Aoun', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'dd14209b-6afb-4d04-a77c-e81e542d4ea4')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'e8384866-2453-486b-827b-ea8a9a904466', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a.fondrieschi@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('e8384866-2453-486b-827b-ea8a9a904466', 'a.fondrieschi@finasi.ae', 'Anna Fondrieschi', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'e8384866-2453-486b-827b-ea8a9a904466')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '1b39a97e-d0f8-463f-9fda-b2c4671cfdf4', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'melaniemaemarzon16@gmail.com', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('1b39a97e-d0f8-463f-9fda-b2c4671cfdf4', 'melaniemaemarzon16@gmail.com', 'Melanie Mae E. Marzon', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '1b39a97e-d0f8-463f-9fda-b2c4671cfdf4')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '56427b75-7cc0-4af4-9e75-72420f7f3eb7', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'd.evangelista@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('56427b75-7cc0-4af4-9e75-72420f7f3eb7', 'd.evangelista@finasi.ae', 'EAGHTON DWYER EVANGELISTA', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '56427b75-7cc0-4af4-9e75-72420f7f3eb7')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '01a3a152-cc34-4e64-a17b-15422c32cff7', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'm.marzon@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('01a3a152-cc34-4e64-a17b-15422c32cff7', 'm.marzon@finasi.ae', 'Melanie Mae E. Marzon', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '01a3a152-cc34-4e64-a17b-15422c32cff7')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '00254cf4-f5d2-4138-b538-c6eb0d03b1e2', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'dwyer.evangelista@gmail.com', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('00254cf4-f5d2-4138-b538-c6eb0d03b1e2', 'dwyer.evangelista@gmail.com', 'EAGHTON DWYER EVANGELISTA', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '00254cf4-f5d2-4138-b538-c6eb0d03b1e2')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'ad07bbfc-4af1-4dd9-8d1e-64d8cc63a472', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a.nagarajiah@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('ad07bbfc-4af1-4dd9-8d1e-64d8cc63a472', 'a.nagarajiah@finasi.ae', 'Abhinandan Muthushetty Nagarajiah', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'ad07bbfc-4af1-4dd9-8d1e-64d8cc63a472')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'c1e9fd50-1421-4a00-9aa3-91ea38ae58d3', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a.faheez@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('c1e9fd50-1421-4a00-9aa3-91ea38ae58d3', 'a.faheez@finasi.ae', 'Faheez Ahmed', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'c1e9fd50-1421-4a00-9aa3-91ea38ae58d3')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '52cfdcda-97c7-4638-8771-433093e82499', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'm.mohan@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('52cfdcda-97c7-4638-8771-433093e82499', 'm.mohan@finasi.ae', 'Meera Mohan', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '52cfdcda-97c7-4638-8771-433093e82499')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '557a77c1-a790-4c0b-91ed-c674a2f12b39', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'mail2shinyv@gmail.com', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('557a77c1-a790-4c0b-91ed-c674a2f12b39', 'mail2shinyv@gmail.com', 'SHINY VIJAYAN', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '557a77c1-a790-4c0b-91ed-c674a2f12b39')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'e7152a4b-1270-4235-a14d-303466e8712c', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a.shanjith@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('e7152a4b-1270-4235-a14d-303466e8712c', 'a.shanjith@finasi.ae', 'AISWARAYA', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'e7152a4b-1270-4235-a14d-303466e8712c')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'd1d5eaae-b6c2-480a-9d08-3b8f87498917', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'qs@smartidea.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('d1d5eaae-b6c2-480a-9d08-3b8f87498917', 'qs@smartidea.ae', 'Mihash CP', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'd1d5eaae-b6c2-480a-9d08-3b8f87498917')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '58d524c6-f8a5-4a12-959e-f013a8daf845', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'g.garcia@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('58d524c6-f8a5-4a12-959e-f013a8daf845', 'g.garcia@finasi.ae', 'Glacylyn Garcia', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '58d524c6-f8a5-4a12-959e-f013a8daf845')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'f66b8619-2dbf-412f-b081-3a7c69d89b2a', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'afaaee57@gmail.com', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('f66b8619-2dbf-412f-b081-3a7c69d89b2a', 'afaaee57@gmail.com', 'Faheez Ahmed', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'f66b8619-2dbf-412f-b081-3a7c69d89b2a')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '1cc73ac4-9e2c-47fd-b388-c86fd36bc8a0', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'k.saaloukeh@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('1cc73ac4-9e2c-47fd-b388-c86fd36bc8a0', 'k.saaloukeh@finasi.ae', 'Kenan Saaloukeh', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '1cc73ac4-9e2c-47fd-b388-c86fd36bc8a0')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'a9b9c9e0-4bb5-4ea3-b79f-916de0ab33c5', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'sami@s-squared.studio', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('a9b9c9e0-4bb5-4ea3-b79f-916de0ab33c5', 'sami@s-squared.studio', 'sami samawi', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'a9b9c9e0-4bb5-4ea3-b79f-916de0ab33c5')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '029a3e5a-ded5-4bbd-8b77-ba93421594ea', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a.muhammad@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('029a3e5a-ded5-4bbd-8b77-ba93421594ea', 'a.muhammad@finasi.ae', 'Mahmood Ahmad Muhammad', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '029a3e5a-ded5-4bbd-8b77-ba93421594ea')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '13035d7b-cb8a-4c08-b38a-8ff4809d563a', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'm.shah@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('13035d7b-cb8a-4c08-b38a-8ff4809d563a', 'm.shah@finasi.ae', 'Malay', 'executive', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '13035d7b-cb8a-4c08-b38a-8ff4809d563a')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '398ceacd-54cb-4c6c-85b4-4057331bdddf', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'n.hayat@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('398ceacd-54cb-4c6c-85b4-4057331bdddf', 'n.hayat@finasi.ae', 'Norah Hayat', 'executive', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '398ceacd-54cb-4c6c-85b4-4057331bdddf')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    'b13ec585-409d-459f-89d7-1c83e5bf7157', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'has@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('b13ec585-409d-459f-89d7-1c83e5bf7157', 'has@finasi.ae', 'hisham sultan', 'executive', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', 'b13ec585-409d-459f-89d7-1c83e5bf7157')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO auth.users (
+    id, instance_id, aud, role, email, encrypted_password, 
+    email_confirmed_at, created_at, updated_at, 
+    raw_app_meta_data, raw_user_meta_data, is_super_admin
+) VALUES (
+    '0270f5a0-0eb0-4a60-94dd-0df3b9888f5e', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'd.badr@finasi.ae', 
+    '$2a$10$vN0wDk.Bv0ZqXW.G9jB8uO4U2A7y8uD2bQ8/x1S8vV3Q.XvR6i8hK', -- mock hash for 'password'
+    now(), now(), now(), 
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('0270f5a0-0eb0-4a60-94dd-0df3b9888f5e', 'd.badr@finasi.ae', 'Daniel Badr', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '0270f5a0-0eb0-4a60-94dd-0df3b9888f5e')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
+INSERT INTO public.users (id, email, full_name, role, company_id, onboarding_completed)
+VALUES ('3fbed695-6c1a-43c4-900d-118ebec7e1de', 'test@finasi.com', 'Test Member', 'participant', 'b5329df4-1664-4d17-bcbc-f96a2f847a70', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO cohort_memberships (cohort_id, user_id)
+VALUES ('a6cd4ab0-2184-40bd-9eb0-1f81a6b3f1d8', '3fbed695-6c1a-43c4-900d-118ebec7e1de')
+ON CONFLICT (cohort_id, user_id) DO NOTHING;
+
