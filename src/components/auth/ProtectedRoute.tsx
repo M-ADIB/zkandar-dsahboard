@@ -32,13 +32,29 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }
 
     const isOnboardingRoute = location.pathname.startsWith('/onboarding')
-    const needsOnboarding =
-        user.role === 'participant' &&
-        (!user.onboarding_completed || !user.user_type)
+    const needsOnboarding = user.role === 'participant' && !user.onboarding_completed
 
     // Check if onboarding is required
     if (needsOnboarding && !isOnboardingRoute) {
+        if (!user.company_id) {
+            return <Navigate to="/onboarding/sprint-workshop" replace />
+        }
         return <Navigate to="/onboarding" replace />
+    }
+
+    // Enforce correct onboarding route if they try to switch
+    if (isOnboardingRoute && needsOnboarding) {
+        if (!user.company_id && location.pathname === '/onboarding') {
+            return <Navigate to="/onboarding/sprint-workshop" replace />
+        }
+        if (user.company_id && location.pathname === '/onboarding/sprint-workshop') {
+            return <Navigate to="/onboarding" replace />
+        }
+    }
+
+    // Block access to onboarding routes once completed
+    if (isOnboardingRoute && !needsOnboarding) {
+        return <Navigate to="/dashboard" replace />
     }
 
     return <>{children}</>

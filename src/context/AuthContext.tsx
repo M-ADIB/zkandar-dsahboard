@@ -10,7 +10,15 @@ interface AuthContextType {
     session: Session | null
     loading: boolean
     signIn: (email: string, password: string) => Promise<{ error: Error | null }>
-    signUp: (email: string, password: string, fullName: string, role?: UserRole) => Promise<{ error: Error | null }>
+    signUp: (
+        email: string,
+        password: string,
+        fullName: string,
+        role?: UserRole,
+        companyId?: string,
+        userType?: 'management' | 'team',
+        sprintCohortId?: string
+    ) => Promise<{ error: Error | null }>
     signOut: () => Promise<void>
     sendMagicLink: (email: string) => Promise<{ error: Error | null }>
     refreshUser: () => Promise<void>
@@ -371,7 +379,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: string,
         password: string,
         fullName: string,
-        role: UserRole = 'participant'
+        role: UserRole = 'participant',
+        companyId?: string,
+        userType?: 'management' | 'team',
+        sprintCohortId?: string
     ) => {
         setLoading(true)
         try {
@@ -393,6 +404,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         email,
                         full_name: fullName,
                         role,
+                        company_id: companyId || null,
+                        user_type: userType || null,
                         onboarding_completed: false,
                         ai_readiness_score: 0,
                     })
@@ -400,6 +413,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (profileError) {
                     console.error('[Auth] Error creating user profile:', profileError)
                     return { error: profileError as Error }
+                }
+
+                if (sprintCohortId) {
+                    const { error: membershipError } = await supabase
+                        .from('cohort_memberships')
+                        // @ts-ignore
+                        .insert({
+                            user_id: data.user.id,
+                            cohort_id: sprintCohortId,
+                        })
+
+                    if (membershipError) {
+                        console.error('[Auth] Error creating cohort membership:', membershipError)
+                        return { error: membershipError as Error }
+                    }
                 }
             }
 

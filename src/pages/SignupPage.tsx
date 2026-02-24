@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Loader2, Building2, UserCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import logo from '@/assets/logo.png'
 import skenderImg from '@/assets/skender.png'
@@ -15,9 +16,29 @@ const signupSchema = z.object({
     email: z.string().email('Please enter a valid email'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
+    joinType: z.enum(['company', 'individual'], { required_error: 'Please select a join type' }),
+    companyId: z.string().optional(),
+    userType: z.enum(['management', 'team']).optional(),
+    sprintCohortId: z.string().optional(),
+}).superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Passwords don't match",
+            path: ['confirmPassword'],
+        })
+    }
+    if (data.joinType === 'company') {
+        if (!data.companyId) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a company", path: ['companyId'] })
+        }
+        if (!data.userType) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select your role", path: ['userType'] })
+        }
+    }
+    if (data.joinType === 'individual' && !data.sprintCohortId) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a workshop", path: ['sprintCohortId'] })
+    }
 })
 
 type SignupFormData = z.infer<typeof signupSchema>
@@ -25,21 +46,46 @@ type SignupFormData = z.infer<typeof signupSchema>
 export function SignupPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [signupOptions, setSignupOptions] = useState<{
+        companies: { id: string, name: string }[],
+        sprintWorkshops: { id: string, name: string }[]
+    }>({ companies: [], sprintWorkshops: [] })
     const { signUp } = useAuth()
     const navigate = useNavigate()
     const { token } = useParams()
 
+    useEffect(() => {
+        const fetchOptions = async () => {
+            const { data, error } = await supabase.rpc('get_public_signup_options')
+            if (!error && data) {
+                setSignupOptions(data)
+            }
+        }
+        fetchOptions()
+    }, [])
+
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
     } = useForm<SignupFormData>({
         resolver: zodResolver(signupSchema),
     })
 
+    const joinType = watch('joinType')
+
     const onSubmit = async (data: SignupFormData) => {
         setIsLoading(true)
-        const { error } = await signUp(data.email, data.password, data.fullName)
+        const { error } = await signUp(
+            data.email,
+            data.password,
+            data.fullName,
+            'participant',
+            data.joinType === 'company' ? data.companyId : undefined,
+            data.joinType === 'company' ? data.userType : undefined,
+            data.joinType === 'individual' ? data.sprintCohortId : undefined
+        )
 
         if (error) {
             toast.error(error.message)
@@ -141,6 +187,71 @@ export function SignupPage() {
                                 <p className="text-red-400 text-xs mt-1">{errors.fullName.message}</p>
                             )}
                         </div>
+
+                        {/* Join Type Selection */}
+                        <div className="pt-2">
+                            <label className="block text-sm font-medium mb-3">How are you joining?</label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition ${joinType === 'company' ? 'border-lime bg-lime/10 text-lime' : 'border-border bg-bg-card hover:bg-white/5 text-gray-400'}`}>
+                                    <input type="radio" value="company" className="sr-only" {...register('joinType')} />
+                                    <Building2 className="h-6 w-6 mb-2" />
+                                    <span className="text-sm font-medium">With a Company</span>
+                                </label>
+                                <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition ${joinType === 'individual' ? 'border-lime bg-lime/10 text-lime' : 'border-border bg-bg-card hover:bg-white/5 text-gray-400'}`}>
+                                    <input type="radio" value="individual" className="sr-only" {...register('joinType')} />
+                                    <UserCircle className="h-6 w-6 mb-2" />
+                                    <span className="text-sm font-medium">Sprint Workshop</span>
+                                </label>
+                            </div>
+                            {errors.joinType && <p className="text-red-400 text-xs mt-2">{errors.joinType.message}</p>}
+                        </div>
+
+                        {/* Dynamic Fields based on Join Type */}
+                        {joinType === 'company' && (
+                            <div className="space-y-5 p-5 border border-border bg-black/20 rounded-2xl">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Select Company</label>
+                                    <select
+                                        {...register('companyId')}
+                                        className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white appearance-none"
+                                    >
+                                        <option value="">-- Choose your company --</option>
+                                        {signupOptions.companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                    {errors.companyId && <p className="text-red-400 text-xs mt-1">{errors.companyId.message}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Your Role inside Company</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <label className="flex items-center gap-3 p-3 border border-border rounded-xl cursor-pointer hover:bg-white/5 bg-bg-card">
+                                            <input type="radio" value="management" {...register('userType')} className="text-lime focus:ring-lime" />
+                                            <span className="text-sm font-medium">Management</span>
+                                        </label>
+                                        <label className="flex items-center gap-3 p-3 border border-border rounded-xl cursor-pointer hover:bg-white/5 bg-bg-card">
+                                            <input type="radio" value="team" {...register('userType')} className="text-lime focus:ring-lime" />
+                                            <span className="text-sm font-medium">Team Member</span>
+                                        </label>
+                                    </div>
+                                    {errors.userType && <p className="text-red-400 text-xs mt-1">{errors.userType.message}</p>}
+                                </div>
+                            </div>
+                        )}
+
+                        {joinType === 'individual' && (
+                            <div className="space-y-5 p-5 border border-border bg-black/20 rounded-2xl">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Select Sprint Workshop</label>
+                                    <select
+                                        {...register('sprintCohortId')}
+                                        className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white appearance-none"
+                                    >
+                                        <option value="">-- Choose a workshop --</option>
+                                        {signupOptions.sprintWorkshops.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                                    </select>
+                                    {errors.sprintCohortId && <p className="text-red-400 text-xs mt-1">{errors.sprintCohortId.message}</p>}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Email */}
                         <div>

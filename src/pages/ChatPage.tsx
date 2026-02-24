@@ -46,8 +46,78 @@ export function ChatPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const senderCache = useRef(new Map<string, { name: string; isAdmin: boolean }>())
 
+    // Admin State for Channel fetching
+    const [adminChannels, setAdminChannels] = useState<{ id: string, name: string, type: 'cohort' | 'company' }[]>([])
+    const [loadingAdminChannels, setLoadingAdminChannels] = useState(false)
+    const isAdmin = user?.role === 'admin' || user?.role === 'owner'
+
+    // Fetch all active channels if user is admin
+    useEffect(() => {
+        if (!isAdmin) return;
+
+        const fetchAdminChannels = async () => {
+            setLoadingAdminChannels(true)
+
+            // 1. Fetch active cohorts
+            const { data: cohortsData } = await supabase
+                .from('cohorts')
+                .select('id, name')
+                .in('status', ['upcoming', 'active'])
+
+            // 2. Fetch companies
+            const { data: companiesData } = await supabase
+                .from('companies')
+                .select('id, name')
+
+            const merged: { id: string, name: string, type: 'cohort' | 'company' }[] = []
+
+            if (cohortsData) {
+                cohortsData.forEach((c: { id: string, name: string }) => merged.push({ id: c.id, name: c.name, type: 'cohort' as const }))
+            }
+            if (companiesData) {
+                companiesData.forEach((c: { id: string, name: string }) => merged.push({ id: c.id, name: c.name, type: 'company' as const }))
+            }
+
+            setAdminChannels(merged)
+            setLoadingAdminChannels(false)
+        }
+
+        fetchAdminChannels()
+    }, [isAdmin])
+
     const channels = useMemo<Channel[]>(() => {
         const list: Channel[] = []
+
+        if (isAdmin) {
+            adminChannels.forEach(item => {
+                if (item.type === 'cohort') {
+                    list.push({
+                        id: `cohort:${item.id}`,
+                        name: item.name,
+                        type: 'cohort',
+                        unread: 0,
+                        cohortId: item.id,
+                    })
+                    list.push({
+                        id: `announcements:${item.id}`,
+                        name: `Announcements · ${item.name}`,
+                        type: 'announcements',
+                        unread: 0,
+                        cohortId: item.id,
+                    })
+                } else {
+                    list.push({
+                        id: `company:${item.id}`,
+                        name: item.name,
+                        type: 'company',
+                        unread: 0,
+                        companyId: item.id,
+                    })
+                }
+            })
+            return list
+        }
+
         cohorts.forEach((cohort) => {
             list.push({
                 id: `cohort:${cohort.id}`,
@@ -96,7 +166,7 @@ export function ChatPage() {
     }, [messages])
 
     useEffect(() => {
-        if (authLoading || companyLoading || cohortsLoading) return
+        if (authLoading || (!isAdmin && (companyLoading || cohortsLoading)) || (isAdmin && loadingAdminChannels)) return
 
         if (!user || !selectedChannel) {
             setMessages([])
@@ -184,10 +254,10 @@ export function ChatPage() {
         return () => {
             ignore = true
         }
-    }, [authLoading, companyLoading, cohortsLoading, user?.id, selectedChannel])
+    }, [authLoading, companyLoading, cohortsLoading, loadingAdminChannels, isAdmin, user?.id, selectedChannel])
 
     useEffect(() => {
-        if (authLoading || companyLoading || cohortsLoading) return
+        if (authLoading || (!isAdmin && (companyLoading || cohortsLoading)) || (isAdmin && loadingAdminChannels)) return
         if (!user || !selectedChannel) return
 
         if (selectedChannel.type === 'company' && !selectedChannel.companyId) return
@@ -262,7 +332,7 @@ export function ChatPage() {
         return () => {
             void supabase.removeChannel(channel)
         }
-    }, [authLoading, companyLoading, cohortsLoading, user, selectedChannel])
+    }, [authLoading, companyLoading, cohortsLoading, loadingAdminChannels, isAdmin, user, selectedChannel])
 
     const canSend = Boolean(
         user &&
@@ -386,7 +456,7 @@ export function ChatPage() {
                                 {selectedChannel?.name ?? 'Chat'}
                             </h3>
                             <p className="text-xs text-gray-500">
-                                {cohortsLoading ? 'Loading channels...' : cohortsError ? 'Channels unavailable' : '24 members online'}
+                                {(!isAdmin && (cohortsLoading || companyLoading)) || (isAdmin && loadingAdminChannels) ? 'Loading channels...' : cohortsError ? 'Channels unavailable' : 'Connected'}
                             </p>
                         </div>
                     </div>

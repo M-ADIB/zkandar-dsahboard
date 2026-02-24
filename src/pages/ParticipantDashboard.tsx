@@ -22,7 +22,7 @@ import type { Assignment, ChatMessage, Session, Submission } from '@/types/datab
 export function ParticipantDashboard() {
     const { user } = useAuth()
     const { company } = useCompany()
-    const { cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
+    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
     const [sessions, setSessions] = useState<Session[]>([])
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [submissions, setSubmissions] = useState<Submission[]>([])
@@ -227,6 +227,9 @@ export function ParticipantDashboard() {
         }))
     }, [recentMessages])
 
+    const primaryCohort = cohorts[0]
+    const isSprintWorkshop = primaryCohort?.offering_type === 'sprint_workshop'
+
     return (
         <div className="space-y-8 animate-fade-in">
             {/* Welcome Banner */}
@@ -240,15 +243,16 @@ export function ParticipantDashboard() {
                     <div className="flex items-center gap-2 mb-4">
                         <Sparkles className="h-5 w-5 text-lime" />
                         <span className="text-xs uppercase tracking-widest text-lime">
-                            Your Learning Journey
+                            {isSprintWorkshop ? 'Sprint Workshop' : 'Master Class Journey'}
                         </span>
                     </div>
                     <h1 className="hero-text text-3xl md:text-4xl mb-4">
                         Hey <span className="text-gradient">{firstName}</span>, here's your progress
                     </h1>
                     <p className="text-gray-400 max-w-lg">
-                        You're making great progress! Keep up the momentum and complete your
-                        assignments to earn your certificate.
+                        {isSprintWorkshop
+                            ? "Welcome to your sprint! Follow the sessions below and engage with your cohort to maximize your learning."
+                            : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
                     </p>
                 </div>
             </motion.div>

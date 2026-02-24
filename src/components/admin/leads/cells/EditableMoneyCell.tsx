@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useGridNavigation } from '../hooks/useGridNavigation';
 
 const currencyFormatter = new Intl.NumberFormat('en-AE', {
     style: 'currency',
@@ -18,6 +19,18 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
     const [isEditing, setIsEditing] = useState(false);
     const [localValue, setLocalValue] = useState(value?.toString() || '');
     const inputRef = useRef<HTMLInputElement>(null);
+    const cellRef = useRef<HTMLDivElement>(null);
+
+    // Apply grid navigation
+    useGridNavigation(cellRef, isEditing, (initialChar) => {
+        if (initialChar) {
+            setLocalValue(initialChar);
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 0);
+        }
+        setIsEditing(true);
+    });
 
     useEffect(() => {
         setLocalValue(value?.toString() || '');
@@ -30,36 +43,69 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
         }
     }, [isEditing]);
 
-    const handleBlur = () => {
+    const handleBlur = (e?: React.FocusEvent) => {
+        if (e && cellRef.current && cellRef.current.contains(e.relatedTarget as Node)) return;
+
         setIsEditing(false);
         if (localValue.trim() === '') {
-            // Empty field → save null (not 0)
             if (value !== undefined && value !== null) {
                 onUpdate(null);
             }
-            return;
+        } else {
+            const numValue = parseFloat(localValue);
+            if (!isNaN(numValue) && numValue !== value) {
+                onUpdate(numValue);
+            } else if (isNaN(numValue)) {
+                setLocalValue(value?.toString() || '');
+            }
         }
-        const numValue = parseFloat(localValue);
-        if (!isNaN(numValue) && numValue !== value) {
-            onUpdate(numValue);
-        } else if (isNaN(numValue)) {
-            // Restore display value if not a valid number
-            setLocalValue(value?.toString() || '');
-        }
+
+        requestAnimationFrame(() => {
+            if (!document.activeElement || document.activeElement.tagName === 'BODY') {
+                cellRef.current?.focus();
+            }
+        });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleBlur();
-        } else if (e.key === 'Escape') {
+        if (e.key === 'Escape') {
+            e.preventDefault();
             setIsEditing(false);
             setLocalValue(value?.toString() || '');
+            requestAnimationFrame(() => cellRef.current?.focus());
+            return;
+        }
+
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleBlur();
+
+            const td = cellRef.current?.closest('td');
+            const tr = td?.closest('tr');
+            if (td && tr && tr.nextElementSibling) {
+                const colIndex = Array.from(tr.children).indexOf(td);
+                const nextTd = tr.nextElementSibling.children[colIndex];
+                (nextTd?.querySelector('[tabindex="0"]') as HTMLElement)?.focus();
+            }
+            return;
+        }
+
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            handleBlur();
+
+            const td = cellRef.current?.closest('td');
+            if (td) {
+                const targetTd = e.shiftKey ? td.previousElementSibling : td.nextElementSibling;
+                (targetTd?.querySelector('[tabindex="0"]') as HTMLElement)?.focus();
+            }
+            return;
         }
     };
 
     if (isEditing) {
         return (
-            <div className="relative w-full">
+            <div ref={cellRef} tabIndex={-1} className="relative w-full">
                 <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">AED</span>
                 <input
                     ref={inputRef}
@@ -68,7 +114,7 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
                     onChange={(e) => setLocalValue(e.target.value)}
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
-                    className={`w-full bg-bg-elevated border border-border rounded-md pl-11 pr-2 py-1 text-sm text-white focus:outline-none focus:border-lime/60 ${className}`}
+                    className={`w-full bg-bg-elevated border-2 border-lime rounded-md pl-11 pr-2 py-1 text-sm text-white outline-none shadow-[0_0_10px_rgba(182,233,65,0.2)] ${className}`}
                 />
             </div>
         );
@@ -77,8 +123,17 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
     const hasValue = value !== undefined && value !== null;
     return (
         <div
+            ref={cellRef}
+            tabIndex={0}
             onClick={() => setIsEditing(true)}
-            className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors hover:bg-white/5 ${!hasValue ? 'text-gray-500' : 'text-gray-200'} ${className}`}
+            onDoubleClick={() => setIsEditing(true)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setIsEditing(true);
+                }
+            }}
+            className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors rounded outline-none focus:ring-2 focus:ring-lime focus:ring-inset focus:bg-lime/5 hover:bg-white/5 ${!hasValue ? 'text-gray-500' : 'text-gray-200'} ${className}`}
         >
             {hasValue ? currencyFormatter.format(value) : '-'}
         </div>
