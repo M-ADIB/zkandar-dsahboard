@@ -90,6 +90,12 @@ const memberNavItems: NavItem[] = [
         roles: ['owner', 'admin', 'executive', 'participant'],
     },
     {
+        icon: GraduationCap,
+        label: 'My Program',
+        path: '/my-program',
+        roles: ['executive', 'participant'],
+    },
+    {
         icon: FileText,
         label: 'Assignments',
         path: '/assignments',

@@ -1,0 +1,420 @@
+import { useEffect, useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
+import {
+    GraduationCap, Calendar, ClipboardList, Film, FileText,
+    CheckCircle2, Clock, Upload, ChevronDown, ChevronUp, Link as LinkIcon,
+} from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/context/AuthContext'
+import { formatDateLabel, formatTimeLabel } from '@/lib/time'
+import type { Assignment, Cohort, Session, SubmissionFormat } from '@/types/database'
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+interface Submission {
+    id: string
+    assignment_id: string
+    user_id: string
+    file_url: string | null
+    notes: string | null
+    score: number | null
+    feedback: string | null
+    submitted_at: string | null
+}
+
+// ─── My Program Page ─────────────────────────────────────────────────────────
+export function MyProgramPage() {
+    const { user } = useAuth()
+    const [cohort, setCohort] = useState<Cohort | null>(null)
+    const [sessions, setSessions] = useState<Session[]>([])
+    const [assignments, setAssignments] = useState<Assignment[]>([])
+    const [submissions, setSubmissions] = useState<Submission[]>([])
+    const [attendance, setAttendance] = useState<Set<string>>(new Set())
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [expandedSession, setExpandedSession] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!user) return
+        const fetchAll = async () => {
+            setLoading(true)
+            setError(null)
+
+            // Get user's company → cohort
+            const { data: userData } = await supabase
+                .from('users').select('company_id').eq('id', user.id).single()
+            const userRow = userData as { company_id: string | null } | null
+            if (!userRow?.company_id) { setError('No company assigned'); setLoading(false); return }
+
+            const { data: companyData } = await supabase
+                .from('companies').select('cohort_id').eq('id', userRow.company_id).single()
+            const companyRow = companyData as { cohort_id: string | null } | null
+            if (!companyRow?.cohort_id) { setError('No program assigned to your company'); setLoading(false); return }
+
+            // Fetch cohort
+            const { data: cohortData } = await supabase
+                .from('cohorts').select('*').eq('id', companyRow.cohort_id).single()
+            if (!cohortData) { setError('Program not found'); setLoading(false); return }
+            setCohort(cohortData as Cohort)
+
+            // Fetch sessions
+            const { data: sessionsData } = await supabase
+                .from('sessions').select('*')
+                .eq('cohort_id', companyRow.cohort_id)
+                .order('session_number', { ascending: true })
+            const sess = (sessionsData as Session[]) ?? []
+            setSessions(sess)
+
+            // Fetch assignments for these sessions
+            if (sess.length > 0) {
+                const { data: assignData } = await supabase
+                    .from('assignments').select('*')
+                    .in('session_id', sess.map((s) => s.id))
+                    .order('due_date', { ascending: true })
+                const asgn = (assignData as Assignment[]) ?? []
+                setAssignments(asgn)
+
+                // Fetch my submissions
+                if (asgn.length > 0) {
+                    const { data: subData } = await supabase
+                        .from('submissions').select('*')
+                        .eq('user_id', user.id)
+                        .in('assignment_id', asgn.map((a) => a.id))
+                    setSubmissions((subData as Submission[]) ?? [])
+                }
+
+                // Fetch my attendance
+                const { data: attData } = await supabase
+                    .from('session_attendance').select('session_id')
+                    .eq('user_id', user.id)
+                    .in('session_id', sess.map((s) => s.id))
+                const attSet = new Set<string>()
+                    ; (attData as { session_id: string }[] | null)?.forEach((r) => attSet.add(r.session_id))
+                setAttendance(attSet)
+            }
+
+            setLoading(false)
+        }
+        fetchAll()
+    }, [user])
+
+    // ─── Derived ────────────────────────────────────────────────────────────────
+    const completedSessions = useMemo(() => sessions.filter((s) => s.status === 'completed').length, [sessions])
+    const attendedSessions = useMemo(() => sessions.filter((s) => attendance.has(s.id)).length, [sessions, attendance])
+    const submissionMap = useMemo(() => new Map(submissions.map((s) => [s.assignment_id, s])), [submissions])
+    const submittedCount = submissions.length
+    const totalAssignments = assignments.length
+    const sessionMap = useMemo(() => new Map(sessions.map((s) => [s.id, s])), [sessions])
+
+    // Progress percentage
+    const progressPct = useMemo(() => {
+        const sessionWeight = 0.5
+        const assignmentWeight = 0.5
+        const sessionScore = sessions.length > 0 ? attendedSessions / sessions.length : 0
+        const assignmentScore = totalAssignments > 0 ? submittedCount / totalAssignments : 0
+        return Math.round((sessionScore * sessionWeight + assignmentScore * assignmentWeight) * 100)
+    }, [sessions, attendedSessions, totalAssignments, submittedCount])
+
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="h-8 w-8 rounded-full border-2 border-lime border-t-transparent animate-spin" />
+        </div>
+    )
+
+    if (error) return (
+        <div className="max-w-2xl mx-auto mt-12 text-center space-y-4">
+            <GraduationCap className="h-12 w-12 text-gray-600 mx-auto" />
+            <p className="text-gray-400">{error}</p>
+        </div>
+    )
+
+    if (!cohort) return null
+
+    const formatBadge: Record<SubmissionFormat, string> = {
+        file: 'File Upload',
+        link: 'Link',
+        text: 'Text',
+    }
+
+    return (
+        <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
+            {/* ── Progress Header ── */}
+            <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-bg-card border border-border rounded-2xl p-6"
+            >
+                <div className="flex items-start justify-between gap-4 mb-6">
+                    <div>
+                        <h1 className="text-xl font-bold text-white">{cohort.name}</h1>
+                        <p className="text-sm text-gray-400 mt-1">
+                            {cohort.offering_type === 'master_class' ? 'Master Class' : 'Sprint Workshop'} ·
+                            {' '}{formatDateLabel(cohort.start_date) || 'TBD'} → {formatDateLabel(cohort.end_date) || 'TBD'}
+                        </p>
+                    </div>
+                    <span className={`shrink-0 px-3 py-1 text-xs rounded-xl border ${cohort.status === 'active' ? 'bg-lime/10 text-lime border-lime/30' : cohort.status === 'completed' ? 'bg-gray-500/10 text-gray-300 border-gray-500/30' : 'bg-blue-500/10 text-blue-300 border-blue-500/30'}`}>
+                        {cohort.status.charAt(0).toUpperCase() + cohort.status.slice(1)}
+                    </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="mb-4">
+                    <div className="flex items-center justify-between text-xs mb-2">
+                        <span className="text-gray-400">Overall Progress</span>
+                        <span className="text-lime font-semibold">{progressPct}%</span>
+                    </div>
+                    <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progressPct}%` }}
+                            transition={{ duration: 1, ease: 'easeOut' }}
+                            className="h-full rounded-full gradient-lime"
+                        />
+                    </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                        <p className="text-lg font-bold text-white">{attendedSessions}/{sessions.length}</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">Sessions</p>
+                    </div>
+                    <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                        <p className="text-lg font-bold text-white">{submittedCount}/{totalAssignments}</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">Assignments</p>
+                    </div>
+                    <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                        <p className="text-lg font-bold text-lime">{completedSessions}</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">Sessions Done</p>
+                    </div>
+                    <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                        <p className={`text-lg font-bold ${progressPct >= 80 ? 'text-lime' : 'text-amber-400'}`}>
+                            {progressPct >= 80 ? '🎓' : '⏳'}
+                        </p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">
+                            {progressPct >= 80 ? 'Certificate Ready' : 'In Progress'}
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* ── Session Timeline ── */}
+            <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-bg-card border border-border rounded-2xl p-6"
+            >
+                <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+                    <Calendar className="h-4 w-4 text-lime" />
+                    Session Timeline
+                </h2>
+
+                <div className="relative">
+                    {/* Vertical line */}
+                    <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" />
+
+                    <div className="space-y-1">
+                        {sessions.map((session) => {
+                            const isCompleted = session.status === 'completed'
+                            const isAttended = attendance.has(session.id)
+                            const isExpanded = expandedSession === session.id
+                            const sessionAssignments = assignments.filter((a) => a.session_id === session.id)
+
+                            return (
+                                <div key={session.id}>
+                                    <button
+                                        onClick={() => setExpandedSession(isExpanded ? null : session.id)}
+                                        className="w-full flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition text-left"
+                                    >
+                                        {/* Timeline dot */}
+                                        <div className={`relative z-10 h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${isCompleted ? (isAttended ? 'bg-lime/20 text-lime' : 'bg-red-500/10 text-red-400') : 'bg-white/5 text-gray-500'}`}>
+                                            {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-white">{session.title}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5">
+                                                {formatDateLabel(session.scheduled_date) || 'TBD'}
+                                                {formatTimeLabel(session.scheduled_date) ? ` · ${formatTimeLabel(session.scheduled_date)}` : ''}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            {session.recording_url && (
+                                                <span className="text-[10px] text-lime bg-lime/5 px-2 py-0.5 rounded border border-lime/20">Recording</span>
+                                            )}
+                                            {sessionAssignments.length > 0 && (
+                                                <span className="text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-border">{sessionAssignments.length} task{sessionAssignments.length > 1 ? 's' : ''}</span>
+                                            )}
+                                            {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-500" />}
+                                        </div>
+                                    </button>
+
+                                    {/* Expanded content */}
+                                    {isExpanded && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="ml-12 pl-3 border-l border-border space-y-2 pb-3"
+                                        >
+                                            {session.recording_url && (
+                                                <a
+                                                    href={session.recording_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline"
+                                                >
+                                                    <Film className="h-3.5 w-3.5" />
+                                                    Watch Recording
+                                                </a>
+                                            )}
+
+                                            {Array.isArray(session.materials) && session.materials.length > 0 && (
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Materials</p>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {session.materials.map((mat, i) => (
+                                                            <a key={i} href={mat.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2 py-1 text-[10px] text-gray-300 bg-white/5 rounded-md border border-border hover:border-lime/30 transition">
+                                                                {mat.type === 'link' ? <LinkIcon className="h-3 w-3" /> : <FileText className="h-3 w-3" />}
+                                                                {mat.name}
+                                                            </a>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {sessionAssignments.length > 0 && (
+                                                <div className="space-y-1.5 mt-2">
+                                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Assignments</p>
+                                                    {sessionAssignments.map((asgn) => {
+                                                        const sub = submissionMap.get(asgn.id)
+                                                        return (
+                                                            <div key={asgn.id} className="flex items-center justify-between bg-bg-elevated rounded-lg p-2.5 border border-border">
+                                                                <div className="flex items-center gap-2">
+                                                                    <ClipboardList className="h-3.5 w-3.5 text-gray-500" />
+                                                                    <div>
+                                                                        <p className="text-xs font-medium text-white">{asgn.title}</p>
+                                                                        {asgn.due_date && <p className="text-[10px] text-gray-500">Due {formatDateLabel(asgn.due_date)}</p>}
+                                                                    </div>
+                                                                </div>
+                                                                {sub ? (
+                                                                    <span className={`px-2 py-0.5 text-[10px] rounded-md border ${sub.score != null ? 'bg-lime/10 text-lime border-lime/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30'}`}>
+                                                                        {sub.score != null ? `✓ ${sub.score}pts` : 'Submitted'}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="px-2 py-0.5 text-[10px] text-gray-500 border border-border rounded-md">Not Submitted</span>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* ── Assignments Overview ── */}
+            {assignments.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-bg-card border border-border rounded-2xl p-6"
+                >
+                    <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+                        <ClipboardList className="h-4 w-4 text-lime" />
+                        All Assignments
+                    </h2>
+
+                    <div className="space-y-2">
+                        {assignments.map((asgn) => {
+                            const sub = submissionMap.get(asgn.id)
+                            const session = sessionMap.get(asgn.session_id)
+                            const isDue = asgn.due_date && new Date(asgn.due_date) < new Date() && !sub
+
+                            return (
+                                <div key={asgn.id} className={`bg-bg-elevated border rounded-xl p-4 transition ${isDue ? 'border-red-500/30' : 'border-border'}`}>
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <p className="text-sm font-medium text-white">{asgn.title}</p>
+                                                <span className="px-2 py-0.5 text-[10px] text-gray-400 border border-border rounded-md">
+                                                    {formatBadge[asgn.submission_format]}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs text-gray-500">
+                                                {session && <span>Session {session.session_number}</span>}
+                                                {asgn.due_date && (
+                                                    <span className={isDue ? 'text-red-400 font-medium' : ''}>
+                                                        {isDue ? '⚠ Overdue' : `Due ${formatDateLabel(asgn.due_date)}`}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {asgn.description && (
+                                                <p className="text-xs text-gray-500 mt-2 line-clamp-2">{asgn.description}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="shrink-0">
+                                            {sub ? (
+                                                <div className="text-right">
+                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg ${sub.score != null ? 'bg-lime/10 text-lime' : 'bg-amber-500/10 text-amber-300'}`}>
+                                                        {sub.score != null ? <><CheckCircle2 className="h-3.5 w-3.5" /> {sub.score}pts</> : <><Clock className="h-3.5 w-3.5" /> Submitted</>}
+                                                    </span>
+                                                    {sub.feedback && (
+                                                        <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.feedback}>
+                                                            💬 {sub.feedback}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-gray-500 border border-border rounded-lg">
+                                                    <Upload className="h-3.5 w-3.5" />
+                                                    Not Submitted
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </motion.div>
+            )}
+
+            {/* ── Miro Board ── */}
+            {cohort.miro_board_url && (
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-bg-card border border-border rounded-2xl overflow-hidden"
+                >
+                    <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+                        <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-lime" />
+                            Miro Board
+                        </h2>
+                        <a href={cohort.miro_board_url} target="_blank" rel="noopener noreferrer" className="text-xs text-lime hover:underline">
+                            Open in new tab →
+                        </a>
+                    </div>
+                    <div className="aspect-video">
+                        <iframe
+                            src={cohort.miro_board_url.replace('board/', 'board/embed/')}
+                            className="w-full h-full border-0"
+                            allow="fullscreen"
+                            title="Miro Board"
+                        />
+                    </div>
+                </motion.div>
+            )}
+        </div>
+    )
+}

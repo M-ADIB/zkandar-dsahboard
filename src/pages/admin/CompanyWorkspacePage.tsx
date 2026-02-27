@@ -7,12 +7,15 @@ import {
 } from 'recharts'
 import {
     ArrowLeft, Building2, Users, GraduationCap, BarChart3,
-    Calendar, CheckCircle2, Clock, Target, Brain, TrendingUp, FileText, Plus, X, Loader2,
+    CheckCircle2, Clock, Target, Brain, TrendingUp, FileText, Plus, X, Loader2,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel } from '@/lib/time'
-import type { Cohort, Company, Session, SessionStatus, User } from '@/types/database'
+import type { Cohort, Company, Session, User } from '@/types/database'
 import { MemberDetailsPanel } from '@/components/admin/company/MemberDetailsPanel'
+import { WorkspaceSessions } from '@/components/admin/company/WorkspaceSessions'
+import { WorkspaceAssignments } from '@/components/admin/company/WorkspaceAssignments'
+import { WorkspaceAttendance } from '@/components/admin/company/WorkspaceAttendance'
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface ManagementSubmission {
@@ -211,10 +214,7 @@ export function CompanyWorkspacePage() {
         completed: 'bg-gray-500/10 text-gray-300 border-gray-500/30',
     }
 
-    const sessionStatusBadge: Record<SessionStatus, string> = {
-        scheduled: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
-        completed: 'bg-lime/10 text-lime border-lime/30',
-    }
+
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -494,7 +494,6 @@ export function CompanyWorkspacePage() {
                                     <p className="text-gray-400 text-sm">No masterclass program assigned to this company yet.</p>
                                     <button
                                         onClick={async () => {
-                                            // Fetch all cohorts for the picker
                                             const { data } = await supabase.from('cohorts').select('*').order('start_date', { ascending: false })
                                             setAllCohorts((data as Cohort[]) ?? [])
                                             setSelectedCohortId((data as Cohort[])?.[0]?.id ?? '')
@@ -509,7 +508,7 @@ export function CompanyWorkspacePage() {
                                 </div>
                             ) : (
                                 <>
-                                    {/* Program info */}
+                                    {/* Program header card */}
                                     <div className="bg-bg-card border border-border rounded-2xl p-6">
                                         <div className="flex items-start justify-between gap-4">
                                             <div>
@@ -519,23 +518,37 @@ export function CompanyWorkspacePage() {
                                                     {' '}{formatDateLabel(cohort.start_date) || 'TBD'} → {formatDateLabel(cohort.end_date) || 'TBD'}
                                                 </p>
                                             </div>
-                                            <span className={`px-3 py-1 text-xs rounded-xl border ${statusBadge[cohort.status]}`}>
-                                                {cohort.status.charAt(0).toUpperCase() + cohort.status.slice(1)}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`px-3 py-1 text-xs rounded-xl border ${statusBadge[cohort.status]}`}>
+                                                    {cohort.status.charAt(0).toUpperCase() + cohort.status.slice(1)}
+                                                </span>
+                                                <button
+                                                    onClick={async () => {
+                                                        const { data } = await supabase.from('cohorts').select('*').order('start_date', { ascending: false })
+                                                        setAllCohorts((data as Cohort[]) ?? [])
+                                                        setSelectedCohortId(cohort.id)
+                                                        setAssignError(null)
+                                                        setIsAssignModalOpen(true)
+                                                    }}
+                                                    className="px-3 py-1 text-xs text-gray-400 hover:text-white border border-border rounded-xl hover:bg-white/5 transition"
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="grid grid-cols-3 gap-4 mt-6">
                                             <div className="bg-bg-elevated rounded-xl p-4 text-center">
                                                 <p className="text-2xl font-bold text-white">{sessions.length}</p>
-                                                <p className="text-xs text-gray-400 mt-1">Total Sessions</p>
+                                                <p className="text-xs text-gray-400 mt-1">Sessions</p>
                                             </div>
                                             <div className="bg-bg-elevated rounded-xl p-4 text-center">
                                                 <p className="text-2xl font-bold text-lime">{completedSessions}</p>
                                                 <p className="text-xs text-gray-400 mt-1">Completed</p>
                                             </div>
                                             <div className="bg-bg-elevated rounded-xl p-4 text-center">
-                                                <p className="text-2xl font-bold text-white">{sessions.length - completedSessions}</p>
-                                                <p className="text-xs text-gray-400 mt-1">Remaining</p>
+                                                <p className="text-2xl font-bold text-white">{members.length}</p>
+                                                <p className="text-xs text-gray-400 mt-1">Members</p>
                                             </div>
                                         </div>
 
@@ -552,35 +565,32 @@ export function CompanyWorkspacePage() {
                                         )}
                                     </div>
 
-                                    {/* Sessions list */}
-                                    {sessions.length > 0 && (
-                                        <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
-                                            <div className="px-6 py-4 border-b border-border">
-                                                <h3 className="font-semibold text-white flex items-center gap-2">
-                                                    <Calendar className="h-4 w-4 text-lime" />
-                                                    Sessions
-                                                </h3>
-                                            </div>
-                                            <div className="divide-y divide-border">
-                                                {sessions.map((session) => (
-                                                    <div key={session.id} className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition">
-                                                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold ${session.status === 'completed' ? 'bg-lime/10 text-lime' : 'bg-white/5 text-gray-400'}`}>
-                                                            {session.session_number ?? '—'}
-                                                        </div>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm font-medium text-white">{session.title || `Session ${session.session_number}`}</p>
-                                                            <p className="text-xs text-gray-500 mt-0.5">
-                                                                {session.scheduled_date ? formatDateLabel(session.scheduled_date) : 'Date TBD'}
-                                                            </p>
-                                                        </div>
-                                                        <span className={`px-2 py-1 text-xs rounded-lg border ${sessionStatusBadge[session.status]}`}>
-                                                            {session.status === 'completed' ? 'Completed' : 'Scheduled'}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+                                    {/* Sessions management */}
+                                    <WorkspaceSessions
+                                        cohortId={cohort.id}
+                                        sessions={sessions}
+                                        onSessionsChange={async () => {
+                                            const { data } = await supabase
+                                                .from('sessions').select('*')
+                                                .eq('cohort_id', cohort.id)
+                                                .order('session_number', { ascending: true })
+                                            setSessions((data as Session[]) ?? [])
+                                        }}
+                                    />
+
+                                    {/* Assignments management */}
+                                    <WorkspaceAssignments
+                                        cohortId={cohort.id}
+                                        cohort={cohort}
+                                        sessions={sessions}
+                                        members={members}
+                                    />
+
+                                    {/* Attendance tracking */}
+                                    <WorkspaceAttendance
+                                        sessions={sessions}
+                                        members={members}
+                                    />
                                 </>
                             )}
                         </div>

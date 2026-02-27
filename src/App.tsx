@@ -27,6 +27,7 @@ import { UsersPage } from '@/pages/admin/UsersPage'
 import { SessionsAdminPage } from '@/pages/admin/SessionsAdminPage'
 import { AssignmentsAdminPage } from '@/pages/admin/AssignmentsAdminPage'
 import { ToolboxPage } from '@/pages/ToolboxPage'
+import { MyProgramPage } from '@/pages/MyProgramPage'
 
 function App() {
     return (
@@ -190,6 +191,14 @@ function App() {
                                     <ProtectedRoute allowedRoles={['owner', 'admin', 'executive', 'participant']}>
                                         <ChatPage />
                                     </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="my-program"
+                                element={
+                                    <MemberRoute>
+                                        <MyProgramPage />
+                                    </MemberRoute>
                                 }
                             />
                             <Route path="settings" element={<SettingsPage />} />
