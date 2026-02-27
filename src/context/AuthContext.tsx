@@ -289,34 +289,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             if (data.user) {
+                // Prevent the onAuthStateChange listener from also fetching
+                isFetchingProfileRef.current = true
+
                 const profile = await fetchUserProfile(
                     data.user.id,
                     data.user.email
                 )
 
+                isFetchingProfileRef.current = false
+
                 if (!mountedRef.current) return { error: null }
 
-                if (!profile) {
-                    try {
-                        await supabase.auth.signOut()
-                        await supabase.auth.signOut({ scope: 'local' })
-                    } catch (signOutError) {
-                        console.error('[Auth] Error clearing session after profile failure:', signOutError)
-                    }
-                    if (mountedRef.current) {
-                        setSession(null)
-                        setAuthUser(null)
-                        setUser(null)
-                    }
-                    return { error: new Error('Unable to load user profile') }
-                }
+                if (profile) {
+                    setUser(profile)
+                } else {
+                    // Profile fetch failed — try one more time after a brief delay
+                    console.warn('[Auth] First profile fetch returned null, retrying after 1s...')
+                    await delay(1000)
 
-                setUser(profile)
+                    isFetchingProfileRef.current = true
+                    const retryProfile = await fetchUserProfile(
+                        data.user.id,
+                        data.user.email
+                    )
+                    isFetchingProfileRef.current = false
+
+                    if (!mountedRef.current) return { error: null }
+
+                    if (retryProfile) {
+                        setUser(retryProfile)
+                    } else {
+                        // Still null — sign out and report error
+                        try {
+                            await supabase.auth.signOut({ scope: 'local' })
+                        } catch (signOutError) {
+                            console.error('[Auth] Error clearing session after profile failure:', signOutError)
+                        }
+                        if (mountedRef.current) {
+                            setSession(null)
+                            setAuthUser(null)
+                            setUser(null)
+                        }
+                        return { error: new Error('Unable to load user profile. Please try again.') }
+                    }
+                }
             }
 
             return { error: null }
         } catch (err) {
             console.error('[Auth] signIn error:', err)
+            isFetchingProfileRef.current = false
             return { error: err as Error }
         } finally {
             if (mountedRef.current) {
