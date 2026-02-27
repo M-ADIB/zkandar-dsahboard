@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     RadarChart, Radar, PolarGrid, PolarAngleAxis, Cell,
 } from 'recharts'
 import {
     ArrowLeft, Building2, Users, GraduationCap, BarChart3,
-    Calendar, CheckCircle2, Clock, Target, Brain, TrendingUp, FileText,
+    Calendar, CheckCircle2, Clock, Target, Brain, TrendingUp, FileText, Plus, X, Loader2,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel } from '@/lib/time'
@@ -115,6 +115,13 @@ export function CompanyWorkspacePage() {
     const [selectedMember, setSelectedMember] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
+    // Assign Program modal state
+    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+    const [allCohorts, setAllCohorts] = useState<Cohort[]>([])
+    const [selectedCohortId, setSelectedCohortId] = useState<string>('')
+    const [isAssigning, setIsAssigning] = useState(false)
+    const [assignError, setAssignError] = useState<string | null>(null)
 
     useEffect(() => {
         if (!id) return
@@ -249,7 +256,7 @@ export function CompanyWorkspacePage() {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`relative flex items - center gap - 2 px - 4 py - 2 rounded - xl text - sm font - medium transition - all duration - 200 ${isActive ? 'text-black' : 'text-gray-400 hover:text-white'} `}
+                            className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isActive ? 'text-black' : 'text-gray-400 hover:text-white'}`}
                         >
                             {isActive && (
                                 <motion.div
@@ -482,9 +489,23 @@ export function CompanyWorkspacePage() {
                     activeTab === 'program' && (
                         <div className="space-y-6">
                             {!cohort ? (
-                                <div className="bg-bg-card border border-border rounded-2xl p-8 text-center">
+                                <div className="bg-bg-card border border-border rounded-2xl p-8 text-center space-y-4">
                                     <GraduationCap className="h-10 w-10 text-gray-600 mx-auto mb-3" />
                                     <p className="text-gray-400 text-sm">No masterclass program assigned to this company yet.</p>
+                                    <button
+                                        onClick={async () => {
+                                            // Fetch all cohorts for the picker
+                                            const { data } = await supabase.from('cohorts').select('*').order('start_date', { ascending: false })
+                                            setAllCohorts((data as Cohort[]) ?? [])
+                                            setSelectedCohortId((data as Cohort[])?.[0]?.id ?? '')
+                                            setAssignError(null)
+                                            setIsAssignModalOpen(true)
+                                        }}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl gradient-lime text-black text-sm font-medium hover:opacity-90 transition"
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                        Assign Program
+                                    </button>
                                 </div>
                             ) : (
                                 <>
@@ -577,6 +598,105 @@ export function CompanyWorkspacePage() {
                     />
                 )
             }
+
+            {/* ── Assign Program Modal ── */}
+            <AnimatePresence>
+                {isAssignModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsAssignModalOpen(false)}
+                            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                            transition={{ type: 'spring', damping: 28, stiffness: 360 }}
+                            className="relative z-10 w-full max-w-sm rounded-2xl bg-bg-card border border-border shadow-2xl overflow-hidden"
+                        >
+                            <div className="flex items-center justify-between gap-4 px-6 py-5 border-b border-border">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-9 w-9 rounded-xl bg-lime/10 flex items-center justify-center">
+                                        <GraduationCap className="h-5 w-5 text-lime" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-semibold text-white">Assign Program</h2>
+                                        <p className="text-xs text-gray-500">Link a cohort to {company.name}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsAssignModalOpen(false)}
+                                    className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition-colors"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </div>
+
+                            <div className="p-6 space-y-4">
+                                {assignError && (
+                                    <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{assignError}</div>
+                                )}
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Program / Cohort</label>
+                                    <select
+                                        value={selectedCohortId}
+                                        onChange={(e) => setSelectedCohortId(e.target.value)}
+                                        className="w-full px-3 py-2.5 bg-bg-elevated border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
+                                    >
+                                        {allCohorts.length === 0 && <option value="">No programs available</option>}
+                                        {allCohorts.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.name} ({c.offering_type === 'master_class' ? 'Master Class' : 'Sprint Workshop'})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="flex items-center justify-end gap-3 pt-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsAssignModalOpen(false)}
+                                        className="px-4 py-2 rounded-xl text-sm text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        disabled={isAssigning || !selectedCohortId}
+                                        onClick={async () => {
+                                            if (!selectedCohortId || !company) return
+                                            setIsAssigning(true)
+                                            setAssignError(null)
+                                            const { error: updateErr } = await supabase
+                                                .from('companies')
+                                                // @ts-expect-error - Supabase update type inference
+                                                .update({ cohort_id: selectedCohortId })
+                                                .eq('id', company.id)
+                                            if (updateErr) {
+                                                setAssignError(updateErr.message)
+                                                setIsAssigning(false)
+                                                return
+                                            }
+                                            // Reload the cohort in state
+                                            const { data: newCohort } = await supabase
+                                                .from('cohorts').select('*').eq('id', selectedCohortId).single()
+                                            if (newCohort) setCohort(newCohort as Cohort)
+                                            setIsAssigning(false)
+                                            setIsAssignModalOpen(false)
+                                        }}
+                                        className="px-5 py-2 rounded-xl text-sm font-medium gradient-lime text-black hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    >
+                                        {isAssigning && <Loader2 className="h-4 w-4 animate-spin" />}
+                                        {isAssigning ? 'Assigning...' : 'Assign'}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div >
     )
 }

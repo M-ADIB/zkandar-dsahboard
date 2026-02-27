@@ -912,12 +912,13 @@ export function LeadsTable({
                                 visibleRows.map((row, rowIndex) => {
                                     // BUG-13 fix: solid row backgrounds so sticky cols have correct background on scroll
                                     const rowTone = rowIndex % 2 === 0 ? 'bg-[#000000]' : 'bg-[#111111]';
+                                    const isHighlighted = highlightId === row.original.id;
                                     return (
                                         <tr
                                             key={row.id}
                                             id={`lead-row-${row.original.id}`}
                                             data-state={row.getIsSelected() && "selected"}
-                                            className={`${rowTone} hover:bg-white/5 transition-colors ${highlightId === row.original.id ? 'ring-2 ring-lime/60 animate-pulse' : ''}`}
+                                            className={`${rowTone} hover:bg-white/5 transition-colors`}
                                         >
                                             {row.getVisibleCells().map((cell) => {
                                                 const meta = cell.column.columnDef.meta as { cellClassName?: string } | undefined;
@@ -925,7 +926,7 @@ export function LeadsTable({
                                                 return (
                                                     <td
                                                         key={cell.id}
-                                                        className={`whitespace-nowrap border-b border-border px-4 ${denseMode ? 'py-2' : 'py-3'} text-gray-200 ${meta?.cellClassName || ''} ${stickyClass}`}
+                                                        className={`whitespace-nowrap border-b border-border px-4 ${denseMode ? 'py-2' : 'py-3'} text-gray-200 ${meta?.cellClassName || ''} ${stickyClass} ${isHighlighted ? 'bg-lime/5 first:border-l-2 first:border-l-lime/60' : ''}`}
                                                     >
                                                         {flexRender(
                                                             cell.column.columnDef.cell,

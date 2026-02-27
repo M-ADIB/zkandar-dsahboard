@@ -59,7 +59,7 @@ const adminNavItems: NavItem[] = [
     {
         icon: MessageSquare,
         label: 'Chat',
-        path: '/chat',
+        path: '/admin/chat',
         roles: ['owner', 'admin'],
     },
     {
