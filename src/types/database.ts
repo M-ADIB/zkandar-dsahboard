@@ -6,6 +6,8 @@ export type SessionStatus = 'scheduled' | 'completed'
 export type SubmissionStatus = 'pending' | 'reviewed'
 export type SubmissionFormat = 'file' | 'link' | 'text'
 export type SurveyTrigger = 'onboarding' | 'mid_program' | 'post_program'
+export type ChatChannelType = 'team' | 'management' | 'sprint'
+export type ChatMessageType = 'text' | 'file' | 'system'
 export type InvitationStatus = 'pending' | 'accepted' | 'expired'
 export type ToolboxImportance = 'essential' | 'recommended' | 'optional'
 export type ToolboxToolType = 'image_generation' | 'video_generation' | 'text_generation' | 'automation' | 'analytics' | 'other'
@@ -191,17 +193,13 @@ export interface ChatMessage {
     company_id: string | null
     sender_id: string
     message: string
-    attachments: ChatAttachment[]
+    message_type: ChatMessageType
+    file_url: string | null
+    channel_type: ChatChannelType
     is_pinned: boolean
     created_at: string
     // Joined data
     sender?: User
-}
-
-export interface ChatAttachment {
-    type: 'image' | 'file'
-    url: string
-    name: string
 }
 
 export interface Survey {
