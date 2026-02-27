@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useSupabase } from '@/hooks/useSupabase';
-import { Plus, Download, Users, Target, Flame, DollarSign, CheckCircle } from 'lucide-react';
+import { Plus, Download, Users, Target, Flame, DollarSign, CheckCircle, Phone } from 'lucide-react';
 import type { Lead } from '@/types/database';
 import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
@@ -53,6 +54,7 @@ const EXPORT_COLUMNS: { key: keyof Lead; label: string }[] = [
 
 export function LeadsPage() {
     const supabase = useSupabase();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState<string | null>(null);
@@ -60,6 +62,7 @@ export function LeadsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
+    const [highlightId, setHighlightId] = useState<string | null>(null);
     // BUG-8: success toast state
     const [toast, setToast] = useState<{ message: string } | null>(null);
 
@@ -109,6 +112,36 @@ export function LeadsPage() {
     useEffect(() => {
         fetchLeads();
     }, []);
+
+    // Handle highlight and priority search params from Dashboard navigation
+    useEffect(() => {
+        if (!isLoading && leads.length > 0) {
+            const hlId = searchParams.get('highlight');
+            const priorityFilter = searchParams.get('priority');
+
+            if (hlId) {
+                setHighlightId(hlId);
+                // Scroll to the highlighted row after a short delay for DOM rendering
+                setTimeout(() => {
+                    const row = document.getElementById(`lead-row-${hlId}`);
+                    if (row) {
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 300);
+                // Clear highlight after animation
+                setTimeout(() => setHighlightId(null), 3000);
+                // Clean up URL
+                searchParams.delete('highlight');
+                setSearchParams(searchParams, { replace: true });
+            }
+
+            if (priorityFilter) {
+                // Clean up URL (the filter will be handled by the table's existing filter UI)
+                searchParams.delete('priority');
+                setSearchParams(searchParams, { replace: true });
+            }
+        }
+    }, [isLoading, leads.length]);
 
     const handleUpdatePriority = async (leadId: string, newPriority: string) => {
         setIsUpdating(leadId);
@@ -234,14 +267,7 @@ export function LeadsPage() {
         total: leads.length,
         active: leads.filter((l: Lead) => l.priority === 'ACTIVE').length,
         hot: leads.filter((l: Lead) => l.priority === 'HOT').length,
-        lava: leads.filter((l: Lead) => l.priority === 'LAVA').length,
-        cold: leads.filter((l: Lead) => l.priority === 'COLD').length,
-        completed: leads.filter((l: Lead) => l.priority === 'COMPLETED').length,
-        notInterested: leads.filter((l: Lead) => l.priority === 'NOT INTERESTED').length,
-        // Revenue = sum of what was actually paid for COMPLETED leads
-        totalRevenue: leads
-            .filter((l: Lead) => l.priority === 'COMPLETED')
-            .reduce((sum: number, l: Lead) => sum + (l.amount_paid || 0) + (l.amount_paid_2 || 0), 0),
+        called: leads.filter((l: Lead) => l.discovery_call_date != null).length,
         // Pipeline value = payment_amount for active/hot/lava leads
         pipelineValue: leads
             .filter((l: Lead) => l.priority === 'HOT' || l.priority === 'ACTIVE' || l.priority === 'LAVA')
@@ -265,7 +291,7 @@ export function LeadsPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dashboard-accent"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime/50"></div>
             </div>
         );
     }
@@ -304,7 +330,7 @@ export function LeadsPage() {
                     <button
                         onClick={handleExport}
                         disabled={isExporting || leads.length === 0}
-                        className="flex items-center gap-2 px-4 py-2 bg-dashboard-card hover:bg-dashboard-card-hover text-white rounded-lg transition-colors font-medium border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 bg-bg-card hover:bg-white/10 text-white rounded-lg transition-colors font-medium border border-border disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Download className="h-5 w-5" />
                         {isExporting ? 'Exporting...' : 'Export'}
@@ -314,7 +340,7 @@ export function LeadsPage() {
                             setSelectedLead(null);
                             setIsModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-dashboard-accent hover:bg-dashboard-accent-bright text-black rounded-lg transition-colors font-medium"
+                        className="flex items-center gap-2 px-4 py-2 gradient-lime hover:opacity-90 text-black rounded-lg transition-colors font-medium"
                     >
                         <Plus className="h-5 w-5" />
                         Add Lead
@@ -324,7 +350,7 @@ export function LeadsPage() {
 
             {/* Stats Cards */}
             <div className="max-w-full overflow-x-auto">
-                <div className="grid grid-flow-col auto-cols-[200px] gap-4 min-w-max pb-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pb-2">
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
                             <div className={metricLabelClass}>Total Leads</div>
@@ -334,45 +360,10 @@ export function LeadsPage() {
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Active</div>
-                            <Target className="h-4 w-4 text-lime" />
-                        </div>
-                        <div className="text-2xl font-semibold text-lime">{stats.active}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
                             <div className={metricLabelClass}>Hot</div>
                             <Flame className="h-4 w-4 text-orange-400" />
                         </div>
                         <div className="text-2xl font-semibold text-orange-400">{stats.hot}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Lava</div>
-                            <Flame className="h-4 w-4 text-purple-400" />
-                        </div>
-                        <div className="text-2xl font-semibold text-purple-400">{stats.lava}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Cold</div>
-                            <span className="text-blue-400 text-sm">❄</span>
-                        </div>
-                        <div className="text-2xl font-semibold text-blue-400">{stats.cold}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Completed</div>
-                            <div className="h-4 w-4 text-green-400">✓</div>
-                        </div>
-                        <div className="text-2xl font-semibold text-green-400">{stats.completed}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Not Interested</div>
-                            <span className="text-red-400 text-sm">✗</span>
-                        </div>
-                        <div className="text-2xl font-semibold text-red-400">{stats.notInterested}</div>
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
@@ -385,12 +376,17 @@ export function LeadsPage() {
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Revenue (AED)</div>
-                            <DollarSign className="h-4 w-4 text-lime" />
+                            <div className={metricLabelClass}>Called</div>
+                            <Phone className="h-4 w-4 text-blue-400" />
                         </div>
-                        <div className="text-xl font-semibold text-lime">
-                            {currencyFormatter.format(stats.totalRevenue)}
+                        <div className="text-2xl font-semibold text-blue-400">{stats.called}</div>
+                    </div>
+                    <div className={metricCardClass}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className={metricLabelClass}>Active</div>
+                            <Target className="h-4 w-4 text-lime" />
                         </div>
+                        <div className="text-2xl font-semibold text-lime">{stats.active}</div>
                     </div>
                 </div>
             </div>
@@ -406,6 +402,7 @@ export function LeadsPage() {
                 onUpdatePriority={handleUpdatePriority}
                 onUpdateLead={handleUpdateLead}
                 isUpdating={isUpdating}
+                highlightId={highlightId}
             />
 
             {/* Modal */}

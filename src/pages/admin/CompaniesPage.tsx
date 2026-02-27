@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { CompanyModal } from '@/components/admin/company/CompanyModal';
-import { Plus, Building2, Users, GraduationCap, ExternalLink } from 'lucide-react';
+import { Plus, Building2, Users, GraduationCap } from 'lucide-react';
 import { formatDateLabel } from '@/lib/time';
 import type { Cohort, Company, User } from '@/types/database';
 
@@ -99,18 +99,7 @@ export function CompaniesPage() {
             header: 'Enrolled',
             accessor: (company: Company) => formatDateLabel(company.enrollment_date) || '—'
         },
-        {
-            header: 'Workspace',
-            accessor: (company: Company) => (
-                <button
-                    onClick={(e) => { e.stopPropagation(); navigate(`/admin/companies/${company.id}`); }}
-                    className="flex items-center gap-1 text-lime hover:text-lime/80 text-sm font-medium transition"
-                >
-                    Open <ExternalLink className="h-3.5 w-3.5" />
-                </button>
-            ),
-        },
-    ], [programMap, userMap, navigate]);
+    ], [programMap, userMap]);
 
     const handleDelete = async (company: Company) => {
         if (!confirm(`Delete ${company.name}?`)) return;
@@ -183,6 +172,7 @@ export function CompaniesPage() {
                 data={companies}
                 columns={columns}
                 isLoading={isLoading}
+                onRowClick={(company) => navigate(`/admin/companies/${company.id}`)}
                 onEdit={(company) => { setSelectedCompany(company); setIsModalOpen(true); }}
                 onDelete={handleDelete}
             />

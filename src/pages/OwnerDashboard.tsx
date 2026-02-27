@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
     DollarSign, Flame, Building2, Calendar,
-    Users, BarChart3, ArrowRight, TrendingUp,
+    Users, ArrowRight, TrendingUp,
     ChevronRight, Clock, CheckCircle2,
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -227,11 +227,10 @@ export function OwnerDashboard() {
         users.filter((u) => u.role === 'participant' || u.role === 'executive').length
         , [users])
 
-    const surveyCompletion = useMemo(() => {
-        const members = users.filter((u) => u.role === 'participant' || u.role === 'executive')
-        if (members.length === 0) return 0
-        return Math.round((members.filter((u) => u.onboarding_completed).length / members.length) * 100)
-    }, [users])
+    const conversionRate = useMemo(() => {
+        if (leads.length === 0) return 0
+        return Math.round(((leadCounts['COMPLETED'] || 0) / leads.length) * 100)
+    }, [leads, leadCounts])
 
     const nextSession = useMemo(() => {
         const now = new Date().toISOString()
@@ -281,7 +280,7 @@ export function OwnerDashboard() {
             </div>
 
             {/* ── Row 1: KPIs ── */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
                 <KPICard
                     icon={DollarSign}
                     label="Pipeline Value"
@@ -298,7 +297,7 @@ export function OwnerDashboard() {
                     sub={`${leads.length} total leads`}
                     trend={hotLeads > 0 ? `${leadCounts['LAVA'] ?? 0} lava` : undefined}
                     delay={0.05}
-                    onClick={() => navigate('/admin/leads')}
+                    onClick={() => navigate('/admin/leads?priority=HOT')}
                 />
                 <KPICard
                     icon={Building2}
@@ -317,36 +316,28 @@ export function OwnerDashboard() {
                     onClick={() => navigate('/admin/programs')}
                 />
                 <KPICard
-                    icon={BarChart3}
-                    label="Survey Completion"
-                    value={`${surveyCompletion}%`}
-                    sub={`of enrolled members`}
-                    delay={0.2}
-                    onClick={() => navigate('/analytics')}
-                />
-                <KPICard
                     icon={Users}
                     label="Total Members"
                     value={String(totalMembers)}
                     sub="executives + participants"
-                    delay={0.25}
+                    delay={0.2}
                     onClick={() => navigate('/settings')}
                 />
             </div>
 
             {/* ── Row 2: Leads status + Recent leads ── */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                {/* Leads Status Bar */}
+                {/* Pipeline Analytics */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="lg:col-span-3 bg-bg-card border border-border rounded-2xl p-6 space-y-4"
+                    className="lg:col-span-3 bg-bg-card border border-border rounded-2xl p-6 space-y-5"
                 >
                     <div className="flex items-center justify-between">
                         <h2 className="font-semibold text-white flex items-center gap-2">
                             <TrendingUp className="h-4 w-4 text-lime" />
-                            Leads by Status
+                            Pipeline Analytics
                         </h2>
                         <button
                             onClick={() => navigate('/admin/leads')}
@@ -355,20 +346,28 @@ export function OwnerDashboard() {
                             View all <ArrowRight className="h-3 w-3" />
                         </button>
                     </div>
+
+                    {/* Status distribution bar */}
                     <LeadsStatusBar counts={leadCounts} />
 
-                    {/* Mini stat row */}
-                    <div className="grid grid-cols-3 gap-3 pt-2">
-                        {[
-                            { label: 'Active', count: leadCounts['ACTIVE'] ?? 0, color: 'text-lime' },
-                            { label: 'Completed', count: leadCounts['COMPLETED'] ?? 0, color: 'text-gray-300' },
-                            { label: 'Not Interested', count: leadCounts['NOT INTERESTED'] ?? 0, color: 'text-red-400' },
-                        ].map(({ label, count, color }) => (
-                            <div key={label} className="bg-bg-elevated rounded-xl p-3 text-center">
-                                <p className={`text-lg font-bold ${color}`}>{count}</p>
-                                <p className="text-xs text-gray-500 mt-0.5">{label}</p>
-                            </div>
-                        ))}
+                    {/* Analytics grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                            <p className="text-lg font-bold text-lime">{fmt(leads.length)}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">Total Leads</p>
+                        </div>
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                            <p className="text-lg font-bold text-orange-400">{conversionRate}%</p>
+                            <p className="text-xs text-gray-500 mt-0.5">Conversion</p>
+                        </div>
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                            <p className="text-lg font-bold text-yellow-400">AED {fmt(pipelineValue)}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">Pipeline</p>
+                        </div>
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
+                            <p className="text-lg font-bold text-green-400">AED {fmt(completedRevenue)}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">Collected</p>
+                        </div>
                     </div>
                 </motion.div>
 
@@ -397,7 +396,7 @@ export function OwnerDashboard() {
                         ) : recentLeads.map((lead) => (
                             <div
                                 key={lead.id}
-                                onClick={() => navigate('/admin/leads')}
+                                onClick={() => navigate(`/admin/leads?highlight=${lead.id}`)}
                                 className="flex items-center gap-3 py-2 border-b border-border last:border-0 cursor-pointer hover:bg-white/5 rounded-lg px-2 -mx-2 transition"
                             >
                                 <div className="h-7 w-7 rounded-lg bg-white/5 flex items-center justify-center shrink-0">

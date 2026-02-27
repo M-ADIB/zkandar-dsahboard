@@ -11,6 +11,7 @@ interface AdminTableProps<T> {
     columns: Column<T>[];
     onEdit?: (item: T) => void;
     onDelete?: (item: T) => void;
+    onRowClick?: (item: T) => void;
     isLoading?: boolean;
 }
 
@@ -19,6 +20,7 @@ export function AdminTable<T extends { id: string }>({
     columns,
     onEdit,
     onDelete,
+    onRowClick,
     isLoading
 }: AdminTableProps<T>) {
     if (isLoading) {
@@ -42,22 +44,22 @@ export function AdminTable<T extends { id: string }>({
             <div className="w-full max-w-full overflow-x-auto">
                 <table className="min-w-full border-separate border-spacing-0 text-sm">
                     <thead className="bg-bg-elevated">
-                    <tr>
-                        {columns.map((col, idx) => (
-                            <th
-                                key={idx}
-                                scope="col"
-                                className={`px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border ${col.className || ''}`}
-                            >
-                                {col.header}
-                            </th>
-                        ))}
-                        {(onEdit || onDelete) && (
-                            <th scope="col" className="relative px-5 py-3 border-b border-border">
-                                <span className="sr-only">Actions</span>
-                            </th>
-                        )}
-                    </tr>
+                        <tr>
+                            {columns.map((col, idx) => (
+                                <th
+                                    key={idx}
+                                    scope="col"
+                                    className={`px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border ${col.className || ''}`}
+                                >
+                                    {col.header}
+                                </th>
+                            ))}
+                            {(onEdit || onDelete) && (
+                                <th scope="col" className="relative px-5 py-3 border-b border-border">
+                                    <span className="sr-only">Actions</span>
+                                </th>
+                            )}
+                        </tr>
                     </thead>
                     <tbody>
                         {data.map((item, index) => {
@@ -65,7 +67,8 @@ export function AdminTable<T extends { id: string }>({
                             return (
                                 <tr
                                     key={item.id}
-                                    className={`${rowTone} hover:bg-white/5 transition-colors`}
+                                    onClick={() => onRowClick?.(item)}
+                                    className={`${rowTone} hover:bg-white/5 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
                                 >
                                     {columns.map((col, idx) => (
                                         <td

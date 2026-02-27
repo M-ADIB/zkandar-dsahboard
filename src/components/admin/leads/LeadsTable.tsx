@@ -56,6 +56,7 @@ interface LeadsTableProps {
     onUpdatePriority: (leadId: string, priority: string) => void;
     onUpdateLead: (leadId: string, field: keyof Lead, value: any) => void;
     isUpdating?: string | null;
+    highlightId?: string | null;
 }
 
 export function LeadsTable({
@@ -64,7 +65,8 @@ export function LeadsTable({
     onDelete,
     onUpdatePriority,
     onUpdateLead,
-    isUpdating
+    isUpdating,
+    highlightId
 }: LeadsTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -158,7 +160,7 @@ export function LeadsTable({
                     'COLD': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
                     'LAVA': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
                     'COMPLETED': 'bg-green-500/20 text-green-300 border-green-500/30',
-                    'NOT INTERESTED': 'bg-gray-700/20 text-gray-400 border-gray-700/30',
+                    'NOT INTERESTED': 'bg-gray-700/20 text-gray-400 border-border/30',
                 };
 
                 return (
@@ -913,8 +915,9 @@ export function LeadsTable({
                                     return (
                                         <tr
                                             key={row.id}
+                                            id={`lead-row-${row.original.id}`}
                                             data-state={row.getIsSelected() && "selected"}
-                                            className={`${rowTone} hover:bg-white/5 transition-colors`}
+                                            className={`${rowTone} hover:bg-white/5 transition-colors ${highlightId === row.original.id ? 'ring-2 ring-lime/60 animate-pulse' : ''}`}
                                         >
                                             {row.getVisibleCells().map((cell) => {
                                                 const meta = cell.column.columnDef.meta as { cellClassName?: string } | undefined;

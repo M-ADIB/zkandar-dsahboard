@@ -149,14 +149,14 @@ export function AssignmentsAdminPage() {
                         setIsModalOpen(true)
                     }}
                     disabled={sessions.length === 0}
-                    className="flex items-center gap-2 px-4 py-2 bg-dashboard-accent hover:bg-dashboard-accent-bright text-black rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 gradient-lime hover:opacity-90 text-black rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Plus className="h-5 w-5" />
                     Add Assignment
                 </button>
             </div>
 
-            <div className="bg-dashboard-card border border-gray-800 rounded-lg p-4 flex flex-wrap gap-4">
+            <div className="bg-bg-card border border-border rounded-lg p-4 flex flex-wrap gap-4">
                 <div className="min-w-[220px]">
                     <label className="block text-xs text-gray-400 mb-1">Program</label>
                     <select
@@ -165,7 +165,7 @@ export function AssignmentsAdminPage() {
                             setSelectedProgramId(e.target.value)
                             setSelectedSessionId('all')
                         }}
-                        className="w-full px-3 py-2 bg-dashboard-bg border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
                     >
                         <option value="all">All Programs</option>
                         {programs.map((program) => (
@@ -178,7 +178,7 @@ export function AssignmentsAdminPage() {
                     <select
                         value={selectedSessionId}
                         onChange={(e) => setSelectedSessionId(e.target.value)}
-                        className="w-full px-3 py-2 bg-dashboard-bg border border-gray-700 rounded-lg text-white focus:outline-none focus:border-dashboard-accent"
+                        className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
                     >
                         <option value="all">All Sessions</option>
                         {sessionsForProgram.map((session) => (

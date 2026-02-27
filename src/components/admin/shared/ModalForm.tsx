@@ -31,7 +31,7 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="relative w-full max-w-lg overflow-hidden rounded-xl bg-[#1A1F2E] shadow-2xl ring-1 ring-white/10"
+                    className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-bg-card border border-border shadow-2xl"
                 >
                     <div className="px-6 py-4 border-b border-border bg-bg-card">
                         <h3 className="text-lg font-semibold text-white">{title}</h3>
@@ -63,7 +63,7 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-dashboard-accent hover:bg-dashboard-accent-bright rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 text-sm font-medium text-black gradient-lime rounded-xl transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? 'Saving...' : 'Save Changes'}
                                 </button>
