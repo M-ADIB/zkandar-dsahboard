@@ -16,6 +16,15 @@ export const supabase = createClient<Database>(
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: true,
+            // Bypass navigator.locks to prevent AbortError when multiple
+            // tabs are open or React Strict Mode double-mounts.
+            // This uses a simple mutex instead of the browser Lock API.
+            lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<any>) => {
+                return await fn()
+            },
         },
     }
 )
+
+// Export URL and key for direct REST fallback in AuthContext
+export { supabaseUrl, supabaseAnonKey }
