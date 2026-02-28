@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import { formatDateLabel, formatTimeLabel } from '@/lib/time'
 import type { Assignment, Cohort, Session, SubmissionFormat } from '@/types/database'
 
@@ -24,6 +25,7 @@ interface Submission {
 // ─── My Program Page ─────────────────────────────────────────────────────────
 export function MyProgramPage() {
     const { user } = useAuth()
+    const { effectiveUserId } = useViewMode()
     const [cohort, setCohort] = useState<Cohort | null>(null)
     const [sessions, setSessions] = useState<Session[]>([])
     const [assignments, setAssignments] = useState<Assignment[]>([])
@@ -34,14 +36,14 @@ export function MyProgramPage() {
     const [expandedSession, setExpandedSession] = useState<string | null>(null)
 
     useEffect(() => {
-        if (!user) return
+        if (!user || !effectiveUserId) return
         const fetchAll = async () => {
             setLoading(true)
             setError(null)
 
             // Get user's company → cohort
             const { data: userData } = await supabase
-                .from('users').select('company_id').eq('id', user.id).single()
+                .from('users').select('company_id').eq('id', effectiveUserId).single()
             const userRow = userData as { company_id: string | null } | null
             if (!userRow?.company_id) { setError('No company assigned'); setLoading(false); return }
 
@@ -77,7 +79,7 @@ export function MyProgramPage() {
                 if (asgn.length > 0) {
                     const { data: subData } = await supabase
                         .from('submissions').select('*')
-                        .eq('user_id', user.id)
+                        .eq('user_id', effectiveUserId)
                         .in('assignment_id', asgn.map((a) => a.id))
                     setSubmissions((subData as Submission[]) ?? [])
                 }
@@ -85,7 +87,7 @@ export function MyProgramPage() {
                 // Fetch my attendance
                 const { data: attData } = await supabase
                     .from('session_attendance').select('session_id')
-                    .eq('user_id', user.id)
+                    .eq('user_id', effectiveUserId)
                     .in('session_id', sess.map((s) => s.id))
                 const attSet = new Set<string>()
                     ; (attData as { session_id: string }[] | null)?.forEach((r) => attSet.add(r.session_id))
@@ -95,7 +97,7 @@ export function MyProgramPage() {
             setLoading(false)
         }
         fetchAll()
-    }, [user])
+    }, [user, effectiveUserId])
 
     // ─── Derived ────────────────────────────────────────────────────────────────
     const completedSessions = useMemo(() => sessions.filter((s) => s.status === 'completed').length, [sessions])

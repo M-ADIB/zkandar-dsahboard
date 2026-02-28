@@ -8,7 +8,7 @@ import { AnimatePresence } from 'framer-motion'
 
 export function AppShell() {
     const { user } = useAuth()
-    const { isPreviewing, canPreview, setPreviewing } = useViewMode()
+    const { isPreviewing, canPreview, previewUser, setPreviewUser } = useViewMode()
     const showPreviewBanner = canPreview && isPreviewing
 
     return (
@@ -25,9 +25,12 @@ export function AppShell() {
                 <main className="flex-1 min-w-0 p-4 md:p-6 lg:p-8 overflow-x-hidden">
                     {showPreviewBanner && (
                         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-lime/30 bg-lime/10 px-4 py-2 text-xs text-lime">
-                            <span>Preview mode: member experience (read-only)</span>
+                            <span>
+                                Previewing as: <strong>{previewUser?.full_name ?? 'Member'}</strong>
+                                {previewUser?.email && <span className="ml-1 text-lime/60">({previewUser.email})</span>}
+                            </span>
                             <button
-                                onClick={() => setPreviewing(false)}
+                                onClick={() => setPreviewUser(null)}
                                 className="rounded-lg border border-lime/40 px-3 py-1 text-xs font-medium text-lime hover:border-lime/70"
                             >
                                 Exit preview

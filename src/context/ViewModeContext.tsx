@@ -1,16 +1,23 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import type { User } from '@/types/database'
 
 type ViewModeContextValue = {
     isPreviewing: boolean
     canPreview: boolean
     setPreviewing: (enabled: boolean) => void
+    /** The member being previewed (null = no specific member selected) */
+    previewUser: User | null
+    setPreviewUser: (member: User | null) => void
+    /** Returns previewUser.id when previewing, else the logged-in user's id */
+    effectiveUserId: string
 }
 
 const ViewModeContext = createContext<ViewModeContextValue | undefined>(undefined)
 
 const PREVIEW_STORAGE_KEY = 'zkandar:view-mode'
+const PREVIEW_USER_KEY = 'zkandar:preview-user'
 
 export function ViewModeProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuth()
@@ -27,9 +34,20 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
         }
     })
 
+    const [previewUser, setPreviewUserState] = useState<User | null>(() => {
+        if (typeof window === 'undefined') return null
+        try {
+            const stored = localStorage.getItem(PREVIEW_USER_KEY)
+            return stored ? JSON.parse(stored) as User : null
+        } catch {
+            return null
+        }
+    })
+
     useEffect(() => {
         if (!isAdmin && isPreviewing) {
             setIsPreviewing(false)
+            setPreviewUserState(null)
         }
     }, [isAdmin, isPreviewing])
 
@@ -46,6 +64,20 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
         }
     }, [isPreviewing])
 
+    // Persist preview user
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        try {
+            if (previewUser) {
+                localStorage.setItem(PREVIEW_USER_KEY, JSON.stringify(previewUser))
+            } else {
+                localStorage.removeItem(PREVIEW_USER_KEY)
+            }
+        } catch {
+            // Ignore storage errors
+        }
+    }, [previewUser])
+
     useEffect(() => {
         if (!isAdmin) return
 
@@ -54,7 +86,7 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (!isPreviewing && !location.pathname.startsWith('/admin') && location.pathname !== '/settings') {
-            const memberPaths = ['/dashboard', '/sessions', '/assignments', '/chat', '/team']
+            const memberPaths = ['/dashboard', '/sessions', '/assignments', '/chat', '/team', '/my-program']
             const isMemberPath = memberPaths.some((path) => location.pathname.startsWith(path))
             if (isMemberPath) {
                 navigate('/admin', { replace: true })
@@ -65,13 +97,36 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
     const setPreviewing = useCallback((enabled: boolean) => {
         if (!isAdmin) return
         setIsPreviewing(enabled)
+        if (!enabled) {
+            setPreviewUserState(null)
+        }
     }, [isAdmin])
+
+    const setPreviewUser = useCallback((member: User | null) => {
+        if (!isAdmin) return
+        setPreviewUserState(member)
+        if (member) {
+            setIsPreviewing(true)
+        } else {
+            setIsPreviewing(false)
+        }
+    }, [isAdmin])
+
+    const effectiveUserId = useMemo(() => {
+        if (isAdmin && isPreviewing && previewUser) {
+            return previewUser.id
+        }
+        return user?.id ?? ''
+    }, [isAdmin, isPreviewing, previewUser, user])
 
     const value = useMemo<ViewModeContextValue>(() => ({
         isPreviewing: isAdmin ? isPreviewing : false,
         canPreview: isAdmin,
         setPreviewing,
-    }), [isAdmin, isPreviewing, setPreviewing])
+        previewUser: isAdmin ? previewUser : null,
+        setPreviewUser,
+        effectiveUserId,
+    }), [isAdmin, isPreviewing, setPreviewing, previewUser, setPreviewUser, effectiveUserId])
 
     return (
         <ViewModeContext.Provider value={value}>
