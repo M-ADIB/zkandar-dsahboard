@@ -23,6 +23,8 @@ export function WorkspaceSessions({ cohortId, sessions, onSessionsChange }: Work
     const [editingRecording, setEditingRecording] = useState<string | null>(null) // session id
     const [recordingUrl, setRecordingUrl] = useState('')
     const [savingRecording, setSavingRecording] = useState(false)
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+    const [deleteError, setDeleteError] = useState<string | null>(null)
 
     const nextSessionNumber = useMemo(() => {
         if (sessions.length === 0) return 1
@@ -30,8 +32,18 @@ export function WorkspaceSessions({ cohortId, sessions, onSessionsChange }: Work
     }, [sessions])
 
     const handleDelete = async (session: Session) => {
-        if (!confirm(`Delete "${session.title}"?`)) return
-        await supabase.from('sessions').delete().eq('id', session.id)
+        if (confirmDeleteId !== session.id) {
+            setConfirmDeleteId(session.id)
+            return
+        }
+        setDeleteError(null)
+        const { error } = await supabase.from('sessions').delete().eq('id', session.id)
+        if (error) {
+            setDeleteError(error.message)
+            setConfirmDeleteId(null)
+            return
+        }
+        setConfirmDeleteId(null)
         onSessionsChange()
     }
 
@@ -59,6 +71,12 @@ export function WorkspaceSessions({ cohortId, sessions, onSessionsChange }: Work
                     Add Session
                 </button>
             </div>
+
+            {deleteError && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+                    Delete failed: {deleteError}
+                </div>
+            )}
 
             {sessions.length === 0 ? (
                 <div className="rounded-xl border border-border border-dashed bg-bg-elevated/50 p-6 text-center">
@@ -165,13 +183,30 @@ export function WorkspaceSessions({ cohortId, sessions, onSessionsChange }: Work
                                     >
                                         <Pencil className="h-3.5 w-3.5" />
                                     </button>
-                                    <button
-                                        onClick={() => handleDelete(session)}
-                                        className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/5 transition"
-                                        title="Delete session"
-                                    >
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                    </button>
+                                    {confirmDeleteId === session.id ? (
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => handleDelete(session)}
+                                                className="px-2 py-1 text-[10px] font-medium rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition"
+                                            >
+                                                Confirm
+                                            </button>
+                                            <button
+                                                onClick={() => setConfirmDeleteId(null)}
+                                                className="px-2 py-1 text-[10px] text-gray-500 hover:text-white transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleDelete(session)}
+                                            className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/5 transition"
+                                            title="Delete session"
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>

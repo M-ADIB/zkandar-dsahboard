@@ -4,8 +4,6 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     LayoutDashboard,
-    Calendar,
-    FileText,
     MessageSquare,
     BarChart3,
     Settings,
@@ -15,7 +13,6 @@ import {
     Building2,
     GraduationCap,
     TrendingUp,
-    Wrench,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -42,6 +39,12 @@ const adminNavItems: NavItem[] = [
         icon: Building2,
         label: 'Companies',
         path: '/admin/companies',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: Users,
+        label: 'Members',
+        path: '/admin/members',
         roles: ['owner', 'admin'],
     },
     {
@@ -84,40 +87,16 @@ const memberNavItems: NavItem[] = [
         roles: ['owner', 'admin', 'executive', 'participant'],
     },
     {
-        icon: Calendar,
-        label: 'Sessions',
-        path: '/sessions',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
         icon: GraduationCap,
         label: 'My Program',
         path: '/my-program',
         roles: ['executive', 'participant'],
     },
     {
-        icon: FileText,
-        label: 'Assignments',
-        path: '/assignments',
-        roles: ['owner', 'admin', 'participant'],
-    },
-    {
         icon: MessageSquare,
         label: 'Chat',
         path: '/chat',
         roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
-        icon: Wrench,
-        label: 'Toolbox',
-        path: '/toolbox',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
-        icon: Users,
-        label: 'Team',
-        path: '/team',
-        roles: ['executive'],
     },
     {
         icon: Settings,

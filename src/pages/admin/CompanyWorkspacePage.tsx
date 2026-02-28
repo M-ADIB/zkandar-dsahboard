@@ -6,8 +6,9 @@ import {
     RadarChart, Radar, PolarGrid, PolarAngleAxis, Cell,
 } from 'recharts'
 import {
-    ArrowLeft, Building2, Users, GraduationCap, BarChart3,
+    ArrowLeft, Building2, Users, GraduationCap, BarChart3, MessageSquare,
     CheckCircle2, Clock, Target, Brain, TrendingUp, FileText, Plus, X, Loader2,
+    Archive, Trash2, AlertTriangle,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel } from '@/lib/time'
@@ -49,13 +50,14 @@ const avg = (arr: (number | null | undefined)[]): number => {
 const PALETTE = ['#D0FF71', '#75C345', '#9AD41A', '#5A9F2E', '#B8F23E']
 
 // ─── Tab definitions ─────────────────────────────────────────────────────────
-type WorkspaceTab = 'overview' | 'members' | 'analytics' | 'program'
+type WorkspaceTab = 'overview' | 'members' | 'program' | 'chat' | 'analytics'
 
 const workspaceTabs: { id: WorkspaceTab; label: string; icon: React.ElementType }[] = [
     { id: 'overview', label: 'Overview', icon: Building2 },
     { id: 'members', label: 'Members', icon: Users },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'program', label: 'Program', icon: GraduationCap },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
@@ -334,6 +336,40 @@ export function CompanyWorkspacePage() {
                                 </div>
                             )
                         }
+
+                        {/* ── Company Actions ── */}
+                        <div className="bg-bg-card border border-red-500/20 rounded-2xl p-6 space-y-4">
+                            <h3 className="font-semibold text-white flex items-center gap-2">
+                                <AlertTriangle className="h-4 w-4 text-red-400" />
+                                Company Actions
+                            </h3>
+                            <p className="text-xs text-gray-500">These actions affect all members in this company.</p>
+                            <div className="flex flex-wrap gap-3">
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm(`Archive "${company.name}"? Members will lose dashboard access.`)) return
+                                        // @ts-expect-error - status column exists but not in generated types
+                                        await supabase.from('companies').update({ status: 'archived' }).eq('id', company.id)
+                                        navigate('/admin/companies')
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 transition"
+                                >
+                                    <Archive className="h-4 w-4" />
+                                    Archive Company
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm(`DELETE "${company.name}"? This is irreversible and will remove all associated data.`)) return
+                                        await supabase.from('companies').delete().eq('id', company.id)
+                                        navigate('/admin/companies')
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete Company
+                                </button>
+                            </div>
+                        </div>
                     </div >
                 )}
 
@@ -596,6 +632,51 @@ export function CompanyWorkspacePage() {
                         </div>
                     )
                 }
+
+                {/* ══ CHAT ══ */}
+                {activeTab === 'chat' && (
+                    <div className="space-y-6">
+                        <div className="bg-bg-card border border-border rounded-2xl p-6 text-center space-y-4">
+                            <MessageSquare className="h-10 w-10 text-lime mx-auto" />
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">Company Chat</h3>
+                                <p className="text-sm text-gray-400 mt-1">
+                                    View and manage conversations with {company.name}'s team
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => navigate('/admin/chat')}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl gradient-lime text-black hover:opacity-90 transition"
+                            >
+                                <MessageSquare className="h-4 w-4" />
+                                Open Chat
+                            </button>
+                        </div>
+
+                        {/* Quick member list for DMs */}
+                        <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-3">
+                            <h4 className="text-sm font-semibold text-white">Members — Quick DM</h4>
+                            <p className="text-xs text-gray-500">Click a member to start a direct message from the Chat page.</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {members.map((m) => (
+                                    <button
+                                        key={m.id}
+                                        onClick={() => navigate('/admin/chat')}
+                                        className="flex items-center gap-3 px-3 py-2.5 bg-bg-elevated border border-border rounded-xl hover:border-lime/30 transition text-left"
+                                    >
+                                        <div className="h-8 w-8 rounded-lg bg-lime/10 flex items-center justify-center text-xs font-bold text-lime shrink-0">
+                                            {m.full_name?.charAt(0)?.toUpperCase() ?? '?'}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-sm text-white truncate">{m.full_name}</p>
+                                            <p className="text-[11px] text-gray-500 capitalize">{m.user_type || m.role}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </motion.div >
 
             {/* Slide-over member panel */}
@@ -612,7 +693,7 @@ export function CompanyWorkspacePage() {
             {/* ── Assign Program Modal ── */}
             <AnimatePresence>
                 {isAssignModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}

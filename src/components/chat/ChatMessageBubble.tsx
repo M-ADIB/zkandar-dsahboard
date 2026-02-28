@@ -39,10 +39,10 @@ export function ChatMessageBubble({
             {/* Avatar */}
             <div
                 className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${isAdmin
-                        ? 'gradient-lime'
-                        : isOwn
-                            ? 'bg-lime/10'
-                            : 'bg-white/10'
+                    ? 'gradient-lime'
+                    : isOwn
+                        ? 'bg-lime/10'
+                        : 'bg-white/10'
                     }`}
             >
                 <span
@@ -76,8 +76,8 @@ export function ChatMessageBubble({
                                 src={fileUrl}
                                 alt={message}
                                 className={`object-cover transition-all duration-300 ${imageExpanded
-                                        ? 'max-w-lg max-h-[500px]'
-                                        : 'max-w-[240px] max-h-[180px]'
+                                    ? 'max-w-lg max-h-[500px]'
+                                    : 'max-w-[240px] max-h-[180px]'
                                     }`}
                                 loading="lazy"
                             />
@@ -95,10 +95,10 @@ export function ChatMessageBubble({
                     /* Text Message */
                     <div
                         className={`inline-block px-4 py-2.5 rounded-2xl text-sm ${isOwn
-                                ? 'bg-lime text-black rounded-br-md'
-                                : isAdmin
-                                    ? 'bg-lime/10 border border-lime/20 rounded-bl-md'
-                                    : 'bg-white/5 rounded-bl-md'
+                            ? 'bg-lime text-black rounded-br-md'
+                            : isAdmin
+                                ? 'bg-lime/10 border border-lime/20 rounded-bl-md'
+                                : 'bg-white/5 rounded-bl-md'
                             }`}
                     >
                         {message}
@@ -109,7 +109,7 @@ export function ChatMessageBubble({
             {/* Expanded Image Overlay */}
             {imageExpanded && isImage && (
                 <div
-                    className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center cursor-pointer"
+                    className="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center cursor-pointer"
                     onClick={() => setImageExpanded(false)}
                 >
                     <img

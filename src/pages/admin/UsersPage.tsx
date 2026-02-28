@@ -170,7 +170,7 @@ export function UsersPage() {
         <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Users</h1>
+                    <h1 className="text-2xl font-bold text-white">Members</h1>
                     <p className="text-gray-400 mt-1">Manage roles, companies, and program memberships</p>
                 </div>
                 <button
@@ -178,7 +178,7 @@ export function UsersPage() {
                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium gradient-lime text-black hover:opacity-90 transition"
                 >
                     <UserPlus className="h-4 w-4" />
-                    Invite User
+                    Add Member
                 </button>
             </div>
 

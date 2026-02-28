@@ -8,8 +8,6 @@ import { LoginPage } from '@/pages/LoginPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { OwnerDashboard } from '@/pages/OwnerDashboard'
 import { ParticipantDashboard } from '@/pages/ParticipantDashboard'
-import { SessionsPage } from '@/pages/SessionsPage'
-import { AssignmentsPage } from '@/pages/AssignmentsPage'
 import { ChatPage } from '@/pages/ChatPage'
 import { AnalyticsDashboard } from '@/pages/AnalyticsDashboard'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -22,11 +20,7 @@ import { CompaniesPage } from '@/pages/admin/CompaniesPage'
 import { CompanyWorkspacePage } from '@/pages/admin/CompanyWorkspacePage'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { ProgramsPage } from '@/pages/admin/ProgramsPage'
-import { ProgramSessionsPage } from '@/pages/admin/ProgramSessionsPage'
 import { UsersPage } from '@/pages/admin/UsersPage'
-import { SessionsAdminPage } from '@/pages/admin/SessionsAdminPage'
-import { AssignmentsAdminPage } from '@/pages/admin/AssignmentsAdminPage'
-import { ToolboxPage } from '@/pages/ToolboxPage'
 import { MyProgramPage } from '@/pages/MyProgramPage'
 
 function App() {
@@ -112,31 +106,7 @@ function App() {
                                 }
                             />
                             <Route
-                                path="admin/sessions"
-                                element={
-                                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                                        <SessionsAdminPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="admin/assignments"
-                                element={
-                                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                                        <AssignmentsAdminPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="admin/programs/:programId/sessions"
-                                element={
-                                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                                        <ProgramSessionsPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="admin/users"
+                                path="admin/members"
                                 element={
                                     <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                         <UsersPage />
@@ -170,22 +140,6 @@ function App() {
                                 }
                             />
                             <Route
-                                path="sessions"
-                                element={
-                                    <MemberRoute>
-                                        <SessionsPage />
-                                    </MemberRoute>
-                                }
-                            />
-                            <Route
-                                path="assignments"
-                                element={
-                                    <MemberRoute>
-                                        <AssignmentsPage />
-                                    </MemberRoute>
-                                }
-                            />
-                            <Route
                                 path="chat"
                                 element={
                                     <ProtectedRoute allowedRoles={['owner', 'admin', 'executive', 'participant']}>
@@ -203,14 +157,6 @@ function App() {
                             />
                             <Route path="settings" element={<SettingsPage />} />
                             <Route path="notifications" element={<NotificationsPage />} />
-                            <Route
-                                path="toolbox"
-                                element={
-                                    <MemberRoute>
-                                        <ToolboxPage />
-                                    </MemberRoute>
-                                }
-                            />
 
                         </Route>
 
