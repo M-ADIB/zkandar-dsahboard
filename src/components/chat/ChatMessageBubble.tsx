@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { Pin } from 'lucide-react'
 
@@ -106,8 +107,8 @@ export function ChatMessageBubble({
                 )}
             </div>
 
-            {/* Expanded Image Overlay */}
-            {imageExpanded && isImage && (
+            {/* Expanded Image Overlay — portalled to body */}
+            {imageExpanded && isImage && createPortal(
                 <div
                     className="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center cursor-pointer"
                     onClick={() => setImageExpanded(false)}
@@ -117,7 +118,8 @@ export function ChatMessageBubble({
                         alt={message}
                         className="max-w-[90vw] max-h-[90vh] object-contain rounded-xl"
                     />
-                </div>
+                </div>,
+                document.body
             )}
         </motion.div>
     )
