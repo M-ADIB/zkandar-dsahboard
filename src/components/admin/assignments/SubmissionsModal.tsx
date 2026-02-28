@@ -19,6 +19,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
     const [error, setError] = useState<string | null>(null)
     const [savingId, setSavingId] = useState<string | null>(null)
     const [feedbackDrafts, setFeedbackDrafts] = useState<Record<string, string>>({})
+    const [scoreDrafts, setScoreDrafts] = useState<Record<string, number | null>>({})
 
     useEffect(() => {
         if (!isOpen || !assignment) return
@@ -30,7 +31,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
             const { data, error: fetchError } = await supabase
                 .from('submissions')
-                .select('id, assignment_id, user_id, content, submitted_at, status, admin_feedback, user:users(id, full_name, email)')
+                .select('id, assignment_id, user_id, content, submitted_at, status, admin_feedback, score, user:users(id, full_name, email)')
                 .eq('assignment_id', assignment.id)
                 .order('submitted_at', { ascending: false })
 
@@ -42,7 +43,8 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
             } else {
                 const rows = (data as SubmissionRow[]) ?? []
                 setSubmissions(rows)
-                setFeedbackDrafts(Object.fromEntries(rows.map((row) => [row.id, row.admin_feedback ?? ''])))
+                setFeedbackDrafts(Object.fromEntries(rows.map((row: SubmissionRow) => [row.id, row.admin_feedback ?? ''])))
+                setScoreDrafts(Object.fromEntries(rows.map((row: SubmissionRow) => [row.id, row.score ?? null])))
             }
 
             setIsLoading(false)
@@ -57,6 +59,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
     const handleSave = async (submissionId: string) => {
         const feedback = feedbackDrafts[submissionId] ?? ''
+        const score = scoreDrafts[submissionId] ?? null
         setSavingId(submissionId)
 
         const { error: updateError } = await supabase
@@ -64,6 +67,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
             // @ts-expect-error - Supabase update type inference issue
             .update({
                 admin_feedback: feedback.trim() || null,
+                score,
                 status: 'reviewed',
             })
             .eq('id', submissionId)
@@ -76,7 +80,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
         setSubmissions((prev) => prev.map((row) => (
             row.id === submissionId
-                ? { ...row, admin_feedback: feedback.trim() || null, status: 'reviewed' }
+                ? { ...row, admin_feedback: feedback.trim() || null, score, status: 'reviewed' }
                 : row
         )))
         setSavingId(null)
@@ -130,6 +134,28 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
                     >
                         {submission.status === 'reviewed' ? 'Reviewed' : 'Pending'}
                     </span>
+                </div>
+
+                <div>
+                    <label className="block text-xs text-gray-400 mb-1">Score (0–100)</label>
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            step={5}
+                            value={scoreDrafts[submission.id] ?? 0}
+                            onChange={(e) =>
+                                setScoreDrafts((prev) => ({ ...prev, [submission.id]: Number(e.target.value) }))
+                            }
+                            className="flex-1 h-2 rounded-full appearance-none bg-bg-elevated accent-lime cursor-pointer"
+                        />
+                        <span className={`text-sm font-bold min-w-[3ch] text-right ${(scoreDrafts[submission.id] ?? 0) < 30 ? 'text-red-400' :
+                            (scoreDrafts[submission.id] ?? 0) < 60 ? 'text-amber-400' : 'text-lime'
+                            }`}>
+                            {scoreDrafts[submission.id] ?? 0}
+                        </span>
+                    </div>
                 </div>
 
                 <div>

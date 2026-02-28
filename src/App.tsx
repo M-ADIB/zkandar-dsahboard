@@ -22,6 +22,7 @@ import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { ProgramsPage } from '@/pages/admin/ProgramsPage'
 import { UsersPage } from '@/pages/admin/UsersPage'
 import { MyProgramPage } from '@/pages/MyProgramPage'
+import { MyPerformancePage } from '@/pages/MyPerformancePage'
 
 function App() {
     return (
@@ -152,6 +153,14 @@ function App() {
                                 element={
                                     <MemberRoute>
                                         <MyProgramPage />
+                                    </MemberRoute>
+                                }
+                            />
+                            <Route
+                                path="my-performance"
+                                element={
+                                    <MemberRoute>
+                                        <MyPerformancePage />
                                     </MemberRoute>
                                 }
                             />

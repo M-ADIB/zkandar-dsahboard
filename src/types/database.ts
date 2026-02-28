@@ -179,6 +179,7 @@ export interface Submission {
     submitted_at: string
     status: SubmissionStatus
     admin_feedback: string | null
+    score: number | null
 }
 
 export interface SubmissionContent {

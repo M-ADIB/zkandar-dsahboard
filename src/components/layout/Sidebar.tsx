@@ -97,6 +97,12 @@ const memberNavItems: NavItem[] = [
         roles: ['owner', 'admin', 'executive', 'participant'],
     },
     {
+        icon: TrendingUp,
+        label: 'My Performance',
+        path: '/my-performance',
+        roles: ['owner', 'admin', 'executive', 'participant'],
+    },
+    {
         icon: MessageSquare,
         label: 'Chat',
         path: '/chat',
