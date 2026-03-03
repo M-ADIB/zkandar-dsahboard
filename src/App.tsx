@@ -13,6 +13,7 @@ import { AnalyticsDashboard } from '@/pages/AnalyticsDashboard'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { OnboardingSurvey } from '@/components/onboarding/OnboardingSurvey'
 import { SprintWorkshopOnboarding } from '@/pages/onboarding/SprintWorkshopOnboarding'
+import { EventsApplyPage } from '@/pages/public/EventsApplyPage'
 
 import { NotificationProvider } from '@/context/NotificationContext'
 import { NotificationsPage } from '@/pages/NotificationsPage'
@@ -21,6 +22,7 @@ import { CompanyWorkspacePage } from '@/pages/admin/CompanyWorkspacePage'
 import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { ProgramsPage } from '@/pages/admin/ProgramsPage'
 import { UsersPage } from '@/pages/admin/UsersPage'
+import { EventsPage } from '@/pages/admin/EventsPage'
 import { MyProgramPage } from '@/pages/MyProgramPage'
 import { MyPerformancePage } from '@/pages/MyPerformancePage'
 
@@ -34,6 +36,7 @@ function App() {
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/signup" element={<SignupPage />} />
                         <Route path="/signup/:token" element={<SignupPage />} />
+                        <Route path="/events-apply" element={<EventsApplyPage />} />
 
                         {/* Onboarding (full-screen) */}
                         <Route
@@ -111,6 +114,14 @@ function App() {
                                 element={
                                     <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                         <UsersPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/events"
+                                element={
+                                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                        <EventsPage />
                                     </ProtectedRoute>
                                 }
                             />

@@ -16,6 +16,7 @@ import {
     Search,
     Eye,
     EyeOff,
+    Mic,
 } from 'lucide-react'
 import type { User, UserRole } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -73,6 +74,12 @@ const adminNavItems: NavItem[] = [
         icon: BarChart3,
         label: 'Analytics',
         path: '/admin/analytics',
+        roles: ['owner', 'admin'],
+    },
+    {
+        icon: Mic,
+        label: 'Events',
+        path: '/admin/events',
         roles: ['owner', 'admin'],
     },
     {
