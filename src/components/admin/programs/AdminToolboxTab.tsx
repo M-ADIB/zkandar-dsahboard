@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-    Plus, Pencil, Trash2, ExternalLink, ToggleLeft, ToggleRight, Wrench
+    Plus, Pencil, Trash2, ExternalLink, ToggleLeft, ToggleRight, Wrench, Video
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import type { ToolboxItem } from '@/types/database'
@@ -116,7 +116,15 @@ export function AdminToolboxTab() {
                                 >
                                     <td className="px-5 py-3.5">
                                         <div>
-                                            <p className="font-medium text-white">{item.title}</p>
+                                            <div className="flex items-center gap-1.5">
+                                                <p className="font-medium text-white">{item.title}</p>
+                                                {item.vimeo_url && (
+                                                    <span className="shrink-0 px-1.5 py-0.5 text-[10px] rounded border bg-blue-500/10 text-blue-300 border-blue-500/30 flex items-center gap-0.5">
+                                                        <Video className="h-2.5 w-2.5" />
+                                                        Video
+                                                    </span>
+                                                )}
+                                            </div>
                                             {item.description && (
                                                 <p className="text-xs text-gray-500 mt-0.5 max-w-xs truncate">{item.description}</p>
                                             )}

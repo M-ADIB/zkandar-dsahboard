@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Wrench, ExternalLink, Search, Filter } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Wrench, ExternalLink, Search, Filter, Play, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { ToolboxItem } from '@/types/database'
+import { parseVimeoEmbedUrl } from '@/lib/vimeo'
 
 const importanceConfig = {
     essential: { label: 'Essential', color: 'text-red-300', bg: 'bg-red-500/10 border-red-500/30', dot: 'bg-red-400' },
@@ -26,6 +27,7 @@ export function ToolboxPage() {
     const [filterCategory, setFilterCategory] = useState('all')
     const [filterType, setFilterType] = useState('all')
     const [filterImportance, setFilterImportance] = useState('all')
+    const [selectedVideoItem, setSelectedVideoItem] = useState<ToolboxItem | null>(null)
 
     useEffect(() => {
         const fetch = async () => {
@@ -39,6 +41,15 @@ export function ToolboxPage() {
         }
         fetch()
     }, [])
+
+    useEffect(() => {
+        if (!selectedVideoItem) return
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setSelectedVideoItem(null)
+        }
+        window.addEventListener('keydown', handleKey)
+        return () => window.removeEventListener('keydown', handleKey)
+    }, [selectedVideoItem])
 
     const categories = useMemo(() =>
         ['all', ...Array.from(new Set(items.map(i => i.category))).sort()]
@@ -66,6 +77,8 @@ export function ToolboxPage() {
     }, [filtered])
 
     const selectClass = 'px-3 py-1.5 bg-bg-elevated border border-border rounded-xl text-sm text-gray-300 focus:outline-none focus:border-lime/40 transition'
+
+    const lightboxEmbedUrl = selectedVideoItem ? parseVimeoEmbedUrl(selectedVideoItem.vimeo_url ?? '') : null
 
     return (
         <div className="space-y-6 max-w-full">
@@ -135,6 +148,7 @@ export function ToolboxPage() {
                     {sorted.map((item, i) => {
                         const imp = importanceConfig[item.importance]
                         const tt = toolTypeConfig[item.tool_type] ?? { label: item.tool_type, color: 'text-gray-400' }
+                        const embedUrl = parseVimeoEmbedUrl(item.vimeo_url ?? '')
                         return (
                             <motion.div
                                 key={item.id}
@@ -174,20 +188,81 @@ export function ToolboxPage() {
                                     </span>
                                 </div>
 
-                                {/* CTA */}
-                                <a
-                                    href={item.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-lime/10 border border-lime/20 text-lime text-sm font-medium hover:bg-lime/20 transition group-hover:border-lime/40"
-                                >
-                                    Open Tool <ExternalLink className="h-3.5 w-3.5" />
-                                </a>
+                                {/* CTAs */}
+                                <div className="flex flex-col gap-2">
+                                    <a
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-lime/10 border border-lime/20 text-lime text-sm font-medium hover:bg-lime/20 transition group-hover:border-lime/40"
+                                    >
+                                        Open Tool <ExternalLink className="h-3.5 w-3.5" />
+                                    </a>
+                                    {embedUrl && (
+                                        <button
+                                            onClick={() => setSelectedVideoItem(item)}
+                                            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium hover:bg-blue-500/20 transition"
+                                        >
+                                            <Play className="h-3.5 w-3.5" />
+                                            Watch Video
+                                        </button>
+                                    )}
+                                </div>
                             </motion.div>
                         )
                     })}
                 </div>
             )}
+
+            {/* Vimeo Video Lightbox */}
+            <AnimatePresence>
+                {selectedVideoItem && lightboxEmbedUrl && (
+                    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedVideoItem(null)}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+                        />
+
+                        {/* Dialog */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                            className="relative w-full max-w-3xl bg-bg-card border border-border rounded-2xl overflow-hidden shadow-2xl"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+                                <div className="flex items-center gap-2">
+                                    <Play className="h-4 w-4 text-blue-300" />
+                                    <h3 className="text-sm font-semibold text-white">
+                                        {selectedVideoItem.title}
+                                    </h3>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedVideoItem(null)}
+                                    className="p-1.5 rounded-lg hover:bg-white/10 transition"
+                                >
+                                    <X className="h-4 w-4 text-gray-400" />
+                                </button>
+                            </div>
+
+                            {/* Video */}
+                            <div className="aspect-video">
+                                <iframe
+                                    src={lightboxEmbedUrl}
+                                    className="w-full h-full border-0"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    title={`${selectedVideoItem.title} video`}
+                                />
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

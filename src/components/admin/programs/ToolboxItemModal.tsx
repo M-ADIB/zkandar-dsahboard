@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ExternalLink } from 'lucide-react'
+import { X, ExternalLink, Video } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import type { ToolboxItem, ToolboxImportance, ToolboxToolType } from '@/types/database'
+import { parseVimeoEmbedUrl } from '@/lib/vimeo'
 
 interface ToolboxItemModalProps {
     isOpen: boolean
@@ -34,6 +35,7 @@ const defaultForm = {
     category: '',
     tool_type: 'other' as ToolboxToolType,
     is_active: true,
+    vimeo_url: '',
 }
 
 const inputClass = 'w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-lime/50 transition'
@@ -55,12 +57,15 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                 category: item.category,
                 tool_type: item.tool_type,
                 is_active: item.is_active,
+                vimeo_url: item.vimeo_url ?? '',
             })
         } else {
             setForm(defaultForm)
         }
         setError(null)
     }, [item, isOpen])
+
+    const embedUrl = parseVimeoEmbedUrl(form.vimeo_url)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -74,6 +79,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
         const payload = {
             ...form,
             description: form.description.trim() || null,
+            vimeo_url: embedUrl,
             updated_at: new Date().toISOString(),
         }
 
@@ -103,7 +109,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                         initial={{ opacity: 0, scale: 0.96, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.96, y: 16 }}
-                        className="relative w-full max-w-lg bg-bg-card border border-border rounded-2xl shadow-2xl overflow-hidden"
+                        className={`relative w-full ${embedUrl ? 'max-w-2xl' : 'max-w-lg'} bg-bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transition-all duration-200`}
                     >
                         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                             <h2 className="text-lg font-semibold text-white">
@@ -174,6 +180,47 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                     </label>
                                 </div>
                             </div>
+
+                            {/* Vimeo Video URL */}
+                            <div>
+                                <label className={labelClass}>
+                                    <Video className="inline h-3.5 w-3.5 mr-1.5 text-gray-500" />
+                                    Vimeo Video URL
+                                    <span className="ml-1.5 text-gray-600 font-normal">(optional)</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    className={inputClass}
+                                    placeholder="https://vimeo.com/123456789 or paste embed URL"
+                                    value={form.vimeo_url}
+                                    onChange={e => setForm({ ...form, vimeo_url: e.target.value })}
+                                />
+                                {form.vimeo_url && !embedUrl && (
+                                    <p className="mt-1 text-xs text-red-400">
+                                        Not a recognized Vimeo URL. Try vimeo.com/123456789
+                                    </p>
+                                )}
+                                {embedUrl && (
+                                    <p className="mt-1 text-xs text-lime/70">Valid Vimeo video detected</p>
+                                )}
+                            </div>
+
+                            {/* Live video preview */}
+                            {embedUrl && (
+                                <div className="rounded-xl overflow-hidden border border-border">
+                                    <p className="px-3 py-1.5 text-[11px] text-gray-500 bg-bg-elevated border-b border-border">
+                                        Video Preview
+                                    </p>
+                                    <div className="aspect-video">
+                                        <iframe
+                                            src={embedUrl}
+                                            className="w-full h-full border-0"
+                                            allow="fullscreen"
+                                            title="Vimeo Preview"
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             {form.url && (
                                 <a href={form.url} target="_blank" rel="noopener noreferrer"

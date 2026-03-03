@@ -22,6 +22,7 @@ export interface ToolboxItem {
     tool_type: ToolboxToolType
     order_index: number
     is_active: boolean
+    vimeo_url: string | null
     created_at: string
     updated_at: string
 }
@@ -349,6 +350,7 @@ export interface Database {
                     tool_type?: ToolboxToolType
                     order_index?: number
                     is_active?: boolean
+                    vimeo_url?: string | null
                 }
                 Update: Partial<Omit<ToolboxItem, 'id' | 'created_at'>>
             }
