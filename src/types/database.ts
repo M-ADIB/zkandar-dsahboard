@@ -380,57 +380,8 @@ export interface Database {
             }
             event_requests: {
                 Row: EventRequest
-                Insert: {
-                    id?: string
-                    full_name: string
-                    email: string
-                    company: string
-                    role_title: string
-                    event_type: string
-                    proposed_date: string
-                    venue: string
-                    audience_size: number
-                    event_description: string
-                    session_format: string
-                    duration: string
-                    has_moderator: boolean
-                    has_qa: boolean
-                    available_tech: string[]
-                    vip_notes?: string | null
-                    marketing_flyer: string
-                    contact_name: string
-                    contact_phone: string
-                    other_notes?: string | null
-                    status?: 'pending' | 'approved' | 'declined' | 'done'
-                    admin_notes?: string | null
-                    created_at?: string
-                }
-                Update: {
-                    id?: string
-                    full_name?: string
-                    email?: string
-                    company?: string
-                    role_title?: string
-                    event_type?: string
-                    proposed_date?: string
-                    venue?: string
-                    audience_size?: number
-                    event_description?: string
-                    session_format?: string
-                    duration?: string
-                    has_moderator?: boolean
-                    has_qa?: boolean
-                    available_tech?: string[]
-                    vip_notes?: string | null
-                    marketing_flyer?: string
-                    contact_name?: string
-                    contact_phone?: string
-                    other_notes?: string | null
-                    status?: 'pending' | 'approved' | 'declined' | 'done'
-                    admin_notes?: string | null
-                    created_at?: string
-                }
-                Relationships: []
+                Insert: Omit<EventRequest, 'id' | 'created_at'>
+                Update: Partial<Omit<EventRequest, 'id' | 'created_at'>>
             }
         }
         Views: {

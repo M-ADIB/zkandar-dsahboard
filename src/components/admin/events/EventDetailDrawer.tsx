@@ -25,10 +25,10 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
     const handleStatusUpdate = async (newStatus: EventRequest['status']) => {
         setIsUpdating(true)
         try {
-            // Update the status and admin notes in database
-            const { data, error } = await supabase
-                .from('event_requests')
-                .update({ status: newStatus, admin_notes: adminNotes })
+            const payload: any = { status: newStatus, admin_notes: adminNotes }
+            const query: any = supabase.from('event_requests')
+            const { data, error } = await query
+                .update(payload)
                 .eq('id', event.id)
                 .select()
                 .single()
@@ -58,9 +58,10 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
     const handleSaveNotes = async () => {
         setIsUpdating(true)
         try {
-            const { data, error } = await supabase
-                .from('event_requests')
-                .update({ admin_notes: adminNotes })
+            const payload: any = { admin_notes: adminNotes }
+            const query: any = supabase.from('event_requests')
+            const { data, error } = await query
+                .update(payload)
                 .eq('id', event.id)
                 .select()
                 .single()

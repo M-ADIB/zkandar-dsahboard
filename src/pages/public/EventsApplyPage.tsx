@@ -82,13 +82,17 @@ export const EventsApplyPage = () => {
         setIsSubmitting(true);
 
         try {
+            const payload: any = {
+                ...step1Data,
+                audience_size: parseInt(step1Data.audience_size.toString()) || 0,
+                ...step2Data,
+                status: 'pending',
+                admin_notes: null
+            };
+
             const { error } = await supabase
                 .from('event_requests')
-                .insert([{
-                    ...step1Data,
-                    audience_size: parseInt(step1Data.audience_size.toString()) || 0,
-                    ...step2Data
-                }]);
+                .insert([payload] as any);
 
             if (error) throw error;
             setIsSuccess(true);
