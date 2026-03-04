@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import logoSrc from '../../assets/logo.png';
 
 // Step 1 Basics
 interface Step1Data {
@@ -115,8 +116,16 @@ export const EventsApplyPage = () => {
 
     if (isSuccess) {
         return (
-            <div className="min-h-screen bg-[#0B0B0B] text-white flex flex-col items-center justify-center p-6 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat">
-                <div className="max-w-md w-full text-center space-y-6">
+            <div className="min-h-screen bg-[#0B0B0B] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                {/* Fixed Noise Overlay */}
+                <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
+
+                {/* Huge Background Badge/Logo */}
+                <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
+                    <img src={logoSrc} alt="" className="w-[200%] md:w-[150%] lg:w-[120%] max-w-none grayscale object-cover" />
+                </div>
+
+                <div className="max-w-md w-full text-center space-y-6 relative z-10">
                     <div className="w-16 h-16 bg-[#D0FF71]/20 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="w-8 h-8 text-[#D0FF71]" />
                     </div>
@@ -136,13 +145,21 @@ export const EventsApplyPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#0B0B0B] text-white selection:bg-[#D0FF71]/30 selection:text-white pb-24 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat relative">
+        <div className="min-h-screen bg-[#0B0B0B] text-white selection:bg-[#D0FF71]/30 selection:text-white pb-24 relative overflow-hidden">
             {/* Ambient gradients matching branding */}
-            <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full point-events-none" />
+            <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0" />
+
+            {/* Fixed Noise Overlay */}
+            <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
+
+            {/* Huge Background Badge/Logo */}
+            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
+                <img src={logoSrc} alt="" className="w-[200%] md:w-[150%] lg:w-[120%] max-w-none grayscale object-cover" />
+            </div>
 
             <div className="max-w-2xl mx-auto px-6 pt-16 relative z-10">
                 <div className="flex items-center space-x-3 mb-12">
-                    <img src="/logo.png" alt="Zkandar AI" className="h-8 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                     <span className="text-xl font-bold font-neue">Zkandar AI</span>
                 </div>
 
