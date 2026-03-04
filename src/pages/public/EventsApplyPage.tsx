@@ -122,14 +122,14 @@ export const EventsApplyPage = () => {
 
                 {/* Huge Background Badge/Logo */}
                 <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
-                    <img src={logoSrc} alt="" className="w-[200%] md:w-[150%] lg:w-[120%] max-w-none grayscale object-cover" />
+                    <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
                 </div>
 
                 <div className="max-w-md w-full text-center space-y-6 relative z-10">
                     <div className="w-16 h-16 bg-[#D0FF71]/20 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="w-8 h-8 text-[#D0FF71]" />
                     </div>
-                    <h1 className="text-3xl font-black font-neue tracking-tight">Request Received.</h1>
+                    <h1 className="text-3xl font-black font-neue tracking-wider">Request Received.</h1>
                     <p className="text-gray-400 font-medium">
                         Thank you for reaching out to book Khaled Iskandar. Our operations team will review your request and get back to you shortly.
                     </p>
@@ -154,7 +154,7 @@ export const EventsApplyPage = () => {
 
             {/* Huge Background Badge/Logo */}
             <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
-                <img src={logoSrc} alt="" className="w-[200%] md:w-[150%] lg:w-[120%] max-w-none grayscale object-cover" />
+                <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
             </div>
 
             <div className="max-w-2xl mx-auto px-6 pt-16 relative z-10">
@@ -164,7 +164,7 @@ export const EventsApplyPage = () => {
                 </div>
 
                 <div className="mb-8">
-                    <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-tight mb-3">Book Khaled for a Talk</h1>
+                    <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-wider mb-3">Book Khaled for a Talk</h1>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Basics</span>
                         <ChevronRight className="w-4 h-4 mx-2" />
