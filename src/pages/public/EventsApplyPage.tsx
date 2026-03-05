@@ -22,8 +22,11 @@ interface Step2Data {
     session_format: string;
     duration: string;
     has_moderator: boolean;
+    intro_handler: string;
     has_qa: boolean;
+    has_catering: boolean;
     available_tech: string[];
+    parking_notes: string;
     vip_notes: string;
     marketing_flyer: string;
     contact_name: string;
@@ -41,7 +44,7 @@ export const EventsApplyPage = () => {
         email: '',
         company: '',
         role_title: '',
-        event_type: 'Corporate Keynote',
+        event_type: 'AI Lunch & Learn',
         proposed_date: '',
         venue: '',
         audience_size: '',
@@ -52,10 +55,13 @@ export const EventsApplyPage = () => {
         session_format: 'Solo presentation',
         duration: '60 min',
         has_moderator: false,
+        intro_handler: '',
         has_qa: true,
+        has_catering: false,
         available_tech: [],
+        parking_notes: '',
         vip_notes: '',
-        marketing_flyer: 'Yes',
+        marketing_flyer: 'Our team will create it',
         contact_name: '',
         contact_phone: '',
         other_notes: ''
@@ -66,7 +72,8 @@ export const EventsApplyPage = () => {
         'Lapel microphone',
         'Handheld microphone',
         'High-speed WiFi',
-        'Backup laptop'
+        'Backup laptop',
+        'Presentation Clicker'
     ];
 
     const handleNext = (e: React.FormEvent) => {
@@ -114,17 +121,16 @@ export const EventsApplyPage = () => {
         }));
     };
 
+    const inputCls = "w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:lowercase";
+    const labelCls = "text-sm font-bold text-gray-300";
+
     if (isSuccess) {
         return (
             <div className="min-h-screen bg-[#0B0B0B] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
-                {/* Fixed Noise Overlay */}
                 <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
-
-                {/* Huge Background Badge/Logo */}
                 <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
                     <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
                 </div>
-
                 <div className="max-w-md w-full text-center space-y-6 relative z-10">
                     <div className="w-16 h-16 bg-[#D0FF71]/20 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="w-8 h-8 text-[#D0FF71]" />
@@ -146,25 +152,29 @@ export const EventsApplyPage = () => {
 
     return (
         <div className="min-h-screen bg-[#0B0B0B] text-white selection:bg-[#D0FF71]/30 selection:text-white pb-24 relative overflow-hidden">
-            {/* Ambient gradients matching branding */}
+            {/* Ambient gradient */}
             <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0" />
 
-            {/* Fixed Noise Overlay */}
+            {/* Noise overlay */}
             <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
 
-            {/* Huge Background Badge/Logo */}
+            {/* Huge background logo */}
             <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
                 <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
             </div>
 
             <div className="max-w-2xl mx-auto px-6 pt-16 relative z-10">
+                {/* Logo */}
                 <div className="flex items-center space-x-3 mb-12">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                     <span className="text-xl font-bold font-neue">Zkandar AI</span>
                 </div>
 
+                {/* Title & Breadcrumb */}
                 <div className="mb-8">
-                    <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-wider mb-3">Book Khaled for a Talk</h1>
+                    <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-wider mb-3">
+                        Book Khaled | AI Talk
+                    </h1>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Basics</span>
                         <ChevronRight className="w-4 h-4 mx-2" />
@@ -186,54 +196,72 @@ export const EventsApplyPage = () => {
                             >
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Full Name *</label>
-                                        <input required type="text" value={step1Data.full_name} onChange={e => setStep1Data({ ...step1Data, full_name: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="Jane Doe" />
+                                        <label className={labelCls}>Full Name *</label>
+                                        <input required type="text" value={step1Data.full_name}
+                                            onChange={e => setStep1Data({ ...step1Data, full_name: e.target.value })}
+                                            className={inputCls} placeholder="ex. full name" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Email Address *</label>
-                                        <input required type="email" value={step1Data.email} onChange={e => setStep1Data({ ...step1Data, email: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="jane@company.com" />
+                                        <label className={labelCls}>Email Address *</label>
+                                        <input required type="email" value={step1Data.email}
+                                            onChange={e => setStep1Data({ ...step1Data, email: e.target.value })}
+                                            className={inputCls} placeholder="ex. email address" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Company / Organization *</label>
-                                        <input required type="text" value={step1Data.company} onChange={e => setStep1Data({ ...step1Data, company: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="Acme Corp" />
+                                        <label className={labelCls}>Company / Organization *</label>
+                                        <input required type="text" value={step1Data.company}
+                                            onChange={e => setStep1Data({ ...step1Data, company: e.target.value })}
+                                            className={inputCls} placeholder="ex. company name" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Your Role / Title *</label>
-                                        <input required type="text" value={step1Data.role_title} onChange={e => setStep1Data({ ...step1Data, role_title: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="Events Manager" />
+                                        <label className={labelCls}>Your Role / Title *</label>
+                                        <input required type="text" value={step1Data.role_title}
+                                            onChange={e => setStep1Data({ ...step1Data, role_title: e.target.value })}
+                                            className={inputCls} placeholder="ex. events manager" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-300">Event Type *</label>
-                                    <select required value={step1Data.event_type} onChange={e => setStep1Data({ ...step1Data, event_type: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors appearance-none">
-                                        <option>Corporate Keynote</option>
-                                        <option>Panel Discussion</option>
-                                        <option>Conference Session</option>
+                                    <label className={labelCls}>Event Type *</label>
+                                    <select required value={step1Data.event_type}
+                                        onChange={e => setStep1Data({ ...step1Data, event_type: e.target.value })}
+                                        className={`${inputCls} appearance-none`}>
+                                        <option>AI Lunch &amp; Learn</option>
+                                        <option>AI Keynote</option>
+                                        <option>AI Panel Discussion</option>
                                         <option>Community Event</option>
                                         <option>Product Launch</option>
-                                        <option>Other</option>
                                     </select>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Proposed Date / Month *</label>
-                                        <input required type="text" value={step1Data.proposed_date} onChange={e => setStep1Data({ ...step1Data, proposed_date: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="e.g. Second week of April 2026" />
+                                        <label className={labelCls}>Proposed Date *</label>
+                                        <input required type="date" value={step1Data.proposed_date}
+                                            onChange={e => setStep1Data({ ...step1Data, proposed_date: e.target.value })}
+                                            className={`${inputCls} [color-scheme:dark]`} />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Expected Audience Size *</label>
-                                        <input required type="number" min="1" value={step1Data.audience_size} onChange={e => setStep1Data({ ...step1Data, audience_size: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="100" />
+                                        <label className={labelCls}>Expected Audience Size *</label>
+                                        <input required type="number" min="1" value={step1Data.audience_size}
+                                            onChange={e => setStep1Data({ ...step1Data, audience_size: e.target.value })}
+                                            className={inputCls} placeholder="ex. 100" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-300">Venue / Location *</label>
-                                    <input required type="text" value={step1Data.venue} onChange={e => setStep1Data({ ...step1Data, venue: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="Hyatt Regency, Dubai" />
+                                    <label className={labelCls}>Venue / Location *</label>
+                                    <input required type="text" value={step1Data.venue}
+                                        onChange={e => setStep1Data({ ...step1Data, venue: e.target.value })}
+                                        className={inputCls} placeholder="ex. venue name and city" />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-300">Brief Description of the Event *</label>
-                                    <textarea required value={step1Data.event_description} onChange={e => setStep1Data({ ...step1Data, event_description: e.target.value })} rows={3} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors resize-none" placeholder="What is the core theme and goal of this event?" />
+                                    <label className={labelCls}>Brief Description of the Event *</label>
+                                    <textarea required value={step1Data.event_description}
+                                        onChange={e => setStep1Data({ ...step1Data, event_description: e.target.value })}
+                                        rows={3} className={`${inputCls} resize-none`}
+                                        placeholder="ex. describe the core theme and goal of this event" />
                                 </div>
 
                                 <button type="submit" className="w-full py-4 bg-[#D0FF71] text-[#0B0B0B] rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-[#bceb5f] transition-colors flex items-center justify-center space-x-2">
@@ -256,10 +284,13 @@ export const EventsApplyPage = () => {
                                     <span>Back to Basics</span>
                                 </button>
 
+                                {/* Session Format & Duration */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Session Format *</label>
-                                        <select required value={step2Data.session_format} onChange={e => setStep2Data({ ...step2Data, session_format: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors appearance-none">
+                                        <label className={labelCls}>Session Format *</label>
+                                        <select required value={step2Data.session_format}
+                                            onChange={e => setStep2Data({ ...step2Data, session_format: e.target.value })}
+                                            className={`${inputCls} appearance-none`}>
                                             <option>Solo presentation</option>
                                             <option>Panel</option>
                                             <option>Workshop</option>
@@ -267,8 +298,10 @@ export const EventsApplyPage = () => {
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Duration Needed *</label>
-                                        <select required value={step2Data.duration} onChange={e => setStep2Data({ ...step2Data, duration: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors appearance-none">
+                                        <label className={labelCls}>Duration Needed *</label>
+                                        <select required value={step2Data.duration}
+                                            onChange={e => setStep2Data({ ...step2Data, duration: e.target.value })}
+                                            className={`${inputCls} appearance-none`}>
                                             <option>30 min</option>
                                             <option>45 min</option>
                                             <option>60 min</option>
@@ -278,25 +311,50 @@ export const EventsApplyPage = () => {
                                     </div>
                                 </div>
 
+                                {/* Moderator + Q&A */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-3">
-                                        <label className="text-sm font-bold text-gray-300">Will there be a moderator?</label>
+                                        <label className={labelCls}>Will there be a moderator?</label>
                                         <div className="flex bg-[#0B0B0B] border border-gray-800 rounded-xl p-1">
-                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_moderator: true })} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${step2Data.has_moderator ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>Yes</button>
-                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_moderator: false })} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${!step2Data.has_moderator ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>No</button>
+                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_moderator: true })}
+                                                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${step2Data.has_moderator ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>Yes</button>
+                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_moderator: false })}
+                                                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${!step2Data.has_moderator ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>No</button>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-sm font-bold text-gray-300">Dedicated Q&A Session?</label>
+                                        <label className={labelCls}>Dedicated Q&A Session?</label>
                                         <div className="flex bg-[#0B0B0B] border border-gray-800 rounded-xl p-1">
-                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_qa: true })} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${step2Data.has_qa ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>Yes</button>
-                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_qa: false })} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${!step2Data.has_qa ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>No</button>
+                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_qa: true })}
+                                                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${step2Data.has_qa ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>Yes</button>
+                                            <button type="button" onClick={() => setStep2Data({ ...step2Data, has_qa: false })}
+                                                className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${!step2Data.has_qa ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>No</button>
                                         </div>
                                     </div>
                                 </div>
 
+                                {/* Introduction Handler */}
+                                <div className="space-y-2">
+                                    <label className={labelCls}>Who will handle the speaker introduction? (Optional)</label>
+                                    <input type="text" value={step2Data.intro_handler}
+                                        onChange={e => setStep2Data({ ...step2Data, intro_handler: e.target.value })}
+                                        className={inputCls} placeholder="ex. event host, mc, or company representative" />
+                                </div>
+
+                                {/* Catering */}
                                 <div className="space-y-3">
-                                    <label className="text-sm font-bold text-gray-300">Available Tech / AV Setup *</label>
+                                    <label className={labelCls}>Will refreshments / catering be available at the event?</label>
+                                    <div className="flex bg-[#0B0B0B] border border-gray-800 rounded-xl p-1 max-w-xs">
+                                        <button type="button" onClick={() => setStep2Data({ ...step2Data, has_catering: true })}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${step2Data.has_catering ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>Yes</button>
+                                        <button type="button" onClick={() => setStep2Data({ ...step2Data, has_catering: false })}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${!step2Data.has_catering ? 'bg-[#D0FF71] text-[#0B0B0B]' : 'text-gray-400 hover:text-white'}`}>No</button>
+                                    </div>
+                                </div>
+
+                                {/* AV Setup */}
+                                <div className="space-y-3">
+                                    <label className={labelCls}>Available Tech / AV Setup *</label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         {techOptions.map((tech) => (
                                             <label key={tech} className="flex items-center space-x-3 p-3 border border-gray-800 rounded-xl bg-[#0B0B0B] cursor-pointer hover:border-gray-600 transition-colors">
@@ -312,38 +370,71 @@ export const EventsApplyPage = () => {
                                     </div>
                                 </div>
 
+                                {/* Marketing Flyer */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-300">Who will handle the marketing flyer?</label>
-                                    <select required value={step2Data.marketing_flyer} onChange={e => setStep2Data({ ...step2Data, marketing_flyer: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors appearance-none">
+                                    <label className={labelCls}>Who will handle the marketing flyer?</label>
+                                    <select required value={step2Data.marketing_flyer}
+                                        onChange={e => setStep2Data({ ...step2Data, marketing_flyer: e.target.value })}
+                                        className={`${inputCls} appearance-none`}>
                                         <option>Our team will create it</option>
                                         <option>We need Zkandar AI to provide it</option>
                                         <option>Not applicable (Internal event)</option>
                                     </select>
                                 </div>
 
+                                {/* Day-of Contact */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Day-of Contact Name *</label>
-                                        <input required type="text" value={step2Data.contact_name} onChange={e => setStep2Data({ ...step2Data, contact_name: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="Contact person" />
+                                        <label className={labelCls}>Day-of Contact Name *</label>
+                                        <input required type="text" value={step2Data.contact_name}
+                                            onChange={e => setStep2Data({ ...step2Data, contact_name: e.target.value })}
+                                            className={inputCls} placeholder="ex. contact person name" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-300">Day-of Contact Phone *</label>
-                                        <input required type="tel" value={step2Data.contact_phone} onChange={e => setStep2Data({ ...step2Data, contact_phone: e.target.value })} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors" placeholder="+971 50..." />
+                                        <label className={labelCls}>Day-of Contact Phone *</label>
+                                        <input required type="tel" value={step2Data.contact_phone}
+                                            onChange={e => setStep2Data({ ...step2Data, contact_phone: e.target.value })}
+                                            className={inputCls} placeholder="ex. +971 50 000 0000" />
                                     </div>
                                 </div>
 
+                                {/* Parking */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-300">VIP Guests or Special Considerations? (Optional)</label>
-                                    <textarea value={step2Data.vip_notes} onChange={e => setStep2Data({ ...step2Data, vip_notes: e.target.value })} rows={2} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors resize-none" placeholder="Is there seating protocol, security, etc?" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-300">Anything else we should know? (Optional)</label>
-                                    <textarea value={step2Data.other_notes} onChange={e => setStep2Data({ ...step2Data, other_notes: e.target.value })} rows={2} className="w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors resize-none" />
+                                    <label className={labelCls}>Any special instructions for parking? (Optional)</label>
+                                    <input type="text" value={step2Data.parking_notes}
+                                        onChange={e => setStep2Data({ ...step2Data, parking_notes: e.target.value })}
+                                        className={inputCls} placeholder="ex. valet available, visitor parking on level 2, etc." />
                                 </div>
 
-                                <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-[#D0FF71] text-[#0B0B0B] rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-[#bceb5f] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                {/* VIP / Special */}
+                                <div className="space-y-2">
+                                    <label className={labelCls}>VIP Guests or Special Considerations? (Optional)</label>
+                                    <textarea value={step2Data.vip_notes}
+                                        onChange={e => setStep2Data({ ...step2Data, vip_notes: e.target.value })}
+                                        rows={2} className={`${inputCls} resize-none`}
+                                        placeholder="ex. seating protocol, security arrangements, etc." />
+                                </div>
+
+                                {/* Other Notes */}
+                                <div className="space-y-2">
+                                    <label className={labelCls}>Anything else we should know? (Optional)</label>
+                                    <textarea value={step2Data.other_notes}
+                                        onChange={e => setStep2Data({ ...step2Data, other_notes: e.target.value })}
+                                        rows={2} className={`${inputCls} resize-none`}
+                                        placeholder="ex. any additional context or requests" />
+                                </div>
+
+                                {/* Submit */}
+                                <button type="submit" disabled={isSubmitting}
+                                    className="w-full py-4 bg-[#D0FF71] text-[#0B0B0B] rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-[#bceb5f] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                     <span>{isSubmitting ? 'Submitting...' : 'Submit Request'}</span>
                                 </button>
+
+                                {/* Videographer Disclaimer */}
+                                <p className="text-xs text-gray-500 text-center leading-relaxed">
+                                    * Please note that Zkandar AI will be accompanied by our videographer to capture
+                                    select moments and snippets of the event for our portfolio and social media channels.
+                                </p>
                             </motion.form>
                         )}
                     </AnimatePresence>
