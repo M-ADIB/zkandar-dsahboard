@@ -1,4 +1,4 @@
--- Migration: Create event_requests table
+-- Migration: Create event_requests table (with client feedback fields)
 
 CREATE TABLE IF NOT EXISTS event_requests (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -18,8 +18,11 @@ CREATE TABLE IF NOT EXISTS event_requests (
   session_format text NOT NULL,
   duration text NOT NULL,
   has_moderator boolean NOT NULL,
+  intro_handler text,
   has_qa boolean NOT NULL,
+  has_catering boolean NOT NULL DEFAULT false,
   available_tech text[] NOT NULL,
+  parking_notes text,
   vip_notes text,
   marketing_flyer text NOT NULL,
   contact_name text NOT NULL,
@@ -52,3 +55,9 @@ CREATE POLICY "Allow admins full access to event_requests"
       AND users.role IN ('owner', 'admin')
     )
   );
+
+-- Allow public select
+CREATE POLICY "Allow public select on event_requests"
+  ON event_requests
+  FOR SELECT
+  USING (true);

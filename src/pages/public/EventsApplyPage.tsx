@@ -166,7 +166,7 @@ export const EventsApplyPage = () => {
             <div className="max-w-2xl mx-auto px-6 pt-16 relative z-10">
                 {/* Logo */}
                 <div className="flex items-center space-x-3 mb-12">
-                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                    <img src={logoSrc} alt="Zkandar AI" className="h-14 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                     <span className="text-xl font-bold font-neue">Zkandar AI</span>
                 </div>
 
