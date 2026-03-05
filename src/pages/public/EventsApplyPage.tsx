@@ -128,7 +128,7 @@ export const EventsApplyPage = () => {
         return (
             <div className="min-h-screen bg-[#0B0B0B] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
                 <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
-                <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
+                <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.07]">
                     <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
                 </div>
                 <div className="max-w-md w-full text-center space-y-6 relative z-10">
@@ -159,7 +159,7 @@ export const EventsApplyPage = () => {
             <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
 
             {/* Huge background logo */}
-            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.02] mix-blend-overlay">
+            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.07]">
                 <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
             </div>
 
