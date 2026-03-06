@@ -1,52 +1,50 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
-const resendApiKey = Deno.env.get('RESEND_API_KEY')
-const supabaseUrl = Deno.env.get('SUPABASE_URL')
-const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
+const resendApiKey = Deno.env.get('RESEND_API_KEY');
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
 // Handle CORS
 const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
-serve(async (req) => {
-    if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    const { eventId, status } = await req.json();
+
+    if (!eventId || !status) {
+      throw new Error("Missing required parameters: eventId or status");
     }
 
-    try {
-        const { eventId, status } = await req.json()
+    if (!resendApiKey) {
+      throw new Error("Missing RESEND_API_KEY");
+    }
 
-        if (!eventId || !status) {
-            throw new Error("Missing required parameters: eventId or status")
-        }
+    // Connect to Supabase with service role key to bypass RLS
+    const supabase = createClient(supabaseUrl!, supabaseKey!);
+    const { data: event, error: fetchError } = await supabase
+      .from('event_requests')
+      .select('*')
+      .eq('id', eventId)
+      .single();
 
-        if (!resendApiKey) {
-            throw new Error("Missing RESEND_API_KEY")
-        }
+    if (fetchError || !event) {
+      throw new Error(`Failed to fetch event details: ${fetchError?.message}`);
+    }
 
-        // Connect to Supabase to fetch the event details
-        const supabase = createClient(supabaseUrl!, supabaseKey!)
-        const { data: event, error: fetchError } = await supabase
-            .from('event_requests')
-            .select('*')
-            .eq('id', eventId)
-            .single()
+    let subject = "";
+    let htmlContent = "";
 
-        if (fetchError || !event) {
-            throw new Error(`Failed to fetch event details: ${fetchError?.message}`)
-        }
-
-        let subject = ""
-        let htmlContent = ""
-
-        const logoUrl = "https://app.zkandar.com/logo.png"
-
-        if (status === 'approved') {
-            subject = "You're confirmed \u2014 Zkandar AI Talk \uD83C\uDF89"
-            htmlContent = `
+    if (status === 'approved') {
+      subject = "You're confirmed — Zkandar AI Talk 🎉";
+      htmlContent = `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
           <tr>
             <td align="center" style="padding:32px 16px;">
@@ -58,7 +56,7 @@ serve(async (req) => {
                         <td style="padding:22px 24px; border-bottom:1px solid #1F2937;">
                           <div style="font-family:Arial,sans-serif; font-size:18px; font-weight:700; color:#FFFFFF;">Hi ${event.full_name},</div>
                           <div style="font-family:Arial,sans-serif; font-size:14px; color:#D1D5DB; margin-top:8px;">
-                            We're very excited to confirm Khaled for your upcoming speaking engagement on <strong>${event.proposed_date}</strong>. Our Operations Manager, Adib, will follow up with you shortly to finalize all logistics.
+                            We're very excited to confirm Khaled for your upcoming speaking engagement on <strong>${event.proposed_date}</strong>.
                           </div>
                         </td>
                       </tr>
@@ -104,10 +102,10 @@ serve(async (req) => {
             </td>
           </tr>
         </table>
-      `
-        } else if (status === 'declined') {
-            subject = "Thank you for reaching out \u2014 Zkandar AI"
-            htmlContent = `
+      `;
+    } else if (status === 'declined') {
+      subject = "Thank you for reaching out — Zkandar AI";
+      htmlContent = `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
           <tr>
             <td align="center" style="padding:32px 16px;">
@@ -142,12 +140,12 @@ serve(async (req) => {
             </td>
           </tr>
         </table>
-      `
-        } else {
-            throw new Error("Invalid status. Emails are only sent for 'approved' or 'declined'.")
-        }
+      `;
+    } else {
+      throw new Error("Invalid status. Emails are only sent for 'approved' or 'declined'.");
+    }
 
-        const fullHtml = `
+    const fullHtml = `
       <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -162,42 +160,47 @@ serve(async (req) => {
           ${htmlContent}
         </body>
       </html>
-    `
+    `;
 
-        const emailPayload = {
-            from: 'Zkandar AI <events@app.zkandar.com>',
-            to: event.email,
-            subject: subject,
-            html: fullHtml,
-        }
+    const emailPayload = {
+      from: 'Zkandar AI <events@app.zkandar.com>',
+      to: event.email,
+      subject: subject,
+      html: fullHtml,
+    };
 
-        const res = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: \`Bearer \${resendApiKey}\`,
+    console.log('Sending email to:', event.email, 'with subject:', subject);
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify(emailPayload),
-    })
+    });
+
+    const responseText = await res.text();
+    console.log('Resend API response status:', res.status, 'body:', responseText);
 
     if (!res.ok) {
-      const errorText = await res.text()
-      throw new Error(\`Resend API error: \${errorText}\`)
+      throw new Error(`Resend API error (${res.status}): ${responseText}`);
     }
 
-    const data = await res.json()
-    console.log('Email sent successfully:', data)
+    const data = JSON.parse(responseText);
+    console.log('Email sent successfully:', data);
 
     return new Response(JSON.stringify({ success: true, data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
-    })
+    });
 
-  } catch (error: any) {
-    console.error('Error sending email:', error.message)
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Error sending email:', message);
+    return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
-    })
+    });
   }
-})
+});
