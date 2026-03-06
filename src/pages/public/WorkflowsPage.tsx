@@ -26,15 +26,15 @@ function useAnimatedNumber(end: number, duration = 1400, inView = false, decimal
 
 // ─── Section wrapper with scroll reveal ───────────────────────────────────────
 
-function Section({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function Section({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
     const ref = useRef(null)
-    const inView = useInView(ref, { once: true, margin: '-60px' })
+    const inView = useInView(ref, { once: true, margin: '-80px' })
     return (
         <motion.section
             ref={ref}
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] }}
             className={className}
         >
             {children}
@@ -44,17 +44,23 @@ function Section({ children, className = '' }: { children: React.ReactNode; clas
 
 // ─── Animated stat pill ───────────────────────────────────────────────────────
 
-function StatPill({ value, label, decimals = 0, suffix = '' }: { value: number; label: string; decimals?: number; suffix?: string }) {
+function StatPill({ value, label, decimals = 0, suffix = '', delay = 0 }: { value: number; label: string; decimals?: number; suffix?: string; delay?: number }) {
     const ref = useRef(null)
     const inView = useInView(ref, { once: true })
     const animated = useAnimatedNumber(value, 1200, inView, decimals)
     return (
-        <div ref={ref} className="flex flex-col items-center gap-2 px-6 py-4 bg-bg-card border border-border rounded-2xl min-w-[140px] group hover:border-lime/30 hover:shadow-glow transition-all duration-300">
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col items-center gap-2 px-8 py-5 bg-bg-card/80 backdrop-blur-sm border border-border rounded-2xl min-w-[150px] group hover:border-lime/30 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
+        >
             <span className="text-3xl md:text-4xl font-heading font-black text-lime tabular-nums">
                 {animated}{suffix}
             </span>
             <span className="text-xs text-gray-500 uppercase tracking-widest font-body">{label}</span>
-        </div>
+        </motion.div>
     )
 }
 
@@ -125,13 +131,19 @@ function ScoreCallout({ score, total, label }: { score: number; total: number; l
     const inView = useInView(ref, { once: true })
     const animated = useAnimatedNumber(score, 1200, inView, 1)
     return (
-        <div ref={ref} className="flex flex-col items-center gap-2 p-6 bg-bg-card border border-border rounded-2xl group hover:border-lime/30 hover:shadow-glow transition-all duration-300">
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col items-center gap-2 p-6 bg-bg-card/80 backdrop-blur-sm border border-border rounded-2xl group hover:border-lime/30 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
+        >
             <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-heading font-black text-lime tabular-nums">{animated}</span>
                 <span className="text-lg text-gray-500 font-heading">/ {total}</span>
             </div>
             <span className="text-xs text-gray-500 uppercase tracking-widest text-center font-body">{label}</span>
-        </div>
+        </motion.div>
     )
 }
 
@@ -143,18 +155,27 @@ function ImpactCard({ label, score }: { label: string; score: number }) {
     const animated = useAnimatedNumber(score, 1000, inView, 1)
     const filledDots = Math.round(score)
     return (
-        <div ref={ref} className="bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 group hover:border-lime/30 hover:shadow-glow transition-all duration-300">
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 15 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col gap-3 group hover:border-lime/30 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
+        >
             <span className="text-xs text-gray-500 uppercase tracking-widest font-body">{label}</span>
             <span className="text-3xl font-heading font-black text-white tabular-nums">{animated}<span className="text-sm text-gray-500 ml-1">/ 5</span></span>
             <div className="flex gap-1.5">
                 {[1, 2, 3, 4, 5].map(dot => (
-                    <div
+                    <motion.div
                         key={dot}
-                        className={`w-3 h-3 rounded-full transition-colors duration-500 ${dot <= filledDots ? 'bg-lime' : 'bg-white/10'}`}
+                        initial={{ scale: 0 }}
+                        animate={inView ? { scale: 1 } : {}}
+                        transition={{ delay: dot * 0.08, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className={`w-3 h-3 rounded-full ${dot <= filledDots ? 'bg-lime shadow-[0_0_6px_rgba(208,255,113,0.4)]' : 'bg-white/10'}`}
                     />
                 ))}
             </div>
-        </div>
+        </motion.div>
     )
 }
 
@@ -185,37 +206,69 @@ function RankedItem({ rank, label, pct }: { rank: number; label: string; pct: nu
 export function WorkflowsPage() {
     return (
         <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
-            {/* Ambient green gradient orb */}
-            <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0" />
-            <div className="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-[#D0FF71]/8 blur-[140px] rounded-full pointer-events-none z-0" />
+            {/* Animated ambient gradient orbs */}
+            <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float-slow" />
+            <div className="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-[#D0FF71]/8 blur-[140px] rounded-full pointer-events-none z-0 animate-float-slow-reverse" />
 
             {/* Noise overlay */}
             <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
 
-            {/* Huge background logo badge */}
-            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.07]">
-                <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
+            {/* Background logo badge — zoomed out so full badge is visible */}
+            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.05]">
+                <img src={logoSrc} alt="" className="w-[80%] md:w-[55%] lg:w-[40%] max-w-[600px] grayscale object-contain" />
             </div>
 
+            {/* Floating CSS keyframes */}
+            <style>{`
+                @keyframes float-slow {
+                    0%, 100% { transform: translate(0, 0) scale(1); }
+                    50% { transform: translate(30px, -20px) scale(1.05); }
+                }
+                @keyframes float-slow-reverse {
+                    0%, 100% { transform: translate(0, 0) scale(1); }
+                    50% { transform: translate(-20px, 15px) scale(1.03); }
+                }
+                .animate-float-slow { animation: float-slow 20s ease-in-out infinite; }
+                .animate-float-slow-reverse { animation: float-slow-reverse 25s ease-in-out infinite; }
+            `}</style>
+
             <div className="max-w-[960px] mx-auto px-6 py-16 md:py-24 space-y-24 relative z-10">
+
+                {/* ─── Zkandar AI Header ────────────────────────────────────── */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="flex items-center gap-3 pb-4 border-b border-white/5"
+                >
+                    <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
+                    <span className="text-sm font-heading font-bold tracking-wider text-white/70">Zkandar AI</span>
+                    <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Industry Report</span>
+                </motion.div>
 
                 {/* ─── SECTION 1: Hero ──────────────────────────────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <span className="text-xs font-bold uppercase tracking-[0.2em] text-lime font-body">Industry Data</span>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-black leading-[1.05] tracking-wide text-white">
-                            Design studios are experimenting{' '}
+                        <motion.span
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-lime font-body"
+                        >
+                            Industry Data
+                        </motion.span>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-heading font-black leading-[1.25] tracking-wide text-white">
+                            Design studios are experimenting
                             <br className="hidden md:block" />
-                            with AI.{' '}
-                            <span className="text-gray-500">Very few are using it.</span>
+                            {' '}with AI. Very few are using it.
                         </h1>
                         <p className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed font-body">
                             Real data from 45 designers across 3 studios shows where the gap is — and what teams actually need.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <StatPill value={45} label="Designers surveyed" />
-                            <StatPill value={3} label="Studios" />
-                            <StatPill value={62} label="Only experimenting" suffix="%" />
+                            <StatPill value={45} label="Designers surveyed" delay={0.1} />
+                            <StatPill value={3} label="Studios" delay={0.2} />
+                            <StatPill value={62} label="Only experimenting" suffix="%" delay={0.3} />
                         </div>
                     </div>
                 </Section>
@@ -364,19 +417,27 @@ export function WorkflowsPage() {
                         <div className="flex items-center justify-center gap-4 flex-wrap pt-2">
                             <Link
                                 to="/programs"
-                                className="px-8 py-3.5 bg-lime text-black font-bold rounded-xl hover:bg-lime-400 transition-colors text-sm uppercase tracking-wider"
+                                className="px-8 py-3.5 bg-lime text-black font-bold rounded-xl hover:bg-lime-400 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5"
                             >
                                 View Programs
                             </Link>
                             <a
                                 href="#"
-                                className="px-8 py-3.5 border border-white/15 text-white font-bold rounded-xl hover:border-lime/40 hover:text-lime transition-colors text-sm uppercase tracking-wider"
+                                className="px-8 py-3.5 border border-white/15 text-white font-bold rounded-xl hover:border-lime/40 hover:text-lime transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5"
                             >
                                 Talk to Us
                             </a>
                         </div>
                     </div>
                 </Section>
+
+                {/* ─── Footer Branding ──────────────────────────────────────── */}
+                <div className="text-center pt-8 pb-4 border-t border-white/5">
+                    <div className="flex items-center justify-center gap-2 opacity-40">
+                        <img src={logoSrc} alt="" className="h-5 object-contain grayscale" />
+                        <span className="text-xs font-heading tracking-wider">Zkandar AI</span>
+                    </div>
+                </div>
 
             </div>
         </div>
