@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import logoSrc from '../../assets/logo.png'
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
@@ -183,14 +184,26 @@ function RankedItem({ rank, label, pct }: { rank: number; label: string; pct: nu
 
 export function WorkflowsPage() {
     return (
-        <div className="min-h-screen bg-bg-primary text-white font-body">
-            <div className="max-w-[960px] mx-auto px-6 py-16 md:py-24 space-y-24">
+        <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
+            {/* Ambient green gradient orb */}
+            <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0" />
+            <div className="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-[#D0FF71]/8 blur-[140px] rounded-full pointer-events-none z-0" />
+
+            {/* Noise overlay */}
+            <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
+
+            {/* Huge background logo badge */}
+            <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.07]">
+                <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
+            </div>
+
+            <div className="max-w-[960px] mx-auto px-6 py-16 md:py-24 space-y-24 relative z-10">
 
                 {/* ─── SECTION 1: Hero ──────────────────────────────────────── */}
                 <Section>
                     <div className="space-y-8">
                         <span className="text-xs font-bold uppercase tracking-[0.2em] text-lime font-body">Industry Data</span>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-black leading-[1.05] tracking-tight text-white">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-black leading-[1.05] tracking-wide text-white">
                             Design studios are experimenting{' '}
                             <br className="hidden md:block" />
                             with AI.{' '}
@@ -210,7 +223,7 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 2: Where Teams Are Right Now ─────────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tight">Where teams are right now</h2>
+                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">Where teams are right now</h2>
 
                         <StackedBar segments={[
                             { label: 'Not using AI at all', pct: 16, color: '#555555' },
@@ -233,7 +246,7 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 3: What Teams Are Struggling With ────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tight">What teams are struggling with</h2>
+                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams are struggling with</h2>
 
                         <div className="space-y-4 bg-bg-card border border-border rounded-2xl p-6">
                             <AnimatedBar label="Controlling style & consistency" pct={44} delay={0} />
@@ -250,7 +263,7 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 4: What Teams Actually Want ──────────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tight">What teams actually want</h2>
+                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams actually want</h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Left: Team goals */}
@@ -280,7 +293,7 @@ export function WorkflowsPage() {
                 <Section>
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tight">What leadership sees</h2>
+                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What leadership sees</h2>
                             <p className="text-sm text-gray-500 mt-2 font-body">Data from 10 studio directors, heads of design, and partners</p>
                         </div>
 
@@ -318,7 +331,7 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 6: What Leadership Wants to Achieve ──────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-tight">What leadership is trying to achieve</h2>
+                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What leadership is trying to achieve</h2>
 
                         <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
                             <AnimatedBar label="Improve output quality & consistency" pct={60} delay={0} />
@@ -342,7 +355,7 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 7: CTA ───────────────────────────────────────── */}
                 <Section className="text-center pb-12">
                     <div className="space-y-6">
-                        <h2 className="text-3xl md:text-4xl font-heading font-black tracking-tight">
+                        <h2 className="text-3xl md:text-4xl font-heading font-black tracking-wide">
                             This is what Zkandar AI is built for.
                         </h2>
                         <p className="text-gray-400 text-base font-body">
