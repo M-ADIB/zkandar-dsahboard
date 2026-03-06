@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
+import { ProductivityCalculator } from '../../components/public/ProductivityCalculator'
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
@@ -257,12 +258,28 @@ export function WorkflowsPage() {
                         >
                             Industry Data
                         </motion.span>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-heading font-black leading-[1.25] tracking-wide text-white">
-                            Design studios are experimenting
-                            <br className="hidden md:block" />
-                            {' '}with AI. Very few are using it.
+                        <h1
+                            className="font-heading font-black text-white"
+                            style={{
+                                lineHeight: 1.15,
+                                letterSpacing: '-0.02em',
+                                wordSpacing: '0.05em',
+                                maxWidth: '820px',
+                                overflowWrap: 'break-word',
+                                hyphens: 'none',
+                                whiteSpace: 'normal',
+                                fontSize: 'clamp(28px, 6vw, 52px)'
+                            }}
+                        >
+                            Design Studios Are Experimenting With AI. Very Few Are Using It.
                         </h1>
-                        <p className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed font-body">
+                        <p
+                            className="text-base md:text-lg text-gray-400 leading-relaxed font-body"
+                            style={{
+                                marginTop: '20px',
+                                maxWidth: '600px'
+                            }}
+                        >
                             Real data from 45 designers across 3 studios shows where the gap is — and what teams actually need.
                         </p>
                         <div className="flex flex-wrap gap-4">
@@ -404,6 +421,9 @@ export function WorkflowsPage() {
                         </div>
                     </div>
                 </Section>
+
+                {/* ─── Productivity Calculator ────────────────────────────────── */}
+                <ProductivityCalculator />
 
                 {/* ─── SECTION 7: CTA ───────────────────────────────────────── */}
                 <Section className="text-center pb-12">
