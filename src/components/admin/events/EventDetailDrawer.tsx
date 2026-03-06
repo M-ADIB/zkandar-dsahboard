@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Calendar, MapPin, Users, Globe, Upload, Clock, Activity, CheckCircle2 } from 'lucide-react'
+import { X, Calendar, MapPin, Users, Globe, Clock, Activity, CheckCircle2, UtensilsCrossed, Car } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { EventRequest } from '@/types/database'
 
@@ -197,7 +197,8 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
                                         <div className="text-sm text-gray-500 mb-1">Requirements</div>
                                         {event.has_moderator && <div className="text-white text-sm flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-brand-lime" /> Moderator needed</div>}
                                         {event.has_qa && <div className="text-white text-sm flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-brand-lime" /> Dedicated Q&A</div>}
-                                        {!event.has_moderator && !event.has_qa && <div className="text-white text-sm">None</div>}
+                                        {event.has_catering && <div className="text-white text-sm flex items-center gap-2"><UtensilsCrossed className="w-4 h-4 text-brand-lime" /> Catering available</div>}
+                                        {!event.has_moderator && !event.has_qa && !event.has_catering && <div className="text-white text-sm">None</div>}
                                     </div>
                                 </div>
                             </div>
@@ -213,6 +214,13 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
                         <section>
                             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Additional Info</h3>
                             <div className="space-y-4">
+                                {event.intro_handler && (
+                                    <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
+                                        <div className="text-sm text-gray-500 mb-2">Speaker Introduction</div>
+                                        <div className="text-white text-sm">{event.intro_handler}</div>
+                                    </div>
+                                )}
+
                                 {(event.available_tech && event.available_tech.length > 0) && (
                                     <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
                                         <div className="text-sm text-gray-500 mb-2">Available Tech</div>
@@ -226,10 +234,18 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
 
                                 {event.marketing_flyer && (
                                     <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
-                                        <div className="text-sm text-gray-500 mb-2">Marketing Material / Flyer</div>
-                                        <a href={event.marketing_flyer} target="_blank" rel="noreferrer" className="text-brand-lime text-sm hover:underline flex items-center gap-2">
-                                            <Upload className="w-4 h-4" /> View Associated Link
-                                        </a>
+                                        <div className="text-sm text-gray-500 mb-2">Marketing Flyer</div>
+                                        <div className="text-white text-sm">{event.marketing_flyer}</div>
+                                    </div>
+                                )}
+
+                                {event.parking_notes && (
+                                    <div className="p-4 bg-[#111] border border-white/5 rounded-xl flex gap-3">
+                                        <Car className="w-5 h-5 text-brand-lime shrink-0" />
+                                        <div>
+                                            <div className="text-sm text-gray-500">Parking Instructions</div>
+                                            <div className="text-white text-sm mt-1">{event.parking_notes}</div>
+                                        </div>
                                     </div>
                                 )}
 

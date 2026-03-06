@@ -252,8 +252,11 @@ export interface EventRequest {
     session_format: string
     duration: string
     has_moderator: boolean
+    intro_handler: string | null
     has_qa: boolean
+    has_catering: boolean
     available_tech: string[]
+    parking_notes: string | null
     vip_notes: string | null
     marketing_flyer: string
     contact_name: string
