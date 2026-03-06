@@ -14,6 +14,7 @@ import { SettingsPage } from '@/pages/SettingsPage'
 import { OnboardingSurvey } from '@/components/onboarding/OnboardingSurvey'
 import { SprintWorkshopOnboarding } from '@/pages/onboarding/SprintWorkshopOnboarding'
 import { EventsApplyPage } from '@/pages/public/EventsApplyPage'
+import { WorkflowsPage } from '@/pages/public/WorkflowsPage'
 
 import { NotificationProvider } from '@/context/NotificationContext'
 import { NotificationsPage } from '@/pages/NotificationsPage'
@@ -37,6 +38,7 @@ function App() {
                         <Route path="/signup" element={<SignupPage />} />
                         <Route path="/signup/:token" element={<SignupPage />} />
                         <Route path="/events-apply" element={<EventsApplyPage />} />
+                        <Route path="/workflows" element={<WorkflowsPage />} />
 
                         {/* Onboarding (full-screen) */}
                         <Route
