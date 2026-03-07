@@ -1,8 +1,15 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, ChevronLeft, Sparkles, CheckCircle2, Users, Briefcase } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
+
+// The 3 enrolled companies — autocomplete source
+const KNOWN_COMPANIES = [
+    { id: 'b5329df4-1664-4d17-bcbc-f96a2f847a70', name: 'Finasi' },
+    { id: 'd95798af-a652-425d-8e0e-6d7bc6ef8369', name: 'Knowndesign' },
+    { id: 'e6e1cc5c-be81-4fa7-8dd5-ecd1b0cc9b68', name: 'Reviespaces' },
+]
 
 // =============================================
 // TEAM QUESTIONS (from Post-Masterclass Impact Survey — Team Participants)
@@ -383,9 +390,34 @@ export function PostCompletionSurvey() {
     const [step, setStep] = useState(0) // 0 = type select, 1 = basic info, 2+ = questions
     const [surveyType, setSurveyType] = useState<SurveyType | null>(null)
     const [basicInfo, setBasicInfo] = useState({ full_name: '', email: '', company_name: '' })
+    const [companyId, setCompanyId] = useState<string | null>(null)
+    const [companySuggestions, setCompanySuggestions] = useState<typeof KNOWN_COMPANIES>([])
+    const [showSuggestions, setShowSuggestions] = useState(false)
+    const companyInputRef = useRef<HTMLInputElement>(null)
     const [answers, setAnswers] = useState<Record<string, string | string[] | number | Record<string, number>>>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+
+    const handleCompanyInput = (value: string) => {
+        setBasicInfo(prev => ({ ...prev, company_name: value }))
+        setCompanyId(null)
+        if (value.length >= 2) {
+            const matches = KNOWN_COMPANIES.filter(c =>
+                c.name.toLowerCase().startsWith(value.toLowerCase())
+            )
+            setCompanySuggestions(matches)
+            setShowSuggestions(matches.length > 0)
+        } else {
+            setCompanySuggestions([])
+            setShowSuggestions(false)
+        }
+    }
+
+    const selectCompany = (company: typeof KNOWN_COMPANIES[0]) => {
+        setBasicInfo(prev => ({ ...prev, company_name: company.name }))
+        setCompanyId(company.id)
+        setShowSuggestions(false)
+    }
 
     const questions = surveyType === 'management' ? managementQuestions : teamQuestions
     const totalSteps = 2 + questions.length
@@ -416,16 +448,26 @@ export function PostCompletionSurvey() {
     const handleSubmit = async () => {
         setIsSubmitting(true)
         try {
-            const { error } = await supabase
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .from('post_completion_survey_responses' as any)
+            // Resolve company_id if not already matched (exact name fallback)
+            let resolvedCompanyId = companyId
+            if (!resolvedCompanyId) {
+                const match = KNOWN_COMPANIES.find(
+                    c => c.name.toLowerCase() === basicInfo.company_name.toLowerCase()
+                )
+                resolvedCompanyId = match?.id ?? null
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error } = await (supabase as any)
+                .from('post_completion_survey_responses')
                 .insert({
                     survey_type: surveyType,
                     respondent_name: basicInfo.full_name,
                     respondent_email: basicInfo.email,
                     company_name: basicInfo.company_name,
+                    company_id: resolvedCompanyId,
                     answers,
-                } as any)
+                })
             if (error) throw error
             setSubmitted(true)
         } catch (err) {
@@ -510,7 +552,7 @@ export function PostCompletionSurvey() {
                             <div className={`h-14 w-14 rounded-xl flex items-center justify-center mb-4 ${surveyType === 'management' ? 'gradient-lime' : 'bg-bg-elevated'}`}>
                                 <Briefcase className={`h-7 w-7 ${surveyType === 'management' ? 'text-black' : 'text-gray-400'}`} />
                             </div>
-                            <h3 className="text-xl font-bold mb-2">Leadership / Management</h3>
+                            <h3 className="text-xl font-bold mb-2">Top Management</h3>
                             <p className="text-gray-400 text-sm">Director, Partner, Studio Lead, or other senior leadership role</p>
                         </motion.button>
                     </div>
@@ -579,15 +621,48 @@ export function PostCompletionSurvey() {
                                 className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl focus:outline-none focus:border-lime/50 transition-colors"
                             />
                         </div>
-                        <div>
+                        <div className="relative">
                             <label className="block text-sm font-medium mb-2">Company / Studio Name *</label>
                             <input
+                                ref={companyInputRef}
                                 type="text"
                                 value={basicInfo.company_name}
-                                onChange={e => setBasicInfo(prev => ({ ...prev, company_name: e.target.value }))}
-                                placeholder="Your company or studio name"
-                                className="w-full px-4 py-3 bg-bg-card border border-border rounded-xl focus:outline-none focus:border-lime/50 transition-colors"
+                                onChange={e => handleCompanyInput(e.target.value)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                                onFocus={() => {
+                                    if (basicInfo.company_name.length >= 2 && companySuggestions.length > 0)
+                                        setShowSuggestions(true)
+                                }}
+                                placeholder="Start typing your company name..."
+                                autoComplete="off"
+                                className={`w-full px-4 py-3 bg-bg-card border rounded-xl focus:outline-none transition-colors ${companyId ? 'border-lime/60' : 'border-border focus:border-lime/50'
+                                    }`}
                             />
+                            {companyId && (
+                                <span className="absolute right-4 top-1/2 translate-y-[8px] text-lime text-xs font-medium">✓ Matched</span>
+                            )}
+                            <AnimatePresence>
+                                {showSuggestions && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -4 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -4 }}
+                                        className="absolute z-50 w-full mt-1 bg-bg-elevated border border-border rounded-xl overflow-hidden shadow-xl"
+                                    >
+                                        {companySuggestions.map(company => (
+                                            <button
+                                                key={company.id}
+                                                type="button"
+                                                onMouseDown={() => selectCompany(company)}
+                                                className="w-full px-4 py-3 text-left hover:bg-lime/10 hover:text-lime transition-colors flex items-center justify-between group"
+                                            >
+                                                <span>{company.name}</span>
+                                                <span className="text-xs text-gray-500 group-hover:text-lime/70">Select →</span>
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
 
