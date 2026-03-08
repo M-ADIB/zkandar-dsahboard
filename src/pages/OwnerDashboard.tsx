@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-    DollarSign, Flame, Building2, Calendar,
+    DollarSign, Flame, Building2, Mic,
     Users, ArrowRight, TrendingUp,
-    ChevronRight, Clock, CheckCircle2,
+    ChevronRight, CheckCircle2, AlertCircle, XCircle,
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import type { Cohort, Company, Lead, Session, User } from '@/types/database'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameMonth, isToday, parseISO } from 'date-fns'
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
 const fmt = (n: number) => n.toLocaleString()
@@ -30,7 +31,7 @@ function KPICard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay }}
             onClick={onClick}
-            className={`relative bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 overflow-hidden ${onClick ? 'cursor-pointer hover:border-lime/40 transition-colors' : ''}`}
+            className={`relative bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 overflow-hidden ${onClick ? 'cursor-pointer hover:border-lime/40 hover:shadow-[0_0_20px_rgba(208,255,113,0.08)] transition-all duration-200' : ''}`}
         >
             {accent && (
                 <div className="absolute inset-0 bg-lime/5 pointer-events-none" />
@@ -53,16 +54,6 @@ function KPICard({
             {onClick && <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />}
         </motion.div>
     )
-}
-
-// ─── Status pill ─────────────────────────────────────────────────────────────
-const priorityStyle: Record<string, string> = {
-    HOT: 'bg-orange-500/10 text-orange-300 border-orange-500/30',
-    ACTIVE: 'bg-lime/10 text-lime border-lime/30',
-    COLD: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
-    COMPLETED: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
-    'NOT INTERESTED': 'bg-red-500/10 text-red-300 border-red-500/30',
-    LAVA: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
 }
 
 // ─── Lead status bar ─────────────────────────────────────────────────────────
@@ -164,6 +155,129 @@ function CompanyCard({ company, cohort, memberCount, progress, onClick }: {
     )
 }
 
+// ─── Calendar Event Type Colors ───────────────────────────────────────────────
+const eventTypeColors: Record<string, { bg: string; text: string; dot: string; label: string }> = {
+    master_class: { bg: 'bg-lime/10', text: 'text-lime', dot: 'bg-lime', label: 'Masterclass' },
+    sprint_workshop: { bg: 'bg-orange-500/10', text: 'text-orange-300', dot: 'bg-orange-400', label: 'Sprint Workshop' },
+    ai_talk: { bg: 'bg-purple-500/10', text: 'text-purple-300', dot: 'bg-purple-400', label: 'AI Talk' },
+}
+
+// ─── Mini Calendar Widget ─────────────────────────────────────────────────────
+function CalendarWidget({ cohorts }: { cohorts: Cohort[] }) {
+    const [currentDate, setCurrentDate] = useState(new Date())
+
+    const monthStart = startOfMonth(currentDate)
+    const monthEnd = endOfMonth(currentDate)
+    const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
+    const startPadding = getDay(monthStart)
+
+    // Map events from cohorts
+    const events = useMemo(() => {
+        return cohorts
+            .filter(c => c.start_date)
+            .map(c => ({
+                date: c.start_date!,
+                name: c.name,
+                type: (c as any).offering_type || 'master_class',
+                status: c.status,
+            }))
+    }, [cohorts])
+
+    const getEventsForDay = (day: Date) => {
+        const dayStr = format(day, 'yyyy-MM-dd')
+        return events.filter(e => e.date === dayStr)
+    }
+
+    const prevMonth = () => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
+    const nextMonth = () => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
+
+    return (
+        <div className="space-y-4">
+            {/* Month nav */}
+            <div className="flex items-center justify-between">
+                <button onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition">
+                    <ChevronRight className="h-4 w-4 rotate-180" />
+                </button>
+                <span className="text-sm font-medium text-white">{format(currentDate, 'MMMM yyyy')}</span>
+                <button onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition">
+                    <ChevronRight className="h-4 w-4" />
+                </button>
+            </div>
+
+            {/* Day headers */}
+            <div className="grid grid-cols-7 gap-1 text-center">
+                {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+                    <div key={d} className="text-[10px] text-gray-600 font-medium py-1">{d}</div>
+                ))}
+                {Array.from({ length: startPadding }).map((_, i) => (
+                    <div key={`pad-${i}`} />
+                ))}
+                {daysInMonth.map(day => {
+                    const dayEvents = getEventsForDay(day)
+                    const today = isToday(day)
+                    const sameMonth = isSameMonth(day, currentDate)
+
+                    return (
+                        <div
+                            key={day.toISOString()}
+                            className={`relative h-8 flex items-center justify-center rounded-lg text-xs transition ${today ? 'bg-lime/20 text-lime font-bold' :
+                                sameMonth ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700'
+                                }`}
+                        >
+                            {format(day, 'd')}
+                            {dayEvents.length > 0 && (
+                                <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                                    {dayEvents.slice(0, 3).map((e, i) => {
+                                        const colors = eventTypeColors[e.type] || eventTypeColors.master_class
+                                        return <span key={i} className={`h-1 w-1 rounded-full ${colors.dot}`} />
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
+            </div>
+
+            {/* Legend */}
+            <div className="flex flex-wrap gap-3 pt-2 border-t border-border">
+                {Object.values(eventTypeColors).map(({ dot, label }) => (
+                    <div key={label} className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                        <span className={`h-2 w-2 rounded-full ${dot}`} />
+                        {label}
+                    </div>
+                ))}
+            </div>
+
+            {/* Upcoming events list */}
+            <div className="space-y-2 pt-2 border-t border-border">
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Upcoming</p>
+                {events.length === 0 ? (
+                    <p className="text-xs text-gray-600">No events scheduled</p>
+                ) : (
+                    events
+                        .filter(e => e.date >= format(new Date(), 'yyyy-MM-dd'))
+                        .sort((a, b) => a.date.localeCompare(b.date))
+                        .slice(0, 4)
+                        .map((e, i) => {
+                            const colors = eventTypeColors[e.type] || eventTypeColors.master_class
+                            return (
+                                <div key={i} className="flex items-center gap-2.5 py-1.5">
+                                    <span className={`h-2 w-2 rounded-full ${colors.dot} shrink-0`} />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs text-white truncate">{e.name}</p>
+                                    </div>
+                                    <span className="text-[10px] text-gray-500 shrink-0">
+                                        {format(parseISO(e.date), 'MMM d')}
+                                    </span>
+                                </div>
+                            )
+                        })
+                )}
+            </div>
+        </div>
+    )
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export function OwnerDashboard() {
     const supabase = useSupabase()
@@ -174,56 +288,69 @@ export function OwnerDashboard() {
     const [sessions, setSessions] = useState<Session[]>([])
     const [users, setUsers] = useState<User[]>([])
     const [leads, setLeads] = useState<Lead[]>([])
-    const [recentLeads, setRecentLeads] = useState<Lead[]>([])
+    const [monthlyCosts, setMonthlyCosts] = useState(0)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetch = async () => {
-            const [coRes, cohRes, sessRes, usersRes, leadsRes, recentLeadsRes] = await Promise.all([
+        const fetchData = async () => {
+            const now = new Date()
+            const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
+            const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
+
+            const [coRes, cohRes, sessRes, usersRes, leadsRes, costsRes] = await Promise.all([
                 supabase.from('companies').select('*').order('name'),
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
-                supabase.from('leads').select('id,priority,payment_amount,amount_paid'),
-                supabase.from('leads').select('id,full_name,company_name,priority,offering_type,created_at').order('created_at', { ascending: false }).limit(5),
+                supabase.from('leads').select('id,priority,payment,amount_paid,balance,paid_full,offering_type'),
+                (supabase as any).from('costs').select('total_amount').gte('payment_date', monthStart).lte('payment_date', monthEnd),
             ])
             setCompanies((coRes.data as Company[]) ?? [])
             setCohorts((cohRes.data as Cohort[]) ?? [])
             setSessions((sessRes.data as Session[]) ?? [])
             setUsers((usersRes.data as User[]) ?? [])
             setLeads((leadsRes.data as Lead[]) ?? [])
-            setRecentLeads((recentLeadsRes.data as Lead[]) ?? [])
+            const costsData = (costsRes as any).data ?? []
+            setMonthlyCosts(costsData.reduce((s: number, c: any) => s + (c.total_amount ?? 0), 0))
             setLoading(false)
         }
-        fetch()
+        fetchData()
     }, [])
 
     // ── KPI calculations ──
     const cohortMap = useMemo(() => new Map(cohorts.map((c) => [c.id, c])), [cohorts])
 
-    const activeCompanies = useMemo(() =>
-        companies.filter((c) => c.cohort_id && cohortMap.get(c.cohort_id)?.status === 'active').length
-        , [companies, cohortMap])
-
     const leadCounts = useMemo(() => {
         const counts: Record<string, number> = {}
-        leads.forEach((l) => { if (l.priority) counts[l.priority] = (counts[l.priority] || 0) + 1 })
+        leads.forEach((l) => { if ((l as any).priority) counts[(l as any).priority] = (counts[(l as any).priority] || 0) + 1 })
         return counts
     }, [leads])
 
-    const hotLeads = (leadCounts['HOT'] || 0) + (leadCounts['LAVA'] || 0)
+    const lavaLeads = leadCounts['LAVA'] || 0
 
     const pipelineValue = useMemo(() => {
         return leads
-            .filter((l) => l.priority === 'HOT' || l.priority === 'ACTIVE' || l.priority === 'LAVA')
-            .reduce((sum, l) => sum + (l.payment_amount ?? 0), 0)
+            .filter((l) => (l as any).priority === 'HOT' || (l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')
+            .reduce((sum, l) => sum + ((l as any).payment ?? 0), 0)
     }, [leads])
 
     const completedRevenue = useMemo(() =>
-        leads.filter((l) => l.priority === 'COMPLETED').reduce((sum, l) => sum + (l.amount_paid ?? 0), 0)
+        leads.filter((l) => (l as any).priority === 'COMPLETED').reduce((sum, l) => sum + ((l as any).amount_paid ?? 0), 0)
         , [leads])
 
-    const totalMembers = useMemo(() =>
+    // Active masterclasses = cohorts with offering_type='master_class' and status='active'
+    const activeMasterclasses = useMemo(() =>
+        cohorts.filter(c => (c as any).offering_type === 'master_class' && c.status === 'active').length
+        , [cohorts])
+
+    // Active AI Talks = cohorts with offering_type that matches ai_talk or leads with offering_type ai_talk
+    const activeAITalks = useMemo(() => {
+        const cohortTalks = cohorts.filter(c => ((c as any).offering_type === 'ai_talk') && c.status === 'active').length
+        const leadTalks = leads.filter(l => (l as any).offering_type === 'ai_talk' && ((l as any).priority === 'HOT' || (l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')).length
+        return cohortTalks || leadTalks
+    }, [cohorts, leads])
+
+    const activeMembers = useMemo(() =>
         users.filter((u) => u.role === 'participant' || u.role === 'executive').length
         , [users])
 
@@ -232,16 +359,16 @@ export function OwnerDashboard() {
         return Math.round(((leadCounts['COMPLETED'] || 0) / leads.length) * 100)
     }, [leads, leadCounts])
 
-    const nextSession = useMemo(() => {
-        const now = new Date().toISOString()
-        return sessions.find((s) => s.status === 'scheduled' && s.scheduled_date && s.scheduled_date > now) ?? null
-    }, [sessions])
+    // Pending = leads where paid_full is not 'yes' and priority is not 'NOT INTERESTED' and not 'COMPLETED'
+    const pendingLeads = useMemo(() =>
+        leads.filter(l => {
+            const p = (l as any).priority
+            const paidFull = ((l as any).paid_full || '').toLowerCase()
+            return p !== 'NOT INTERESTED' && p !== 'COMPLETED' && paidFull !== 'yes'
+        }).length
+        , [leads])
 
-    const nextSessionLabel = useMemo(() => {
-        if (!nextSession?.scheduled_date) return 'None scheduled'
-        const d = new Date(nextSession.scheduled_date)
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-    }, [nextSession])
+    const notInterestedLeads = leadCounts['NOT INTERESTED'] || 0
 
     // Company health
     const companyHealth = useMemo(() => {
@@ -288,44 +415,44 @@ export function OwnerDashboard() {
                     sub={`AED ${fmt(completedRevenue)} collected`}
                     delay={0}
                     accent
-                    onClick={() => navigate('/admin/leads')}
+                    onClick={() => navigate('/admin/leads?priority=COMPLETED')}
                 />
                 <KPICard
                     icon={Flame}
-                    label="Hot Leads"
-                    value={String(hotLeads)}
+                    label="Lava Leads"
+                    value={String(lavaLeads)}
                     sub={`${leads.length} total leads`}
-                    trend={hotLeads > 0 ? `${leadCounts['LAVA'] ?? 0} lava` : undefined}
+                    trend={lavaLeads > 0 ? `${lavaLeads} active` : undefined}
                     delay={0.05}
-                    onClick={() => navigate('/admin/leads?priority=HOT')}
+                    onClick={() => navigate('/admin/leads?priority=LAVA')}
                 />
                 <KPICard
                     icon={Building2}
-                    label="Active Companies"
-                    value={String(activeCompanies)}
-                    sub={`of ${companies.length} total`}
+                    label="Active Masterclasses"
+                    value={String(activeMasterclasses)}
+                    sub={`of ${cohorts.filter(c => (c as any).offering_type === 'master_class').length} total`}
                     delay={0.1}
-                    onClick={() => navigate('/admin/companies')}
+                    onClick={() => navigate('/admin/programs?type=master_class&status=active')}
                 />
                 <KPICard
-                    icon={Calendar}
-                    label="Next Session"
-                    value={nextSessionLabel}
-                    sub={nextSession ? `Session ${nextSession.session_number ?? '?'}` : 'All caught up'}
+                    icon={Mic}
+                    label="Active AI Talks"
+                    value={String(activeAITalks)}
+                    sub="current engagements"
                     delay={0.15}
-                    onClick={() => navigate('/admin/programs')}
+                    onClick={() => navigate('/admin/programs?type=ai_talk')}
                 />
                 <KPICard
                     icon={Users}
-                    label="Total Members"
-                    value={String(totalMembers)}
+                    label="Active Members"
+                    value={String(activeMembers)}
                     sub="executives + participants"
                     delay={0.2}
-                    onClick={() => navigate('/settings')}
+                    onClick={() => navigate('/admin/members')}
                 />
             </div>
 
-            {/* ── Row 2: Leads status + Recent leads ── */}
+            {/* ── Row 2: Pipeline Analytics + Calendar ── */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 {/* Pipeline Analytics */}
                 <motion.div
@@ -351,7 +478,7 @@ export function OwnerDashboard() {
                     <LeadsStatusBar counts={leadCounts} />
 
                     {/* Analytics grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                         <div className="bg-bg-elevated rounded-xl p-3 text-center">
                             <p className="text-lg font-bold text-lime">{fmt(leads.length)}</p>
                             <p className="text-xs text-gray-500 mt-0.5">Total Leads</p>
@@ -364,60 +491,49 @@ export function OwnerDashboard() {
                             <p className="text-lg font-bold text-yellow-400">AED {fmt(pipelineValue)}</p>
                             <p className="text-xs text-gray-500 mt-0.5">Pipeline</p>
                         </div>
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
-                            <p className="text-lg font-bold text-green-400">AED {fmt(completedRevenue)}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">Collected</p>
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center cursor-pointer hover:border hover:border-lime/20 transition" onClick={() => navigate('/admin/leads?paid=pending')}>
+                            <p className="text-lg font-bold text-amber-400 flex items-center justify-center gap-1">
+                                <AlertCircle className="h-4 w-4" />{pendingLeads}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">Pending</p>
+                        </div>
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center cursor-pointer hover:border hover:border-lime/20 transition" onClick={() => navigate('/admin/leads?priority=NOT INTERESTED')}>
+                            <p className="text-lg font-bold text-red-400 flex items-center justify-center gap-1">
+                                <XCircle className="h-4 w-4" />{notInterestedLeads}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">Not Interested</p>
+                        </div>
+                        <div className="bg-bg-elevated rounded-xl p-3 text-center cursor-pointer hover:border hover:border-lime/20 transition" onClick={() => navigate('/admin/costs')}>
+                            <p className="text-lg font-bold text-green-400">AED {fmt(monthlyCosts)}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">Costs (Month)</p>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Recent Leads */}
+                {/* Calendar Widget (replaced Recent Leads) */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.35 }}
-                    className="lg:col-span-2 bg-bg-card border border-border rounded-2xl p-6 flex flex-col gap-4"
+                    className="lg:col-span-2 bg-bg-card border border-border rounded-2xl p-6"
                 >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-4">
                         <h2 className="font-semibold text-white text-sm flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-lime" />
-                            Recent Leads
+                            <Building2 className="h-4 w-4 text-lime" />
+                            Calendar
                         </h2>
                         <button
-                            onClick={() => navigate('/admin/leads')}
+                            onClick={() => navigate('/admin/programs')}
                             className="text-xs text-gray-400 hover:text-lime transition flex items-center gap-1"
                         >
-                            All <ArrowRight className="h-3 w-3" />
+                            Programs <ArrowRight className="h-3 w-3" />
                         </button>
                     </div>
-                    <div className="flex-1 space-y-2">
-                        {recentLeads.length === 0 ? (
-                            <p className="text-gray-500 text-sm">No leads yet</p>
-                        ) : recentLeads.map((lead) => (
-                            <div
-                                key={lead.id}
-                                onClick={() => navigate(`/admin/leads?highlight=${lead.id}`)}
-                                className="flex items-center gap-3 py-2 border-b border-border last:border-0 cursor-pointer hover:bg-white/5 rounded-lg px-2 -mx-2 transition"
-                            >
-                                <div className="h-7 w-7 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                                    <span className="text-xs font-bold text-gray-300">{(lead.full_name || '?').charAt(0)}</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-white truncate">{lead.full_name}</p>
-                                    <p className="text-xs text-gray-500 truncate">{lead.offering_type ?? 'No offering'}</p>
-                                </div>
-                                {lead.priority && (
-                                    <span className={`px-1.5 py-0.5 rounded text-[10px] border font-medium ${priorityStyle[lead.priority] ?? 'border-border text-gray-400'}`}>
-                                        {lead.priority}
-                                    </span>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                    <CalendarWidget cohorts={cohorts} />
                 </motion.div>
             </div>
 
-            {/* ── Row 3: Company health ── */}
+            {/* ── Row 3: Masterclass Progress ── */}
             <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -427,7 +543,7 @@ export function OwnerDashboard() {
                 <div className="flex items-center justify-between mb-5">
                     <h2 className="font-semibold text-white flex items-center gap-2">
                         <CheckCircle2 className="h-4 w-4 text-lime" />
-                        Company Progress
+                        Masterclass Progress
                     </h2>
                     <button
                         onClick={() => navigate('/admin/companies')}

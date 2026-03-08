@@ -25,6 +25,7 @@ import { LeadsPage } from '@/pages/admin/LeadsPage'
 import { ProgramsPage } from '@/pages/admin/ProgramsPage'
 import { UsersPage } from '@/pages/admin/UsersPage'
 import { EventsPage } from '@/pages/admin/EventsPage'
+import { CostsPage } from '@/pages/admin/CostsPage'
 import { MyProgramPage } from '@/pages/MyProgramPage'
 import { MyPerformancePage } from '@/pages/MyPerformancePage'
 
@@ -126,6 +127,14 @@ function App() {
                                 element={
                                     <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                         <EventsPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/costs"
+                                element={
+                                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                        <CostsPage />
                                     </ProtectedRoute>
                                 }
                             />
