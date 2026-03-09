@@ -66,7 +66,7 @@ const TOOLS: ToolDef[] = [
         name: 'Complete AI Workflow',
         replaces: 'Fragmented multi-tool, multi-day production pipelines',
         stat: '2–3× total studio output',
-        detail: 'Equivalent to 20–25 designers from a team of 10. Turning this on selects all.'
+        detail: 'Equivalent to 20–25 participants from a team of 10. Turning this on selects all.'
     }
 ]
 
@@ -95,17 +95,17 @@ function calculateSavings(teamSize: number, projectType: ProjectType, selectedTo
     const has = (id: ToolId) => isAll || selectedTools.includes(id)
     const m = multipliers[projectType]
 
-    let savedHrsPerDesigner = 0
-    if (has('midjourney')) savedHrsPerDesigner += (baseHrs.research * savingsRates.midjourney.research + baseHrs.concept * savingsRates.midjourney.concept) * m.mj
-    if (has('nanobanana')) savedHrsPerDesigner += (baseHrs.render * savingsRates.nanobanana.render + baseHrs.concept * savingsRates.nanobanana.concept) * m.nb
-    if (has('higgsfield')) savedHrsPerDesigner += baseHrs.video * savingsRates.higgsfield.video * m.hf
-    if (has('chatgpt')) savedHrsPerDesigner += baseHrs.written * savingsRates.chatgpt.written * m.gpt
-    if (has('krea')) savedHrsPerDesigner += (baseHrs.style * savingsRates.krea.style + baseHrs.render * savingsRates.krea.render) * m.krea
+    let savedHrsPerParticipant = 0
+    if (has('midjourney')) savedHrsPerParticipant += (baseHrs.research * savingsRates.midjourney.research + baseHrs.concept * savingsRates.midjourney.concept) * m.mj
+    if (has('nanobanana')) savedHrsPerParticipant += (baseHrs.render * savingsRates.nanobanana.render + baseHrs.concept * savingsRates.nanobanana.concept) * m.nb
+    if (has('higgsfield')) savedHrsPerParticipant += baseHrs.video * savingsRates.higgsfield.video * m.hf
+    if (has('chatgpt')) savedHrsPerParticipant += baseHrs.written * savingsRates.chatgpt.written * m.gpt
+    if (has('krea')) savedHrsPerParticipant += (baseHrs.style * savingsRates.krea.style + baseHrs.render * savingsRates.krea.render) * m.krea
 
     // Cap at 80% (32 hours/week)
-    savedHrsPerDesigner = Math.min(savedHrsPerDesigner, 32)
+    savedHrsPerParticipant = Math.min(savedHrsPerParticipant, 32)
 
-    const totalHoursSaved = savedHrsPerDesigner * teamSize
+    const totalHoursSaved = savedHrsPerParticipant * teamSize
     const headcountFreed = totalHoursSaved / 40
     const projectsMonth = Math.floor((totalHoursSaved * 4) / AVG_PROJECT_HRS[projectType])
 
@@ -208,7 +208,7 @@ export function ProductivityCalculator() {
                 </p>
                 <div className="flex items-center gap-2.5 text-xs text-gray-500 font-body pt-1">
                     <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] uppercase tracking-widest font-bold text-gray-400 shrink-0">Data source</span>
-                    <span>Estimates modelled from observed time savings across 200+ designers in 5 studios using structured AI workflows.</span>
+                    <span>Estimates modelled from observed time savings across 200+ participants in 10 studios using structured AI workflows.</span>
                 </div>
             </div>
 
@@ -217,7 +217,7 @@ export function ProductivityCalculator() {
                 {/* Team Size Slider */}
                 <div className="space-y-6">
                     <div className="flex justify-between items-baseline">
-                        <label className="text-sm font-bold text-gray-300 font-heading tracking-wide uppercase">Designers on your team</label>
+                        <label className="text-sm font-bold text-gray-300 font-heading tracking-wide uppercase">Participants on your team</label>
                         <span className="text-3xl font-heading font-black text-lime">{teamSize}</span>
                     </div>
                     <input
@@ -307,13 +307,13 @@ export function ProductivityCalculator() {
                                 <OutputCard
                                     value={totalHoursSaved}
                                     label="Hours / Week"
-                                    subtext={`Across your team of ${teamSize} designers`}
+                                    subtext={`Across your team of ${teamSize} participants`}
                                     delay={0}
                                 />
                                 <OutputCard
                                     value={headcountFreed}
                                     decimals={1}
-                                    label="Designer Equivalent"
+                                    label="Participant Equivalent"
                                     subtext="Based on a 40-hour work week"
                                     delay={0.1}
                                 />
@@ -333,7 +333,7 @@ export function ProductivityCalculator() {
                                 className="text-center p-6 bg-lime/10 border border-lime/20 rounded-2xl"
                             >
                                 <p className="text-base md:text-lg text-lime font-body leading-relaxed">
-                                    "A {teamSize}-person {projectType} studio using {selectedTools.length === TOOLS.length || selectedTools.includes('all') ? 'the complete AI workflow' : `${selectedTools.length} AI ${selectedTools.length === 1 ? 'tool' : 'tools'}`} could reclaim <strong className="font-heading font-black tracking-wide">{totalHoursSaved}</strong> hours/week — the equivalent of <strong className="font-heading font-black tracking-wide">{headcountFreed}</strong> full-time {headcountFreed === 1 ? 'designer' : 'designers'}."
+                                    "A {teamSize}-person {projectType} studio using {selectedTools.length === TOOLS.length || selectedTools.includes('all') ? 'the complete AI workflow' : `${selectedTools.length} AI ${selectedTools.length === 1 ? 'tool' : 'tools'}`} could reclaim <strong className="font-heading font-black tracking-wide">{totalHoursSaved}</strong> hours/week — the equivalent of <strong className="font-heading font-black tracking-wide">{headcountFreed}</strong> full-time {headcountFreed === 1 ? 'participant' : 'participants'}."
                                 </p>
                             </motion.div>
                         </div>

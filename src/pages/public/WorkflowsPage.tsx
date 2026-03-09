@@ -303,11 +303,11 @@ export function WorkflowsPage() {
                                 maxWidth: '600px'
                             }}
                         >
-                            Real data from +200 designers across 5 studios shows where the gap is and what teams actually need.
+                            Real data from +200 Participants across 10 studios shows where the gap is and what teams actually need.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <StatPill value={200} suffix="+" label="Designers surveyed" delay={0.1} />
-                            <StatPill value={5} label="Studios" delay={0.2} />
+                            <StatPill value={200} suffix="+" label="Participants surveyed" delay={0.1} />
+                            <StatPill value={10} label="Studios" delay={0.2} />
                             <StatPill value={62} label="Only experimenting" suffix="%" delay={0.3} />
                         </div>
                     </div>
@@ -350,7 +350,7 @@ export function WorkflowsPage() {
                             <AnimatedBar label="Proposal response time" sublabel="Days of scrambling to respond to RFPs → same-day turnaround" pct={60} delay={0.5} />
                         </div>
 
-                        <div className="flex flex-wrap gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <StatPill value={75} suffix="%" label="More creative output / month" delay={0.1} />
                             <StatPill value={50} suffix="%" label="Faster client approvals" delay={0.2} />
                             <StatPill value={10} suffix="×" label="More visual content produced" delay={0.3} />
@@ -480,7 +480,7 @@ export function WorkflowsPage() {
                                 <p className="text-xs text-gray-500 uppercase tracking-widest font-heading mt-1">Creative output capacity</p>
                             </div>
                             <p className="text-sm text-gray-400 leading-relaxed font-body">
-                                A 10-person team operating with structured AI workflows produces the creative output equivalent to 20–25 designers using traditional methods — without adding headcount, salaries, or management overhead.
+                                A 10-person team operating with structured AI workflows produces the creative output equivalent to 20–25 participants using traditional methods — without adding headcount, salaries, or management overhead.
                             </p>
                         </div>
                     </div>

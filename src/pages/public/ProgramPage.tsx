@@ -6,12 +6,14 @@ import logoSrc from '../../assets/logo.png'
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
 
 const inclusions = [
-    'Structured AI workflow system built specifically for design studios',
-    'Live workshops with real-time feedback and studio exercises',
-    'Post-program support and follow-up sessions',
-    'Lifetime access to all recordings',
-    'In-session hands-on exercises and prompt libraries',
-    '1-on-1 implementation session with your team',
+    'Tailored AI content & case studies built specifically for your studio',
+    'In-session hands-on exercises',
+    'Prize money competition',
+    'Life-time access to all session recordings',
+    'Free access to E-prompt books',
+    'Bonus 2-hr support call post Masterclass',
+    '60-day free access to AI community',
+    'Data-driven analysis of teams performance',
 ]
 
 const gains = [
@@ -241,7 +243,7 @@ export function ProgramPage() {
                                 className="flex flex-wrap gap-3"
                             >
                                 {[
-                                    { label: 'Duration', value: '4 Weeks' },
+                                    { label: 'Duration', value: '15 hours' },
                                     { label: 'Format', value: 'Live + Async' },
                                     { label: 'Delivery', value: 'In-Person or Remote' },
                                     { label: 'Team Size', value: 'Up to 20 designers' },
@@ -308,7 +310,7 @@ export function ProgramPage() {
                                         <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                 </button>
-                                <p className="text-xs text-gray-600 font-body">Free 30-minute call. No commitment.</p>
+                                <p className="text-xs text-lime font-bold font-body">Free 15-minute call. No commitment.</p>
                             </motion.div>
 
                         </div>
