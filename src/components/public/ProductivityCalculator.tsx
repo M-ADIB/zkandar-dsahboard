@@ -206,6 +206,10 @@ export function ProductivityCalculator() {
                 <p className="text-base text-gray-400 font-body">
                     Build your AI stack and see the real-time impact on your team's capacity.
                 </p>
+                <div className="flex items-center gap-2.5 text-xs text-gray-500 font-body pt-1">
+                    <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] uppercase tracking-widest font-bold text-gray-400 shrink-0">Data source</span>
+                    <span>Estimates modelled from observed time savings across 200+ designers in 5 studios using structured AI workflows.</span>
+                </div>
             </div>
 
             {/* Step 1: Context */}

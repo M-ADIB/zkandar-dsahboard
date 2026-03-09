@@ -183,22 +183,42 @@ function ImpactCard({ label, score }: { label: string; score: number }) {
     )
 }
 
-// ─── Ranked list item ─────────────────────────────────────────────────────────
+// ─── Ring chart (SVG donut) ───────────────────────────────────────────────────
 
-function RankedItem({ rank, label, pct }: { rank: number; label: string; pct: number }) {
+function RingChart({ pct, label, delay = 0 }: { pct: number; label: string; delay?: number }) {
     const ref = useRef(null)
     const inView = useInView(ref, { once: true })
+    const animated = useAnimatedNumber(pct, 1200, inView)
+    const r = 18
+    const circumference = 2 * Math.PI * r
     return (
         <motion.div
             ref={ref}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: 10 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: rank * 0.08, duration: 0.5 }}
-            className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0"
+            transition={{ duration: 0.5, delay }}
+            className="flex items-center gap-4"
         >
-            <span className="text-xs font-bold text-lime bg-lime/10 w-7 h-7 rounded-lg flex items-center justify-center shrink-0">{rank}</span>
-            <span className="text-sm text-gray-300 flex-1 font-body">{label}</span>
-            <span className="text-sm font-bold text-white tabular-nums">{pct}%</span>
+            <div className="relative w-14 h-14 shrink-0">
+                <svg viewBox="0 0 40 40" className="w-14 h-14 -rotate-90">
+                    <circle cx="20" cy="20" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3.5" />
+                    <motion.circle
+                        cx="20" cy="20" r={r}
+                        fill="none"
+                        stroke="#D0FF71"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={inView ? { strokeDashoffset: circumference - (pct / 100) * circumference } : {}}
+                        transition={{ duration: 1.1, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[11px] font-black text-lime font-heading leading-none">{animated}%</span>
+                </div>
+            </div>
+            <span className="text-sm text-gray-400 font-body leading-snug">{label}</span>
         </motion.div>
     )
 }
@@ -338,47 +358,28 @@ export function WorkflowsPage() {
                     </div>
                 </Section>
 
-                {/* ─── SECTION 3: What Teams Are Struggling With ────────────── */}
-                <Section>
-                    <div className="space-y-8">
-                        <div>
-                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams are struggling with</h2>
-                            <p className="text-sm text-gray-500 mt-2 font-body">Share of designers who cited each as a primary friction point</p>
-                        </div>
-
-                        <div className="space-y-4 bg-bg-card border border-border rounded-2xl p-6">
-                            <AnimatedBar label="Controlling style and consistency" sublabel="AI outputs don't match the studio's visual language" pct={44} delay={0} />
-                            <AnimatedBar label="Getting strong concept ideas" sublabel="Struggling to push AI beyond generic directions" pct={40} delay={0.1} />
-                            <AnimatedBar label="Translating AI into real design work" sublabel="Results look good but don't connect to actual projects" pct={33} delay={0.2} />
-                            <AnimatedBar label="Creating mood and storytelling visuals" sublabel="Can't get the emotional quality needed for client presentations" pct={22} delay={0.3} />
-                            <AnimatedBar label="Iterating efficiently" sublabel="Each round of changes takes too long" pct={18} delay={0.4} />
-                        </div>
-
-                        <CalloutCard number={67} text={`of designers say difficulty controlling results is their primary concern — not lack of access to tools.`} />
-                    </div>
-                </Section>
-
                 {/* ─── SECTION 4: What Teams Actually Want ──────────────────── */}
                 <Section>
                     <div className="space-y-8">
                         <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams actually want</h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Left: Team goals */}
-                            <div className="bg-bg-card border border-border rounded-2xl p-6">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 font-heading">Team goals</h3>
-                                <RankedItem rank={1} label="Gain more control over AI results" pct={69} />
-                                <RankedItem rank={2} label="Learn structured AI workflows" pct={33} />
-                                <RankedItem rank={3} label="Generate concepts faster" pct={33} />
-                                <RankedItem rank={4} label="Improve visual quality" pct={27} />
-                                <RankedItem rank={5} label="Build confidence using AI tools" pct={16} />
+                            {/* Left: Bar chart of team priorities */}
+                            <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-5">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest font-heading">Team priorities</h3>
+                                <AnimatedBar label="Gain more control over AI results" pct={69} delay={0} />
+                                <AnimatedBar label="Learn structured AI workflows" pct={33} delay={0.1} />
+                                <AnimatedBar label="Generate concepts faster" pct={33} delay={0.2} />
+                                <AnimatedBar label="Improve visual quality" pct={27} delay={0.3} />
+                                <AnimatedBar label="Build confidence using AI tools" pct={16} delay={0.4} />
                             </div>
 
-                            {/* Right: What would help most */}
-                            <div className="space-y-3">
-                                <p className="text-xs text-gray-500 uppercase tracking-widest font-heading">Of designers, what would help them most</p>
-                                <BigStatCard value={42} label="say structured prompting techniques would make the biggest difference" />
-                                <BigStatCard value={36} label="say learning to refine and control AI results is their top need" />
+                            {/* Right: Ring charts for what would help most */}
+                            <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-6">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest font-heading">What would help most</h3>
+                                <RingChart pct={42} label="say structured prompting techniques would make the biggest difference" delay={0.1} />
+                                <RingChart pct={36} label="say learning to refine and control AI results is their top need" delay={0.25} />
+                                <RingChart pct={22} label="want better tools and guidance for client-facing work" delay={0.4} />
                             </div>
                         </div>
 
@@ -423,30 +424,6 @@ export function WorkflowsPage() {
                             <ImpactCard label="Quality" score={4.2} />
                             <ImpactCard label="Client Satisfaction" score={5.0} />
                             <ImpactCard label="Competitive Advantage" score={5.0} />
-                        </div>
-                    </div>
-                </Section>
-
-                {/* ─── SECTION 6: What Leadership Wants to Achieve ──────────── */}
-                <Section>
-                    <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What leadership is trying to achieve</h2>
-
-                        <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
-                            <AnimatedBar label="Improve output quality & consistency" pct={60} delay={0} />
-                            <AnimatedBar label="Establish clear AI workflows" pct={50} delay={0.1} />
-                            <AnimatedBar label="Upskill teams efficiently" pct={40} delay={0.2} />
-                            <AnimatedBar label="Enable safe client-facing AI use" pct={30} delay={0.3} />
-                        </div>
-
-                        {/* Full-width callout block */}
-                        <div className="bg-bg-card border-l-4 border-lime rounded-2xl p-8">
-                            <h3 className="text-xl font-heading font-black text-white mb-3">
-                                The gap is not tool access. It's workflow structure.
-                            </h3>
-                            <p className="text-sm text-gray-400 leading-relaxed font-body">
-                                The missing piece is a clear, repeatable system built for how design studios actually work.
-                            </p>
                         </div>
                     </div>
                 </Section>
@@ -545,37 +522,3 @@ export function WorkflowsPage() {
     )
 }
 
-// ─── Helper sub-components ────────────────────────────────────────────────────
-
-function CalloutCard({ number, text }: { number: number; text: string }) {
-    const ref = useRef(null)
-    const inView = useInView(ref, { once: true })
-    const animated = useAnimatedNumber(number, 1200, inView)
-    return (
-        <div
-            ref={ref}
-            className="bg-bg-card border-l-4 border-lime rounded-2xl p-6 flex items-start gap-4"
-        >
-            <motion.span
-                className="text-4xl font-heading font-black text-lime tabular-nums shrink-0"
-                animate={inView ? { textShadow: ['0 0 0px #D0FF71', '0 0 20px #D0FF71', '0 0 0px #D0FF71'] } : {}}
-                transition={{ duration: 1.2, ease: 'easeInOut' }}
-            >
-                {animated}%
-            </motion.span>
-            <span className="text-sm text-gray-400 leading-relaxed pt-2 font-body">{text}</span>
-        </div>
-    )
-}
-
-function BigStatCard({ value, label }: { value: number; label: string }) {
-    const ref = useRef(null)
-    const inView = useInView(ref, { once: true })
-    const animated = useAnimatedNumber(value, 1200, inView)
-    return (
-        <div ref={ref} className="bg-bg-card border border-border rounded-2xl p-6 flex flex-col gap-2 group hover:border-lime/30 hover:shadow-glow transition-all duration-300">
-            <span className="text-4xl font-heading font-black text-lime tabular-nums">{animated}%</span>
-            <span className="text-sm text-gray-400 font-body">{label}</span>
-        </div>
-    )
-}
