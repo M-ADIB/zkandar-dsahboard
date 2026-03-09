@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { PopupModal } from 'react-calendly'
+import { Link } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
 
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
@@ -69,6 +70,13 @@ const testimonials = [
 export function ProgramPage() {
     const [calendlyOpen, setCalendlyOpen] = useState(false)
     return (
+        <>
+        <PopupModal
+            url={CALENDLY_URL}
+            open={calendlyOpen}
+            onModalClose={() => setCalendlyOpen(false)}
+            rootElement={document.body}
+        />
         <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
             {/* Ambient gradient orbs */}
             <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float-slow" />
@@ -243,20 +251,20 @@ export function ProgramPage() {
                         <p className="text-gray-400 text-base font-body">
                             Book a free 30-minute discovery call. We'll walk through your studio's current setup and whether this program is the right fit.
                         </p>
-                        <div className="flex items-center justify-center pt-2">
+                        <div className="flex items-center justify-center gap-4 flex-wrap pt-2">
                             <button
                                 onClick={() => setCalendlyOpen(true)}
                                 className="px-8 py-3.5 bg-lime text-black font-bold rounded-xl hover:bg-lime-400 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5"
                             >
                                 Talk to Us
                             </button>
+                            <Link
+                                to="/thank-you"
+                                className="px-8 py-3.5 border border-white/15 text-white font-bold rounded-xl hover:border-lime/40 hover:text-lime transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5"
+                            >
+                                I Have Booked
+                            </Link>
                         </div>
-                        <PopupModal
-                            url={CALENDLY_URL}
-                            open={calendlyOpen}
-                            onModalClose={() => setCalendlyOpen(false)}
-                            rootElement={document.body}
-                        />
                     </div>
                 </Section>
 
@@ -270,5 +278,6 @@ export function ProgramPage() {
 
             </div>
         </div>
+        </>
     )
 }
