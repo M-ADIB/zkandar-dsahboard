@@ -2,11 +2,12 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
+import { InlineWidget } from 'react-calendly'
 
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
 
 const inclusions = [
-    'Tailored AI content & case studies built specifically for your studio',
+    'Tailored content & case studies for your studio',
     'In-session hands-on exercises',
     'Prize money competition',
     'Life-time access to all session recordings',
@@ -56,14 +57,19 @@ function CalendlyModal({ onClose }: { onClose: () => void }) {
                     </button>
                 </div>
 
-                {/* Calendly iframe */}
-                <iframe
-                    src={`${CALENDLY_URL}?embed_type=Inline&hide_gdpr_banner=1`}
-                    width="100%"
-                    className="flex-1 min-h-0"
-                    frameBorder="0"
-                    title="Book a discovery call with Zkandar AI"
-                />
+                {/* Calendly Inline Widget */}
+                <div className="flex-1 min-h-0 relative bg-white">
+                    <InlineWidget
+                        url={CALENDLY_URL}
+                        styles={{ height: '100%', width: '100%' }}
+                        pageSettings={{
+                            hideGdprBanner: true,
+                            backgroundColor: '111111',
+                            textColor: 'ffffff',
+                            primaryColor: 'd0ff71'
+                        }}
+                    />
+                </div>
 
                 {/* I Have Booked — inside modal */}
                 <div className="px-5 py-4 border-t border-white/10 shrink-0 bg-[#0E0E0E]">
