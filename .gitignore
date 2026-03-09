@@ -38,3 +38,4 @@ lerna-debug.log*
 
 # Claude Code worktrees
 .claude/worktrees/
+.vercel
