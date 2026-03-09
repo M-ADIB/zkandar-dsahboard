@@ -1,6 +1,6 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { openPopupWidget } from 'react-calendly'
+import { PopupModal } from 'react-calendly'
 import logoSrc from '../../assets/logo.png'
 
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
@@ -67,6 +67,7 @@ const testimonials = [
 ]
 
 export function ProgramPage() {
+    const [calendlyOpen, setCalendlyOpen] = useState(false)
     return (
         <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
             {/* Ambient gradient orbs */}
@@ -244,12 +245,18 @@ export function ProgramPage() {
                         </p>
                         <div className="flex items-center justify-center pt-2">
                             <button
-                                onClick={() => openPopupWidget({ url: CALENDLY_URL })}
+                                onClick={() => setCalendlyOpen(true)}
                                 className="px-8 py-3.5 bg-lime text-black font-bold rounded-xl hover:bg-lime-400 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5"
                             >
                                 Talk to Us
                             </button>
                         </div>
+                        <PopupModal
+                            url={CALENDLY_URL}
+                            open={calendlyOpen}
+                            onModalClose={() => setCalendlyOpen(false)}
+                            rootElement={document.body}
+                        />
                     </div>
                 </Section>
 
