@@ -10,14 +10,15 @@ import {
     ColumnFiltersState,
     VisibilityState,
 } from '@tanstack/react-table';
-import { Lead } from '@/types/database';
+import { Lead, LeadColumn } from '@/types/database';
 import {
     ArrowUpDown,
     Pencil,
     Trash2,
     Search,
     Filter,
-    ChevronDown
+    ChevronDown,
+    Plus,
 } from 'lucide-react';
 import { EditableTextCell } from './cells/EditableTextCell';
 import { EditableSelectCell } from './cells/EditableSelectCell';
@@ -51,6 +52,10 @@ const OFFERING_OPTIONS = [
 
 interface LeadsTableProps {
     data: Lead[];
+    columnsConfig: LeadColumn[];
+    onAddColumn: (label: string, type?: string) => void;
+    onUpdateColumn: (colId: string, updates: Partial<LeadColumn>) => void;
+    onDeleteColumn: (colId: string, colKey: string) => void;
     onEdit: (lead: Lead) => void;
     onDelete: (lead: Lead) => void;
     onUpdatePriority: (leadId: string, priority: string) => void;
@@ -61,6 +66,10 @@ interface LeadsTableProps {
 
 export function LeadsTable({
     data,
+    columnsConfig,
+    onAddColumn,
+    onUpdateColumn,
+    onDeleteColumn,
     onEdit,
     onDelete,
     onUpdatePriority,
@@ -106,592 +115,220 @@ export function LeadsTable({
         }
     }, [rowsPerPage]);
 
-    const toText = (value: unknown) => {
-        if (value === null || value === undefined) return '';
-        return String(value);
-    };
 
-    const toNumber = (value: string) => {
-        if (value.trim() === '') return null;
-        const parsed = Number(value);
-        return Number.isNaN(parsed) ? null : parsed;
-    };
 
-    const normalizeBoolean = (value: unknown) => {
-        return value === true || value === 'true' ? 'true' : 'false';
-    };
 
-    const formatDateLabel = (value: string | null | undefined) => {
-        if (!value) return '-';
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return '-';
-        return date.toLocaleDateString();
-    };
+    const EditableHeader = ({ column, colConfig }: { column: any, colConfig: LeadColumn }) => {
+        const [isEditing, setIsEditing] = useState(false);
+        const [value, setValue] = useState(colConfig.label);
 
-    const columns = useMemo<ColumnDef<Lead>[]>(() => [
-        {
-            accessorKey: 'full_name',
-            header: ({ column }) => (
-                <button
-                    className="flex items-center gap-1 hover:text-white transition-colors"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    Name
-                    <ArrowUpDown className="h-4 w-4" />
-                </button>
-            ),
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('full_name'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'full_name', val)}
-                    className="font-medium"
-                />
-            ),
-            meta: { headerClassName: 'min-w-[220px] max-w-[220px]', cellClassName: 'min-w-[220px] max-w-[220px]' }
-        },
-        {
-            accessorKey: 'priority',
-            header: 'Priority',
-            cell: ({ row }) => {
-                const priority = (row.getValue('priority') as string) || 'COLD';
-                const colorConfig: Record<string, string> = {
-                    'ACTIVE': 'bg-lime/10 text-lime border-lime/30',
-                    'HOT': 'bg-red-500/20 text-red-300 border-red-500/30',
-                    'COLD': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
-                    'LAVA': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-                    'COMPLETED': 'bg-green-500/20 text-green-300 border-green-500/30',
-                    'NOT INTERESTED': 'bg-gray-700/20 text-gray-400 border-border/30',
-                };
+        const handleSave = () => {
+            if (value.trim() && value !== colConfig.label && onUpdateColumn) {
+                onUpdateColumn(colConfig.id, { label: value });
+            }
+            setIsEditing(false);
+        };
 
-                return (
-                    <EditableSelectCell
-                        value={priority}
-                        options={PRIORITY_OPTIONS}
-                        onUpdate={(val) => onUpdatePriority(row.original.id, val)}
-                        className={`text-xs font-medium border px-2 py-1 rounded-md w-fit ${colorConfig[priority] || colorConfig['COLD']}`}
+        return (
+            <div
+                className="flex items-center gap-1 hover:text-white transition-colors group relative"
+                onDoubleClick={() => setIsEditing(true)}
+            >
+                {isEditing ? (
+                    <input
+                        autoFocus
+                        type="text"
+                        value={value}
+                        onChange={e => setValue(e.target.value)}
+                        onBlur={handleSave}
+                        onKeyDown={e => e.key === 'Enter' && handleSave()}
+                        className="bg-bg-elevated text-white px-1 py-0.5 rounded outline-none border border-lime/50 w-full min-w-[80px]"
                     />
-                );
-            },
-            meta: { headerClassName: 'min-w-[160px] max-w-[160px]', cellClassName: 'min-w-[160px] max-w-[160px]' }
-        },
-        {
-            accessorKey: 'company_name',
-            header: ({ column }) => (
-                <button
-                    className="flex items-center gap-1 hover:text-white transition-colors"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    Company
-                    <ArrowUpDown className="h-4 w-4" />
-                </button>
-            ),
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('company_name'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'company_name', val)}
-                    className="text-gray-300"
-                />
-            ),
-            meta: { headerClassName: 'min-w-[200px]', cellClassName: 'min-w-[200px]' }
-        },
-        {
-            accessorKey: 'email',
-            header: 'Email',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('email'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'email', val)}
-                    className="text-sm text-gray-400"
-                />
-            ),
-            meta: { headerClassName: 'min-w-[240px]', cellClassName: 'min-w-[240px]' }
-        },
-        {
-            accessorKey: 'phone',
-            header: 'Phone',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('phone'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'phone', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
-        },
-        {
-            accessorKey: 'instagram',
-            header: 'Instagram',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('instagram'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'instagram', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
-        },
-        {
-            accessorKey: 'job_title',
-            header: 'Job Title',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('job_title'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'job_title', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[200px]', cellClassName: 'min-w-[200px]' }
-        },
-        {
-            accessorKey: 'country',
-            header: 'Country',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('country'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'country', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'city',
-            header: 'City',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('city'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'city', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'description',
-            header: 'Description',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('description'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'description', val)}
-                    className="truncate"
-                />
-            ),
-            meta: { headerClassName: 'min-w-[240px]', cellClassName: 'min-w-[240px]' }
-        },
-        {
-            accessorKey: 'offering_type',
-            header: 'Offering',
-            cell: ({ row }) => (
-                <EditableSelectCell
-                    value={toText(row.getValue('offering_type')) || 'TBA'}
-                    options={OFFERING_OPTIONS}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'offering_type', val)}
-                    className="text-sm text-gray-300"
-                />
-            ),
-            filterFn: (row, id, value) => {
-                const rowValue = row.getValue(id) as string;
-                if (!value || value === 'ALL') return true;
-                return rowValue?.includes(value);
-            },
-            meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
-        },
-        {
-            accessorKey: 'session_type',
-            header: 'Session Type',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('session_type'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'session_type', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
-        },
-        {
-            accessorKey: 'discovery_call_date',
-            header: 'Discovery Call',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('discovery_call_date') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'discovery_call_date', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
-        },
-        {
-            id: 'payment_amount',
-            accessorFn: row => row.payment_amount,
-            header: ({ column }) => (
-                <button
-                    className="flex items-center gap-1 hover:text-white transition-colors"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    Payment (AED)
-                    <ArrowUpDown className="h-4 w-4" />
-                </button>
-            ),
-            cell: ({ row }) => (
-                <EditableMoneyCell
-                    value={row.original.payment_amount ?? undefined}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'payment_amount', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'seats',
-            header: 'Seats',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('seats'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'seats', toNumber(val))}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[100px]', cellClassName: 'min-w-[100px]' }
-        },
-        {
-            accessorKey: 'balance',
-            header: 'Balance (AED)',
-            cell: ({ row }) => (
-                <EditableMoneyCell
-                    value={row.original.balance ?? undefined}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'balance', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'balance_2',
-            header: 'Balance 2 (AED)',
-            cell: ({ row }) => (
-                <EditableMoneyCell
-                    value={row.original.balance_2 ?? undefined}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'balance_2', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'coupon_percent',
-            header: 'Coupon %',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('coupon_percent'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'coupon_percent', toNumber(val))}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[120px]', cellClassName: 'min-w-[120px]' }
-        },
-        {
-            accessorKey: 'coupon_code',
-            header: 'Coupon Code',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('coupon_code'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'coupon_code', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'paid_deposit',
-            header: 'Paid Deposit',
-            cell: ({ row }) => (
-                <EditableSelectCell
-                    value={normalizeBoolean(row.getValue('paid_deposit'))}
-                    options={BOOLEAN_OPTIONS}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'paid_deposit', val === 'true')}
-                    className="text-xs"
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'paid_full',
-            header: 'Paid Full',
-            cell: ({ row }) => (
-                <EditableSelectCell
-                    value={normalizeBoolean(row.getValue('paid_full'))}
-                    options={BOOLEAN_OPTIONS}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'paid_full', val === 'true')}
-                    className="text-xs"
-                />
-            ),
-            meta: { headerClassName: 'min-w-[120px]', cellClassName: 'min-w-[120px]' }
-        },
-        {
-            accessorKey: 'amount_paid',
-            header: 'Amount Paid (AED)',
-            cell: ({ row }) => (
-                <EditableMoneyCell
-                    value={row.original.amount_paid ?? undefined}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'amount_paid', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'amount_paid_2',
-            header: 'Amount Paid 2 (AED)',
-            cell: ({ row }) => (
-                <EditableMoneyCell
-                    value={row.original.amount_paid_2 ?? undefined}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'amount_paid_2', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[150px]', cellClassName: 'min-w-[150px]' }
-        },
-        {
-            accessorKey: 'date_of_payment',
-            header: 'DOP 1',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('date_of_payment') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'date_of_payment', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'date_of_payment_2',
-            header: 'DOP 2',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('date_of_payment_2') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'date_of_payment_2', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'date_of_payment_3',
-            header: 'DOP 3',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('date_of_payment_3') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'date_of_payment_3', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'payment_plan',
-            header: 'Payment Plan',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('payment_plan'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'payment_plan', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'balance_dop',
-            header: 'Balance DOP',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('balance_dop') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'balance_dop', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'day_slot',
-            header: 'Day Slot',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('day_slot'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'day_slot', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'time_slot',
-            header: 'Time Slot',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('time_slot'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'time_slot', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'start_date',
-            header: 'Start Date',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('start_date') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'start_date', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'end_date',
-            header: 'End Date',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('end_date') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'end_date', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'sessions_done',
-            header: 'Sessions Done',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('sessions_done'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'sessions_done', toNumber(val))}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'booked_support',
-            header: 'Booked Support',
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('booked_support'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'booked_support', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'support_date_booked',
-            header: 'Support Date',
-            cell: ({ row }) => (
-                <EditableDateCell
-                    value={row.getValue('support_date_booked') as string}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'support_date_booked', val)}
-                />
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'notes',
-            header: 'Notes',
-            // BUG-2 fix: use multiline textarea for the notes cell
-            cell: ({ row }) => (
-                <EditableTextCell
-                    value={toText(row.getValue('notes'))}
-                    onUpdate={(val) => onUpdateLead(row.original.id, 'notes', val)}
-                    multiline
-                />
-            ),
-            meta: { headerClassName: 'min-w-[240px]', cellClassName: 'min-w-[240px]' }
-        },
-        {
-            accessorKey: 'record_id',
-            header: 'Record ID',
-            // BUG-11 fix: record_id is a unique identifier – make it read-only to prevent DB integrity issues
-            cell: ({ row }) => (
-                <span className="text-xs text-gray-500 px-2 py-1 select-all font-mono">
-                    {toText(row.getValue('record_id')) || '-'}
-                </span>
-            ),
-            meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-        },
-        {
-            accessorKey: 'owner_id',
-            header: 'Owner ID',
-            cell: ({ row }) => (
-                <span className="text-xs text-gray-500">{toText(row.getValue('owner_id')) || '-'}</span>
-            ),
-            meta: { headerClassName: 'min-w-[220px]', cellClassName: 'min-w-[220px]' }
-        },
-        {
-            accessorKey: 'priority_changed_at',
-            header: 'Priority Changed',
-            cell: ({ row }) => (
-                <span className="text-xs text-gray-500">{formatDateLabel(row.getValue('priority_changed_at') as string)}</span>
-            ),
-            meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
-        },
-        {
-            accessorKey: 'priority_previous_values',
-            header: 'Priority History',
-            cell: ({ row }) => {
-                const values = row.original.priority_previous_values as unknown;
-                let label = '-';
+                ) : (
+                    <>
+                        <button
+                            className="flex items-center gap-1"
+                            onClick={() => column.toggleSorting?.(column.getIsSorted() === 'asc')}
+                        >
+                            {colConfig.label}
+                            {['full_name', 'company_name', 'payment_amount'].includes(colConfig.key) && (
+                                <ArrowUpDown className="h-4 w-4" />
+                            )}
+                        </button>
+                        {colConfig.is_custom && onDeleteColumn && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (confirm('Delete custom column?')) {
+                                        onDeleteColumn(colConfig.id, colConfig.key);
+                                    }
+                                }}
+                                className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 transition-opacity ml-auto"
+                                title="Delete Custom Column"
+                            >
+                                <Trash2 className="h-3 w-3" />
+                            </button>
+                        )}
+                    </>
+                )}
+            </div>
+        );
+    };
 
-                if (Array.isArray(values)) {
-                    label = values.filter(Boolean).join(', ') || '-';
-                } else if (typeof values === 'string') {
-                    const trimmed = values.trim();
-                    if (trimmed) {
-                        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-                            const inner = trimmed.slice(1, -1);
-                            label = inner ? inner.split(',').filter(Boolean).join(', ') : '-';
-                        } else if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-                            try {
-                                const parsed = JSON.parse(trimmed);
-                                label = Array.isArray(parsed)
-                                    ? parsed.filter(Boolean).join(', ') || '-'
-                                    : trimmed;
-                            } catch {
-                                label = trimmed;
-                            }
+    const columns = useMemo<ColumnDef<Lead>[]>(() => {
+        if (!columnsConfig || columnsConfig.length === 0) return []; // Fallback while loading
+
+        const dynamicCols: ColumnDef<Lead>[] = columnsConfig.filter(c => c.visible).map(col => {
+            return {
+                id: col.key,
+                accessorFn: row => col.is_custom ? row.custom_fields?.[col.key] : (row as any)[col.key],
+                header: ({ column }) => <EditableHeader column={column} colConfig={col} />,
+                cell: ({ row }) => {
+                    const val = col.is_custom ? row.original.custom_fields?.[col.key] : (row.original as any)[col.key];
+                    const onUpdate = (newVal: any) => {
+                        if (col.is_custom) {
+                            const newFields = { ...row.original.custom_fields, [col.key]: newVal };
+                            onUpdateLead(row.original.id, 'custom_fields' as any, newFields);
                         } else {
-                            label = trimmed;
+                            onUpdateLead(row.original.id, col.key as any, newVal);
                         }
-                    }
-                } else if (values && typeof values === 'object') {
-                    const list = Object.values(values as Record<string, string>).filter(Boolean);
-                    label = list.length > 0 ? list.join(', ') : '-';
-                }
+                    };
 
-                return (
-                    <span className="text-xs text-gray-500">
-                        {label}
-                    </span>
-                );
+                    const toTextLocal = (v: any) => (v === null || v === undefined) ? '' : String(v);
+
+                    if (col.key === 'priority') {
+                        const priority = (val as string) || 'COLD';
+                        const colorConfig: Record<string, string> = {
+                            'ACTIVE': 'bg-lime/10 text-lime border-lime/30',
+                            'HOT': 'bg-red-500/20 text-red-300 border-red-500/30',
+                            'COLD': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
+                            'LAVA': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
+                            'COMPLETED': 'bg-green-500/20 text-green-300 border-green-500/30',
+                            'NOT INTERESTED': 'bg-gray-700/20 text-gray-400 border-border/30',
+                        };
+                        return (
+                            <EditableSelectCell
+                                value={priority}
+                                options={PRIORITY_OPTIONS}
+                                onUpdate={(newVal) => onUpdatePriority(row.original.id, newVal)}
+                                className={`text-xs font-medium border px-2 py-1 rounded-md w-fit ${colorConfig[priority] || colorConfig['COLD']}`}
+                            />
+                        );
+                    }
+                    if (col.key === 'offering_type') {
+                        return (
+                            <EditableSelectCell
+                                value={toTextLocal(val) || 'TBA'}
+                                options={OFFERING_OPTIONS}
+                                onUpdate={onUpdate}
+                                className="text-sm text-gray-300"
+                            />
+                        );
+                    }
+                    if (col.key === 'record_id') {
+                        return <span className="text-xs text-gray-500 px-2 py-1 select-all font-mono">{toTextLocal(val) || '-'}</span>;
+                    }
+                    // Add logic for boolean fields where 'Yes'/'No' looks cleaner
+                    if (['has_coupon', 'paid_full', 'is_payment_plan'].includes(col.key)) {
+                        return (
+                            <EditableSelectCell
+                                value={val === true || val === 'true' ? 'true' : 'false'}
+                                options={BOOLEAN_OPTIONS}
+                                onUpdate={(newVal) => onUpdate(newVal === 'true')}
+                            />
+                        );
+                    }
+                    if (col.type === 'date') {
+                        return (
+                            <EditableDateCell
+                                value={val as string}
+                                onUpdate={onUpdate}
+                            />
+                        );
+                    }
+                    if (col.type === 'number') {
+                        return (
+                            <EditableMoneyCell
+                                value={val ?? undefined}
+                                onUpdate={onUpdate}
+                            />
+                        );
+                    }
+
+                    return (
+                        <EditableTextCell
+                            value={toTextLocal(val)}
+                            onUpdate={onUpdate}
+                            multiline={col.key === 'notes' || col.key === 'description'}
+                            className={
+                                col.key === 'full_name' ? 'font-medium' :
+                                    col.key === 'company_name' ? 'text-gray-300' :
+                                        col.key === 'email' ? 'text-sm text-gray-400' :
+                                            col.key === 'description' ? 'truncate max-w-[200px]' :
+                                                col.key === 'notes' ? 'truncate max-w-[200px]' : ''
+                            }
+                        />
+                    );
+                },
+                meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
+            };
+        });
+
+        const systemCols: ColumnDef<Lead>[] = [
+            {
+                accessorKey: 'owner_id',
+                header: 'Owner ID',
+                cell: ({ row }) => (<span className="text-xs text-gray-500">{row.getValue('owner_id') ? String(row.getValue('owner_id')) : '-'}</span>),
+                meta: { headerClassName: 'min-w-[220px]', cellClassName: 'min-w-[220px]' }
             },
-            meta: { headerClassName: 'min-w-[200px]', cellClassName: 'min-w-[200px]' }
-        },
-        {
-            accessorKey: 'created_at',
-            header: 'Created',
-            cell: ({ row }) => (
-                <span className="text-xs text-gray-500">{formatDateLabel(row.getValue('created_at') as string)}</span>
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            accessorKey: 'updated_at',
-            header: 'Updated',
-            cell: ({ row }) => (
-                <span className="text-xs text-gray-500">{formatDateLabel(row.getValue('updated_at') as string)}</span>
-            ),
-            meta: { headerClassName: 'min-w-[140px]', cellClassName: 'min-w-[140px]' }
-        },
-        {
-            id: 'actions',
-            header: 'Actions',
-            cell: ({ row }) => {
-                const lead = row.original;
-                return (
-                    <div className="flex items-center justify-end gap-2">
-                        <button
-                            onClick={() => onEdit(lead)}
-                            className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-colors"
-                            title="Edit"
-                        >
-                            <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                            onClick={() => onDelete(lead)}
-                            className="p-2 hover:bg-red-900/20 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                            title="Delete"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </button>
-                    </div>
-                );
+            {
+                accessorKey: 'priority_changed_at',
+                header: 'Priority Changed',
+                cell: ({ row }) => {
+                    const date = row.getValue('priority_changed_at') as string;
+                    return <span className="text-xs text-gray-500">{date ? new Date(date).toLocaleDateString() : '-'}</span>;
+                },
+                meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
             },
-            meta: { headerClassName: 'min-w-[120px] text-right', cellClassName: 'min-w-[120px]' }
-        },
-    ], [onEdit, onDelete, onUpdatePriority, onUpdateLead]);
+            {
+                id: 'actions',
+                header: 'Actions',
+                cell: ({ row }) => {
+                    const lead = row.original;
+                    // Fix paintbucket issue by checking that PaintBucket icon is imported or import it.
+                    // Assuming onUpdateLead handles is_highlighted
+                    return (
+                        <div className="flex items-center justify-end gap-1">
+                            <button
+                                onClick={() => onUpdateLead?.(lead.id, 'is_highlighted', !lead.is_highlighted)}
+                                className="p-2 hover:bg-lime/10 rounded-lg text-gray-400 hover:text-lime transition-colors"
+                                title={lead.is_highlighted ? "Remove Highlight" : "Highlight Row"}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" /><path d="m5 2 5 5" /><path d="M2 13h15" /><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" /></svg>
+                            </button>
+                            <button
+                                onClick={() => onEdit(lead)}
+                                className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-colors"
+                                title="Edit"
+                            >
+                                <Pencil className="h-4 w-4" />
+                            </button>
+                            <button
+                                onClick={() => onDelete(lead)}
+                                className="p-2 hover:bg-red-900/20 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
+                                title="Delete"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </button>
+                        </div>
+                    );
+                },
+                meta: { headerClassName: 'min-w-[120px] text-right', cellClassName: 'min-w-[120px]' }
+            }
+        ];
+
+        return [...dynamicCols, ...systemCols];
+    }, [columnsConfig, onUpdateColumn, onDeleteColumn, onUpdateLead, onUpdatePriority, onEdit, onDelete]);
 
     const table = useReactTable({
         data,
@@ -829,7 +466,21 @@ export function LeadsTable({
                     >
                         {denseMode ? 'Compact rows' : 'Comfort rows'}
                     </button>
+
+                    {/* Add Column */}
+                    <button
+                        onClick={() => {
+                            const name = prompt('Enter custom column name:');
+                            if (name && name.trim()) onAddColumn(name.trim(), 'text');
+                        }}
+                        className="px-4 py-2 rounded-xl border border-lime/30 text-lime bg-lime/10 hover:bg-lime/20 text-sm transition-colors flex items-center gap-2"
+                        title="Add custom text column"
+                    >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Column</span>
+                    </button>
                 </div>
+
 
                 {/* Active Filters Summary */}
                 {(priorityFilter !== 'ALL' || offeringFilter !== 'ALL' || globalFilter) && (

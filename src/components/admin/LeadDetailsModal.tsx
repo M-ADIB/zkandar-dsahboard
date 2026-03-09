@@ -299,8 +299,8 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 <span className="text-sm text-gray-400 mb-1 block">Balance (2nd) (AED)</span>
                                                 <input
                                                     type="number"
-                                                    value={formData.balance_2 || 0}
-                                                    onChange={e => handleInputChange('balance_2', parseFloat(e.target.value))}
+                                                    value={formData.amount_paid_3 || 0}
+                                                    onChange={e => handleInputChange('amount_paid_3', parseFloat(e.target.value))}
                                                     className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
                                                 />
                                             </label>
@@ -342,15 +342,23 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <label className="block">
-                                                <span className="text-sm text-gray-400 mb-1 block">Payment Plan</span>
-                                                <input
-                                                    type="text"
-                                                    value={formData.payment_plan || ''}
-                                                    onChange={e => handleInputChange('payment_plan', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
-                                                />
-                                            </label>
+                                            <div className="flex items-center justify-between p-4 bg-bg-card rounded-lg border border-border">
+                                                <span className="text-sm font-medium text-white">Payment Plan</span>
+                                                <button
+                                                    onClick={() => {
+                                                        handleInputChange('is_payment_plan', !(formData.is_payment_plan === true));
+                                                    }}
+                                                    className={`w-12 h-6 rounded-full transition-colors relative ${formData.is_payment_plan === true
+                                                        ? 'gradient-lime'
+                                                        : 'bg-gray-700'
+                                                        }`}
+                                                >
+                                                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.is_payment_plan === true
+                                                        ? 'left-7'
+                                                        : 'left-1'
+                                                        }`} />
+                                                </button>
+                                            </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <label className="block">
                                                     <span className="text-sm text-gray-400 mb-1 block">Coupon Code</span>
@@ -385,7 +393,6 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
                                             >
                                                 <option value="ACTIVE">ACTIVE</option>
-                                                <option value="HOT">HOT</option>
                                                 <option value="COLD">COLD</option>
                                                 <option value="LAVA">LAVA</option>
                                                 <option value="COMPLETED">COMPLETED</option>

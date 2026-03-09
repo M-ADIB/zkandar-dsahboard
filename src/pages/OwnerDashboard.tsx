@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
     DollarSign, Flame, Building2, Mic,
@@ -62,7 +63,6 @@ function LeadsStatusBar({ counts }: { counts: Record<string, number> }) {
     if (total === 0) return null
 
     const segments = [
-        { key: 'HOT', label: 'Hot', color: '#F97316' },
         { key: 'ACTIVE', label: 'Active', color: '#D0FF71' },
         { key: 'LAVA', label: 'Lava', color: '#8B5CF6' },
         { key: 'COLD', label: 'Cold', color: '#60A5FA' },
@@ -283,20 +283,13 @@ export function OwnerDashboard() {
     const supabase = useSupabase()
     const navigate = useNavigate()
 
-    const [companies, setCompanies] = useState<Company[]>([])
-    const [cohorts, setCohorts] = useState<Cohort[]>([])
-    const [sessions, setSessions] = useState<Session[]>([])
-    const [users, setUsers] = useState<User[]>([])
-    const [leads, setLeads] = useState<Lead[]>([])
-    const [monthlyCosts, setMonthlyCosts] = useState(0)
-    const [loading, setLoading] = useState(true)
+    const now = new Date()
+    const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
+    const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const now = new Date()
-            const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
-            const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
-
+    const { data, isLoading: loading } = useQuery({
+        queryKey: ['ownerDashboardData', monthStart, monthEnd],
+        queryFn: async () => {
             const [coRes, cohRes, sessRes, usersRes, leadsRes, costsRes] = await Promise.all([
                 supabase.from('companies').select('*').order('name'),
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
@@ -305,17 +298,26 @@ export function OwnerDashboard() {
                 supabase.from('leads').select('id,priority,payment,amount_paid,balance,paid_full,offering_type'),
                 (supabase as any).from('costs').select('total_amount').gte('payment_date', monthStart).lte('payment_date', monthEnd),
             ])
-            setCompanies((coRes.data as Company[]) ?? [])
-            setCohorts((cohRes.data as Cohort[]) ?? [])
-            setSessions((sessRes.data as Session[]) ?? [])
-            setUsers((usersRes.data as User[]) ?? [])
-            setLeads((leadsRes.data as Lead[]) ?? [])
             const costsData = (costsRes as any).data ?? []
-            setMonthlyCosts(costsData.reduce((s: number, c: any) => s + (c.total_amount ?? 0), 0))
-            setLoading(false)
+            const monthlyCostsScore = costsData.reduce((s: number, c: any) => s + (c.total_amount ?? 0), 0)
+
+            return {
+                companies: (coRes.data as Company[]) ?? [],
+                cohorts: (cohRes.data as Cohort[]) ?? [],
+                sessions: (sessRes.data as Session[]) ?? [],
+                users: (usersRes.data as User[]) ?? [],
+                leads: (leadsRes.data as Lead[]) ?? [],
+                monthlyCosts: monthlyCostsScore
+            }
         }
-        fetchData()
-    }, [])
+    })
+
+    const companies = data?.companies ?? []
+    const cohorts = data?.cohorts ?? []
+    const sessions = data?.sessions ?? []
+    const users = data?.users ?? []
+    const leads = data?.leads ?? []
+    const monthlyCosts = data?.monthlyCosts ?? 0
 
     // ── KPI calculations ──
     const cohortMap = useMemo(() => new Map(cohorts.map((c) => [c.id, c])), [cohorts])
@@ -330,7 +332,7 @@ export function OwnerDashboard() {
 
     const pipelineValue = useMemo(() => {
         return leads
-            .filter((l) => (l as any).priority === 'HOT' || (l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')
+            .filter((l) => (l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')
             .reduce((sum, l) => sum + ((l as any).payment ?? 0), 0)
     }, [leads])
 
@@ -346,7 +348,7 @@ export function OwnerDashboard() {
     // Active AI Talks = cohorts with offering_type that matches ai_talk or leads with offering_type ai_talk
     const activeAITalks = useMemo(() => {
         const cohortTalks = cohorts.filter(c => ((c as any).offering_type === 'ai_talk') && c.status === 'active').length
-        const leadTalks = leads.filter(l => (l as any).offering_type === 'ai_talk' && ((l as any).priority === 'HOT' || (l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')).length
+        const leadTalks = leads.filter(l => (l as any).offering_type === 'ai_talk' && ((l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')).length
         return cohortTalks || leadTalks
     }, [cohorts, leads])
 

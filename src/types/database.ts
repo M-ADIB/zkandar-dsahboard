@@ -38,6 +38,9 @@ export interface User {
     profile_data: Record<string, unknown> | null
     onboarding_data: Record<string, unknown> | null
     created_at: string
+    nationality: string | null
+    age: number | null
+    position: string | null
 }
 
 export interface Company {
@@ -48,6 +51,7 @@ export interface Company {
     cohort_id: string | null
     executive_user_id: string | null
     team_size: number
+    country: string | null
 }
 
 export interface Notification {
@@ -79,27 +83,28 @@ export interface Lead {
     description?: string | null;
 
     // Deal Info
-    priority?: 'ACTIVE' | 'HOT' | 'COLD' | 'LAVA' | 'COMPLETED' | 'NOT INTERESTED' | null;
+    priority?: 'ACTIVE' | 'COLD' | 'LAVA' | 'COMPLETED' | 'NOT INTERESTED' | null;
     discovery_call_date?: string | null;
     offering_type?: string | null;
     session_type?: string | null;
 
     // Financial
     payment_amount?: number | null;
-    seats?: number | null;
-    balance?: number | null;
-    balance_2?: number | null;
+    has_coupon?: boolean | null;
     coupon_percent?: number | null;
     coupon_code?: string | null;
+    seats?: number | null;
     paid_deposit?: boolean | null;
     amount_paid?: number | null;
-    amount_paid_2?: number | null;
     date_of_payment?: string | null;
+    is_payment_plan?: boolean | null;
+    amount_paid_2?: number | null;
     date_of_payment_2?: string | null;
-    date_of_payment_3?: string | null;
-    payment_plan?: string | null;
-    paid_full?: boolean | null;
+    balance?: number | null;
     balance_dop?: string | null;
+    paid_full?: boolean | null;
+    amount_paid_3?: number | null;
+    date_of_payment_3?: string | null;
 
     // Schedule
     day_slot?: string | null;
@@ -121,6 +126,22 @@ export interface Lead {
 
     // Ownership
     owner_id?: string | null;
+
+    // UI state
+    is_highlighted?: boolean | null;
+    custom_fields?: Record<string, any>;
+}
+
+export interface LeadColumn {
+    id: string;
+    key: string;
+    label: string;
+    type: string;
+    is_custom: boolean;
+    visible: boolean;
+    order_index: number;
+    created_at: string;
+    updated_at: string;
 }
 
 
@@ -284,6 +305,9 @@ export interface Database {
                     ai_readiness_score?: number
                     profile_data?: Record<string, unknown> | null
                     onboarding_data?: Record<string, unknown> | null
+                    nationality?: string | null
+                    age?: number | null
+                    position?: string | null
                     created_at?: string
                 }
                 Update: Partial<Omit<User, 'id' | 'created_at'>>
@@ -297,6 +321,7 @@ export interface Database {
                     cohort_id?: string | null
                     executive_user_id?: string | null
                     team_size?: number
+                    country?: string | null
                 }
                 Update: Partial<Omit<Company, 'id'>>
             }
@@ -366,6 +391,11 @@ export interface Database {
                 Row: Lead
                 Insert: Omit<Lead, 'id' | 'created_at' | 'updated_at'>
                 Update: Partial<Omit<Lead, 'id' | 'created_at'>>
+            }
+            lead_columns: {
+                Row: LeadColumn
+                Insert: Omit<LeadColumn, 'id' | 'created_at' | 'updated_at'>
+                Update: Partial<Omit<LeadColumn, 'id' | 'created_at'>>
             }
             toolbox_items: {
                 Row: ToolboxItem

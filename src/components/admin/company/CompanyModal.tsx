@@ -19,6 +19,7 @@ type CompanyFormData = {
     enrollment_date: string;
     cohort_id: string;
     executive_user_id: string;
+    country: string;
 };
 
 const defaultFormData: CompanyFormData = {
@@ -28,6 +29,7 @@ const defaultFormData: CompanyFormData = {
     enrollment_date: '',
     cohort_id: '',
     executive_user_id: '',
+    country: '',
 };
 
 const toDateInputValue = (isoDate: string | null | undefined) => {
@@ -60,6 +62,7 @@ export function CompanyModal({
                 enrollment_date: toDateInputValue(company.enrollment_date),
                 cohort_id: company.cohort_id ?? '',
                 executive_user_id: company.executive_user_id ?? '',
+                country: company.country ?? '',
             });
         } else {
             setFormData(defaultFormData);
@@ -85,6 +88,7 @@ export function CompanyModal({
             enrollment_date: formData.enrollment_date || null,
             cohort_id: formData.cohort_id || null,
             executive_user_id: formData.executive_user_id || null,
+            country: formData.country.trim() || null,
         };
 
         const { error: saveError } = company
@@ -143,6 +147,17 @@ export function CompanyModal({
                 />
             </div>
 
+            <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Country</label>
+                <input
+                    type="text"
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    placeholder="e.g. United Arab Emirates"
+                />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Team Size</label>
@@ -161,7 +176,6 @@ export function CompanyModal({
                         type="date"
                         value={formData.enrollment_date}
                         onChange={(e) => setFormData({ ...formData, enrollment_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
                     />
                 </div>
             </div>

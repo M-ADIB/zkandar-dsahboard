@@ -1,69 +1,24 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
-import { Plus, Download, Users, Target, Flame, DollarSign, CheckCircle, Phone } from 'lucide-react';
-import type { Lead } from '@/types/database';
+import { Plus, Download, Users, Target, Flame, DollarSign, CheckCircle, Phone, PaintBucket } from 'lucide-react';
+import type { Lead, LeadColumn } from '@/types/database';
 import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
+import { logAudit } from '@/lib/audit';
 // BUG-10 fix: QuickAddLead removed – "Add Lead" button opens the modal instead
 
-const EXPORT_COLUMNS: { key: keyof Lead; label: string }[] = [
-    { key: 'record_id', label: 'Record ID' },
-    { key: 'full_name', label: 'Full Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'instagram', label: 'Instagram' },
-    { key: 'company_name', label: 'Company Name' },
-    { key: 'job_title', label: 'Job Title' },
-    { key: 'country', label: 'Country' },
-    { key: 'city', label: 'City' },
-    { key: 'description', label: 'Description' },
-    { key: 'priority', label: 'Priority' },
-    { key: 'discovery_call_date', label: 'Discovery Call Date' },
-    { key: 'offering_type', label: 'Offering Type' },
-    { key: 'session_type', label: 'Session Type' },
-    { key: 'payment_amount', label: 'Payment Amount' },
-    { key: 'seats', label: 'Seats' },
-    { key: 'balance', label: 'Balance' },
-    { key: 'balance_2', label: 'Balance 2' },
-    { key: 'coupon_percent', label: 'Coupon Percent' },
-    { key: 'coupon_code', label: 'Coupon Code' },
-    { key: 'paid_deposit', label: 'Paid Deposit' },
-    { key: 'amount_paid', label: 'Amount Paid' },
-    { key: 'amount_paid_2', label: 'Amount Paid 2' },
-    { key: 'date_of_payment', label: 'Date of Payment' },
-    { key: 'date_of_payment_2', label: 'Date of Payment 2' },
-    { key: 'date_of_payment_3', label: 'Date of Payment 3' },
-    { key: 'payment_plan', label: 'Payment Plan' },
-    { key: 'paid_full', label: 'Paid Full' },
-    { key: 'balance_dop', label: 'Balance DOP' },
-    { key: 'day_slot', label: 'Day Slot' },
-    { key: 'time_slot', label: 'Time Slot' },
-    { key: 'start_date', label: 'Start Date' },
-    { key: 'end_date', label: 'End Date' },
-    { key: 'sessions_done', label: 'Sessions Done' },
-    { key: 'booked_support', label: 'Booked Support' },
-    { key: 'support_date_booked', label: 'Support Date Booked' },
-    { key: 'notes', label: 'Notes' },
-    { key: 'priority_changed_at', label: 'Priority Changed At' },
-    { key: 'priority_previous_values', label: 'Priority Previous Values' },
-    { key: 'owner_id', label: 'Owner ID' },
-    { key: 'created_at', label: 'Created At' },
-    { key: 'updated_at', label: 'Updated At' },
-];
 
 export function LeadsPage() {
     const supabase = useSupabase();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [leads, setLeads] = useState<Lead[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadError, setLoadError] = useState<string | null>(null);
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
-    // BUG-8: success toast state
+    const [showHighlightedOnly, setShowHighlightedOnly] = useState(false);
     const [toast, setToast] = useState<{ message: string } | null>(null);
 
     const showToast = useCallback((message: string) => {
@@ -71,47 +26,29 @@ export function LeadsPage() {
         setTimeout(() => setToast(null), 3000);
     }, []);
 
-    const fetchLeads = async () => {
-        setIsLoading(true);
-        setLoadError(null);
-        const timeoutMs = 8000;
-        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const queryClient = useQueryClient();
+    const { data, isLoading, isError, error, refetch } = useQuery({
+        queryKey: ['leadsData'],
+        queryFn: async () => {
+            const [leadsQuery, columnsQuery] = await Promise.all([
+                supabase.from('leads').select('*').order('updated_at', { ascending: false }),
+                supabase.from('lead_columns').select('*').order('order_index', { ascending: true })
+            ]);
 
-        const timeoutPromise = new Promise<{ data: Lead[] | null; error: Error }>((resolve) => {
-            timeoutId = setTimeout(() => {
-                resolve({ data: null, error: new Error('Leads fetch timeout') });
-            }, timeoutMs);
-        });
+            if (leadsQuery.error) throw new Error('Unable to load leads: ' + leadsQuery.error.message);
+            if (columnsQuery.error) throw new Error('Unable to load lead columns: ' + columnsQuery.error.message);
 
-        try {
-            const query = supabase
-                .from('leads')
-                .select('*')
-                .order('updated_at', { ascending: false });
-
-            const result = await Promise.race([query, timeoutPromise]) as { data: Lead[] | null; error: Error | null };
-
-            if (timeoutId) clearTimeout(timeoutId);
-
-            if (result.error) {
-                console.error('Error fetching leads:', result.error);
-                setLoadError('Unable to load leads. Please try again.');
-                setLeads([]);
-            } else {
-                setLeads(result.data || []);
-            }
-        } catch (error) {
-            console.error('Error fetching leads:', error);
-            setLoadError('Unable to load leads. Please try again.');
-            setLeads([]);
-        } finally {
-            setIsLoading(false);
+            return {
+                leads: (leadsQuery.data || []) as Lead[],
+                columns: (columnsQuery.data || []) as LeadColumn[]
+            };
         }
-    };
+    });
 
-    useEffect(() => {
-        fetchLeads();
-    }, []);
+    const leads = data?.leads || [];
+    const leadColumns = data?.columns || [];
+    const loadError = isError ? (error as Error).message : null;
+    const fetchLeads = useCallback(() => { refetch(); }, [refetch]);
 
     // Handle highlight and priority search params from Dashboard navigation
     useEffect(() => {
@@ -146,7 +83,10 @@ export function LeadsPage() {
     const handleUpdatePriority = async (leadId: string, newPriority: string) => {
         setIsUpdating(leadId);
         // Optimistic update
-        setLeads((prev: Lead[]) => prev.map((l: Lead) => l.id === leadId ? { ...l, priority: newPriority as Lead['priority'] } : l));
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            leads: old?.leads?.map((l: Lead) => l.id === leadId ? { ...l, priority: newPriority as Lead['priority'] } : l) || []
+        }));
 
         const { error } = await (supabase.from('leads') as any)
             .update({
@@ -165,7 +105,10 @@ export function LeadsPage() {
 
     const handleUpdateLead = async (leadId: string, field: keyof Lead, value: any) => {
         // optimistically update local state
-        setLeads((prev) => prev.map(l => l.id === leadId ? { ...l, [field]: value } : l));
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            leads: old?.leads?.map((l: Lead) => l.id === leadId ? { ...l, [field]: value } : l) || []
+        }));
 
         const { error } = await (supabase.from('leads') as any)
             .update({
@@ -195,6 +138,8 @@ export function LeadsPage() {
             console.error('Error saving lead:', error);
             throw error;
         } else {
+            const isNew = !updatedLead.id;
+            void logAudit(isNew ? 'lead.create' : 'lead.update', 'lead', updatedLead.id, { name: updatedLead.full_name });
             await fetchLeads();
             setIsModalOpen(false);
             // BUG-8 fix: show success toast after save
@@ -211,7 +156,11 @@ export function LeadsPage() {
         if (error) {
             console.error('Error deleting lead:', error);
         } else {
-            setLeads((prev: Lead[]) => prev.filter((l: Lead) => l.id !== lead.id));
+            void logAudit('lead.delete', 'lead', lead.id, { name: lead.full_name });
+            queryClient.setQueryData(['leadsData'], (old: any) => ({
+                ...old,
+                leads: old?.leads?.filter((l: Lead) => l.id !== lead.id) || []
+            }));
             setIsModalOpen(false);
             setSelectedLead(null);
             // BUG-8 fix: also show toast after delete
@@ -219,7 +168,7 @@ export function LeadsPage() {
         }
     };
 
-    const formatCsvValue = (value: Lead[keyof Lead]) => {
+    const formatCsvValue = (value: any) => {
         if (value === null || value === undefined) return '';
         if (Array.isArray(value)) return value.join('; ');
         if (typeof value === 'boolean') return value ? 'true' : 'false';
@@ -242,10 +191,18 @@ export function LeadsPage() {
 
         setIsExporting(true);
 
-        const headers = EXPORT_COLUMNS.map((column) => escapeCsvValue(column.label));
+        // Dynamically build headers based on visible columns
+        const visibleCols = leadColumns.filter(c => c.visible).sort((a, b) => a.order_index - b.order_index);
+        const headers = visibleCols.map((column) => escapeCsvValue(column.label));
         const rows = leads.map((lead) => {
-            return EXPORT_COLUMNS
-                .map((column) => escapeCsvValue(formatCsvValue(lead[column.key])))
+            return visibleCols
+                .map((column) => {
+                    if (column.is_custom) {
+                        return escapeCsvValue(formatCsvValue(lead.custom_fields?.[column.key]));
+                    } else {
+                        return escapeCsvValue(formatCsvValue((lead as any)[column.key]));
+                    }
+                })
                 .join(',');
         });
 
@@ -253,24 +210,90 @@ export function LeadsPage() {
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = url;
-        link.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.setAttribute('href', url);
+        link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
 
         setIsExporting(false);
     };
 
+    const handleAddColumn = async (label: string, type: string = 'text') => {
+        const tempKey = `custom_${Date.now()}`;
+        const newCol = {
+            key: tempKey,
+            label,
+            type,
+            is_custom: true,
+            visible: true,
+            order_index: leadColumns.length, // Appended to end
+        };
+
+        const { data, error } = await (supabase.from('lead_columns') as any)
+            .insert(newCol)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error adding column:', error);
+            showToast('Failed to add column');
+            return;
+        }
+
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            columns: [...(old?.columns || []), data]
+        }));
+        showToast('Column added');
+    };
+
+    const handleUpdateColumn = async (colId: string, updates: Partial<LeadColumn>) => {
+        // Optimistic update
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            columns: old?.columns?.map((c: LeadColumn) => c.id === colId ? { ...c, ...updates } : c) || []
+        }));
+
+        const { error } = await (supabase.from('lead_columns') as any)
+            .update(updates)
+            .eq('id', colId);
+
+        if (error) {
+            console.error('Error updating column:', error);
+            showToast('Failed to update column');
+            fetchLeads(); // Revert
+        }
+    };
+
+    const handleDeleteColumn = async (colId: string) => {
+        // Optimistic UI updates
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            columns: old?.columns?.filter((c: LeadColumn) => c.id !== colId) || []
+        }));
+
+        const { error } = await (supabase.from('lead_columns') as any)
+            .delete()
+            .eq('id', colId);
+
+        if (error) {
+            console.error('Error deleting column:', error);
+            showToast('Failed to delete column');
+            fetchLeads(); // Revert
+        } else {
+            showToast('Column deleted');
+        }
+    };
     const stats = {
         total: leads.length,
         active: leads.filter((l: Lead) => l.priority === 'ACTIVE').length,
-        hot: leads.filter((l: Lead) => l.priority === 'HOT').length,
-        called: leads.filter((l: Lead) => l.discovery_call_date != null).length,
-        // Pipeline value = payment_amount for active/hot/lava leads
+        lava: leads.filter((l: Lead) => l.priority === 'LAVA').length,
+        followUp: leads.filter((l: Lead) => l.discovery_call_date != null).length,
+        // Pipeline value = payment_amount for active/lava leads
         pipelineValue: leads
-            .filter((l: Lead) => l.priority === 'HOT' || l.priority === 'ACTIVE' || l.priority === 'LAVA')
+            .filter((l: Lead) => l.priority === 'ACTIVE' || l.priority === 'LAVA')
             .reduce((sum: number, l: Lead) => sum + (l.payment_amount || 0), 0),
     };
 
@@ -328,6 +351,13 @@ export function LeadsPage() {
                 </div>
                 <div className="flex gap-3">
                     <button
+                        onClick={() => setShowHighlightedOnly(!showHighlightedOnly)}
+                        className={`flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors font-medium border ${showHighlightedOnly ? 'bg-lime/20 text-lime border-lime/50' : 'bg-bg-card text-gray-400 border-border'}`}
+                    >
+                        <PaintBucket className="h-5 w-5" />
+                        <span className="hidden sm:inline">Highlighted</span>
+                    </button>
+                    <button
                         onClick={handleExport}
                         disabled={isExporting || leads.length === 0}
                         className="flex items-center gap-2 px-4 py-2 bg-bg-card hover:bg-white/10 text-white rounded-lg transition-colors font-medium border border-border disabled:opacity-50 disabled:cursor-not-allowed"
@@ -360,10 +390,10 @@ export function LeadsPage() {
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Hot</div>
-                            <Flame className="h-4 w-4 text-orange-400" />
+                            <div className={metricLabelClass}>Lava</div>
+                            <Flame className="h-4 w-4 text-purple-400" />
                         </div>
-                        <div className="text-2xl font-semibold text-orange-400">{stats.hot}</div>
+                        <div className="text-2xl font-semibold text-purple-400">{stats.lava}</div>
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
@@ -376,10 +406,10 @@ export function LeadsPage() {
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Called</div>
+                            <div className={metricLabelClass}>Follow Up</div>
                             <Phone className="h-4 w-4 text-blue-400" />
                         </div>
-                        <div className="text-2xl font-semibold text-blue-400">{stats.called}</div>
+                        <div className="text-2xl font-semibold text-blue-400">{stats.followUp}</div>
                     </div>
                     <div className={metricCardClass}>
                         <div className="flex items-center justify-between mb-2">
@@ -393,7 +423,11 @@ export function LeadsPage() {
 
             {/* Table */}
             <LeadsTable
-                data={leads}
+                data={showHighlightedOnly ? leads.filter(l => l.is_highlighted) : leads}
+                columnsConfig={leadColumns}
+                onAddColumn={handleAddColumn}
+                onUpdateColumn={handleUpdateColumn}
+                onDeleteColumn={handleDeleteColumn}
                 onEdit={(lead) => {
                     setSelectedLead(lead);
                     setIsModalOpen(true);

@@ -3,6 +3,7 @@ import { Send, Paperclip, X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import type { ChatChannel } from '@/hooks/useChatChannels'
+import toast from 'react-hot-toast'
 
 interface ChatInputProps {
     channel: ChatChannel
@@ -103,6 +104,19 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
+
+        const MAX_SIZE_MB = 10
+        if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+            toast.error(`Image must be under ${MAX_SIZE_MB} MB`)
+            if (fileInputRef.current) fileInputRef.current.value = ''
+            return
+        }
+
+        if (!file.type.startsWith('image/')) {
+            toast.error('Only image files are allowed here')
+            if (fileInputRef.current) fileInputRef.current.value = ''
+            return
+        }
 
         setPendingFile(file)
 

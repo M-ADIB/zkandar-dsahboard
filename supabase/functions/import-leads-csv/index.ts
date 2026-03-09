@@ -1,12 +1,21 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Set ALLOWED_ORIGIN in Supabase Edge Function secrets to your production domain, e.g. https://app.zkandar.com
+function getCorsHeaders(req: Request): Record<string, string> {
+    const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN');
+    const requestOrigin = req.headers.get('origin') ?? '';
+    const origin = allowedOrigin
+        ? (requestOrigin === allowedOrigin ? requestOrigin : allowedOrigin)
+        : requestOrigin || '*';
+    return {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    };
 }
 
 serve(async (req) => {
+    const corsHeaders = getCorsHeaders(req);
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })

@@ -1,14 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, Loader2, ShieldAlert } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import toast from 'react-hot-toast'
 import logo from '@/assets/logo.png'
 import skenderImg from '@/assets/skender.png'
+
+// ─── Brute-force protection ───────────────────────────────────────────────────
+const STORAGE_KEY = 'zk_login_attempts'
+const THRESHOLDS = [
+    { attempts: 10, lockoutSecs: 900 },  // 10+ → 15 min
+    { attempts: 7,  lockoutSecs: 300 },  // 7+  → 5 min
+    { attempts: 5,  lockoutSecs: 60 },   // 5+  → 1 min
+]
+interface AttemptRecord { count: number; lockedUntil: number | null }
+function loadAttempts(): AttemptRecord {
+    try {
+        const raw = sessionStorage.getItem(STORAGE_KEY)
+        return raw ? JSON.parse(raw) : { count: 0, lockedUntil: null }
+    } catch { return { count: 0, lockedUntil: null } }
+}
+function saveAttempts(rec: AttemptRecord) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(rec))
+}
+function getLockoutSecs(count: number): number {
+    for (const t of THRESHOLDS) { if (count >= t.attempts) return t.lockoutSecs }
+    return 0
+}
 
 const loginSchema = z.object({
     email: z.string().email('Please enter a valid email'),
@@ -21,8 +43,38 @@ export function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [magicLinkSent, setMagicLinkSent] = useState(false)
+    const [lockoutSecsLeft, setLockoutSecsLeft] = useState(0)
     const { signIn, sendMagicLink, user, loading } = useAuth()
     const navigate = useNavigate()
+
+    // Initialise lockout countdown from sessionStorage
+    useEffect(() => {
+        const rec = loadAttempts()
+        if (rec.lockedUntil && rec.lockedUntil > Date.now()) {
+            setLockoutSecsLeft(Math.ceil((rec.lockedUntil - Date.now()) / 1000))
+        }
+    }, [])
+
+    // Tick-down the lockout timer
+    useEffect(() => {
+        if (lockoutSecsLeft <= 0) return
+        const id = setInterval(() => setLockoutSecsLeft(s => Math.max(0, s - 1)), 1000)
+        return () => clearInterval(id)
+    }, [lockoutSecsLeft])
+
+    const recordFailedAttempt = useCallback(() => {
+        const rec = loadAttempts()
+        rec.count += 1
+        const secs = getLockoutSecs(rec.count)
+        rec.lockedUntil = secs > 0 ? Date.now() + secs * 1000 : null
+        saveAttempts(rec)
+        if (secs > 0) setLockoutSecsLeft(secs)
+    }, [])
+
+    const clearAttempts = useCallback(() => {
+        sessionStorage.removeItem(STORAGE_KEY)
+        setLockoutSecsLeft(0)
+    }, [])
 
     // Redirect if already logged in
     useEffect(() => {
@@ -43,17 +95,27 @@ export function LoginPage() {
     const email = watch('email')
 
     const onSubmit = async (data: LoginFormData) => {
+        if (lockoutSecsLeft > 0) return
+
         setIsLoading(true)
         const { error } = await signIn(data.email, data.password)
 
         if (error) {
-            toast.error(error.message)
+            recordFailedAttempt()
+            const rec = loadAttempts()
+            const remaining = THRESHOLDS.find(t => rec.count >= t.attempts)
+            if (remaining) {
+                toast.error(`Too many failed attempts. Try again in ${Math.ceil((rec.lockedUntil! - Date.now()) / 60000)} min.`)
+            } else {
+                toast.error(error.message)
+            }
             setIsLoading(false)
             return
         }
 
+        clearAttempts()
         toast.success('Welcome back!')
-        // Don't navigate here — the useEffect on line 28 will redirect
+        // Don't navigate here — the useEffect above will redirect
         // once the onAuthStateChange listener updates the user state.
         // We keep isLoading true so the button stays disabled.
     }
@@ -162,6 +224,21 @@ export function LoginPage() {
                             </button>
                         </div>
                     ) : (
+                        <>
+                        {lockoutSecsLeft > 0 && (
+                            <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 mb-5">
+                                <ShieldAlert className="h-5 w-5 text-red-400 mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="text-sm font-medium text-red-300">Account temporarily locked</p>
+                                    <p className="text-xs text-red-400/80 mt-0.5">
+                                        Too many failed attempts. Try again in{' '}
+                                        <span className="font-mono font-bold">
+                                            {Math.floor(lockoutSecsLeft / 60)}:{String(lockoutSecsLeft % 60).padStart(2, '0')}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                             {/* Email */}
                             <div>
@@ -217,7 +294,7 @@ export function LoginPage() {
                             {/* Submit */}
                             <button
                                 type="submit"
-                                disabled={isLoading}
+                                disabled={isLoading || lockoutSecsLeft > 0}
                                 className="w-full py-3 gradient-lime text-black font-bold rounded-xl
                   hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                             >
@@ -242,13 +319,14 @@ export function LoginPage() {
                             <button
                                 type="button"
                                 onClick={handleMagicLink}
-                                disabled={isLoading}
+                                disabled={isLoading || lockoutSecsLeft > 0}
                                 className="w-full py-3 border border-border rounded-xl text-sm
                   hover:border-lime/50 transition-colors disabled:opacity-50"
                             >
                                 Send Magic Link
                             </button>
                         </form>
+                        </>
                     )}
 
                     {/* Signup Link */}

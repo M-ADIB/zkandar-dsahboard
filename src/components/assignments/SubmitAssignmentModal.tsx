@@ -278,8 +278,20 @@ export function SubmitAssignmentModal({
                                         <input
                                             ref={fileInputRef}
                                             type="file"
+                                            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.webp,.mp4,.mov"
                                             className="hidden"
-                                            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                                            onChange={(e) => {
+                                                const picked = e.target.files?.[0] ?? null
+                                                if (!picked) return
+                                                const MAX_MB = 50
+                                                if (picked.size > MAX_MB * 1024 * 1024) {
+                                                    setError(`File must be under ${MAX_MB} MB`)
+                                                    e.target.value = ''
+                                                    return
+                                                }
+                                                setError(null)
+                                                setFile(picked)
+                                            }}
                                         />
                                     </div>
                                 )}

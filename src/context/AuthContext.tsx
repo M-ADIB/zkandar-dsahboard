@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import type { User as AuthUser, Session } from '@supabase/supabase-js'
 import type { User, UserRole } from '@/types/database'
+import { identifyUser, resetAnalytics } from '@/lib/analytics'
 
 interface AuthContextType {
     authUser: AuthUser | null
@@ -303,6 +304,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 if (profile) {
                     setUser(profile)
+                    identifyUser(profile.id, { email: profile.email, role: profile.role })
                 } else {
                     // Profile fetch failed — try one more time after a brief delay
                     console.warn('[Auth] First profile fetch returned null, retrying after 1s...')
@@ -430,6 +432,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setAuthUser(null)
             setUser(null)
             setLoading(false)
+            resetAnalytics()
             navigate('/login')
         }
     }

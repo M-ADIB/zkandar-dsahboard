@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, MapPin, Users, Globe, Clock, Activity, CheckCircle2, UtensilsCrossed, Car } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -14,11 +14,44 @@ interface EventDetailDrawerProps {
 export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDetailDrawerProps) {
     const [isUpdating, setIsUpdating] = useState(false)
     const [adminNotes, setAdminNotes] = useState(event?.admin_notes || '')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [surveyData, setSurveyData] = useState<any>(null)
+    const [loadingSurvey, setLoadingSurvey] = useState(false)
 
     // Keep admin notes in sync when event changes
     useState(() => {
         setAdminNotes(event?.admin_notes || '')
     })
+
+    useEffect(() => {
+        const fetchSurvey = async () => {
+            if (!event?.email) return
+            setLoadingSurvey(true)
+
+            const [mgmt, team, post] = await Promise.all([
+                supabase.from('management_submissions').select('*').eq('user_email', event.email).maybeSingle(),
+                supabase.from('team_submissions').select('*').eq('user_email', event.email).maybeSingle(),
+                supabase.from('post_completion_survey_responses').select('*').eq('respondent_email', event.email).maybeSingle()
+            ])
+
+            if (mgmt.data || team.data || post.data) {
+                setSurveyData({
+                    pre: mgmt.data || team.data,
+                    preType: mgmt.data ? 'management' : team.data ? 'team' : null,
+                    post: post.data
+                })
+            } else {
+                setSurveyData(null)
+            }
+            setLoadingSurvey(false)
+        }
+
+        if (isOpen) {
+            fetchSurvey()
+        } else {
+            setSurveyData(null)
+        }
+    }, [event, isOpen])
 
     if (!isOpen || !event) return null
 
@@ -259,6 +292,65 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
                                     </div>
                                 )}
                             </div>
+                        </section>
+
+                        {/* Survey Data Section */}
+                        <section>
+                            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Survey Responses</h3>
+                            {loadingSurvey ? (
+                                <div className="text-sm text-gray-500 animate-pulse">Loading survey data...</div>
+                            ) : !surveyData ? (
+                                <div className="p-4 bg-[#111] border border-white/5 rounded-xl text-sm text-gray-500">
+                                    No survey data found for {event.email}.
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {surveyData.pre && (
+                                        <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
+                                            <div className="text-sm font-semibold text-brand-lime mb-3 flex items-center gap-2">
+                                                <Activity className="w-4 h-4" />
+                                                Pre-Program Survey ({surveyData.preType})
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {Object.entries(surveyData.pre)
+                                                    .filter(([k]) => k.startsWith('q'))
+                                                    .sort(([a], [b]) => {
+                                                        const numA = parseInt(a.replace(/\D/g, '')) || 0
+                                                        const numB = parseInt(b.replace(/\D/g, '')) || 0
+                                                        return numA - numB
+                                                    })
+                                                    .map(([key, value]) => (
+                                                        <div key={key}>
+                                                            <div className="text-xs text-gray-500 mb-0.5 capitalize">{key.replace(/_/g, ' ')}</div>
+                                                            <div className="text-sm text-white font-medium">
+                                                                {Array.isArray(value) ? value.join(', ') || '—' : String(value || '—')}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {surveyData.post && (
+                                        <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
+                                            <div className="text-sm font-semibold text-brand-lime mb-3 flex items-center gap-2">
+                                                <CheckCircle2 className="w-4 h-4" />
+                                                Post-Program Survey
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                {Object.entries((surveyData.post as any).answers || {}).map(([key, value]) => (
+                                                    <div key={key}>
+                                                        <div className="text-xs text-gray-500 mb-0.5 capitalize">{key.replace(/_/g, ' ')}</div>
+                                                        <div className="text-sm text-white font-medium">
+                                                            {Array.isArray(value) ? value.join(', ') || '—' : String(value || '—')}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </section>
 
                         {/* Admin Notes */}

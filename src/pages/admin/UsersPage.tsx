@@ -99,7 +99,9 @@ export function UsersPage() {
         return users.filter((user) => {
             const matchesSearch =
                 user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().includes(searchQuery.toLowerCase());
+                user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (user.nationality && user.nationality.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                (user.position && user.position.toLowerCase().includes(searchQuery.toLowerCase()));
 
             const matchesRole = roleFilter === 'all' || user.role === roleFilter;
 
@@ -142,6 +144,20 @@ export function UsersPage() {
                 const company = companyMap.get(user.company_id);
                 return company ? company.name : '—';
             },
+        },
+        {
+            header: 'Position',
+            accessor: (user: User) => user.position || '—',
+            className: 'text-gray-400',
+        },
+        {
+            header: 'Nationality',
+            accessor: (user: User) => user.nationality || '—',
+            className: 'text-gray-400',
+        },
+        {
+            header: 'Age',
+            accessor: (user: User) => user.age ?? '—',
         },
         {
             header: 'Programs',

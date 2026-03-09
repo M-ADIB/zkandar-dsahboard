@@ -58,6 +58,18 @@ interface TeamSubmission {
     q13_success_definition: string | null
 }
 
+interface PostSubmission {
+    id: string
+    created_at: string
+    survey_type: 'management' | 'team'
+    respondent_name: string | null
+    respondent_email: string | null
+    company_name: string | null
+    company_id: string | null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    answers: Record<string, any>
+}
+
 // ─── Palette ──────────────────────────────────────────────────────────────────
 
 const PALETTE = ['#D0FF71', '#75C345', '#5A9F2E', '#9AD41A', '#B8F23E', '#A3D783', '#C6F05A']
@@ -334,30 +346,138 @@ function TeamTab({ data }: { data: TeamSubmission[] }) {
     )
 }
 
+
+// ─── Post-Masterclass Tabs ────────────────────────────────────────────────────
+
+function PostManagementTab({ data }: { data: PostSubmission[] }) {
+    const goalsData = useMemo(() => toBarData(countField(data.map(d => d.answers), 'goals_achieved')), [data])
+    const concernsData = useMemo(() => topN(countArr(data.map(d => d.answers.remaining_concerns)), 8, ['#F87171', '#FB923C', '#FBBF24', '#60A5FA']), [data])
+    const outcomesData = useMemo(() => topN(countArr(data.map(d => d.answers.outcomes_observed)), 8, PALETTE), [data])
+
+    const avgValue = avg(data.map(d => d.answers.overall_value))
+    const avgRelevance = avg(data.map(d => d.answers.content_relevance))
+    const avgSkillShift = avg(data.map(d => d.answers.team_skill_shift))
+    const avgROI = avg(data.map(d => d.answers.roi_perception))
+    const avgInternal = avg(data.map(d => d.answers.likelihood_internal_adoption))
+    const avgClient = avg(data.map(d => d.answers.likelihood_client_adoption))
+
+    const ScoreMap = ({ label, value, color }: { label: string; value: number; color: string }) => (
+        <div className="flex flex-col items-center gap-2">
+            <div className="text-3xl font-bold font-heading" style={{ color }}>{value || '-'}</div>
+            <span className="text-xs text-gray-500 text-center leading-tight">{label}</span>
+        </div>
+    )
+
+    return (
+        <div className="space-y-6">
+            <ChartCard title="Average Ratings (out of 5)" delay={0.1}>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-2">
+                    <ScoreMap label="Overall Value" value={avgValue} color="#D0FF71" />
+                    <ScoreMap label="Content Relevance" value={avgRelevance} color="#75C345" />
+                    <ScoreMap label="Team Skill Shift" value={avgSkillShift} color="#9AD41A" />
+                    <ScoreMap label="ROI Perception" value={avgROI} color="#B8F23E" />
+                    <ScoreMap label="Internal Adoption" value={avgInternal} color="#5A9F2E" />
+                    <ScoreMap label="Client Adoption" value={avgClient} color="#C6F05A" />
+                </div>
+            </ChartCard>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ChartCard title="Goals Achieved" delay={0.2}>
+                    <DonutChart data={goalsData.map((d, i) => ({ ...d, color: PALETTE[i % PALETTE.length] }))} />
+                </ChartCard>
+                <ChartCard title="Outcomes Observed" delay={0.3}>
+                    <MiniBar data={outcomesData} color="#D0FF71" height={220} />
+                </ChartCard>
+                <ChartCard title="Remaining Concerns" delay={0.4}>
+                    <MiniBar data={concernsData} color="#F87171" height={220} />
+                </ChartCard>
+            </div>
+        </div>
+    )
+}
+
+function PostTeamTab({ data }: { data: PostSubmission[] }) {
+    const goalsData = useMemo(() => toBarData(countField(data.map(d => d.answers), 'goals_achieved')), [data])
+    const confidenceChangeData = useMemo(() => toBarData(countField(data.map(d => d.answers), 'confidence_change')), [data])
+    const concernsData = useMemo(() => topN(countArr(data.map(d => d.answers.remaining_concerns)), 8, ['#A78BFA', '#F87171', '#FB923C']), [data])
+    const outcomesData = useMemo(() => topN(countArr(data.map(d => d.answers.outcomes_experienced)), 8, PALETTE), [data])
+
+    const avgValue = avg(data.map(d => d.answers.overall_value))
+    const avgRelevance = avg(data.map(d => d.answers.content_relevance))
+    const avgConfidence = avg(data.map(d => d.answers.post_ai_confidence))
+    const avgSkill = avg(data.map(d => d.answers.post_ai_skill))
+    const avgQuality = avg(data.map(d => d.answers.quality_confidence))
+    const avgReadiness = avg(data.map(d => d.answers.workflow_readiness))
+
+    const ScoreMap = ({ label, value, color }: { label: string; value: number; color: string }) => (
+        <div className="flex flex-col items-center gap-2">
+            <div className="text-3xl font-bold font-heading" style={{ color }}>{value || '-'}</div>
+            <span className="text-xs text-gray-500 text-center leading-tight">{label}</span>
+        </div>
+    )
+
+    return (
+        <div className="space-y-6">
+            <ChartCard title="Average Ratings (out of 5)" delay={0.1}>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-2">
+                    <ScoreMap label="Overall Value" value={avgValue} color="#D0FF71" />
+                    <ScoreMap label="Content Relevance" value={avgRelevance} color="#75C345" />
+                    <ScoreMap label="Post AI Confidence" value={avgConfidence} color="#9AD41A" />
+                    <ScoreMap label="Post AI Skill" value={avgSkill} color="#B8F23E" />
+                    <ScoreMap label="Quality Confidence" value={avgQuality} color="#5A9F2E" />
+                    <ScoreMap label="Workflow Readiness" value={avgReadiness} color="#C6F05A" />
+                </div>
+            </ChartCard>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ChartCard title="Confidence Change" delay={0.2}>
+                    <MiniBar data={confidenceChangeData} color="#D0FF71" height={220} />
+                </ChartCard>
+                <ChartCard title="Goals Achieved" delay={0.3}>
+                    <DonutChart data={goalsData.map((d, i) => ({ ...d, color: PALETTE[i % PALETTE.length] }))} />
+                </ChartCard>
+                <ChartCard title="Outcomes Experienced" delay={0.4}>
+                    <MiniBar data={outcomesData} color="#75C345" height={220} />
+                </ChartCard>
+                <ChartCard title="Remaining Concerns" delay={0.5}>
+                    <MiniBar data={concernsData} color="#A78BFA" height={220} />
+                </ChartCard>
+            </div>
+        </div>
+    )
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function AnalyticsDashboard() {
     const [mgmt, setMgmt] = useState<ManagementSubmission[]>([])
     const [team, setTeam] = useState<TeamSubmission[]>([])
+    const [postMgmt, setPostMgmt] = useState<PostSubmission[]>([])
+    const [postTeam, setPostTeam] = useState<PostSubmission[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [tab, setTab] = useState<'management' | 'team'>('management')
+    const [phaseTab, setPhaseTab] = useState<'pre' | 'post'>('pre')
+    const [roleTab, setRoleTab] = useState<'management' | 'team'>('management')
     const [companyFilter, setCompanyFilter] = useState<string>('all')
 
     useEffect(() => {
         let ignore = false
         const load = async () => {
             setLoading(true)
-            const [mr, tr] = await Promise.all([
+            const [mr, tr, post] = await Promise.all([
                 supabase.from('management_submissions').select('*').order('created_at'),
                 supabase.from('team_submissions').select('*').order('created_at'),
+                supabase.from('post_completion_survey_responses').select('*').order('created_at'),
             ])
             if (ignore) return
-            if (mr.error || tr.error) {
-                setError(mr.error?.message ?? tr.error?.message ?? 'Failed to load data')
+            if (mr.error || tr.error || post.error) {
+                setError(mr.error?.message ?? tr.error?.message ?? post.error?.message ?? 'Failed to load data')
             } else {
                 setMgmt((mr.data as ManagementSubmission[]) ?? [])
                 setTeam((tr.data as TeamSubmission[]) ?? [])
+                const postResponses = (post.data as PostSubmission[]) ?? []
+                setPostMgmt(postResponses.filter(r => r.survey_type === 'management'))
+                setPostTeam(postResponses.filter(r => r.survey_type === 'team'))
             }
             setLoading(false)
         }
@@ -368,7 +488,7 @@ export function AnalyticsDashboard() {
     // Company list for filter
     const companyList = useMemo(() => {
         const map = new Map<string, string>()
-            ;[...mgmt, ...team].forEach(d => {
+            ;[...mgmt, ...team, ...postMgmt, ...postTeam].forEach(d => {
                 if (d.company_id && d.company_name) map.set(d.company_id, d.company_name)
             })
         return Array.from(map.entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name))
@@ -377,23 +497,30 @@ export function AnalyticsDashboard() {
     // Filtered data
     const filteredMgmt = useMemo(() => companyFilter === 'all' ? mgmt : mgmt.filter(d => d.company_id === companyFilter), [mgmt, companyFilter])
     const filteredTeam = useMemo(() => companyFilter === 'all' ? team : team.filter(d => d.company_id === companyFilter), [team, companyFilter])
+    const filteredPostMgmt = useMemo(() => companyFilter === 'all' ? postMgmt : postMgmt.filter(d => d.company_id === companyFilter), [postMgmt, companyFilter])
+    const filteredPostTeam = useMemo(() => companyFilter === 'all' ? postTeam : postTeam.filter(d => d.company_id === companyFilter), [postTeam, companyFilter])
 
     // KPI computations
     const companies = useMemo(() => {
         const s = new Set<string>()
-        filteredMgmt.forEach(d => { if (d.company_name) s.add(d.company_name.toLowerCase().trim()) })
-        filteredTeam.forEach(d => { if (d.company_name) s.add(d.company_name.toLowerCase().trim()) })
+        if (phaseTab === 'pre') {
+            filteredMgmt.forEach(d => { if (d.company_name) s.add(d.company_name.toLowerCase().trim()) })
+            filteredTeam.forEach(d => { if (d.company_name) s.add(d.company_name.toLowerCase().trim()) })
+        } else {
+            filteredPostMgmt.forEach(d => { if (d.company_name) s.add(d.company_name.toLowerCase().trim()) })
+            filteredPostTeam.forEach(d => { if (d.company_name) s.add(d.company_name.toLowerCase().trim()) })
+        }
         return s.size
-    }, [filteredMgmt, filteredTeam])
+    }, [filteredMgmt, filteredTeam, filteredPostMgmt, filteredPostTeam, phaseTab])
 
     const avgTeamReadiness = avg(filteredMgmt.map(d => d.q10_team_readiness))
     const avgAiConfidence = avg(filteredTeam.map(d => d.q5_confidence_ai_workflow))
 
     const kpis = [
-        { icon: Users, label: 'Management Respondents', value: String(filteredMgmt.length), sub: 'from survey', delay: 0 },
-        { icon: Brain, label: 'Team Respondents', value: String(filteredTeam.length), sub: 'from survey', delay: 0.07 },
-        { icon: Target, label: 'Avg Team Readiness', value: `${avgTeamReadiness}/5`, sub: 'management-rated', delay: 0.14 },
-        { icon: Building2, label: 'Companies Represented', value: String(companies), sub: 'unique studios', delay: 0.21 },
+        { icon: Users, label: 'Management Respondents', value: String(phaseTab === 'pre' ? filteredMgmt.length : filteredPostMgmt.length), sub: 'from survey', delay: 0 },
+        { icon: Brain, label: 'Team Respondents', value: String(phaseTab === 'pre' ? filteredTeam.length : filteredPostTeam.length), sub: 'from survey', delay: 0.07 },
+        { icon: Target, label: phaseTab === 'pre' ? 'Avg Team Readiness' : 'Avg Success Rate', value: phaseTab === 'pre' ? `${avgTeamReadiness}/5` : '-', sub: phaseTab === 'pre' ? 'management-rated' : 'post-completion', delay: 0.14 },
+        { icon: Building2, label: 'Companies Represented', value: String(companies), sub: phaseTab === 'pre' ? 'unique studios (pre)' : 'unique studios (post)', delay: 0.21 },
     ]
 
     return (
@@ -420,19 +547,35 @@ export function AnalyticsDashboard() {
                         </select>
                     </div>
                     {/* Tab selector */}
-                    <div className="flex gap-1 p-1 bg-bg-card border border-border rounded-xl">
-                        {(['management', 'team'] as const).map(t => (
-                            <button
-                                key={t}
-                                onClick={() => setTab(t)}
-                                className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${tab === t
-                                    ? 'bg-lime text-black shadow'
-                                    : 'text-gray-400 hover:text-white'
-                                    }`}
-                            >
-                                {t}
-                            </button>
-                        ))}
+                    <div className="flex flex-col gap-2 items-end">
+                        <div className="flex gap-1 p-1 bg-bg-card border border-border rounded-xl">
+                            {(['pre', 'post'] as const).map(t => (
+                                <button
+                                    key={t}
+                                    onClick={() => setPhaseTab(t)}
+                                    className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors ${phaseTab === t
+                                        ? 'bg-lime text-black shadow'
+                                        : 'text-gray-400 hover:text-white'
+                                        }`}
+                                >
+                                    {t === 'pre' ? 'Pre-Masterclass' : 'Post-Masterclass'}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="flex gap-1 p-1 bg-bg-card border border-border rounded-xl">
+                            {(['management', 'team'] as const).map(t => (
+                                <button
+                                    key={t}
+                                    onClick={() => setRoleTab(t)}
+                                    className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${roleTab === t
+                                        ? 'bg-lime text-black shadow'
+                                        : 'text-gray-400 hover:text-white'
+                                        }`}
+                                >
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -453,7 +596,7 @@ export function AnalyticsDashboard() {
                     </div>
 
                     {/* Survey data avg confidence banner */}
-                    {tab === 'team' && (
+                    {roleTab === 'team' && phaseTab === 'pre' && (
                         <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-lime/5 border border-lime/20 text-sm text-gray-300">
                             <Brain className="h-4 w-4 text-lime shrink-0" />
                             Avg AI Workflow Confidence across {filteredTeam.length} team members:
@@ -462,10 +605,18 @@ export function AnalyticsDashboard() {
                     )}
 
                     {/* Tab content */}
-                    {tab === 'management' ? (
-                        <ManagementTab data={filteredMgmt} />
+                    {phaseTab === 'pre' ? (
+                        roleTab === 'management' ? (
+                            <ManagementTab data={filteredMgmt} />
+                        ) : (
+                            <TeamTab data={filteredTeam} />
+                        )
                     ) : (
-                        <TeamTab data={filteredTeam} />
+                        roleTab === 'management' ? (
+                            <PostManagementTab data={filteredPostMgmt} />
+                        ) : (
+                            <PostTeamTab data={filteredPostTeam} />
+                        )
                     )}
                 </>
             )}

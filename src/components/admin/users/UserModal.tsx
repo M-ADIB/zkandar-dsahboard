@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
 import type { Cohort, Company, User, UserRole, UserType } from '@/types/database';
+import { logAudit } from '@/lib/audit';
 
 interface UserModalProps {
     isOpen: boolean;
@@ -18,6 +19,9 @@ type UserFormData = {
     role: UserRole;
     user_type: UserType | '';
     company_id: string;
+    nationality: string;
+    age: string;
+    position: string;
 };
 
 const roleOptions: { value: UserRole; label: string }[] = [
@@ -48,6 +52,9 @@ export function UserModal({
         role: 'participant',
         user_type: '',
         company_id: '',
+        nationality: '',
+        age: '',
+        position: '',
     });
     const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
     const [initialPrograms, setInitialPrograms] = useState<string[]>([]);
@@ -62,6 +69,9 @@ export function UserModal({
             role: user.role,
             user_type: user.user_type ?? '',
             company_id: user.company_id ?? '',
+            nationality: user.nationality ?? '',
+            age: user.age ? String(user.age) : '',
+            position: user.position ?? '',
         });
         setSelectedPrograms(memberships);
         setInitialPrograms(memberships);
@@ -114,6 +124,9 @@ export function UserModal({
             role: formData.role,
             user_type: formData.user_type || null,
             company_id: formData.company_id || null,
+            nationality: formData.nationality.trim() || null,
+            age: formData.age ? parseInt(formData.age, 10) : null,
+            position: formData.position.trim() || null,
         };
 
         const { error: updateError } = await supabase
@@ -158,6 +171,7 @@ export function UserModal({
             }
         }
 
+        void logAudit('user.update', 'user', user.id, { name: payload.full_name, role: payload.role });
         setIsLoading(false);
         onSuccess();
     };
@@ -242,6 +256,41 @@ export function UserModal({
                         </option>
                     ))}
                 </select>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Position / Job Title</label>
+                <input
+                    type="text"
+                    value={formData.position}
+                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    placeholder="e.g. Senior Architect"
+                />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Nationality</label>
+                    <input
+                        type="text"
+                        value={formData.nationality}
+                        onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        placeholder="e.g. Canadian"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Age</label>
+                    <input
+                        type="number"
+                        min="1"
+                        value={formData.age}
+                        onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        placeholder="e.g. 35"
+                    />
+                </div>
             </div>
 
             <div className="space-y-3">

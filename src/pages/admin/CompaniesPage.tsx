@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { CompanyModal } from '@/components/admin/company/CompanyModal';
-import { Plus, Building2, Users, GraduationCap } from 'lucide-react';
+import { Plus, Users, GraduationCap, MapPin } from 'lucide-react';
 import { formatDateLabel } from '@/lib/time';
 import type { Cohort, Company, User } from '@/types/database';
 
@@ -45,12 +45,24 @@ export function CompaniesPage() {
     const programMap = useMemo(() => new Map(programs.map((p) => [p.id, p])), [programs]);
     const userMap = useMemo(() => new Map(users.map((u) => [u.id, u])), [users]);
 
-    // Derived metrics for summary cards
     const activeCount = useMemo(() => companies.filter((c) => {
         if (!c.cohort_id) return false;
         const prog = programMap.get(c.cohort_id);
         return prog?.status === 'active';
     }).length, [companies, programMap]);
+
+    const activeLocationsCount = useMemo(() => {
+        const activeCountries = new Set<string>();
+        companies.forEach(c => {
+            if (c.country && c.cohort_id) {
+                const prog = programMap.get(c.cohort_id);
+                if (prog?.status === 'active') {
+                    activeCountries.add(c.country);
+                }
+            }
+        });
+        return activeCountries.size;
+    }, [companies, programMap]);
 
     const totalMembers = useMemo(() => users.filter((u) => u.company_id && companies.some((c) => c.id === u.company_id)).length, [users, companies]);
 
@@ -130,11 +142,22 @@ export function CompaniesPage() {
                 <div className="bg-bg-card border border-border rounded-2xl p-5">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-lime/10 flex items-center justify-center">
-                            <Building2 className="h-5 w-5 text-lime" />
+                            <GraduationCap className="h-5 w-5 text-lime" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-white">{companies.length}</p>
-                            <p className="text-xs text-gray-500">Total Companies</p>
+                            <p className="text-2xl font-bold text-white">{activeCount}</p>
+                            <p className="text-xs text-gray-500">Active Masterclasses</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-bg-card border border-border rounded-2xl p-5">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-lime/10 flex items-center justify-center">
+                            <MapPin className="h-5 w-5 text-lime" />
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-white">{activeLocationsCount}</p>
+                            <p className="text-xs text-gray-500">Number of Locations</p>
                         </div>
                     </div>
                 </div>
