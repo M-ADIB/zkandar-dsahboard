@@ -14,6 +14,7 @@ const LoginPage = lazy(() => import('@/pages/LoginPage').then(module => ({ defau
 const SignupPage = lazy(() => import('@/pages/SignupPage').then(module => ({ default: module.SignupPage })))
 const EventsApplyPage = lazy(() => import('@/pages/public/EventsApplyPage').then(module => ({ default: module.EventsApplyPage })))
 const WorkflowsPage = lazy(() => import('@/pages/public/WorkflowsPage').then(module => ({ default: module.WorkflowsPage })))
+const ProgramPage = lazy(() => import('@/pages/public/ProgramPage').then(module => ({ default: module.ProgramPage })))
 const PostCompletionSurvey = lazy(() => import('@/pages/public/PostCompletionSurvey').then(module => ({ default: module.PostCompletionSurvey })))
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
 const TermsOfServicePage = lazy(() => import('@/pages/TermsOfServicePage').then(module => ({ default: module.TermsOfServicePage })))
@@ -58,7 +59,8 @@ function App() {
                                 <Route path="/signup" element={<SignupPage />} />
                                 <Route path="/signup/:token" element={<SignupPage />} />
                                 <Route path="/events-apply" element={<EventsApplyPage />} />
-                                <Route path="/workflows" element={<WorkflowsPage />} />
+                                <Route path="/masterclass-analytics" element={<WorkflowsPage />} />
+                                <Route path="/program" element={<ProgramPage />} />
                                 <Route path="/survey/post-completion" element={<PostCompletionSurvey />} />
                                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                                 <Route path="/terms" element={<TermsOfServicePage />} />

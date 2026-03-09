@@ -109,7 +109,7 @@ function StackedBar({ segments }: { segments: { label: string; pct: number; colo
                         initial={{ width: 0 }}
                         animate={inView ? { width: `${seg.pct}%` } : {}}
                         transition={{ duration: 0.8, delay: i * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        title={`${seg.label} — ${seg.pct}%`}
+                        title={`${seg.label}: ${seg.pct}%`}
                     />
                 ))}
             </div>
@@ -117,7 +117,7 @@ function StackedBar({ segments }: { segments: { label: string; pct: number; colo
                 {segments.map(seg => (
                     <div key={seg.label} className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: seg.color }} />
-                        <span className="text-xs text-gray-400 font-body">{seg.label} — {seg.pct}%</span>
+                        <span className="text-xs text-gray-400 font-body">{seg.label} {seg.pct}%</span>
                     </div>
                 ))}
             </div>
@@ -280,11 +280,11 @@ export function WorkflowsPage() {
                                 maxWidth: '600px'
                             }}
                         >
-                            Real data from 45 designers across 3 studios shows where the gap is — and what teams actually need.
+                            Real data from +200 designers across 5 studios shows where the gap is and what teams actually need.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <StatPill value={45} label="Designers surveyed" delay={0.1} />
-                            <StatPill value={3} label="Studios" delay={0.2} />
+                            <StatPill value={200} suffix="+" label="Designers surveyed" delay={0.1} />
+                            <StatPill value={5} label="Studios" delay={0.2} />
                             <StatPill value={62} label="Only experimenting" suffix="%" delay={0.3} />
                         </div>
                     </div>
@@ -296,10 +296,10 @@ export function WorkflowsPage() {
                         <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">Where teams are right now</h2>
 
                         <StackedBar segments={[
-                            { label: 'Not using AI at all', pct: 16, color: '#555555' },
+                            { label: 'Not using AI at all', pct: 16, color: '#6B7280' },
                             { label: 'Occasionally experimenting', pct: 62, color: '#D0FF71' },
-                            { label: 'Regularly for internal work', pct: 13, color: '#75C345' },
-                            { label: 'Regularly for client-facing', pct: 9, color: '#5A9F2E' },
+                            { label: 'Regularly for internal work', pct: 13, color: '#4ADE80' },
+                            { label: 'Regularly for client-facing', pct: 9, color: '#16A34A' },
                         ]} />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -307,9 +307,6 @@ export function WorkflowsPage() {
                             <ScoreCallout score={2.4} total={5} label="Average self-rated skill level" />
                         </div>
 
-                        <p className="text-sm text-gray-500 italic border-l-2 border-lime/30 pl-4 font-body">
-                            "78% of designers are either not using AI or only experimenting — with no structured workflow in place."
-                        </p>
                     </div>
                 </Section>
 
@@ -353,8 +350,8 @@ export function WorkflowsPage() {
                             </div>
                         </div>
 
-                        <p className="text-sm text-gray-500 italic border-l-2 border-lime/30 pl-4 font-body">
-                            "Teams don't need more tools. They need a framework."
+                        <p className="text-base text-gray-500 italic border-l-2 border-lime/30 pl-4 font-body">
+                            Teams don't need more tools. They need a structured workflow framework.
                         </p>
                     </div>
                 </Section>
@@ -364,7 +361,7 @@ export function WorkflowsPage() {
                     <div className="space-y-8">
                         <div>
                             <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What leadership sees</h2>
-                            <p className="text-sm text-gray-500 mt-2 font-body">Data from 10 studio directors, heads of design, and partners</p>
+                            <p className="text-sm text-gray-500 mt-2 font-body">Data from 5 studio directors, heads of design, and partners</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -374,26 +371,26 @@ export function WorkflowsPage() {
                                 <AnimatedBar label="Better use of team time" pct={60} color="#D0FF71" delay={0} />
                                 <AnimatedBar label="Faster concept development" pct={60} color="#D0FF71" delay={0.1} />
                                 <AnimatedBar label="Greater design consistency" pct={30} color="#D0FF71" delay={0.2} />
-                                <AnimatedBar label="Competitive differentiation" pct={20} color="#D0FF71" delay={0.3} />
+                                <AnimatedBar label="Competitive differentiation" pct={80} color="#D0FF71" delay={0.3} />
                             </div>
 
                             {/* Risks */}
                             <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest font-heading">Risks</h3>
-                                <AnimatedBar label="Client perception / trust" pct={50} color="#F87171" delay={0} />
-                                <AnimatedBar label="Inconsistent output quality" pct={50} color="#F87171" delay={0.1} />
-                                <AnimatedBar label="Lack of clear guidelines" pct={40} color="#F87171" delay={0.2} />
-                                <AnimatedBar label="Brand or design misalignment" pct={20} color="#F87171" delay={0.3} />
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest font-heading">Risks of not using AI</h3>
+                                <AnimatedBar label="Falling behind competitors" pct={80} color="#F87171" delay={0} />
+                                <AnimatedBar label="Slower delivery, higher costs" pct={70} color="#F87171" delay={0.1} />
+                                <AnimatedBar label="Team skill gaps widening" pct={60} color="#F87171" delay={0.2} />
+                                <AnimatedBar label="Losing top creative talent" pct={40} color="#F87171" delay={0.3} />
                             </div>
                         </div>
 
                         {/* Impact ratings */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                            <ImpactCard label="Speed" score={4.2} />
-                            <ImpactCard label="Efficiency" score={4.0} />
-                            <ImpactCard label="Quality" score={3.9} />
-                            <ImpactCard label="Client Satisfaction" score={3.9} />
-                            <ImpactCard label="Competitive Advantage" score={4.2} />
+                            <ImpactCard label="Speed" score={4.7} />
+                            <ImpactCard label="Efficiency" score={4.6} />
+                            <ImpactCard label="Quality" score={4.2} />
+                            <ImpactCard label="Client Satisfaction" score={5.0} />
+                            <ImpactCard label="Competitive Advantage" score={5.0} />
                         </div>
                     </div>
                 </Section>
@@ -416,7 +413,7 @@ export function WorkflowsPage() {
                                 The gap is not tool access. It's workflow structure.
                             </h3>
                             <p className="text-sm text-gray-400 leading-relaxed font-body">
-                                Leadership sees the opportunity. Teams feel the friction. The missing piece is a clear, repeatable system — built for how design studios actually work.
+                                The missing piece is a clear, repeatable system built for how design studios actually work.
                             </p>
                         </div>
                     </div>
@@ -436,17 +433,11 @@ export function WorkflowsPage() {
                         </p>
                         <div className="flex items-center justify-center gap-4 flex-wrap pt-2">
                             <Link
-                                to="/programs"
+                                to="/program"
                                 className="px-8 py-3.5 bg-lime text-black font-bold rounded-xl hover:bg-lime-400 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5"
                             >
-                                View Programs
+                                View Program
                             </Link>
-                            <a
-                                href="#"
-                                className="px-8 py-3.5 border border-white/15 text-white font-bold rounded-xl hover:border-lime/40 hover:text-lime transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5"
-                            >
-                                Talk to Us
-                            </a>
                         </div>
                     </div>
                 </Section>
