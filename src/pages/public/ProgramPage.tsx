@@ -211,7 +211,7 @@ export function ProgramPage() {
                                         style={{
                                             fontSize: 'clamp(36px, 7vw, 76px)',
                                             lineHeight: 1.0,
-                                            letterSpacing: '-0.03em',
+                                            letterSpacing: '-0.01em',
                                         }}
                                     >
                                         Zkandar AI

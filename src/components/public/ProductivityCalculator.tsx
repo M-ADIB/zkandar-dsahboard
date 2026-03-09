@@ -57,9 +57,9 @@ const TOOLS: ToolDef[] = [
     {
         id: 'krea',
         name: 'Krea',
-        replaces: 'Static export-and-review style exploration cycles',
-        stat: 'Live canvas iteration',
-        detail: 'Real-time style and upscaling without leaving the workflow'
+        replaces: 'External retouching, slow render-export-feedback cycles, and manual upscaling',
+        stat: 'Live AI canvas',
+        detail: 'Real-time rendering, style controls, and HD upscaling directly on the canvas — iterate visually in seconds, not hours'
     },
     {
         id: 'all',

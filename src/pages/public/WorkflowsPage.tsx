@@ -68,17 +68,20 @@ function StatPill({ value, label, decimals = 0, suffix = '', delay = 0 }: { valu
 // ─── Animated horizontal bar ──────────────────────────────────────────────────
 
 function AnimatedBar({
-    label, pct, color = '#D0FF71', delay = 0
+    label, sublabel, pct, color = '#D0FF71', delay = 0
 }: {
-    label: string; pct: number; color?: string; delay?: number
+    label: string; sublabel?: string; pct: number; color?: string; delay?: number
 }) {
     const ref = useRef(null)
     const inView = useInView(ref, { once: true, margin: '-30px' })
     return (
         <div ref={ref} className="space-y-1.5">
-            <div className="flex justify-between items-baseline">
-                <span className="text-sm text-gray-300 font-body">{label}</span>
-                <span className="text-sm font-bold tabular-nums" style={{ color }}>{pct}%</span>
+            <div className="flex justify-between items-baseline gap-4">
+                <div>
+                    <span className="text-sm text-gray-300 font-body">{label}</span>
+                    {sublabel && <span className="block text-xs text-gray-500 font-body mt-0.5">{sublabel}</span>}
+                </div>
+                <span className="text-sm font-bold tabular-nums shrink-0" style={{ color }}>{pct}%</span>
             </div>
             <div className="h-3 rounded-full bg-white/5 overflow-hidden">
                 <motion.div
@@ -262,7 +265,7 @@ export function WorkflowsPage() {
                             className="font-heading font-black text-white"
                             style={{
                                 lineHeight: 1.15,
-                                letterSpacing: '-0.02em',
+                                letterSpacing: '-0.01em',
                                 wordSpacing: '0.05em',
                                 maxWidth: '820px',
                                 overflowWrap: 'break-word',
@@ -310,20 +313,48 @@ export function WorkflowsPage() {
                     </div>
                 </Section>
 
+                {/* ─── SECTION 2.5: What AI Changes in Your Process ────────── */}
+                <Section>
+                    <div className="space-y-8">
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What AI changes in your process</h2>
+                            <p className="text-sm text-gray-500 mt-2 font-body">Average time saved per workflow phase when structured AI tools are adopted</p>
+                        </div>
+
+                        <div className="space-y-5 bg-bg-card border border-border rounded-2xl p-6">
+                            <AnimatedBar label="Research & moodboarding" sublabel="1–3 days → 10–20 minutes" pct={90} delay={0} />
+                            <AnimatedBar label="Concept development" sublabel="3–7 days → under 1 hour, exploring 10–20 directions instead of 3–5" pct={80} delay={0.1} />
+                            <AnimatedBar label="Material & FF&E exploration" sublabel="1–2 days sourcing finishes and references → curated boards in minutes" pct={85} delay={0.2} />
+                            <AnimatedBar label="Visualization turnaround" sublabel="Days or weeks of rendering → multiple variations in minutes" pct={70} delay={0.3} />
+                            <AnimatedBar label="Client presentation prep" sublabel="Full days assembling visuals → client-ready materials in hours" pct={80} delay={0.4} />
+                            <AnimatedBar label="Proposal response time" sublabel="Days of scrambling to respond to RFPs → same-day turnaround" pct={60} delay={0.5} />
+                        </div>
+
+                        <div className="flex flex-wrap gap-4">
+                            <StatPill value={75} suffix="%" label="More creative output / month" delay={0.1} />
+                            <StatPill value={50} suffix="%" label="Faster client approvals" delay={0.2} />
+                            <StatPill value={10} suffix="×" label="More visual content produced" delay={0.3} />
+                        </div>
+                    </div>
+                </Section>
+
                 {/* ─── SECTION 3: What Teams Are Struggling With ────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams are struggling with</h2>
-
-                        <div className="space-y-4 bg-bg-card border border-border rounded-2xl p-6">
-                            <AnimatedBar label="Controlling style & consistency" pct={44} delay={0} />
-                            <AnimatedBar label="Getting strong concept ideas" pct={40} delay={0.1} />
-                            <AnimatedBar label="Translating AI into real design work" pct={33} delay={0.2} />
-                            <AnimatedBar label="Creating mood / storytelling visuals" pct={22} delay={0.3} />
-                            <AnimatedBar label="Iterating efficiently" pct={18} delay={0.4} />
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams are struggling with</h2>
+                            <p className="text-sm text-gray-500 mt-2 font-body">Share of designers who cited each as a primary friction point</p>
                         </div>
 
-                        <CalloutCard number={67} text={`of designers say "difficulty controlling results" is their primary concern.`} />
+                        <div className="space-y-4 bg-bg-card border border-border rounded-2xl p-6">
+                            <AnimatedBar label="Controlling style and consistency" sublabel="AI outputs don't match the studio's visual language" pct={44} delay={0} />
+                            <AnimatedBar label="Getting strong concept ideas" sublabel="Struggling to push AI beyond generic directions" pct={40} delay={0.1} />
+                            <AnimatedBar label="Translating AI into real design work" sublabel="Results look good but don't connect to actual projects" pct={33} delay={0.2} />
+                            <AnimatedBar label="Creating mood and storytelling visuals" sublabel="Can't get the emotional quality needed for client presentations" pct={22} delay={0.3} />
+                            <AnimatedBar label="Iterating efficiently" sublabel="Each round of changes takes too long" pct={18} delay={0.4} />
+                        </div>
+
+                        <CalloutCard number={67} text={`of designers say difficulty controlling results is their primary concern — not lack of access to tools.`} />
                     </div>
                 </Section>
 
@@ -344,9 +375,10 @@ export function WorkflowsPage() {
                             </div>
 
                             {/* Right: What would help most */}
-                            <div className="space-y-4">
-                                <BigStatCard value={42} label="Better prompting techniques" />
-                                <BigStatCard value={36} label="Refining & controlling results" />
+                            <div className="space-y-3">
+                                <p className="text-xs text-gray-500 uppercase tracking-widest font-heading">Of designers, what would help them most</p>
+                                <BigStatCard value={42} label="say structured prompting techniques would make the biggest difference" />
+                                <BigStatCard value={36} label="say learning to refine and control AI results is their top need" />
                             </div>
                         </div>
 
@@ -414,6 +446,64 @@ export function WorkflowsPage() {
                             </h3>
                             <p className="text-sm text-gray-400 leading-relaxed font-body">
                                 The missing piece is a clear, repeatable system built for how design studios actually work.
+                            </p>
+                        </div>
+                    </div>
+                </Section>
+
+                {/* ─── SECTION 7: Studio Capacity Multiplier ───────────────── */}
+                <Section>
+                    <div className="space-y-8">
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">Your team, amplified</h2>
+                            <p className="text-sm text-gray-500 mt-2 font-body">What the same 10-person studio looks like before and after structured AI workflows</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
+                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-heading">Without AI workflows</h3>
+                                <div className="space-y-3">
+                                    {[
+                                        '3–5 concept directions explored per project',
+                                        '2–3 projects handled simultaneously',
+                                        'Limited bandwidth to respond to new RFPs',
+                                        '40–60% of designer time spent before real design begins',
+                                        'Dependence on external visualization studios',
+                                    ].map(item => (
+                                        <div key={item} className="flex items-start gap-3">
+                                            <span className="text-gray-600 shrink-0 mt-0.5 text-base leading-none">–</span>
+                                            <p className="text-sm text-gray-400 font-body">{item}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-bg-card border border-lime/20 rounded-2xl p-6 space-y-4">
+                                <h3 className="text-xs font-bold text-lime/60 uppercase tracking-widest font-heading">With AI workflows</h3>
+                                <div className="space-y-3">
+                                    {[
+                                        '8–12 concept directions per project',
+                                        '40–60% more proposals responded to per month',
+                                        '30–50% increase in project acquisition capacity',
+                                        'Concept visuals, moodboards, and walkthroughs produced in-house',
+                                        '5–10× more visual content for presentations and social media',
+                                    ].map(item => (
+                                        <div key={item} className="flex items-start gap-3">
+                                            <span className="text-lime shrink-0 mt-0.5 text-base leading-none">↑</span>
+                                            <p className="text-sm text-gray-300 font-body">{item}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-bg-card border-l-4 border-lime rounded-2xl p-8 flex flex-col md:flex-row items-start md:items-center gap-6">
+                            <div className="shrink-0 text-center md:text-left">
+                                <span className="text-5xl font-heading font-black text-lime">2–3×</span>
+                                <p className="text-xs text-gray-500 uppercase tracking-widest font-heading mt-1">Creative output capacity</p>
+                            </div>
+                            <p className="text-sm text-gray-400 leading-relaxed font-body">
+                                A 10-person team operating with structured AI workflows produces the creative output equivalent to 20–25 designers using traditional methods — without adding headcount, salaries, or management overhead.
                             </p>
                         </div>
                     </div>
