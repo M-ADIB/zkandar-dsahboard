@@ -22,24 +22,6 @@ const gains = [
     { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
 ]
 
-const testimonials = [
-    {
-        quote: 'This completely changed how our team approaches the early stages of a project. We\'re generating better concepts in a fraction of the time.',
-        name: 'Sofia M.',
-        role: 'Creative Director, Studio Forma',
-    },
-    {
-        quote: 'I was skeptical going in. I left with a workflow I use every single day. The difference in output quality is real.',
-        name: 'James R.',
-        role: 'Senior Designer, Atelier Nord',
-    },
-    {
-        quote: 'Finally a program that respects that we\'re designers first. Not a tech course, a design course that happens to use AI.',
-        name: 'Lena K.',
-        role: 'Head of Design, Blank Studio',
-    },
-]
-
 // ─── Calendly Modal ───────────────────────────────────────────────────────────
 
 function CalendlyModal({ onClose }: { onClose: () => void }) {
@@ -318,29 +300,6 @@ export function ProgramPage() {
                         {/* Bottom glow */}
                         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-lime/20 to-transparent" />
                     </motion.div>
-
-                    {/* ─── Testimonials ─────────────────────────────────────── */}
-                    <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What participants say</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {testimonials.map((t, i) => (
-                                <motion.div
-                                    key={t.name}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: '-40px' }}
-                                    transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                                    className="bg-bg-card border border-border rounded-2xl p-6 flex flex-col gap-4"
-                                >
-                                    <p className="text-sm text-gray-300 leading-relaxed font-body italic flex-1">"{t.quote}"</p>
-                                    <div>
-                                        <p className="text-sm font-bold text-white font-heading">{t.name}</p>
-                                        <p className="text-xs text-gray-500 font-body">{t.role}</p>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
 
                     {/* Footer */}
                     <div className="text-center pt-8 pb-4 border-t border-white/5">
