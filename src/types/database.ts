@@ -288,6 +288,32 @@ export interface EventRequest {
     created_at: string
 }
 
+export type ApplicationStatus = 'new' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired'
+
+export interface JobApplication {
+    id: string
+    position_type: string
+    full_name: string
+    email: string
+    phone: string
+    linkedin_url: string | null
+    country: string
+    timezone: string
+    compensation_model: string
+    years_experience: string
+    sold_info_products: string
+    avg_deal_size: string
+    crm_tools: string[]
+    expected_monthly_earnings: string | null
+    best_close_story: string | null
+    why_zkandar: string | null
+    video_intro_url: string | null
+    status: ApplicationStatus
+    admin_notes: string | null
+    reviewed_by: string | null
+    created_at: string
+}
+
 // Database type for Supabase client
 export interface Database {
     public: {

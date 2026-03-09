@@ -13,6 +13,7 @@ import { AppShell } from '@/components/layout/AppShell'
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(module => ({ default: module.LoginPage })))
 const SignupPage = lazy(() => import('@/pages/SignupPage').then(module => ({ default: module.SignupPage })))
 const EventsApplyPage = lazy(() => import('@/pages/public/EventsApplyPage').then(module => ({ default: module.EventsApplyPage })))
+const ApplySalesPage = lazy(() => import('@/pages/public/ApplySalesPage').then(module => ({ default: module.ApplySalesPage })))
 const WorkflowsPage = lazy(() => import('@/pages/public/WorkflowsPage').then(module => ({ default: module.WorkflowsPage })))
 const ProgramPage = lazy(() => import('@/pages/public/ProgramPage').then(module => ({ default: module.ProgramPage })))
 const ThankYouPage = lazy(() => import('@/pages/public/ThankYouPage').then(module => ({ default: module.ThankYouPage })))
@@ -33,6 +34,7 @@ const ProgramsPage = lazy(() => import('@/pages/admin/ProgramsPage').then(module
 const UsersPage = lazy(() => import('@/pages/admin/UsersPage').then(module => ({ default: module.UsersPage })))
 const EventsPage = lazy(() => import('@/pages/admin/EventsPage').then(module => ({ default: module.EventsPage })))
 const CostsPage = lazy(() => import('@/pages/admin/CostsPage').then(module => ({ default: module.CostsPage })))
+const RecruitingPage = lazy(() => import('@/pages/admin/RecruitingPage').then(module => ({ default: module.RecruitingPage })))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
 
@@ -60,6 +62,7 @@ function App() {
                                 <Route path="/signup" element={<SignupPage />} />
                                 <Route path="/signup/:token" element={<SignupPage />} />
                                 <Route path="/events-apply" element={<EventsApplyPage />} />
+                                <Route path="/apply/sales" element={<ApplySalesPage />} />
                                 <Route path="/masterclass-analytics" element={<WorkflowsPage />} />
                                 <Route path="/program" element={<ProgramPage />} />
                                 <Route path="/thank-you" element={<ThankYouPage />} />
@@ -159,6 +162,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <CostsPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/recruiting"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <RecruitingPage />
                                             </ProtectedRoute>
                                         }
                                     />
