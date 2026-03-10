@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
-import { InlineWidget } from 'react-calendly'
 
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
 
@@ -57,18 +56,31 @@ function CalendlyModal({ onClose }: { onClose: () => void }) {
                     </button>
                 </div>
 
-                {/* Calendly Inline Widget */}
-                <div className="flex-1 min-h-0 relative bg-white">
-                    <InlineWidget
-                        url={CALENDLY_URL}
-                        styles={{ height: '100%', width: '100%' }}
-                        pageSettings={{
-                            hideGdprBanner: true,
-                            backgroundColor: '111111',
-                            textColor: 'ffffff',
-                            primaryColor: 'd0ff71'
-                        }}
-                    />
+                {/* Interstitial Fallback Content (Safari/Brave Proof) */}
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#111111]">
+                    <div className="w-16 h-16 rounded-full border border-lime/20 bg-lime/5 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(208,255,113,0.1)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D0FF71" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                    </div>
+                    <h3 className="text-2xl font-heading font-black text-white mb-3">Choose a Time</h3>
+                    <p className="text-gray-400 font-body text-sm md:text-base max-w-[340px] mb-8 leading-relaxed">
+                        To bypass browser blocks and ensure your booking goes smoothly, we'll open Calendly in a secure window.
+                    </p>
+                    <a
+                        href={CALENDLY_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:bg-lime-400 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5 font-heading"
+                    >
+                        Open Calendar
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="translate-x-1">
+                            <path d="M5 11L11 5M11 5H6.5M11 5V9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </a>
                 </div>
 
                 {/* I Have Booked — inside modal */}
