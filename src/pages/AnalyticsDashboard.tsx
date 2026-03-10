@@ -467,7 +467,7 @@ export function AnalyticsDashboard() {
             const [mr, tr, post] = await Promise.all([
                 supabase.from('management_submissions').select('*').order('created_at'),
                 supabase.from('team_submissions').select('*').order('created_at'),
-                supabase.from('post_completion_survey_responses').select('*').order('created_at'),
+                supabase.from('post_completion_survey_responses').select('*').order('submitted_at'),
             ])
             if (ignore) return
             if (mr.error || tr.error || post.error) {
@@ -546,36 +546,33 @@ export function AnalyticsDashboard() {
                             ))}
                         </select>
                     </div>
-                    {/* Tab selector */}
-                    <div className="flex flex-col gap-2 items-end">
-                        <div className="flex gap-1 p-1 bg-bg-card border border-border rounded-xl">
-                            {(['pre', 'post'] as const).map(t => (
+                    {/* Unified Smart Filter */}
+                    <div className="flex bg-bg-card border border-border rounded-xl p-1 gap-1 overflow-x-auto max-w-[calc(100vw-32px)] hide-scrollbar shrink-0">
+                        {[
+                            { id: 'pre-management', label: 'Pre: Mgmt' },
+                            { id: 'pre-team', label: 'Pre: Team' },
+                            { id: 'post-management', label: 'Post: Mgmt' },
+                            { id: 'post-team', label: 'Post: Team' },
+                        ].map(t => {
+                            const isSelected = phaseTab === (t.id.startsWith('pre') ? 'pre' : 'post') &&
+                                roleTab === (t.id.endsWith('management') ? 'management' : 'team')
+
+                            return (
                                 <button
-                                    key={t}
-                                    onClick={() => setPhaseTab(t)}
-                                    className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors ${phaseTab === t
+                                    key={t.id}
+                                    onClick={() => {
+                                        setPhaseTab(t.id.startsWith('pre') ? 'pre' : 'post')
+                                        setRoleTab(t.id.endsWith('management') ? 'management' : 'team')
+                                    }}
+                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isSelected
                                         ? 'bg-lime text-black shadow'
                                         : 'text-gray-400 hover:text-white'
                                         }`}
                                 >
-                                    {t === 'pre' ? 'Pre-Masterclass' : 'Post-Masterclass'}
+                                    {t.label}
                                 </button>
-                            ))}
-                        </div>
-                        <div className="flex gap-1 p-1 bg-bg-card border border-border rounded-xl">
-                            {(['management', 'team'] as const).map(t => (
-                                <button
-                                    key={t}
-                                    onClick={() => setRoleTab(t)}
-                                    className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${roleTab === t
-                                        ? 'bg-lime text-black shadow'
-                                        : 'text-gray-400 hover:text-white'
-                                        }`}
-                                >
-                                    {t}
-                                </button>
-                            ))}
-                        </div>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
