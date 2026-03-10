@@ -40,8 +40,8 @@ function CalendlyModal({ onClose }: { onClose: () => void }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="relative bg-[#111111] border border-white/10 rounded-2xl overflow-hidden w-full max-w-[540px] flex flex-col"
-                style={{ height: '720px' }}
+                className="relative bg-[#111111] border border-white/10 rounded-2xl overflow-hidden w-full max-w-[1000px] flex flex-col"
+                style={{ height: 'min(850px, 90vh)' }}
             >
                 {/* Modal header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
