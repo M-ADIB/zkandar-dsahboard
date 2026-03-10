@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import type { Cohort, Company, Lead, Session, User } from '@/types/database'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameMonth, isToday, parseISO } from 'date-fns'
+import { format, startOfMonth, endOfMonth } from 'date-fns'
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
 const fmt = (n: number) => n.toLocaleString()
@@ -155,125 +155,21 @@ function CompanyCard({ company, cohort, memberCount, progress, onClick }: {
     )
 }
 
-// ─── Calendar Event Type Colors ───────────────────────────────────────────────
-const eventTypeColors: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-    master_class: { bg: 'bg-lime/10', text: 'text-lime', dot: 'bg-lime', label: 'Masterclass' },
-    sprint_workshop: { bg: 'bg-orange-500/10', text: 'text-orange-300', dot: 'bg-orange-400', label: 'Sprint Workshop' },
-    ai_talk: { bg: 'bg-purple-500/10', text: 'text-purple-300', dot: 'bg-purple-400', label: 'AI Talk' },
-}
-
-// ─── Mini Calendar Widget ─────────────────────────────────────────────────────
-function CalendarWidget({ cohorts }: { cohorts: Cohort[] }) {
-    const [currentDate, setCurrentDate] = useState(new Date())
-
-    const monthStart = startOfMonth(currentDate)
-    const monthEnd = endOfMonth(currentDate)
-    const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
-    const startPadding = getDay(monthStart)
-
-    // Map events from cohorts
-    const events = useMemo(() => {
-        return cohorts
-            .filter(c => c.start_date)
-            .map(c => ({
-                date: c.start_date!,
-                name: c.name,
-                type: (c as any).offering_type || 'master_class',
-                status: c.status,
-            }))
-    }, [cohorts])
-
-    const getEventsForDay = (day: Date) => {
-        const dayStr = format(day, 'yyyy-MM-dd')
-        return events.filter(e => e.date === dayStr)
-    }
-
-    const prevMonth = () => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
-    const nextMonth = () => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
-
+// ─── Google Calendar Widget ─────────────────────────────────────────────────────
+function GoogleCalendarWidget() {
     return (
-        <div className="space-y-4">
-            {/* Month nav */}
-            <div className="flex items-center justify-between">
-                <button onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition">
-                    <ChevronRight className="h-4 w-4 rotate-180" />
-                </button>
-                <span className="text-sm font-medium text-white">{format(currentDate, 'MMMM yyyy')}</span>
-                <button onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition">
-                    <ChevronRight className="h-4 w-4" />
-                </button>
-            </div>
-
-            {/* Day headers */}
-            <div className="grid grid-cols-7 gap-1 text-center">
-                {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
-                    <div key={d} className="text-[10px] text-gray-600 font-medium py-1">{d}</div>
-                ))}
-                {Array.from({ length: startPadding }).map((_, i) => (
-                    <div key={`pad-${i}`} />
-                ))}
-                {daysInMonth.map(day => {
-                    const dayEvents = getEventsForDay(day)
-                    const today = isToday(day)
-                    const sameMonth = isSameMonth(day, currentDate)
-
-                    return (
-                        <div
-                            key={day.toISOString()}
-                            className={`relative h-8 flex items-center justify-center rounded-lg text-xs transition ${today ? 'bg-lime/20 text-lime font-bold' :
-                                sameMonth ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700'
-                                }`}
-                        >
-                            {format(day, 'd')}
-                            {dayEvents.length > 0 && (
-                                <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
-                                    {dayEvents.slice(0, 3).map((e, i) => {
-                                        const colors = eventTypeColors[e.type] || eventTypeColors.master_class
-                                        return <span key={i} className={`h-1 w-1 rounded-full ${colors.dot}`} />
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                    )
-                })}
-            </div>
-
-            {/* Legend */}
-            <div className="flex flex-wrap gap-3 pt-2 border-t border-border">
-                {Object.values(eventTypeColors).map(({ dot, label }) => (
-                    <div key={label} className="flex items-center gap-1.5 text-[10px] text-gray-400">
-                        <span className={`h-2 w-2 rounded-full ${dot}`} />
-                        {label}
-                    </div>
-                ))}
-            </div>
-
-            {/* Upcoming events list */}
-            <div className="space-y-2 pt-2 border-t border-border">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Upcoming</p>
-                {events.length === 0 ? (
-                    <p className="text-xs text-gray-600">No events scheduled</p>
-                ) : (
-                    events
-                        .filter(e => e.date >= format(new Date(), 'yyyy-MM-dd'))
-                        .sort((a, b) => a.date.localeCompare(b.date))
-                        .slice(0, 4)
-                        .map((e, i) => {
-                            const colors = eventTypeColors[e.type] || eventTypeColors.master_class
-                            return (
-                                <div key={i} className="flex items-center gap-2.5 py-1.5">
-                                    <span className={`h-2 w-2 rounded-full ${colors.dot} shrink-0`} />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-white truncate">{e.name}</p>
-                                    </div>
-                                    <span className="text-[10px] text-gray-500 shrink-0">
-                                        {format(parseISO(e.date), 'MMM d')}
-                                    </span>
-                                </div>
-                            )
-                        })
-                )}
-            </div>
+        <div className="w-full h-[380px] rounded-xl overflow-hidden border border-white/10 bg-[#111] relative">
+            {/* 
+              TODO: Replace the 'src' below with your actual Google Calendar Embed URL 
+              Go to Google Calendar > Settings > Integrate Calendar > Customize > copy the URL inside the src="" of the iframe.
+            */}
+            <iframe
+                src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23111111&color=%23D0FF71&ctz=Asia%2FDubai&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0&mode=AGENDA"
+                style={{ borderWidth: 0, width: '100%', height: '100%' }}
+                frameBorder="0"
+                scrolling="no"
+                title="Google Calendar"
+            ></iframe>
         </div>
     )
 }
@@ -531,7 +427,7 @@ export function OwnerDashboard() {
                             Programs <ArrowRight className="h-3 w-3" />
                         </button>
                     </div>
-                    <CalendarWidget cohorts={cohorts} />
+                    <GoogleCalendarWidget />
                 </motion.div>
             </div>
 
