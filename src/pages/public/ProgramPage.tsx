@@ -128,6 +128,18 @@ export function ProgramPage() {
             </AnimatePresence>
 
             <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
+                {/* Navigation Back Button */}
+                <div className="absolute top-6 left-6 z-20">
+                    <Link
+                        to="/masterclass-analytics"
+                        className="group flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/5 border border-white/10 rounded-full backdrop-blur-md transition-all text-sm font-medium text-gray-400 hover:text-white"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:-translate-x-1">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Back
+                    </Link>
+                </div>
                 {/* Ambient orbs */}
                 <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float-slow" />
                 <div className="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-[#D0FF71]/8 blur-[140px] rounded-full pointer-events-none z-0 animate-float-slow-reverse" />
