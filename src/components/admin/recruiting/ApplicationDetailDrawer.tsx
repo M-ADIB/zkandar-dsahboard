@@ -57,9 +57,9 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
                     }
                 })
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error updating status:', err)
-            alert('Failed to update. Please try again.')
+            alert(`Failed to update: ${err.message || 'Unknown error'}. Please try again.`)
         } finally {
             setIsUpdating(false)
         }
