@@ -194,7 +194,7 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
                                 <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
                                     <div className="text-xs text-gray-500 mb-1">Compensation Model</div>
                                     <div className="text-white font-medium text-sm capitalize">
-                                        {application.compensation_model.replace(/_/g, ' ')}
+                                        {application.compensation_model?.replace(/_/g, ' ') || 'Commission only'}
                                     </div>
                                 </div>
                                 <div className="p-4 bg-[#111] border border-white/5 rounded-xl">
@@ -216,13 +216,13 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
                                     <div className="text-xs text-gray-500 mb-1">Sold Info Products Before?</div>
                                     <div className="text-white text-sm">{application.sold_info_products}</div>
                                 </div>
-                                {application.crm_tools.length > 0 && (
+                                {application.crm_tools && application.crm_tools.length > 0 && (
                                     <div className="p-4 bg-[#111] border border-white/5 rounded-xl col-span-2">
                                         <div className="text-xs text-gray-500 mb-2 flex items-center gap-1.5">
                                             <Briefcase className="w-3.5 h-3.5" /> CRM Tools
                                         </div>
                                         <div className="flex flex-wrap gap-2">
-                                            {application.crm_tools.map(t => (
+                                            {application.crm_tools.map((t: string) => (
                                                 <span key={t} className="px-3 py-1 bg-white/5 rounded-full text-xs text-[#D0FF71] border border-white/10">{t}</span>
                                             ))}
                                         </div>

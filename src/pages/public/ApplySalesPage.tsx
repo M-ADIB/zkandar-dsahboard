@@ -85,8 +85,6 @@ export const ApplySalesPage = () => {
                 .from('job_applications')
                 .insert([{
                     position_type: 'sales_closer',
-                    compensation_model: 'commission_only', // required by db
-                    crm_tools: [], // required by db
                     ...step1Data,
                     ...step2Data,
                     status: 'new',
