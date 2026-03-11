@@ -9,32 +9,21 @@ interface Step1Data {
     email: string;
     phone: string;
     linkedin_url: string;
+    instagram_url: string;
+    gender: string;
     country: string;
     timezone: string;
 }
 
 interface Step2Data {
-    compensation_model: string;
     years_experience: string;
     sold_info_products: string;
     avg_deal_size: string;
-    crm_tools: string[];
     expected_monthly_earnings: string;
-    best_close_story: string;
-    why_zkandar: string;
     video_intro_url: string;
 }
 
-const COMPENSATION_OPTIONS = [
-    { value: 'commission_only', label: 'Commission Only', desc: 'No base — full upside' },
-    { value: 'commission_plus_base', label: 'Commission + Base', desc: 'Hybrid model' },
-    { value: 'base_plus_bonus', label: 'Base + Performance Bonus', desc: 'Salary with performance upside' },
-    { value: 'base_only', label: 'Base Salary Only', desc: 'Fixed comp, no commission' },
-];
 
-const CRM_OPTIONS = [
-    'HubSpot', 'Salesforce', 'GoHighLevel', 'Close CRM', 'Pipedrive', 'Notion / custom setup',
-];
 
 export const ApplySalesPage = () => {
     const [step, setStep] = useState(1);
@@ -46,19 +35,17 @@ export const ApplySalesPage = () => {
         email: '',
         phone: '',
         linkedin_url: '',
+        instagram_url: '',
+        gender: '',
         country: '',
         timezone: '',
     });
 
     const [step2Data, setStep2Data] = useState<Step2Data>({
-        compensation_model: '',
         years_experience: '',
         sold_info_products: '',
         avg_deal_size: '',
-        crm_tools: [],
         expected_monthly_earnings: '',
-        best_close_story: '',
-        why_zkandar: '',
         video_intro_url: '',
     });
 
@@ -75,8 +62,8 @@ export const ApplySalesPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!step2Data.compensation_model) {
-            alert('Please select a compensation model.');
+        if (step1Data.gender !== 'Female') {
+            alert('This position is exclusively for female closers.');
             return;
         }
         setIsSubmitting(true);
@@ -101,14 +88,7 @@ export const ApplySalesPage = () => {
         }
     };
 
-    const toggleCrm = (tool: string) => {
-        setStep2Data(prev => ({
-            ...prev,
-            crm_tools: prev.crm_tools.includes(tool)
-                ? prev.crm_tools.filter(t => t !== tool)
-                : [...prev.crm_tools, tool],
-        }));
-    };
+
 
     const inputCls = "w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:lowercase";
     const labelCls = "text-sm font-bold text-gray-300";
@@ -165,10 +145,10 @@ export const ApplySalesPage = () => {
                         Open Position — Fully Remote
                     </div>
                     <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-wider mb-3">
-                        High-Ticket Closer
+                        Female High-Ticket Closer
                     </h1>
                     <p className="text-gray-400 font-medium mb-4 leading-relaxed">
-                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for a hunter with a proven track record closing high-ticket info products.
+                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're exclusively looking for female high-ticket closers.
                     </p>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Contact Info</span>
@@ -234,6 +214,29 @@ export const ApplySalesPage = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
+                                        <label className={labelCls}>Instagram Profile URL</label>
+                                        <input
+                                            type="url"
+                                            value={step1Data.instagram_url}
+                                            onChange={e => setStep1Data({ ...step1Data, instagram_url: e.target.value })}
+                                            className={inputCls}
+                                            placeholder="ex. instagram.com/yourname"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={labelCls}>Gender *</label>
+                                        <select
+                                            required
+                                            value={step1Data.gender}
+                                            onChange={e => setStep1Data({ ...step1Data, gender: e.target.value })}
+                                            className={`${inputCls} appearance-none`}
+                                        >
+                                            <option value="">Select gender</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Male">Male</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
                                         <label className={labelCls}>Country of Residence *</label>
                                         <input
                                             required
@@ -267,8 +270,10 @@ export const ApplySalesPage = () => {
                                     <p className="text-xs font-bold text-[#D0FF71] uppercase tracking-widest">Position Brief</p>
                                     <ul className="text-sm text-gray-400 space-y-1 leading-relaxed">
                                         <li>→ Fully remote, Gulf hours preferred (GMT+4)</li>
-                                        <li>→ Minimum 5 years in high-ticket info product / education sales</li>
-                                        <li>→ Deals range $5,000–$25,000+ per enrollment</li>
+                                        <li>→ Commission-only position</li>
+                                        <li>→ Female Only</li>
+                                        <li>→ Just 2 years in high-ticket sales</li>
+                                        <li>→ Deals range from $3,000 to $5,000+ per enrollment</li>
                                         <li>→ Product: AI Masterclass for architecture & design studios</li>
                                     </ul>
                                 </div>
@@ -300,30 +305,6 @@ export const ApplySalesPage = () => {
                                     <span>Back to Contact Info</span>
                                 </button>
 
-                                {/* Compensation Model */}
-                                <div className="space-y-3">
-                                    <label className={labelCls}>
-                                        What compensation model are you willing to go with? *
-                                    </label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        {COMPENSATION_OPTIONS.map(opt => (
-                                            <button
-                                                key={opt.value}
-                                                type="button"
-                                                onClick={() => setStep2Data({ ...step2Data, compensation_model: opt.value })}
-                                                className={`p-4 rounded-xl border text-left transition-all ${
-                                                    step2Data.compensation_model === opt.value
-                                                        ? 'bg-[#D0FF71]/10 border-[#D0FF71] text-white'
-                                                        : 'bg-[#0B0B0B] border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white'
-                                                }`}
-                                            >
-                                                <p className="font-bold text-sm">{opt.label}</p>
-                                                <p className="text-xs mt-0.5 opacity-70">{opt.desc}</p>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
                                 {/* Years Experience + Info Products */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
@@ -335,10 +316,8 @@ export const ApplySalesPage = () => {
                                             className={`${inputCls} appearance-none`}
                                         >
                                             <option value="">Select range</option>
-                                            <option value="1–2 years">1–2 years</option>
-                                            <option value="2–5 years">2–5 years</option>
-                                            <option value="5–10 years">5–10 years</option>
-                                            <option value="10+ years">10+ years</option>
+                                            <option value="Just under 2 years">Just under 2 years</option>
+                                            <option value="2+ years">2+ years</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">
@@ -350,10 +329,8 @@ export const ApplySalesPage = () => {
                                             className={`${inputCls} appearance-none`}
                                         >
                                             <option value="">Select range</option>
-                                            <option value="Under $2,000">Under $2,000</option>
-                                            <option value="$2,000–$5,000">$2,000–$5,000</option>
-                                            <option value="$5,000–$15,000">$5,000–$15,000</option>
-                                            <option value="$15,000+">$15,000+</option>
+                                            <option value="Under $3,000">Under $3,000</option>
+                                            <option value="$3,000 to $5,000+">$3,000 to $5,000+</option>
                                         </select>
                                     </div>
                                 </div>
@@ -374,27 +351,6 @@ export const ApplySalesPage = () => {
                                     </select>
                                 </div>
 
-                                {/* CRM Tools */}
-                                <div className="space-y-3">
-                                    <label className={labelCls}>CRM tools you're experienced with</label>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                        {CRM_OPTIONS.map(tool => (
-                                            <label
-                                                key={tool}
-                                                className="flex items-center space-x-3 p-3 border border-gray-800 rounded-xl bg-[#0B0B0B] cursor-pointer hover:border-gray-600 transition-colors"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={step2Data.crm_tools.includes(tool)}
-                                                    onChange={() => toggleCrm(tool)}
-                                                    className="w-4 h-4 accent-[#D0FF71] bg-gray-900 border-gray-700 rounded shrink-0"
-                                                />
-                                                <span className="text-sm text-gray-300 font-medium">{tool}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-
                                 {/* Expected Earnings */}
                                 <div className="space-y-2">
                                     <label className={labelCls}>Expected monthly earnings target (USD) *</label>
@@ -408,48 +364,23 @@ export const ApplySalesPage = () => {
                                     />
                                 </div>
 
-                                {/* Best Close Story */}
-                                <div className="space-y-2">
-                                    <label className={labelCls}>Describe your most impressive close and what made it work *</label>
-                                    <textarea
-                                        required
-                                        value={step2Data.best_close_story}
-                                        onChange={e => setStep2Data({ ...step2Data, best_close_story: e.target.value })}
-                                        rows={4}
-                                        className={`${inputCls} resize-none`}
-                                        placeholder="ex. walk us through the prospect, the objections, how you handled them, and the outcome"
-                                    />
-                                </div>
-
-                                {/* Why Zkandar */}
-                                <div className="space-y-2">
-                                    <label className={labelCls}>Why do you want to sell for Zkandar AI specifically? *</label>
-                                    <textarea
-                                        required
-                                        value={step2Data.why_zkandar}
-                                        onChange={e => setStep2Data({ ...step2Data, why_zkandar: e.target.value })}
-                                        rows={3}
-                                        className={`${inputCls} resize-none`}
-                                        placeholder="ex. be direct — what drew you to this company and this product"
-                                    />
-                                </div>
-
                                 {/* Video Intro */}
                                 <div className="space-y-2">
-                                    <label className={labelCls}>Video introduction link (optional)</label>
+                                    <label className={labelCls}>Video introduction link *</label>
                                     <input
+                                        required
                                         type="url"
                                         value={step2Data.video_intro_url}
                                         onChange={e => setStep2Data({ ...step2Data, video_intro_url: e.target.value })}
                                         className={inputCls}
                                         placeholder="ex. loom.com/share/... or youtube.com/..."
                                     />
-                                    <p className="text-xs text-gray-600">A 1–2 minute video on why you're the right hire goes a long way.</p>
+                                    <p className="text-xs text-gray-600">A 1–2 minute video on why you're the right hire. (Required)</p>
                                 </div>
 
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting || !step2Data.compensation_model}
+                                    disabled={isSubmitting}
                                     className="w-full py-4 bg-[#D0FF71] text-[#0B0B0B] rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-[#bceb5f] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <span>{isSubmitting ? 'Submitting...' : 'Submit Application'}</span>
