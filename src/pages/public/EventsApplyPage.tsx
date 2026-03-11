@@ -98,13 +98,14 @@ export const EventsApplyPage = () => {
                 admin_notes: null
             };
 
-            const { data: inserted, error } = await supabase
+            const insertResult = await supabase
                 .from('event_requests')
                 .insert([payload] as any)
                 .select('id')
                 .single();
 
-            if (error) throw error;
+            if (insertResult.error) throw insertResult.error;
+            const inserted = insertResult.data as { id: string } | null;
 
             // Notify admin — failure here must not block the success screen
             if (inserted?.id) {

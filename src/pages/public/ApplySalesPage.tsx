@@ -81,7 +81,7 @@ export const ApplySalesPage = () => {
         }
         setIsSubmitting(true);
         try {
-            const { data: inserted, error } = await supabase
+            const insertResult = await supabase
                 .from('job_applications')
                 .insert([{
                     position_type: 'sales_closer',
@@ -92,7 +92,8 @@ export const ApplySalesPage = () => {
                 .select('id')
                 .single();
 
-            if (error) throw error;
+            if (insertResult.error) throw insertResult.error;
+            const inserted = insertResult.data as { id: string } | null;
 
             // Notify admin — failure here must not block the success screen
             if (inserted?.id) {
