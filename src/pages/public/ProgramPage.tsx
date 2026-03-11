@@ -40,7 +40,7 @@ function CalendlyModal({ onClose }: { onClose: () => void }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="relative bg-[#111111] border border-white/10 rounded-2xl overflow-hidden w-full max-w-[1000px] flex flex-col"
+                className="relative bg-[#111111] border border-white/10 rounded-2xl overflow-hidden w-full max-w-4xl flex flex-col"
                 style={{ height: 'min(850px, 90vh)' }}
             >
                 {/* Modal header */}
@@ -58,7 +58,7 @@ function CalendlyModal({ onClose }: { onClose: () => void }) {
                 </div>
 
                 {/* Calendly Inline Widget */}
-                <div className="flex-1 min-h-0 relative bg-white">
+                <div className="flex-1 min-h-0 relative bg-[#111111]">
                     <InlineWidget
                         url={CALENDLY_URL}
                         styles={{ height: '100%', width: '100%' }}
@@ -69,18 +69,6 @@ function CalendlyModal({ onClose }: { onClose: () => void }) {
                             primaryColor: 'd0ff71'
                         }}
                     />
-                </div>
-
-                {/* I Have Booked — inside modal */}
-                <div className="px-5 py-4 border-t border-white/10 shrink-0 bg-[#0E0E0E]">
-                    <p className="text-xs text-gray-600 text-center mb-3 font-body">Already completed your booking?</p>
-                    <Link
-                        to="/thank-you"
-                        onClick={onClose}
-                        className="flex items-center justify-center w-full px-6 py-3 border border-lime/30 text-lime font-bold rounded-xl hover:bg-lime/5 transition-all text-sm uppercase tracking-wider font-heading"
-                    >
-                        I Have Booked
-                    </Link>
                 </div>
             </motion.div>
         </motion.div>
