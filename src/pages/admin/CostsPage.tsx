@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 const CATEGORIES = [
     { key: 'all', label: 'All', icon: DollarSign },
     { key: 'salary', label: 'Salaries', icon: UsersIcon },
-    { key: 'ai_subscription', label: 'AI Tool Subscriptions', icon: Cpu },
+    { key: 'ai_subscription', label: 'Subscriptions', icon: Cpu },
     { key: 'contractor', label: 'External Contractors', icon: Briefcase },
 ] as const
 
@@ -23,10 +23,11 @@ interface Cost {
     invoice_date: string | null
     total_amount: number
     payment_date: string | null
+    notes: string | null
     created_at: string
 }
 
-const emptyCost = { item_name: '', category: 'salary' as Category, invoice_date: '', total_amount: 0, payment_date: '' }
+const emptyCost = { item_name: '', category: 'salary' as Category, invoice_date: '', total_amount: 0, payment_date: '', notes: '' }
 
 export function CostsPage() {
     const supabase = useSupabase()
@@ -84,6 +85,7 @@ export function CostsPage() {
             invoice_date: c.invoice_date ?? '',
             total_amount: c.total_amount,
             payment_date: c.payment_date ?? '',
+            notes: c.notes ?? '',
         })
         setModalOpen(true)
     }
@@ -98,6 +100,7 @@ export function CostsPage() {
                 invoice_date: form.invoice_date || null,
                 total_amount: Number(form.total_amount) || 0,
                 payment_date: form.payment_date || null,
+                notes: form.notes || null,
             }
             if (editingCost) {
                 const { error } = await (supabase as any).from('costs').update(payload).eq('id', editingCost.id)
@@ -128,7 +131,7 @@ export function CostsPage() {
 
     const fmt = (n: number) => n.toLocaleString('en-AE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
     const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'
-    const catLabel: Record<string, string> = { salary: 'Salary', ai_subscription: 'AI Sub', contractor: 'Contractor' }
+    const catLabel: Record<string, string> = { salary: 'Salary', ai_subscription: 'Subscription', contractor: 'Contractor' }
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
@@ -199,7 +202,10 @@ export function CostsPage() {
                                 <tr><td colSpan={6} className="px-5 py-8 text-center text-gray-500">No cost entries yet</td></tr>
                             ) : filtered.map((cost) => (
                                 <tr key={cost.id} className="border-b border-border last:border-0 hover:bg-white/5 transition">
-                                    <td className="px-5 py-3 text-white font-medium">{cost.item_name}</td>
+                                    <td className="px-5 py-3">
+                                        <div className="text-white font-medium">{cost.item_name}</div>
+                                        {cost.notes && <div className="text-xs text-gray-500 mt-0.5">{cost.notes}</div>}
+                                    </td>
                                     <td className="px-5 py-3">
                                         <span className="px-2 py-0.5 text-xs rounded-lg border border-lime/20 bg-lime/5 text-lime">
                                             {catLabel[cost.category] ?? cost.category}
@@ -266,9 +272,18 @@ export function CostsPage() {
                                             className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50"
                                         >
                                             <option value="salary">Salary</option>
-                                            <option value="ai_subscription">AI Tool Subscription</option>
+                                            <option value="ai_subscription">Subscription</option>
                                             <option value="contractor">External Contractor</option>
                                         </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1.5">Notes (Email, Pass, Info)</label>
+                                        <textarea
+                                            value={form.notes}
+                                            onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
+                                            className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 min-h-[80px]"
+                                            placeholder="e.g. login credentials, status..."
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>

@@ -1,3 +1,35 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git add src/pages/public/ApplySalesPage.tsx)",
+      "Bash(git push origin main)",
+      "Bash(npx supabase functions deploy notify-admin-application --no-verify-jwt)",
+      "Bash(npx supabase projects list)",
+      "Bash(npx supabase functions deploy notify-admin-application --project-ref gzzeywmbehzbassweudb --no-verify-jwt)",
+      "Bash(npx supabase functions deploy --help)",
+      "Bash(npx supabase functions deploy notify-admin-application --project-ref gzzeywmbehzbassweudb --no-verify-jwt --use-api)",
+      "Bash(npx supabase functions deploy notify-admin-event --project-ref gzzeywmbehzbassweudb --no-verify-jwt --use-api)",
+      "Bash(git add supabase/functions/notify-admin-application/index.ts supabase/functions/notify-admin-event/index.ts src/pages/public/ApplySalesPage.tsx src/pages/public/EventsApplyPage.tsx)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(git add src/pages/public/ApplySalesPage.tsx src/pages/public/EventsApplyPage.tsx)",
+      "Bash(git add src/pages/public/ApplySalesPage.tsx src/pages/public/EventsApplyPage.tsx src/pages/public/PostCompletionSurvey.tsx)",
+      "Bash(grep -l \"management_submissions\\\\|team_submissions\" /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/supabase/migrations/*.sql)",
+      "Bash(grep -n \"scheduled_date\" /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/supabase/migrations/*.sql)",
+      "Bash(find /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/supabase/migrations -name \"*.sql\" -exec grep -l \"management_submissions\\\\|team_submissions\" {} ;)",
+      "Bash(for f in /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/supabase/migrations/*.sql)",
+      "Bash(do grep -l \"management_submissions\\\\|team_submissions\" \"$f\")",
+      "Bash(grep -r \"CREATE TABLE\" /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/supabase/migrations/*.sql)",
+      "Bash(git -C /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard log --oneline -15)",
+      "Bash(grep -n \"management_submissions\\\\|team_submissions\" /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/supabase/migrations/*.sql)",
+      "Bash(grep -n \"management_submissions\\\\|team_submissions\" /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/src/pages/admin/ProgramsPage.tsx /Users/madibbaroudi/Desktop/Dashboards/zkandar-dashboard/src/components/admin/programs/*.tsx)",
+      "Bash(npx supabase db push --project-ref gzzeywmbehzbassweudb --use-api)",
+      "Bash(npx supabase db push --linked --yes)",
+      "Bash(npx supabase db execute --help)",
+      "Bash(npx supabase db push --include-all --yes)",
+      "Bash(npx supabase status)",
+      "Bash(npx supabase db push --help)",
+      "Bash(npx supabase migration list --linked)"
+    ]
+  },
   "defaultMode": "bypassPermissions"
 }
