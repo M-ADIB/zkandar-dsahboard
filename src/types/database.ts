@@ -297,13 +297,15 @@ export interface JobApplication {
     email: string
     phone: string
     linkedin_url: string | null
+    instagram_url: string | null
+    gender: string
     country: string
     timezone: string
-    compensation_model: string
+    compensation_model?: string
     years_experience: string
     sold_info_products: string
     avg_deal_size: string
-    crm_tools: string[]
+    crm_tools?: string[]
     expected_monthly_earnings: string | null
     best_close_story: string | null
     why_zkandar: string | null

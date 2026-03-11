@@ -68,7 +68,7 @@ export function RecruitingPage() {
             || app.country.toLowerCase().includes(q)
         const matchStatus = statusFilter === 'all' || app.status === statusFilter
         const matchPosition = positionFilter === 'all' || app.position_type === positionFilter
-        const matchComp = compensationFilter === 'all' || app.compensation_model === compensationFilter
+        const matchComp = compensationFilter === 'all' || (app.compensation_model && app.compensation_model === compensationFilter)
         const matchTz = timezoneFilter === 'all' || app.timezone.includes(timezoneFilter)
         return matchSearch && matchStatus && matchPosition && matchComp && matchTz
     })
@@ -237,7 +237,7 @@ export function RecruitingPage() {
                                             </td>
                                             <td className="p-4">
                                                 <div className="text-sm text-white">
-                                                    {COMPENSATION_LABELS[app.compensation_model] ?? app.compensation_model}
+                                                    {app.compensation_model ? (COMPENSATION_LABELS[app.compensation_model] ?? app.compensation_model) : '—'}
                                                 </div>
                                             </td>
                                             <td className="p-4">
