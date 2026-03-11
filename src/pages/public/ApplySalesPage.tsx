@@ -290,10 +290,9 @@ export const ApplySalesPage = () => {
                                     <ul className="text-sm text-gray-400 space-y-1 leading-relaxed">
                                         <li>→ Fully remote, Gulf hours preferred (GMT+4)</li>
                                         <li>→ Commission-only position</li>
-                                        <li>→ Female Only</li>
-                                        <li>→ Just 2 years in high-ticket sales</li>
-                                        <li className="font-sans">→ Deals range from $3,000 to $5,000+ per enrollment</li>
-                                        <li>→ Product: AI Masterclass for architecture & design studios</li>
+                                        <li>→ Up to 2 years in high-ticket sales</li>
+                                        <li className="font-sans">→ Deals range from $3,000 to $25,000</li>
+                                        <li>→ Product: AI workshops and masterclasses for architecture & design studios</li>
                                     </ul>
                                 </div>
 
@@ -335,7 +334,7 @@ export const ApplySalesPage = () => {
                                             className={`${inputCls} appearance-none`}
                                         >
                                             <option value="">Select range</option>
-                                            <option value="Just under 2 years">Just under 2 years</option>
+                                            <option value="Up to 2 years">Up to 2 years</option>
                                             <option value="2+ years">2+ years</option>
                                         </select>
                                     </div>
@@ -349,7 +348,7 @@ export const ApplySalesPage = () => {
                                         >
                                             <option value="">Select range</option>
                                             <option value="Under $3,000">Under $3,000</option>
-                                            <option value="$3,000 to $5,000+">$3,000 to $5,000+</option>
+                                            <option value="$3,000 to $25,000">$3,000 to $25,000</option>
                                         </select>
                                     </div>
                                 </div>
