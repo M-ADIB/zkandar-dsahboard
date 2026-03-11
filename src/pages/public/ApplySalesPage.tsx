@@ -334,8 +334,12 @@ export const ApplySalesPage = () => {
                                             className={`${inputCls} appearance-none`}
                                         >
                                             <option value="">Select range</option>
-                                            <option value="Up to 2 years">Up to 2 years</option>
-                                            <option value="2+ years">2+ years</option>
+                                            <option value="Less than 6 months">Less than 6 months</option>
+                                            <option value="6 months – 1 year">6 months – 1 year</option>
+                                            <option value="1 – 2 years">1 – 2 years</option>
+                                            <option value="2 – 3 years">2 – 3 years</option>
+                                            <option value="3 – 5 years">3 – 5 years</option>
+                                            <option value="5+ years">5+ years</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">
@@ -347,8 +351,12 @@ export const ApplySalesPage = () => {
                                             className={`${inputCls} appearance-none`}
                                         >
                                             <option value="">Select range</option>
-                                            <option value="Under $3,000">Under $3,000</option>
-                                            <option value="$3,000 to $25,000">$3,000 to $25,000</option>
+                                            <option value="Under $1,000">Under $1,000</option>
+                                            <option value="$1,000 – $3,000">$1,000 – $3,000</option>
+                                            <option value="$3,000 – $5,000">$3,000 – $5,000</option>
+                                            <option value="$5,000 – $10,000">$5,000 – $10,000</option>
+                                            <option value="$10,000 – $25,000">$10,000 – $25,000</option>
+                                            <option value="$25,000+">$25,000+</option>
                                         </select>
                                     </div>
                                 </div>
