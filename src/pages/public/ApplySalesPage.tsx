@@ -117,34 +117,8 @@ export const ApplySalesPage = () => {
     const inputCls = "w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:lowercase font-sans";
     const labelCls = "text-sm font-bold text-gray-300";
 
-    if (isSuccess) {
-        return (
-            <div className="min-h-screen bg-[#0B0B0B] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
-                <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
-                <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.07]">
-                    <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
-                </div>
-                <div className="max-w-md w-full text-center space-y-6 relative z-10">
-                    <div className="w-16 h-16 bg-[#D0FF71]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle2 className="w-8 h-8 text-[#D0FF71]" />
-                    </div>
-                    <h1 className="text-3xl font-black font-neue tracking-wider">Application Received.</h1>
-                    <p className="text-gray-400 font-medium leading-relaxed">
-                        Thanks for applying to the High-Ticket Closer role at Zkandar AI. We review every application personally. If you're the right fit, you'll hear from us soon.
-                    </p>
-                    <button
-                        onClick={() => window.location.href = 'https://zkandar.com'}
-                        className="mt-8 px-6 py-3 bg-[#111111] border border-gray-800 rounded-xl text-white font-bold hover:bg-gray-800 transition-colors w-full"
-                    >
-                        Back to Zkandar AI
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="min-h-screen bg-[#0B0B0B] text-white selection:bg-[#D0FF71]/30 selection:text-white pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-[#0B0B0B] text-white selection:bg-[#D0FF71]/30 selection:text-white relative overflow-hidden">
             {/* Ambient gradient */}
             <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0" />
 
@@ -156,7 +130,61 @@ export const ApplySalesPage = () => {
                 <img src={logoSrc} alt="" className="w-[300%] md:w-[250%] lg:w-[200%] max-w-none grayscale object-cover" />
             </div>
 
-            <div className="max-w-2xl mx-auto px-6 pt-16 relative z-10">
+            <AnimatePresence mode="wait">
+                {isSuccess ? (
+                    <motion.div
+                        key="success"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-col items-center justify-center min-h-screen p-6 relative z-10"
+                    >
+                        <div className="max-w-md w-full text-center">
+                            <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                                className="w-16 h-16 bg-[#D0FF71]/20 rounded-full flex items-center justify-center mx-auto mb-6"
+                            >
+                                <CheckCircle2 className="w-8 h-8 text-[#D0FF71]" />
+                            </motion.div>
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                className="text-3xl font-black font-neue tracking-wider mb-4"
+                            >
+                                Application Received.
+                            </motion.h1>
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                className="text-gray-400 font-medium leading-relaxed mb-8"
+                            >
+                                Thanks for applying to the High-Ticket Closer role at Zkandar AI. We review every application personally. If you're the right fit, you'll hear from us soon.
+                            </motion.p>
+                            <motion.button
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                onClick={() => window.location.href = 'https://zkandar.com'}
+                                className="px-6 py-3 bg-[#111111] border border-gray-800 rounded-xl text-white font-bold hover:bg-gray-800 transition-colors w-full"
+                            >
+                                Back to Zkandar AI
+                            </motion.button>
+                        </div>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="form"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.25 }}
+                        className="max-w-2xl mx-auto px-6 pt-16 pb-24 relative z-10"
+                    >
                 {/* Logo */}
                 <div className="flex items-center space-x-3 mb-12">
                     <img src={logoSrc} alt="Zkandar AI" className="h-14 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
@@ -430,7 +458,9 @@ export const ApplySalesPage = () => {
                         )}
                     </AnimatePresence>
                 </div>
-            </div>
+            </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

@@ -486,23 +486,41 @@ export function PostCompletionSurvey() {
     if (submitted) {
         return (
             <div className="min-h-screen flex items-center justify-center p-6 bg-bg-primary">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="w-full max-w-lg text-center space-y-6"
-                >
-                    <div className="h-20 w-20 mx-auto rounded-full gradient-lime flex items-center justify-center">
+                <div className="w-full max-w-lg text-center">
+                    <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                        className="h-20 w-20 mx-auto rounded-full gradient-lime flex items-center justify-center mb-6"
+                    >
                         <CheckCircle2 className="h-10 w-10 text-black" />
-                    </div>
-                    <h1 className="hero-text text-3xl">Thank you!</h1>
-                    <p className="text-gray-400 text-lg">
+                    </motion.div>
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="hero-text text-3xl mb-4"
+                    >
+                        Thank you!
+                    </motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-gray-400 text-lg mb-6"
+                    >
                         Your response has been recorded. We appreciate you taking the time to share your experience.
-                    </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm">
+                    </motion.p>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm"
+                    >
                         <Sparkles className="h-4 w-4" />
                         Zkandar AI
-                    </div>
-                </motion.div>
+                    </motion.div>
+                </div>
             </div>
         )
     }
