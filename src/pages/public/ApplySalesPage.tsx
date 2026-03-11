@@ -23,7 +23,13 @@ interface Step2Data {
     video_intro_url: string;
 }
 
-
+const COUNTRIES = [
+    "United Arab Emirates", "Saudi Arabia", "Qatar", "Kuwait", "Bahrain", "Oman",
+    "United States", "Canada", "United Kingdom", "Australia", "New Zealand",
+    "India", "Pakistan", "Philippines", "South Africa", "Egypt", "Jordan", "Lebanon",
+    "Germany", "France", "Spain", "Italy", "Netherlands", "Ireland", "Sweden",
+    "Singapore", "Malaysia", "Other"
+].sort();
 
 export const ApplySalesPage = () => {
     const [step, setStep] = useState(1);
@@ -72,6 +78,8 @@ export const ApplySalesPage = () => {
                 .from('job_applications')
                 .insert([{
                     position_type: 'sales_closer',
+                    compensation_model: 'commission_only', // required by db
+                    crm_tools: [], // required by db
                     ...step1Data,
                     ...step2Data,
                     status: 'new',
@@ -90,7 +98,7 @@ export const ApplySalesPage = () => {
 
 
 
-    const inputCls = "w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:lowercase";
+    const inputCls = "w-full bg-[#0B0B0B] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D0FF71] transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:lowercase font-sans";
     const labelCls = "text-sm font-bold text-gray-300";
 
     if (isSuccess) {
@@ -238,14 +246,17 @@ export const ApplySalesPage = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <label className={labelCls}>Country of Residence *</label>
-                                        <input
+                                        <select
                                             required
-                                            type="text"
                                             value={step1Data.country}
                                             onChange={e => setStep1Data({ ...step1Data, country: e.target.value })}
-                                            className={inputCls}
-                                            placeholder="ex. United Arab Emirates"
-                                        />
+                                            className={`${inputCls} appearance-none`}
+                                        >
+                                            <option value="">Select your country</option>
+                                            {COUNTRIES.map(c => (
+                                                <option key={c} value={c}>{c}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className={labelCls}>Your Timezone *</label>
@@ -273,7 +284,7 @@ export const ApplySalesPage = () => {
                                         <li>→ Commission-only position</li>
                                         <li>→ Female Only</li>
                                         <li>→ Just 2 years in high-ticket sales</li>
-                                        <li>→ Deals range from $3,000 to $5,000+ per enrollment</li>
+                                        <li className="font-sans">→ Deals range from $3,000 to $5,000+ per enrollment</li>
                                         <li>→ Product: AI Masterclass for architecture & design studios</li>
                                     </ul>
                                 </div>

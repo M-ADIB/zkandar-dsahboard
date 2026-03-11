@@ -47,6 +47,16 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
                 .single()
             if (error) throw error
             onUpdate(data)
+
+            // Trigger the email edge function if shortlisted or rejected
+            if (newStatus === 'shortlisted' || newStatus === 'rejected') {
+                await supabase.functions.invoke('send-application-email', {
+                    body: {
+                        applicationId: application.id,
+                        status: newStatus
+                    }
+                })
+            }
         } catch (err) {
             console.error('Error updating status:', err)
             alert('Failed to update. Please try again.')
@@ -123,6 +133,16 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                        {/* Status Alert for Email Triggers */}
+                        {['new', 'reviewing'].includes(application.status) && (
+                            <div className="p-4 bg-[#D0FF71]/10 border border-[#D0FF71]/20 rounded-xl">
+                                <p className="text-sm text-[#D0FF71] flex items-start gap-2">
+                                    <span className="shrink-0 mt-0.5">ℹ️</span>
+                                    Changing status to "Shortlisted" or "Rejected" will automatically send a notification email to the applicant.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Contact */}
                         <section>
                             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Contact Details</h3>
