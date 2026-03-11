@@ -24,12 +24,19 @@ interface Step2Data {
 }
 
 const COUNTRIES = [
-    "United Arab Emirates", "Saudi Arabia", "Qatar", "Kuwait", "Bahrain", "Oman",
-    "United States", "Canada", "United Kingdom", "Australia", "New Zealand",
-    "India", "Pakistan", "Philippines", "South Africa", "Egypt", "Jordan", "Lebanon",
-    "Germany", "France", "Spain", "Italy", "Netherlands", "Ireland", "Sweden",
-    "Singapore", "Malaysia", "Other"
-].sort();
+    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+    "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+    "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia (Czech Republic)",
+    "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+    "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary",
+    "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan",
+    "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar (formerly Burma)",
+    "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman",
+    "Pakistan", "Palau", "Palestine State", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar",
+    "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+    "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
+    "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+];
 
 export const ApplySalesPage = () => {
     const [step, setStep] = useState(1);
@@ -222,8 +229,9 @@ export const ApplySalesPage = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={labelCls}>Instagram Profile URL</label>
+                                        <label className={labelCls}>Instagram Profile URL *</label>
                                         <input
+                                            required
                                             type="url"
                                             value={step1Data.instagram_url}
                                             onChange={e => setStep1Data({ ...step1Data, instagram_url: e.target.value })}
@@ -246,17 +254,19 @@ export const ApplySalesPage = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <label className={labelCls}>Country of Residence *</label>
-                                        <select
+                                        <input
                                             required
+                                            list="country-options"
                                             value={step1Data.country}
                                             onChange={e => setStep1Data({ ...step1Data, country: e.target.value })}
-                                            className={`${inputCls} appearance-none`}
-                                        >
-                                            <option value="">Select your country</option>
+                                            className={inputCls}
+                                            placeholder="Type to search country..."
+                                        />
+                                        <datalist id="country-options">
                                             {COUNTRIES.map(c => (
                                                 <option key={c} value={c}>{c}</option>
                                             ))}
-                                        </select>
+                                        </datalist>
                                     </div>
                                     <div className="space-y-2">
                                         <label className={labelCls}>Your Timezone *</label>
