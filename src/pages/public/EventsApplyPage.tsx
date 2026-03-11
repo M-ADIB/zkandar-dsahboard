@@ -98,11 +98,21 @@ export const EventsApplyPage = () => {
                 admin_notes: null
             };
 
-            const { error } = await supabase
+            const { data: inserted, error } = await supabase
                 .from('event_requests')
-                .insert([payload] as any);
+                .insert([payload] as any)
+                .select('id')
+                .single();
 
             if (error) throw error;
+
+            // Notify admin — failure here must not block the success screen
+            if (inserted?.id) {
+                supabase.functions.invoke('notify-admin-event', {
+                    body: { eventId: inserted.id },
+                }).catch((err) => console.error('Admin notification failed:', err));
+            }
+
             setIsSuccess(true);
         } catch (err) {
             console.error('Submission error:', err);

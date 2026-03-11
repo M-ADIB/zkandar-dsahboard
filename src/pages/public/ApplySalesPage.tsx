@@ -81,16 +81,26 @@ export const ApplySalesPage = () => {
         }
         setIsSubmitting(true);
         try {
-            const { error } = await supabase
+            const { data: inserted, error } = await supabase
                 .from('job_applications')
                 .insert([{
                     position_type: 'sales_closer',
                     ...step1Data,
                     ...step2Data,
                     status: 'new',
-                }] as any);
+                }] as any)
+                .select('id')
+                .single();
 
             if (error) throw error;
+
+            // Notify admin — failure here must not block the success screen
+            if (inserted?.id) {
+                supabase.functions.invoke('notify-admin-application', {
+                    body: { applicationId: inserted.id },
+                }).catch((err) => console.error('Admin notification failed:', err));
+            }
+
             setIsSuccess(true);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (err) {
