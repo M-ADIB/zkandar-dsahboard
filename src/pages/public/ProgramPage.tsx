@@ -116,18 +116,7 @@ export function ProgramPage() {
             </AnimatePresence>
 
             <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
-                {/* Navigation Back Button */}
-                <div className="absolute top-6 left-6 z-20">
-                    <Link
-                        to="/masterclass-analytics"
-                        className="group flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/5 border border-white/10 rounded-full backdrop-blur-md transition-all text-sm font-medium text-gray-400 hover:text-white"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:-translate-x-1">
-                            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        Back
-                    </Link>
-                </div>
+
                 {/* Ambient orbs */}
                 <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float-slow" />
                 <div className="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-[#D0FF71]/8 blur-[140px] rounded-full pointer-events-none z-0 animate-float-slow-reverse" />
@@ -151,17 +140,36 @@ export function ProgramPage() {
 
                 <div className="max-w-[960px] mx-auto px-6 py-16 md:py-24 space-y-20 relative z-10">
 
-                    {/* Header */}
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="flex items-center gap-3 pb-4 border-b border-white/5"
-                    >
-                        <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
-                        <span className="text-sm font-heading font-bold tracking-wider text-white/70">Zkandar AI</span>
-                        <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Program</span>
-                    </motion.div>
+                    {/* Header & Navigation */}
+                    <div className="space-y-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="flex items-center gap-3 pb-4 border-b border-white/5"
+                        >
+                            <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
+                            <span className="text-sm font-heading font-bold tracking-wider text-white/70">Zkandar AI</span>
+                            <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Program</span>
+                        </motion.div>
+
+                        {/* Navigation Back Button */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, delay: 0.1 }}
+                        >
+                            <Link
+                                to="/masterclass-analytics"
+                                className="group inline-flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/5 border border-white/10 rounded-full backdrop-blur-md transition-all text-sm font-medium text-gray-400 hover:text-white"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:-translate-x-1">
+                                    <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                Back to Analytics
+                            </Link>
+                        </motion.div>
+                    </div>
 
                     {/* ─── THE CARD ─────────────────────────────────────────── */}
                     <motion.div
