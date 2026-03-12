@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
     DollarSign, Plus, Pencil, Trash2, X, Check,
     Briefcase, Cpu, Users as UsersIcon,
+    Copy, Eye, EyeOff, Key
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import toast from 'react-hot-toast'
@@ -28,6 +29,56 @@ interface Cost {
 }
 
 const emptyCost = { item_name: '', category: 'salary' as Category, invoice_date: '', total_amount: 0, payment_date: '', notes: '' }
+
+function CredentialDisplay({ notes }: { notes: string | null }) {
+    const [showPass, setShowPass] = useState(false)
+    
+    if (!notes) return <span className="text-gray-600">—</span>
+
+    // Basic parsing for common patterns
+    const email = notes.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)?.[0]
+    const passMatch = notes.match(/Pass(?:word)?:\s*([^\s|]+)/i) || notes.match(/\|\s*([^\s|]+)/)
+    const password = passMatch?.[1]
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text)
+        toast.success('Copied to clipboard')
+    }
+
+    return (
+        <div className="flex flex-col gap-1">
+            {email && (
+                <div className="flex items-center gap-2 group">
+                    <span className="text-xs text-gray-400 truncate max-w-[120px]">{email}</span>
+                    <button onClick={() => handleCopy(email)} className="opacity-0 group-hover:opacity-100 transition p-0.5 hover:text-white">
+                        <Copy className="h-3 w-3" />
+                    </button>
+                </div>
+            )}
+            {password && (
+                <div className="flex items-center gap-2 group">
+                    <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                        <Key className="h-3 w-3 text-gray-500" />
+                        <span className="text-[10px] font-mono text-gray-300">
+                            {showPass ? password : '••••••••'}
+                        </span>
+                    </div>
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition">
+                        <button onClick={() => setShowPass(!showPass)} className="p-1 hover:text-white">
+                            {showPass ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                        </button>
+                        <button onClick={() => handleCopy(password)} className="p-1 hover:text-white">
+                            <Copy className="h-3 w-3" />
+                        </button>
+                    </div>
+                </div>
+            )}
+            {!email && !password && notes && (
+                <span className="text-xs text-gray-500 italic max-w-[150px] truncate">{notes}</span>
+            )}
+        </div>
+    )
+}
 
 export function CostsPage() {
     const supabase = useSupabase()
@@ -191,7 +242,9 @@ export function CostsPage() {
                             <tr className="border-b border-border text-left">
                                 <th className="px-5 py-3 text-gray-500 font-medium">Item Name</th>
                                 <th className="px-5 py-3 text-gray-500 font-medium">Category</th>
-                                <th className="px-5 py-3 text-gray-500 font-medium">Invoice Date</th>
+                                <th className="px-5 py-3 text-gray-500 font-medium whitespace-nowrap">
+                                    {filter === 'salary' ? 'Role / Info' : 'Credentials'}
+                                </th>
                                 <th className="px-5 py-3 text-gray-500 font-medium">Amount</th>
                                 <th className="px-5 py-3 text-gray-500 font-medium">Payment Date</th>
                                 <th className="px-5 py-3 text-gray-500 font-medium w-20"></th>
@@ -211,7 +264,15 @@ export function CostsPage() {
                                             {catLabel[cost.category] ?? cost.category}
                                         </span>
                                     </td>
-                                    <td className="px-5 py-3 text-gray-400">{fmtDate(cost.invoice_date)}</td>
+                                    <td className="px-5 py-3">
+                                        {cost.category === 'ai_subscription' ? (
+                                            <CredentialDisplay notes={cost.notes} />
+                                        ) : (
+                                            <span className="text-gray-400 text-xs italic truncate max-w-[150px] block">
+                                                {cost.notes || fmtDate(cost.invoice_date)}
+                                            </span>
+                                        )}
+                                    </td>
                                     <td className="px-5 py-3 text-white font-medium">AED {fmt(cost.total_amount)}</td>
                                     <td className="px-5 py-3 text-gray-400">{fmtDate(cost.payment_date)}</td>
                                     <td className="px-5 py-3">
