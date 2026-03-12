@@ -16,6 +16,7 @@ export interface ToolboxItem {
     id: string
     title: string
     url: string
+    vimeo_url: string | null
     description: string | null
     importance: ToolboxImportance
     category: string
@@ -430,6 +431,7 @@ export interface Database {
                 Insert: {
                     title: string
                     url: string
+                    vimeo_url?: string | null
                     description?: string | null
                     importance?: ToolboxImportance
                     category?: string

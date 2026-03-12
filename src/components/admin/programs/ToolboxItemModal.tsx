@@ -29,6 +29,7 @@ const TOOL_TYPE_OPTIONS: { value: ToolboxToolType; label: string }[] = [
 const defaultForm = {
     title: '',
     url: '',
+    vimeo_url: '',
     description: '',
     importance: 'recommended' as ToolboxImportance,
     category: '',
@@ -50,6 +51,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
             setForm({
                 title: item.title,
                 url: item.url,
+                vimeo_url: item.vimeo_url ?? '',
                 description: item.description ?? '',
                 importance: item.importance,
                 category: item.category,
@@ -73,6 +75,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
 
         const payload = {
             ...form,
+            vimeo_url: form.vimeo_url.trim() || null,
             description: form.description.trim() || null,
             updated_at: new Date().toISOString(),
         }
@@ -137,6 +140,12 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                 <label className={labelClass}>Description</label>
                                 <textarea rows={3} className={inputClass + ' resize-none'} placeholder="What does this tool do?"
                                     value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Vimeo Tutorial URL <span className="text-gray-500 font-normal">(optional)</span></label>
+                                <input type="url" className={inputClass} placeholder="https://vimeo.com/..."
+                                    value={form.vimeo_url} onChange={e => setForm({ ...form, vimeo_url: e.target.value })} />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">

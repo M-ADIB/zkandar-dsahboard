@@ -4,6 +4,11 @@ import { Wrench, ExternalLink, Search, Filter } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { ToolboxItem } from '@/types/database'
 
+function getVimeoEmbedUrl(url: string): string | null {
+    const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
+    return match ? `https://player.vimeo.com/video/${match[1]}` : null
+}
+
 const importanceConfig = {
     essential: { label: 'Essential', color: 'text-red-300', bg: 'bg-red-500/10 border-red-500/30', dot: 'bg-red-400' },
     recommended: { label: 'Recommended', color: 'text-yellow-300', bg: 'bg-yellow-500/10 border-yellow-500/30', dot: 'bg-yellow-400' },
@@ -163,6 +168,22 @@ export function ToolboxPage() {
                                         </p>
                                     )}
                                 </div>
+
+                                {/* Vimeo embed */}
+                                {item.vimeo_url && (() => {
+                                    const embedUrl = getVimeoEmbedUrl(item.vimeo_url)
+                                    return embedUrl ? (
+                                        <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                                            <iframe
+                                                src={embedUrl}
+                                                className="absolute inset-0 w-full h-full"
+                                                allow="autoplay; fullscreen; picture-in-picture"
+                                                allowFullScreen
+                                                title={`${item.title} tutorial`}
+                                            />
+                                        </div>
+                                    ) : null
+                                })()}
 
                                 {/* Categories */}
                                 <div className="flex flex-wrap gap-2">

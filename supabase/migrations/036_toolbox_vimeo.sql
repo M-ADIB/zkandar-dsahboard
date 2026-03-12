@@ -1,0 +1,2 @@
+ALTER TABLE toolbox_items
+  ADD COLUMN IF NOT EXISTS vimeo_url TEXT DEFAULT NULL;
