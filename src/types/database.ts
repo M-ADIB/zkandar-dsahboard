@@ -12,6 +12,8 @@ export type InvitationStatus = 'pending' | 'accepted' | 'expired'
 export type ToolboxImportance = 'essential' | 'recommended' | 'optional'
 export type ToolboxToolType = 'image_generation' | 'video_generation' | 'text_generation' | 'automation' | 'analytics' | 'other'
 
+export type ToolboxSubscriptionType = 'free' | 'freemium' | 'paid' | 'enterprise'
+
 export interface ToolboxItem {
     id: string
     title: string
@@ -21,6 +23,7 @@ export interface ToolboxItem {
     importance: ToolboxImportance
     category: string
     tool_type: ToolboxToolType
+    subscription_type: ToolboxSubscriptionType
     order_index: number
     is_active: boolean
     created_at: string
@@ -436,6 +439,7 @@ export interface Database {
                     importance?: ToolboxImportance
                     category?: string
                     tool_type?: ToolboxToolType
+                    subscription_type?: ToolboxSubscriptionType
                     order_index?: number
                     is_active?: boolean
                 }

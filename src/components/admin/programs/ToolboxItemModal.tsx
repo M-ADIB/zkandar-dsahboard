@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ExternalLink } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
-import type { ToolboxItem, ToolboxImportance, ToolboxToolType } from '@/types/database'
+import type { ToolboxItem, ToolboxImportance, ToolboxToolType, ToolboxSubscriptionType } from '@/types/database'
 
 interface ToolboxItemModalProps {
     isOpen: boolean
@@ -26,6 +26,13 @@ const TOOL_TYPE_OPTIONS: { value: ToolboxToolType; label: string }[] = [
     { value: 'other', label: 'Other' },
 ]
 
+const SUBSCRIPTION_OPTIONS: { value: ToolboxSubscriptionType; label: string }[] = [
+    { value: 'free', label: 'Free' },
+    { value: 'freemium', label: 'Freemium' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'enterprise', label: 'Enterprise' },
+]
+
 const defaultForm = {
     title: '',
     url: '',
@@ -34,6 +41,7 @@ const defaultForm = {
     importance: 'recommended' as ToolboxImportance,
     category: '',
     tool_type: 'other' as ToolboxToolType,
+    subscription_type: 'paid' as ToolboxSubscriptionType,
     is_active: true,
 }
 
@@ -56,6 +64,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                 importance: item.importance,
                 category: item.category,
                 tool_type: item.tool_type,
+                subscription_type: item.subscription_type ?? 'paid',
                 is_active: item.is_active,
             })
         } else {
@@ -146,6 +155,14 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                 <label className={labelClass}>Vimeo Tutorial URL <span className="text-gray-500 font-normal">(optional)</span></label>
                                 <input type="url" className={inputClass} placeholder="https://vimeo.com/..."
                                     value={form.vimeo_url} onChange={e => setForm({ ...form, vimeo_url: e.target.value })} />
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Subscription Type</label>
+                                <select className={inputClass} value={form.subscription_type}
+                                    onChange={e => setForm({ ...form, subscription_type: e.target.value as ToolboxSubscriptionType })}>
+                                    {SUBSCRIPTION_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                                </select>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">

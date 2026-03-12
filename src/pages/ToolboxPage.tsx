@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Wrench, ExternalLink, Search, Filter } from 'lucide-react'
+import { Wrench, Search, Filter, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { ToolboxItem } from '@/types/database'
-
-function getVimeoEmbedUrl(url: string): string | null {
-    const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
-    return match ? `https://player.vimeo.com/video/${match[1]}` : null
-}
 
 const importanceConfig = {
     essential: { label: 'Essential', color: 'text-red-300', bg: 'bg-red-500/10 border-red-500/30', dot: 'bg-red-400' },
@@ -169,22 +165,6 @@ export function ToolboxPage() {
                                     )}
                                 </div>
 
-                                {/* Vimeo embed */}
-                                {item.vimeo_url && (() => {
-                                    const embedUrl = getVimeoEmbedUrl(item.vimeo_url)
-                                    return embedUrl ? (
-                                        <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
-                                            <iframe
-                                                src={embedUrl}
-                                                className="absolute inset-0 w-full h-full"
-                                                allow="autoplay; fullscreen; picture-in-picture"
-                                                allowFullScreen
-                                                title={`${item.title} tutorial`}
-                                            />
-                                        </div>
-                                    ) : null
-                                })()}
-
                                 {/* Categories */}
                                 <div className="flex flex-wrap gap-2">
                                     <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-lg">
@@ -196,14 +176,12 @@ export function ToolboxPage() {
                                 </div>
 
                                 {/* CTA */}
-                                <a
-                                    href={item.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <Link
+                                    to={`/toolbox/${item.id}`}
                                     className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-lime/10 border border-lime/20 text-lime text-sm font-medium hover:bg-lime/20 transition group-hover:border-lime/40"
                                 >
-                                    Open Tool <ExternalLink className="h-3.5 w-3.5" />
-                                </a>
+                                    View Tool <ChevronRight className="h-3.5 w-3.5" />
+                                </Link>
                             </motion.div>
                         )
                     })}
