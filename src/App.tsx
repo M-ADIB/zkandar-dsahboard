@@ -44,6 +44,7 @@ const SettingsPage = lazy(() => import('@/pages/SettingsPage').then(module => ({
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage').then(module => ({ default: module.NotificationsPage })))
 const MyProgramPage = lazy(() => import('@/pages/MyProgramPage').then(module => ({ default: module.MyProgramPage })))
 const MyPerformancePage = lazy(() => import('@/pages/MyPerformancePage').then(module => ({ default: module.MyPerformancePage })))
+const ToolboxPage = lazy(() => import('@/pages/ToolboxPage').then(module => ({ default: module.ToolboxPage })))
 
 function App() {
     return (
@@ -220,6 +221,14 @@ function App() {
                                         element={
                                             <MemberRoute>
                                                 <MyPerformancePage />
+                                            </MemberRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="toolbox"
+                                        element={
+                                            <MemberRoute>
+                                                <ToolboxPage />
                                             </MemberRoute>
                                         }
                                     />

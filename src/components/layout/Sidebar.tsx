@@ -19,6 +19,7 @@ import {
     Mic,
     DollarSign,
     Briefcase,
+    Wrench,
 } from 'lucide-react'
 import type { User, UserRole } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -121,6 +122,12 @@ const memberNavItems: NavItem[] = [
         icon: TrendingUp,
         label: 'My Performance',
         path: '/my-performance',
+        roles: ['owner', 'admin', 'executive', 'participant'],
+    },
+    {
+        icon: Wrench,
+        label: 'Toolbox',
+        path: '/toolbox',
         roles: ['owner', 'admin', 'executive', 'participant'],
     },
     {
