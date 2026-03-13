@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Clock, CheckCircle2, Upload, Link as LinkIcon, ArrowRight } from 'lucide-react'
+import { FileText, Clock, CheckCircle2, Upload, Link as LinkIcon, ArrowRight, Video, Image as ImageIcon } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { formatDateLabel } from '@/lib/time'
 import { SubmitAssignmentModal } from '@/components/assignments/SubmitAssignmentModal'
-import type { Assignment, Session, Submission, SubmissionFormat } from '@/types/database'
+import type { Assignment, Session, Submission, SubmissionFormat, SessionMaterial } from '@/types/database'
 
 type AssignmentCard = {
     id: string
@@ -18,6 +18,7 @@ type AssignmentCard = {
     submissionFormat: SubmissionFormat
     status: 'pending' | 'submitted' | 'upcoming'
     feedback?: string
+    materials?: SessionMaterial[]
 }
 
 export function AssignmentsPage() {
@@ -138,6 +139,7 @@ export function AssignmentsPage() {
                 submissionFormat: assignment.submission_format,
                 status,
                 feedback: submission?.admin_feedback ?? undefined,
+                materials: assignment.materials ?? [],
             }
         })
 
@@ -346,6 +348,21 @@ export function AssignmentsPage() {
                                         <div className="mt-4 p-4 bg-lime/5 border border-lime/20 rounded-xl">
                                             <p className="text-xs text-lime mb-1 font-medium">Admin Feedback</p>
                                             <p className="text-sm text-gray-300">{assignment.feedback}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Materials */}
+                                    {assignment.materials && assignment.materials.length > 0 && (
+                                        <div className="mt-4 p-4 bg-bg-elevated border border-border rounded-xl">
+                                            <p className="text-xs text-gray-400 mb-3 font-medium">Reference Materials</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {assignment.materials.map((m, i) => (
+                                                    <a key={i} href={m.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-xs text-gray-300 transition-colors">
+                                                        {m.type === 'pdf' ? <FileText className="h-3.5 w-3.5" /> : m.type === 'video' ? <Video className="h-3.5 w-3.5" /> : m.type === 'image' ? <ImageIcon className="h-3.5 w-3.5" /> : <LinkIcon className="h-3.5 w-3.5" />}
+                                                        <span>{m.name}</span>
+                                                    </a>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

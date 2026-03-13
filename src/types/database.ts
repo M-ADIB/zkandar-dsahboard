@@ -4,7 +4,7 @@ export type CohortStatus = 'upcoming' | 'active' | 'completed'
 export type OfferingType = 'sprint_workshop' | 'master_class'
 export type SessionStatus = 'scheduled' | 'completed'
 export type SubmissionStatus = 'pending' | 'reviewed'
-export type SubmissionFormat = 'file' | 'link' | 'text'
+export type SubmissionFormat = 'file' | 'link' | 'text' | 'any'
 export type SurveyTrigger = 'onboarding' | 'mid_program' | 'post_program'
 export type ChatChannelType = 'team' | 'management' | 'sprint'
 export type ChatMessageType = 'text' | 'file' | 'system'
@@ -193,6 +193,7 @@ export interface Assignment {
     description: string | null
     due_date: string
     submission_format: SubmissionFormat
+    materials?: SessionMaterial[]
     created_at: string
 }
 
