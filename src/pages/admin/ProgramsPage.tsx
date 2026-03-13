@@ -4,6 +4,7 @@ import { Plus, GraduationCap, Calendar, FileText, Wrench } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
+import { ModalForm } from '@/components/admin/shared/ModalForm';
 import { ProgramModal } from '@/components/admin/programs/ProgramModal';
 import { SessionModal } from '@/components/admin/programs/SessionModal';
 import { AssignmentModal } from '@/components/admin/assignments/AssignmentModal';
@@ -37,6 +38,76 @@ const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
 const filterBoxClass = 'bg-bg-card border border-border rounded-2xl p-4 flex flex-wrap gap-4';
 const selectClass = 'w-full px-3 py-2 bg-bg-elevated border border-border rounded-xl text-white text-sm focus:outline-none focus:border-lime/50 transition-colors';
 
+// ─── Shared action bar ────────────────────────────────────────────────────────
+interface ActionBarProps {
+    selectedCount: number;
+    onEdit: () => void;
+    onDelete: () => void;
+}
+function SelectionActionBar({ selectedCount, onEdit, onDelete }: ActionBarProps) {
+    return (
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-elevated border border-border">
+            <span className="text-sm text-gray-400 font-medium">{selectedCount} selected</span>
+            <div className="h-4 w-px bg-border" />
+            {selectedCount === 1 && (
+                <button
+                    onClick={onEdit}
+                    className="text-sm text-gray-300 hover:text-white transition-colors font-medium"
+                >
+                    Edit
+                </button>
+            )}
+            <button
+                onClick={onDelete}
+                className="text-sm text-red-400 hover:text-red-300 transition-colors font-medium"
+            >
+                Delete
+            </button>
+        </div>
+    );
+}
+
+// ─── Shared bulk-delete confirm modal ─────────────────────────────────────────
+interface BulkDeleteConfirmProps {
+    isOpen: boolean;
+    count: number;
+    isLoading: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+}
+function BulkDeleteConfirm({ isOpen, count, isLoading, onClose, onConfirm }: BulkDeleteConfirmProps) {
+    return (
+        <ModalForm
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Confirm Delete"
+            showActions={false}
+        >
+            <p className="text-gray-300 text-sm">
+                Delete <span className="text-white font-semibold">{count}</span> item{count !== 1 ? 's' : ''}? This cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3 mt-6">
+                <button
+                    type="button"
+                    onClick={onClose}
+                    disabled={isLoading}
+                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onClick={onConfirm}
+                    disabled={isLoading}
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50"
+                >
+                    {isLoading ? 'Deleting…' : 'Delete'}
+                </button>
+            </div>
+        </ModalForm>
+    );
+}
+
 // ─── Programs Tab ────────────────────────────────────────────────────────────
 function ProgramsTab() {
     const supabase = useSupabase();
@@ -48,6 +119,9 @@ function ProgramsTab() {
     const [selectedProgram, setSelectedProgram] = useState<Cohort | null>(null);
     const [offeringFilter, setOfferingFilter] = useState<OfferingFilter>('all');
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const fetchPrograms = async () => {
         setIsLoading(true);
@@ -124,17 +198,41 @@ function ProgramsTab() {
         fetchPrograms();
     };
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
+        const { error: deleteError } = await supabase.from('cohorts').delete().in('id', selectedIds);
+        setIsBulkDeleting(false);
+        if (deleteError) { setError(deleteError.message); return; }
+        setShowBulkDeleteConfirm(false);
+        setSelectedIds([]);
+        fetchPrograms();
+    };
+
+    const handleBulkEdit = () => {
+        const item = filteredPrograms.find((p) => p.id === selectedIds[0]);
+        if (item) { setSelectedProgram(item); setIsModalOpen(true); }
+    };
+
     return (
         <div className="space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <p className="text-gray-400 text-sm">Manage Sprint Workshops and Master Classes</p>
-                <button
-                    onClick={() => { setSelectedProgram(null); setIsModalOpen(true); }}
-                    className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl transition font-medium hover:opacity-90"
-                >
-                    <Plus className="h-4 w-4" />
-                    Add Program
-                </button>
+                <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onEdit={handleBulkEdit}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
+                    <button
+                        onClick={() => { setSelectedProgram(null); setIsModalOpen(true); }}
+                        className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl transition font-medium hover:opacity-90"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Program
+                    </button>
+                </div>
             </div>
 
             <div className={filterBoxClass}>
@@ -165,6 +263,8 @@ function ProgramsTab() {
                 isLoading={isLoading}
                 onEdit={(p) => { setSelectedProgram(p); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
             />
 
             <ProgramModal
@@ -172,6 +272,14 @@ function ProgramsTab() {
                 onClose={() => setIsModalOpen(false)}
                 program={selectedProgram}
                 onSuccess={() => { setIsModalOpen(false); setSelectedProgram(null); fetchPrograms(); }}
+            />
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
             />
         </div>
     );
@@ -187,6 +295,9 @@ function SessionsTab() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const fetchPrograms = async () => {
         const { data } = await supabase.from('cohorts').select('id, name, start_date, end_date, status, offering_type, created_at').order('start_date', { ascending: false });
@@ -249,18 +360,41 @@ function SessionsTab() {
         fetchSessions(selectedProgramId);
     };
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
+        const { error: e } = await supabase.from('sessions').delete().in('id', selectedIds);
+        setIsBulkDeleting(false);
+        if (e) { setError(e.message); return; }
+        setShowBulkDeleteConfirm(false);
+        setSelectedIds([]);
+        fetchSessions(selectedProgramId);
+    };
+
+    const handleBulkEdit = () => {
+        const item = sessions.find((s) => s.id === selectedIds[0]);
+        if (item) { setSelectedSession(item); setIsModalOpen(true); }
+    };
+
     return (
         <div className="space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <p className="text-gray-400 text-sm">Manage upcoming and completed sessions</p>
-                <button
-                    onClick={() => { setSelectedSession(null); setIsModalOpen(true); }}
-                    disabled={selectedProgramId === 'all'}
-                    className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl font-medium hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                    <Plus className="h-4 w-4" />
-                    Add Session
-                </button>
+                <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onEdit={handleBulkEdit}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
+                    <button
+                        onClick={() => { setSelectedSession(null); setIsModalOpen(true); }}
+                        className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl font-medium hover:opacity-90 transition"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Session
+                    </button>
+                </div>
             </div>
 
             <div className={filterBoxClass}>
@@ -271,9 +405,6 @@ function SessionsTab() {
                         {programs.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
                 </div>
-                {selectedProgramId === 'all' && (
-                    <div className="flex items-end pb-1 text-xs text-gray-500">Select a program to add sessions</div>
-                )}
             </div>
 
             {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
@@ -284,18 +415,27 @@ function SessionsTab() {
                 isLoading={isLoading}
                 onEdit={(s) => { setSelectedSession(s); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
             />
 
-            {selectedProgramId !== 'all' && (
-                <SessionModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSuccess={() => { setIsModalOpen(false); setSelectedSession(null); fetchSessions(selectedProgramId); }}
-                    cohortId={selectedSession?.cohort_id ?? selectedProgramId}
-                    session={selectedSession}
-                    defaultSessionNumber={nextSessionNumber}
-                />
-            )}
+            <SessionModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={() => { setIsModalOpen(false); setSelectedSession(null); fetchSessions(selectedProgramId); }}
+                programs={programs}
+                cohortId={selectedProgramId !== 'all' ? selectedProgramId : undefined}
+                session={selectedSession}
+                defaultSessionNumber={nextSessionNumber}
+            />
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
+            />
         </div>
     );
 }
@@ -313,6 +453,9 @@ function AssignmentsTab() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
     const [submissionsAssignment, setSubmissionsAssignment] = useState<Assignment | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -370,7 +513,7 @@ function AssignmentsTab() {
         {
             header: 'Submissions',
             accessor: (a: Assignment) => (
-                <button onClick={() => setSubmissionsAssignment(a)} className="text-sm text-lime hover:text-lime/80 font-medium">View</button>
+                <button onClick={(e) => { e.stopPropagation(); setSubmissionsAssignment(a); }} className="text-sm text-lime hover:text-lime/80 font-medium">View</button>
             ),
         },
     ], [programMap, sessionMap]);
@@ -382,18 +525,42 @@ function AssignmentsTab() {
         fetchData();
     };
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
+        const { error: e } = await supabase.from('assignments').delete().in('id', selectedIds);
+        setIsBulkDeleting(false);
+        if (e) { setError(e.message); return; }
+        setShowBulkDeleteConfirm(false);
+        setSelectedIds([]);
+        fetchData();
+    };
+
+    const handleBulkEdit = () => {
+        const item = filteredAssignments.find((a) => a.id === selectedIds[0]);
+        if (item) { setSelectedAssignment(item); setIsModalOpen(true); }
+    };
+
     return (
         <div className="space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <p className="text-gray-400 text-sm">Create and review program assignments</p>
-                <button
-                    onClick={() => { setSelectedAssignment(null); setIsModalOpen(true); }}
-                    disabled={sessions.length === 0}
-                    className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl font-medium hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                    <Plus className="h-4 w-4" />
-                    Add Assignment
-                </button>
+                <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onEdit={handleBulkEdit}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
+                    <button
+                        onClick={() => { setSelectedAssignment(null); setIsModalOpen(true); }}
+                        disabled={sessions.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl font-medium hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Assignment
+                    </button>
+                </div>
             </div>
 
             <div className={filterBoxClass}>
@@ -421,6 +588,8 @@ function AssignmentsTab() {
                 isLoading={isLoading}
                 onEdit={(a) => { setSelectedAssignment(a); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
             />
 
             <AssignmentModal
@@ -437,6 +606,14 @@ function AssignmentsTab() {
                 isOpen={Boolean(submissionsAssignment)}
                 onClose={() => setSubmissionsAssignment(null)}
                 assignment={submissionsAssignment}
+            />
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
             />
         </div>
     );

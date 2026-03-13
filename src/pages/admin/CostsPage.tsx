@@ -143,42 +143,56 @@ export function CostsPage() {
         const currentYear = now.getFullYear()
         
         result = result.map(c => {
-            // If item is active and has a past payment date, calculate its rolled-forward date
-            // The logic: roll the month forward to the current month or next month if already passed this month
             let displayDate = c.payment_date
+            let includeInFilter = true
             
             if (c.is_active && c.payment_date) {
                 const originalDate = new Date(c.payment_date)
+                const originalDateOnly = new Date(originalDate.getFullYear(), originalDate.getMonth(), originalDate.getDate())
                 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
                 
-                // Only roll forward if the original date is in the past
-                if (originalDate < today) {
-                    const rolledDate = new Date(originalDate.getTime())
-                    // Set it to current month/year
+                const rolledDate = new Date(originalDate.getTime())
+                
+                if (timeFilter === 'this_month') {
                     rolledDate.setFullYear(currentYear)
                     rolledDate.setMonth(currentMonth)
-                    
-                    // If the rolled date in current month is still in the past (e.g., today is 15th, payment is 1st),
-                    // roll it to next month
-                    if (rolledDate < today) {
+                    if (rolledDate < originalDateOnly) includeInFilter = false
+                } else if (timeFilter === 'last_month') {
+                    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1
+                    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear
+                    rolledDate.setFullYear(lastMonthYear)
+                    rolledDate.setMonth(lastMonth)
+                    if (rolledDate < originalDateOnly) includeInFilter = false
+                } else if (timeFilter === 'upcoming') {
+                    rolledDate.setFullYear(currentYear)
+                    rolledDate.setMonth(currentMonth)
+                    if (rolledDate <= today) {
                         rolledDate.setMonth(currentMonth + 1)
                     }
-                    
-                    // Format correctly as string YYYY-MM-DD to preserve local timezone rendering
-                    displayDate = `${rolledDate.getFullYear()}-${String(rolledDate.getMonth() + 1).padStart(2, '0')}-${String(rolledDate.getDate()).padStart(2, '0')}`
+                } else if (timeFilter === 'past_90') {
+                    rolledDate.setFullYear(currentYear)
+                    rolledDate.setMonth(currentMonth)
+                    if (rolledDate > today) {
+                        rolledDate.setMonth(currentMonth - 1)
+                    }
+                    if (rolledDate < originalDateOnly) includeInFilter = false
                 }
+                
+                displayDate = `${rolledDate.getFullYear()}-${String(rolledDate.getMonth() + 1).padStart(2, '0')}-${String(rolledDate.getDate()).padStart(2, '0')}`
             }
             
             return {
                 ...c,
-                display_payment_date: displayDate
+                display_payment_date: displayDate,
+                _passes_recurring_check: includeInFilter
             }
         })
         
         result = result.filter(c => {
-            // Now filter using display_payment_date instead of payment_date
-            if (!c.display_payment_date) {
-                const dateToUse = c.display_payment_date || c.invoice_date || c.created_at
+            if (!(c as any)._passes_recurring_check) return false
+
+            if (!(c as any).display_payment_date) {
+                const dateToUse = (c as any).display_payment_date || c.invoice_date || c.created_at
                 const d = new Date(dateToUse)
                 
                 if (timeFilter === 'this_month') {
@@ -199,7 +213,7 @@ export function CostsPage() {
                 return true
             }
 
-            const d = new Date(c.display_payment_date)
+            const d = new Date((c as any).display_payment_date)
             // Strip time from 'now' for precise 'upcoming' check
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
             

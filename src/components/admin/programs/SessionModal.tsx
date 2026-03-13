@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
-import type { Session, SessionMaterial, SessionStatus } from '@/types/database';
+import type { Cohort, Session, SessionMaterial, SessionStatus } from '@/types/database';
 
 interface SessionModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    cohortId: string;
+    cohortId?: string;
+    programs?: Cohort[];
     session?: Session | null;
     defaultSessionNumber?: number;
 }
@@ -19,6 +20,7 @@ type SessionFormData = {
     scheduled_date: string;
     status: SessionStatus;
     recording_url: string;
+    description: string;
 };
 
 type MaterialDraft = {
@@ -42,22 +44,28 @@ export function SessionModal({
     onClose,
     onSuccess,
     cohortId,
+    programs,
     session,
     defaultSessionNumber = 1,
 }: SessionModalProps) {
     const supabase = useSupabase();
+    const [internalCohortId, setInternalCohortId] = useState(cohortId ?? '');
     const [formData, setFormData] = useState<SessionFormData>({
         title: '',
         session_number: String(defaultSessionNumber),
         scheduled_date: '',
         status: 'scheduled',
         recording_url: '',
+        description: '',
     });
     const [materials, setMaterials] = useState<MaterialDraft[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Sync the internal cohort ID when prop changes or modal opens
+        setInternalCohortId(cohortId ?? '');
+
         if (session) {
             setFormData({
                 title: session.title,
@@ -65,6 +73,7 @@ export function SessionModal({
                 scheduled_date: toDateTimeLocal(session.scheduled_date),
                 status: session.status,
                 recording_url: session.recording_url ?? '',
+                description: (session as Session & { description?: string }).description ?? '',
             });
             const existing = Array.isArray(session.materials) ? session.materials : [];
             setMaterials(existing.map((m) => ({ name: m.name, url: m.url, type: m.type })));
@@ -75,11 +84,12 @@ export function SessionModal({
                 scheduled_date: '',
                 status: 'scheduled',
                 recording_url: '',
+                description: '',
             });
             setMaterials([]);
         }
         setError(null);
-    }, [session, defaultSessionNumber, isOpen]);
+    }, [session, defaultSessionNumber, isOpen, cohortId]);
 
     const addMaterial = () => setMaterials((prev) => [...prev, emptyMaterial()]);
 
@@ -93,6 +103,12 @@ export function SessionModal({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate program selection (only required when programs prop is present and no cohortId pre-filled)
+        if (programs && !cohortId && !internalCohortId) {
+            setError('Please select a program.');
+            return;
+        }
 
         if (!formData.title.trim()) {
             setError('Session title is required.');
@@ -117,12 +133,13 @@ export function SessionModal({
         setError(null);
 
         const payload = {
-            cohort_id: cohortId,
+            cohort_id: internalCohortId,
             session_number: sessionNumber,
             title: formData.title.trim(),
             scheduled_date: new Date(formData.scheduled_date).toISOString(),
             status: formData.status,
             recording_url: formData.recording_url.trim() || null,
+            description: formData.description.trim() || null,
             materials: validatedMaterials,
         };
 
@@ -145,6 +162,9 @@ export function SessionModal({
         onSuccess();
     };
 
+    // Show program picker only when programs list is provided and no cohortId pre-filled
+    const showProgramPicker = Boolean(programs && !cohortId);
+
     return (
         <ModalForm
             isOpen={isOpen}
@@ -158,8 +178,26 @@ export function SessionModal({
                     {error}
                 </div>
             )}
+
+            {showProgramPicker && (
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Program <span className="text-red-400">*</span></label>
+                    <select
+                        value={internalCohortId}
+                        onChange={(e) => setInternalCohortId(e.target.value)}
+                        required
+                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    >
+                        <option value="">Select a program…</option>
+                        {programs?.map((p) => (
+                            <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Session Title</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Session Title <span className="text-red-400">*</span></label>
                 <input
                     type="text"
                     required
@@ -196,7 +234,7 @@ export function SessionModal({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Scheduled Date &amp; Time</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Scheduled Date &amp; Time <span className="text-red-400">*</span></label>
                 <input
                     type="datetime-local"
                     required
@@ -207,13 +245,24 @@ export function SessionModal({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Recording URL</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Zoom / Meeting Link</label>
                 <input
                     type="url"
                     value={formData.recording_url}
                     onChange={(e) => setFormData({ ...formData, recording_url: e.target.value })}
                     className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
-                    placeholder="https://..."
+                    placeholder="https://zoom.us/j/..."
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Description / Agenda</label>
+                <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50 resize-none"
+                    placeholder="Session agenda or notes…"
                 />
             </div>
 

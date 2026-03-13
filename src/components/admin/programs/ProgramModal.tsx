@@ -17,6 +17,7 @@ type ProgramFormData = {
     start_date: string;
     end_date: string;
     miro_board_url: string;
+    company_id: string;
 };
 
 const defaultFormData: ProgramFormData = {
@@ -26,25 +27,51 @@ const defaultFormData: ProgramFormData = {
     start_date: '',
     end_date: '',
     miro_board_url: '',
+    company_id: '',
 };
 
 export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramModalProps) {
     const supabase = useSupabase();
     const [formData, setFormData] = useState<ProgramFormData>(defaultFormData);
+    const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Fetch companies once on mount
+    useEffect(() => {
+        supabase
+            .from('companies')
+            .select('id, name')
+            .order('name')
+            .then(({ data }) => {
+                setCompanies((data as { id: string; name: string }[]) ?? []);
+            });
+    }, []);
+
     useEffect(() => {
         if (program) {
-            setFormData({
+            const base: ProgramFormData = {
                 name: program.name,
                 offering_type: program.offering_type,
                 status: program.status,
                 start_date: program.start_date,
                 end_date: program.end_date,
                 miro_board_url: program.miro_board_url ?? '',
-            });
+                company_id: '',
+            };
+            setFormData(base);
             setError(null);
+
+            // Look up which company is currently assigned to this program
+            supabase
+                .from('companies')
+                .select('id')
+                .eq('cohort_id', program.id)
+                .maybeSingle()
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .then(({ data: companyRow }: { data: any }) => {
+                    setFormData((prev) => ({ ...prev, company_id: companyRow?.id ?? '' }));
+                });
         } else {
             setFormData(defaultFormData);
             setError(null);
@@ -56,6 +83,11 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
         if (!formData.name.trim()) {
             setError('Program name is required.');
+            return;
+        }
+
+        if (!formData.company_id) {
+            setError('Please select a company.');
             return;
         }
 
@@ -81,22 +113,53 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             miro_board_url: formData.miro_board_url.trim() || null,
         };
 
-        const { error: saveError } = program
-            ? await supabase.from('cohorts')
+        if (program) {
+            // Edit mode: update cohort, then update the company link
+            const { error: saveError } = await supabase
+                .from('cohorts')
                 // @ts-expect-error - Supabase update type inference issue
                 .update(payload)
-                .eq('id', program.id)
-            : await supabase.from('cohorts')
+                .eq('id', program.id);
+
+            if (saveError) {
+                setIsLoading(false);
+                setError(saveError.message);
+                return;
+            }
+
+            // Update the company's cohort_id
+            await supabase
+                .from('companies')
+                // @ts-expect-error - Supabase update type inference issue
+                .update({ cohort_id: program.id })
+                .eq('id', formData.company_id);
+        } else {
+            // Create mode: insert cohort, get new ID, then update company
+            const { data: newCohort, error: saveError } = await supabase
+                .from('cohorts')
                 // @ts-expect-error - Supabase insert type inference issue
-                .insert(payload);
+                .insert(payload)
+                .select('id')
+                .single();
 
-        setIsLoading(false);
+            if (saveError) {
+                setIsLoading(false);
+                setError(saveError.message);
+                return;
+            }
 
-        if (saveError) {
-            setError(saveError.message);
-            return;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((newCohort as any)?.id) {
+                await supabase
+                    .from('companies')
+                    // @ts-expect-error - Supabase update type inference issue
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    .update({ cohort_id: (newCohort as any).id })
+                    .eq('id', formData.company_id);
+            }
         }
 
+        setIsLoading(false);
         onSuccess();
     };
 
@@ -123,6 +186,21 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
                     placeholder="e.g. Spring Sprint Workshop"
                 />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Company <span className="text-red-400">*</span></label>
+                <select
+                    value={formData.company_id}
+                    onChange={(e) => setFormData({ ...formData, company_id: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                >
+                    <option value="">Select a company…</option>
+                    {companies.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                </select>
             </div>
 
             <div>
