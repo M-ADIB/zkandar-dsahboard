@@ -135,6 +135,7 @@ export function MyProgramPage() {
         file: 'File Upload',
         link: 'Link',
         text: 'Text',
+        any: 'Open Format',
     }
 
     return (
