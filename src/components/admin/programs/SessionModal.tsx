@@ -132,11 +132,13 @@ export function SessionModal({
         setIsLoading(true);
         setError(null);
 
+        const scheduledDateISO = new Date(formData.scheduled_date).toISOString();
         const payload = {
             cohort_id: internalCohortId,
             session_number: sessionNumber,
             title: formData.title.trim(),
-            scheduled_date: new Date(formData.scheduled_date).toISOString(),
+            scheduled_date: scheduledDateISO,
+            session_date: scheduledDateISO,   // mirror field added outside migrations
             status: formData.status,
             recording_url: formData.recording_url.trim() || null,
             description: formData.description.trim() || null,
