@@ -75,10 +75,6 @@ export const ApplySalesPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (step1Data.gender !== 'Female') {
-            alert('This position is exclusively for female closers.');
-            return;
-        }
         setIsSubmitting(true);
         try {
             const insertResult = await supabase
@@ -197,10 +193,10 @@ export const ApplySalesPage = () => {
                         Open Position — Fully Remote
                     </div>
                     <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-wider mb-3">
-                        Female High-Ticket Closer
+                        High-Ticket Closer
                     </h1>
                     <p className="text-gray-400 font-medium mb-4 leading-relaxed">
-                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're exclusively looking for female high-ticket closers.
+                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for high-ticket closers to join our remote sales team.
                     </p>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Contact Info</span>
