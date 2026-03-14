@@ -9,6 +9,58 @@ import { LeadsTable } from '@/components/admin/leads/LeadsTable';
 import { ColumnSettingsPanel } from '@/components/admin/leads/ColumnSettingsPanel';
 import { logAudit } from '@/lib/audit';
 
+// ── Stat card ──────────────────────────────────────────────────────────────────
+// Inspired by 21st.dev dark-stats card pattern.
+// Pure black bg, subtle decorative circles, Lime #D0FF71 accent on the headline number.
+function LeadStatCard({
+    label,
+    value,
+    icon: Icon,
+    limeAccent = false,
+    iconColor = 'text-gray-500',
+}: {
+    label: string;
+    value: string | number;
+    icon: React.ComponentType<{ className?: string }>;
+    limeAccent?: boolean;
+    iconColor?: string;
+}) {
+    return (
+        <div className="relative bg-[#080808] border border-[#1a1a1a] rounded-2xl px-5 pt-5 pb-6 overflow-hidden">
+            {/* Decorative background circles (21st.dev style) */}
+            <svg
+                className="pointer-events-none absolute right-0 top-0 h-full w-2/3 opacity-[0.06]"
+                viewBox="0 0 200 160"
+                fill="none"
+            >
+                <circle cx="160" cy="40"  r="70" fill="white" />
+                <circle cx="190" cy="110" r="45" fill="white" />
+                <circle cx="130" cy="130" r="30" fill="white" />
+            </svg>
+
+            {/* Top lime hairline accent */}
+            <span className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#D0FF71]/50 to-transparent" />
+
+            <div className="relative z-10">
+                {/* Label + icon */}
+                <div className="flex items-start justify-between mb-4">
+                    <p className="text-[10px] font-semibold tracking-[0.16em] uppercase text-gray-500 leading-none">
+                        {label}
+                    </p>
+                    <span className={`flex h-7 w-7 items-center justify-center rounded-lg bg-[#111] border border-[#1f1f1f] ${iconColor}`}>
+                        <Icon className="h-3.5 w-3.5" />
+                    </span>
+                </div>
+
+                {/* Value */}
+                <p className={`text-[1.85rem] font-bold leading-none tabular-nums ${limeAccent ? 'text-[#D0FF71]' : 'text-white'}`}>
+                    {value}
+                </p>
+            </div>
+        </div>
+    );
+}
+
 
 export function LeadsPage() {
     const supabase = useSupabase();
@@ -50,6 +102,41 @@ export function LeadsPage() {
     const leadColumns = data?.columns || [];
     const loadError = isError ? (error as Error).message : null;
     const fetchLeads = useCallback(() => { refetch(); }, [refetch]);
+
+    // Real-time subscription — surgical state updates without full refetch
+    useEffect(() => {
+        const channel = supabase
+            .channel('leads-realtime')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, (payload) => {
+                queryClient.setQueryData(['leadsData'], (old: any) => {
+                    if (!old) return old;
+                    return { ...old, leads: [payload.new as Lead, ...(old.leads || [])] };
+                });
+            })
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'leads' }, (payload) => {
+                queryClient.setQueryData(['leadsData'], (old: any) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        leads: old.leads?.map((l: Lead) =>
+                            l.id === (payload.new as Lead).id ? (payload.new as Lead) : l
+                        ) || [],
+                    };
+                });
+            })
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'leads' }, (payload) => {
+                queryClient.setQueryData(['leadsData'], (old: any) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        leads: old.leads?.filter((l: Lead) => l.id !== (payload.old as any).id) || [],
+                    };
+                });
+            })
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
+    }, [supabase, queryClient]);
 
     // Handle highlight and priority search params from Dashboard navigation
     useEffect(() => {
@@ -339,9 +426,6 @@ export function LeadsPage() {
         []
     );
 
-    const metricCardClass = 'bg-bg-card/60 border border-border rounded-xl p-4';
-    const metricLabelClass = 'text-[11px] uppercase tracking-widest text-gray-500';
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
@@ -410,46 +494,12 @@ export function LeadsPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="max-w-full overflow-x-auto">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pb-2">
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Total Leads</div>
-                            <Users className="h-4 w-4 text-gray-500" />
-                        </div>
-                        <div className="text-2xl font-semibold text-gray-100">{stats.total}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Lava</div>
-                            <Flame className="h-4 w-4 text-purple-400" />
-                        </div>
-                        <div className="text-2xl font-semibold text-purple-400">{stats.lava}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Pipeline (AED)</div>
-                            <DollarSign className="h-4 w-4 text-yellow-400" />
-                        </div>
-                        <div className="text-xl font-semibold text-yellow-400">
-                            {currencyFormatter.format(stats.pipelineValue)}
-                        </div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Follow Up</div>
-                            <Phone className="h-4 w-4 text-blue-400" />
-                        </div>
-                        <div className="text-2xl font-semibold text-blue-400">{stats.followUp}</div>
-                    </div>
-                    <div className={metricCardClass}>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className={metricLabelClass}>Active</div>
-                            <Target className="h-4 w-4 text-lime" />
-                        </div>
-                        <div className="text-2xl font-semibold text-lime">{stats.active}</div>
-                    </div>
-                </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <LeadStatCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
+                <LeadStatCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
+                <LeadStatCard label="Pipeline (AED)" value={currencyFormatter.format(stats.pipelineValue)} icon={DollarSign} iconColor="text-yellow-400" />
+                <LeadStatCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
+                <LeadStatCard label="Active"        value={stats.active}                             icon={Target}     iconColor="text-[#D0FF71]" limeAccent />
             </div>
 
             {/* Table */}

@@ -9,6 +9,7 @@ import {
     SortingState,
     ColumnFiltersState,
     VisibilityState,
+    RowSelectionState,
 } from '@tanstack/react-table';
 import { Lead, LeadColumn } from '@/types/database';
 import {
@@ -55,6 +56,21 @@ const OFFERING_OPTIONS = [
     { value: 'TBA', label: 'TBA' },
 ];
 
+// Sticky column layout
+// ┌──────────────┬─────────────────┬──────────────────────┬──────────────────────────────
+// │  Checkbox    │    Priority     │       Name           │  Email (scrolls) …
+// │  left:0      │  left:44px      │  left:204px          │
+// │  w:44px      │  w:160px        │  w:220px             │
+// └──────────────┴─────────────────┴──────────────────────┴──────────────────────────────
+const STICKY_MAP: Record<string, { left: string; width: string }> = {
+    select:    { left: 'left-0',       width: 'w-[44px]  min-w-[44px]  max-w-[44px]' },
+    priority:  { left: 'left-[44px]',  width: 'w-[160px] min-w-[160px] max-w-[160px]' },
+    full_name: { left: 'left-[204px]', width: 'w-[220px] min-w-[220px] max-w-[220px]' },
+};
+
+// Even/odd row backgrounds — must be opaque so scrolling content disappears cleanly behind sticky cols
+const ROW_BG = ['bg-[#000000]', 'bg-[#111111]'] as const;
+
 interface LeadsTableProps {
     data: Lead[];
     columnsConfig: LeadColumn[];
@@ -80,12 +96,13 @@ export function LeadsTable({
     onUpdatePriority,
     onUpdateLead,
     isUpdating,
-    highlightId
+    highlightId,
 }: LeadsTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const [denseMode, setDenseMode] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState<RowsPerPage>(() => {
         if (typeof window === 'undefined') return 100;
@@ -99,11 +116,9 @@ export function LeadsTable({
         }
     });
 
-    // Custom Filters State (mapped to column filters)
     const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
     const [offeringFilter, setOfferingFilter] = useState<string>('ALL');
 
-    // Update column filters when custom filters change
     useEffect(() => {
         const filters = [];
         if (priorityFilter !== 'ALL') filters.push({ id: 'priority', value: priorityFilter });
@@ -115,15 +130,11 @@ export function LeadsTable({
         if (typeof window === 'undefined') return;
         try {
             localStorage.setItem(ROWS_PER_PAGE_STORAGE_KEY, String(rowsPerPage));
-        } catch {
-            // Ignore storage errors (private mode, disabled storage)
-        }
+        } catch { /* ignore */ }
     }, [rowsPerPage]);
 
-
-
-
-    const EditableHeader = ({ column, colConfig }: { column: any, colConfig: LeadColumn }) => {
+    // Inline editable column header (double-click to rename)
+    const EditableHeader = ({ column, colConfig }: { column: any; colConfig: LeadColumn }) => {
         const [isEditing, setIsEditing] = useState(false);
         const [value, setValue] = useState(colConfig.label);
 
@@ -181,15 +192,54 @@ export function LeadsTable({
     };
 
     const columns = useMemo<ColumnDef<Lead>[]>(() => {
-        if (!columnsConfig || columnsConfig.length === 0) return []; // Fallback while loading
+        if (!columnsConfig || columnsConfig.length === 0) return [];
 
-        const dynamicCols: ColumnDef<Lead>[] = columnsConfig.filter(c => c.visible).map(col => {
-            return {
+        // Checkbox / row-selection column — always first, always sticky
+        const checkboxCol: ColumnDef<Lead> = {
+            id: 'select',
+            header: ({ table }) => {
+                const allSelected = table.getIsAllPageRowsSelected();
+                const someSelected = table.getIsSomePageRowsSelected();
+                return (
+                    <input
+                        type="checkbox"
+                        checked={allSelected}
+                        ref={(el) => { if (el) el.indeterminate = !allSelected && someSelected; }}
+                        onChange={table.getToggleAllPageRowsSelectedHandler()}
+                        className="h-4 w-4 rounded border-gray-600 bg-transparent cursor-pointer accent-lime"
+                        title="Select all rows"
+                    />
+                );
+            },
+            cell: ({ row }) => (
+                <input
+                    type="checkbox"
+                    checked={row.getIsSelected()}
+                    disabled={!row.getCanSelect()}
+                    onChange={row.getToggleSelectedHandler()}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-4 w-4 rounded border-gray-600 bg-transparent cursor-pointer accent-lime"
+                />
+            ),
+            // No meta width here — width is controlled entirely by STICKY_MAP
+        };
+
+        // Dynamic columns from lead_columns config
+        // record_id is explicitly excluded — it must never render as a visible column
+        // (also guarded in the DB by visible=false via migration 040, but we filter here too)
+        const dynamicCols: ColumnDef<Lead>[] = columnsConfig
+            .filter(c => c.visible && c.key !== 'record_id')
+            .map(col => ({
                 id: col.key,
-                accessorFn: row => col.is_custom ? row.custom_fields?.[col.key] : (row as any)[col.key],
+                accessorFn: row => col.is_custom
+                    ? row.custom_fields?.[col.key]
+                    : (row as any)[col.key],
                 header: ({ column }) => <EditableHeader column={column} colConfig={col} />,
                 cell: ({ row }) => {
-                    const val = col.is_custom ? row.original.custom_fields?.[col.key] : (row.original as any)[col.key];
+                    const val = col.is_custom
+                        ? row.original.custom_fields?.[col.key]
+                        : (row.original as any)[col.key];
+
                     const onUpdate = (newVal: any) => {
                         if (col.is_custom) {
                             const newFields = { ...row.original.custom_fields, [col.key]: newVal };
@@ -199,16 +249,16 @@ export function LeadsTable({
                         }
                     };
 
-                    const toTextLocal = (v: any) => (v === null || v === undefined) ? '' : String(v);
+                    const toText = (v: any) => (v === null || v === undefined) ? '' : String(v);
 
                     if (col.key === 'priority') {
                         const priority = (val as string) || 'COLD';
                         const colorConfig: Record<string, string> = {
-                            'ACTIVE': 'bg-lime/10 text-lime border-lime/30',
-                            'HOT': 'bg-red-500/20 text-red-300 border-red-500/30',
-                            'COLD': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
-                            'LAVA': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-                            'COMPLETED': 'bg-green-500/20 text-green-300 border-green-500/30',
+                            'ACTIVE':       'bg-lime/10 text-lime border-lime/30',
+                            'HOT':          'bg-red-500/20 text-red-300 border-red-500/30',
+                            'COLD':         'bg-gray-500/20 text-gray-300 border-gray-500/30',
+                            'LAVA':         'bg-orange-500/20 text-orange-300 border-orange-500/30',
+                            'COMPLETED':    'bg-green-500/20 text-green-300 border-green-500/30',
                             'NOT INTERESTED': 'bg-gray-700/20 text-gray-400 border-border/30',
                         };
                         return (
@@ -220,20 +270,18 @@ export function LeadsTable({
                             />
                         );
                     }
+
                     if (col.key === 'offering_type') {
                         return (
                             <EditableSelectCell
-                                value={toTextLocal(val) || 'TBA'}
+                                value={toText(val) || 'TBA'}
                                 options={OFFERING_OPTIONS}
                                 onUpdate={onUpdate}
                                 className="text-sm text-gray-300"
                             />
                         );
                     }
-                    if (col.key === 'record_id') {
-                        return <span className="text-xs text-gray-500 px-2 py-1 select-all font-mono">{toTextLocal(val) || '-'}</span>;
-                    }
-                    // Add logic for boolean fields where 'Yes'/'No' looks cleaner
+
                     if (['has_coupon', 'paid_full', 'is_payment_plan'].includes(col.key)) {
                         return (
                             <EditableSelectCell
@@ -243,73 +291,74 @@ export function LeadsTable({
                             />
                         );
                     }
+
                     if (col.type === 'date') {
-                        return (
-                            <EditableDateCell
-                                value={val as string}
-                                onUpdate={onUpdate}
-                            />
-                        );
+                        return <EditableDateCell value={val as string} onUpdate={onUpdate} />;
                     }
+
                     if (col.type === 'number') {
-                        return (
-                            <EditableMoneyCell
-                                value={val ?? undefined}
-                                onUpdate={onUpdate}
-                            />
-                        );
+                        return <EditableMoneyCell value={val ?? undefined} onUpdate={onUpdate} />;
                     }
 
                     return (
                         <EditableTextCell
-                            value={toTextLocal(val)}
+                            value={toText(val)}
                             onUpdate={onUpdate}
                             multiline={col.key === 'notes' || col.key === 'description'}
                             className={
-                                col.key === 'full_name' ? 'font-medium' :
-                                    col.key === 'company_name' ? 'text-gray-300' :
-                                        col.key === 'email' ? 'text-sm text-gray-400' :
-                                            col.key === 'description' ? 'truncate max-w-[200px]' :
-                                                col.key === 'notes' ? 'truncate max-w-[200px]' : ''
+                                col.key === 'full_name'    ? 'font-medium' :
+                                col.key === 'company_name' ? 'text-gray-300' :
+                                col.key === 'email'        ? 'text-sm text-gray-400' :
+                                col.key === 'description'  ? 'truncate max-w-[200px]' :
+                                col.key === 'notes'        ? 'truncate max-w-[200px]' : ''
                             }
                         />
                     );
                 },
-                meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' }
-            };
-        });
+                meta: { headerClassName: 'min-w-[160px]', cellClassName: 'min-w-[160px]' },
+            }));
 
         const systemCols: ColumnDef<Lead>[] = [
             {
                 accessorKey: 'owner_id',
                 header: 'Owner ID',
-                cell: ({ row }) => (<span className="text-xs text-gray-500">{row.getValue('owner_id') ? String(row.getValue('owner_id')) : '-'}</span>),
-                meta: { headerClassName: 'min-w-[220px]', cellClassName: 'min-w-[220px]' }
+                cell: ({ row }) => (
+                    <span className="text-xs text-gray-500">
+                        {row.getValue('owner_id') ? String(row.getValue('owner_id')) : '-'}
+                    </span>
+                ),
+                meta: { headerClassName: 'min-w-[220px]', cellClassName: 'min-w-[220px]' },
             },
             {
                 accessorKey: 'priority_changed_at',
                 header: 'Priority Changed',
                 cell: ({ row }) => {
                     const date = row.getValue('priority_changed_at') as string;
-                    return <span className="text-xs text-gray-500">{date ? new Date(date).toLocaleDateString() : '-'}</span>;
+                    return (
+                        <span className="text-xs text-gray-500">
+                            {date ? new Date(date).toLocaleDateString() : '-'}
+                        </span>
+                    );
                 },
-                meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' }
+                meta: { headerClassName: 'min-w-[180px]', cellClassName: 'min-w-[180px]' },
             },
             {
                 id: 'actions',
                 header: 'Actions',
                 cell: ({ row }) => {
                     const lead = row.original;
-                    // Fix paintbucket issue by checking that PaintBucket icon is imported or import it.
-                    // Assuming onUpdateLead handles is_highlighted
                     return (
                         <div className="flex items-center justify-end gap-1">
                             <button
                                 onClick={() => onUpdateLead?.(lead.id, 'is_highlighted', !lead.is_highlighted)}
                                 className="p-2 hover:bg-lime/10 rounded-lg text-gray-400 hover:text-lime transition-colors"
-                                title={lead.is_highlighted ? "Remove Highlight" : "Highlight Row"}
+                                title={lead.is_highlighted ? 'Remove Highlight' : 'Highlight Row'}
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" /><path d="m5 2 5 5" /><path d="M2 13h15" /><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" /></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" />
+                                    <path d="m5 2 5 5" /><path d="M2 13h15" />
+                                    <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" />
+                                </svg>
                             </button>
                             <button
                                 onClick={() => onEdit(lead)}
@@ -328,11 +377,11 @@ export function LeadsTable({
                         </div>
                     );
                 },
-                meta: { headerClassName: 'min-w-[120px] text-right', cellClassName: 'min-w-[120px]' }
-            }
+                meta: { headerClassName: 'min-w-[120px] text-right', cellClassName: 'min-w-[120px]' },
+            },
         ];
 
-        return [...dynamicCols, ...systemCols];
+        return [checkboxCol, ...dynamicCols, ...systemCols];
     }, [columnsConfig, onUpdateColumn, onDeleteColumn, onUpdateLead, onUpdatePriority, onEdit, onDelete]);
 
     const table = useReactTable({
@@ -345,15 +394,18 @@ export function LeadsTable({
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
+        getRowId: (row) => row.id,
+        enableRowSelection: true,
         state: {
             sorting,
             columnFilters,
             globalFilter,
             columnVisibility,
+            rowSelection,
         },
     });
 
-    // BUG-3 fix: use getRowModel() which applies filter + sort pipeline (not getSortedRowModel which ignores filters)
     const allProcessedRows = table.getRowModel().rows;
     const visibleRows = useMemo(() => {
         if (rowsPerPage === 'all') return allProcessedRows;
@@ -363,29 +415,23 @@ export function LeadsTable({
     const totalFilteredRows = table.getFilteredRowModel().rows.length;
     const visibleCount = visibleRows.length;
 
-    // Only full_name is sticky — priority and all other columns scroll freely behind it.
-    // Having priority also sticky at left-[220px] caused it to overlap Email/adjacent columns
-    // because priority (order_index 2) rendered after full_name (order_index 1) in the DOM,
-    // making the offset calculations wrong.
-    const stickyColumns: Record<string, { left: string; width: string }> = {
-        full_name: { left: 'left-0', width: 'w-[220px] min-w-[220px] max-w-[220px]' },
+    // ── Sticky column helpers ─────────────────────────────────────────────────
+    // z-40 on sticky headers (above the z-20 thead and z-10 sticky body cells).
+    // Fully opaque backgrounds prevent scrolling content from bleeding through.
+    const getStickyHeaderClass = (colId: string) => {
+        const s = STICKY_MAP[colId];
+        if (!s) return '';
+        return `sticky ${s.left} z-40 ${s.width} bg-bg-elevated border-r border-border`;
     };
 
-    const getStickyHeaderClass = (columnId: string) => {
-        const sticky = stickyColumns[columnId];
-        if (!sticky) return '';
-        // BUG-13 fix: use bg-bg-elevated (fully opaque) so header never bleeds
-        return `sticky ${sticky.left} z-30 ${sticky.width} bg-bg-elevated border-r border-border`;
+    const getStickyCellClass = (colId: string, rowIndex: number) => {
+        const s = STICKY_MAP[colId];
+        if (!s) return '';
+        const bg = ROW_BG[rowIndex % 2];
+        return `sticky ${s.left} z-20 ${s.width} ${bg} border-r border-border`;
     };
 
-    const getStickyCellClass = (columnId: string, rowIndex: number) => {
-        const sticky = stickyColumns[columnId];
-        if (!sticky) return '';
-        // BUG-13 fix: fully opaque solid colours – no /80 opacity that causes bleed-through on scroll
-        const rowTone = rowIndex % 2 === 0 ? 'bg-[#000000]' : 'bg-[#111111]';
-        return `sticky ${sticky.left} z-10 ${sticky.width} ${rowTone} border-r border-border`;
-    };
-
+    // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div className="space-y-4">
             {/* Toolbar */}
@@ -406,71 +452,52 @@ export function LeadsTable({
                     </div>
 
                     {/* Priority Filter */}
-                    <div className="min-w-[180px]">
-                        <div className="relative">
-                            <select
-                                value={priorityFilter}
-                                onChange={(e) => setPriorityFilter(e.target.value)}
-                                className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
-                            >
-                                <option value="ALL">All Priorities</option>
-                                {PRIORITY_OPTIONS.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                        </div>
+                    <div className="min-w-[180px] relative">
+                        <select
+                            value={priorityFilter}
+                            onChange={(e) => setPriorityFilter(e.target.value)}
+                            className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60"
+                        >
+                            <option value="ALL">All Priorities</option>
+                            {PRIORITY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     </div>
 
                     {/* Offering Filter */}
-                    <div className="min-w-[180px]">
-                        <div className="relative">
-                            <select
-                                value={offeringFilter}
-                                onChange={(e) => setOfferingFilter(e.target.value)}
-                                className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
-                            >
-                                <option value="ALL">All Offerings</option>
-                                {OFFERING_OPTIONS.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                        </div>
+                    <div className="min-w-[180px] relative">
+                        <select
+                            value={offeringFilter}
+                            onChange={(e) => setOfferingFilter(e.target.value)}
+                            className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60"
+                        >
+                            <option value="ALL">All Offerings</option>
+                            {OFFERING_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     </div>
 
                     {/* Rows per page */}
-                    <div className="min-w-[140px]">
-                        <div className="relative">
-                            <select
-                                value={rowsPerPage}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setRowsPerPage(val === 'all' ? 'all' : (Number(val) as RowsPerPage));
-                                }}
-                                className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
-                            >
-                                {ROWS_PER_PAGE_OPTIONS.map((option) => (
-                                    <option key={option} value={option}>
-                                        {option === 'all' ? 'All rows' : `${option} rows`}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                        </div>
+                    <div className="min-w-[140px] relative">
+                        <select
+                            value={rowsPerPage}
+                            onChange={(e) => {
+                                const v = e.target.value;
+                                setRowsPerPage(v === 'all' ? 'all' : (Number(v) as RowsPerPage));
+                            }}
+                            className="w-full appearance-none px-4 py-2 pr-10 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 focus:outline-none focus:border-gray-500/60"
+                        >
+                            {ROWS_PER_PAGE_OPTIONS.map(o => (
+                                <option key={o} value={o}>{o === 'all' ? 'All rows' : `${o} rows`}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     </div>
 
                     {/* Density toggle */}
                     <button
-                        onClick={() => setDenseMode((prev) => !prev)}
-                        className={`px-4 py-2 rounded-xl border text-sm transition-colors ${denseMode
-                            ? 'border-gray-500/60 text-gray-100 bg-white/5'
-                            : 'border-border text-gray-400 hover:text-white hover:border-gray-500/60'
-                            }`}
+                        onClick={() => setDenseMode(p => !p)}
+                        className={`px-4 py-2 rounded-xl border text-sm transition-colors ${denseMode ? 'border-gray-500/60 text-gray-100 bg-white/5' : 'border-border text-gray-400 hover:text-white hover:border-gray-500/60'}`}
                     >
                         {denseMode ? 'Compact rows' : 'Comfort rows'}
                     </button>
@@ -486,13 +513,11 @@ export function LeadsTable({
                     </button>
                 </div>
 
-
                 {/* Active Filters Summary */}
                 {(priorityFilter !== 'ALL' || offeringFilter !== 'ALL' || globalFilter) && (
                     <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                         <Filter className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-400">Active filters:</span>
-                        {/* BUG-7 fix: show a chip for active global search text */}
                         {globalFilter && (
                             <span className="px-2 py-1 bg-bg-primary/60 text-gray-200 rounded border border-border/60">
                                 Search: &quot;{globalFilter}&quot;
@@ -509,11 +534,7 @@ export function LeadsTable({
                             </span>
                         )}
                         <button
-                            onClick={() => {
-                                setPriorityFilter('ALL');
-                                setOfferingFilter('ALL');
-                                setGlobalFilter('');
-                            }}
+                            onClick={() => { setPriorityFilter('ALL'); setOfferingFilter('ALL'); setGlobalFilter(''); }}
                             className="ml-2 text-gray-400 hover:text-white transition-colors"
                         >
                             Clear all
@@ -523,30 +544,39 @@ export function LeadsTable({
 
                 <div className="mt-3 text-xs text-gray-500">
                     Showing {visibleCount} of {totalFilteredRows} leads
+                    {Object.keys(rowSelection).length > 0 && (
+                        <span className="ml-3 text-lime">
+                            · {Object.keys(rowSelection).length} selected
+                        </span>
+                    )}
                 </div>
             </div>
 
             {/* Table */}
-            {/* BUG-13 fix: bg-bg-card (solid, no opacity) so sticky cols are never transparent */}
             <div className={`w-full max-w-full overflow-hidden rounded-xl border border-border bg-bg-card ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
                 <div className="w-full max-w-full max-h-[60vh] overflow-auto">
                     <table className={`min-w-[3200px] w-max border-separate border-spacing-0 ${denseMode ? 'text-xs' : 'text-sm'}`}>
-                        <thead className="sticky top-0 z-20 bg-bg-elevated">
+
+                        {/* ── thead: sticky top + solid background ─────────────── */}
+                        <thead className="sticky top-0 z-30 bg-bg-elevated">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
+                                        const isSelect = header.column.id === 'select';
                                         const meta = header.column.columnDef.meta as { headerClassName?: string } | undefined;
+                                        const stickyClass = getStickyHeaderClass(header.column.id);
                                         return (
                                             <th
                                                 key={header.id}
-                                                className={`px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border ${meta?.headerClassName || ''} ${getStickyHeaderClass(header.column.id)}`}
+                                                className={[
+                                                    // Padding: tighter for the checkbox col
+                                                    isSelect ? 'px-3 py-3' : 'px-4 py-3',
+                                                    'text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border',
+                                                    meta?.headerClassName || '',
+                                                    stickyClass,
+                                                ].join(' ')}
                                             >
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
+                                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                             </th>
                                         );
                                     })}
@@ -554,6 +584,7 @@ export function LeadsTable({
                             ))}
                         </thead>
 
+                        {/* ── tbody ─────────────────────────────────────────────── */}
                         <tbody>
                             {visibleRows.length === 0 ? (
                                 <tr>
@@ -566,28 +597,35 @@ export function LeadsTable({
                                 </tr>
                             ) : (
                                 visibleRows.map((row, rowIndex) => {
-                                    // BUG-13 fix: solid row backgrounds so sticky cols have correct background on scroll
-                                    const rowTone = rowIndex % 2 === 0 ? 'bg-[#000000]' : 'bg-[#111111]';
+                                    const baseBg = ROW_BG[rowIndex % 2];
                                     const isHighlighted = highlightId === row.original.id;
                                     return (
                                         <tr
                                             key={row.id}
                                             id={`lead-row-${row.original.id}`}
-                                            data-state={row.getIsSelected() && "selected"}
-                                            className={`${rowTone} hover:bg-white/5 transition-colors`}
+                                            data-state={row.getIsSelected() ? 'selected' : undefined}
+                                            className={`${baseBg} hover:bg-white/5 transition-colors`}
                                         >
                                             {row.getVisibleCells().map((cell) => {
+                                                const isSelect = cell.column.id === 'select';
                                                 const meta = cell.column.columnDef.meta as { cellClassName?: string } | undefined;
                                                 const stickyClass = getStickyCellClass(cell.column.id, rowIndex);
                                                 return (
                                                     <td
                                                         key={cell.id}
-                                                        className={`whitespace-nowrap border-b border-border px-4 ${denseMode ? 'py-2' : 'py-3'} text-gray-200 ${meta?.cellClassName || ''} ${stickyClass} ${isHighlighted ? 'bg-lime/5 first:border-l-2 first:border-l-lime/60' : ''}`}
+                                                        className={[
+                                                            'whitespace-nowrap border-b border-border',
+                                                            isSelect ? 'px-3' : 'px-4',
+                                                            denseMode ? 'py-2' : 'py-3',
+                                                            'text-gray-200',
+                                                            meta?.cellClassName || '',
+                                                            stickyClass,
+                                                            isHighlighted ? 'bg-lime/5' : '',
+                                                            // Lime left-border only on the first sticky col (checkbox) for highlighted rows
+                                                            isHighlighted && isSelect ? 'border-l-2 border-l-lime/60' : '',
+                                                        ].filter(Boolean).join(' ')}
                                                     >
-                                                        {flexRender(
-                                                            cell.column.columnDef.cell,
-                                                            cell.getContext()
-                                                        )}
+                                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                     </td>
                                                 );
                                             })}
