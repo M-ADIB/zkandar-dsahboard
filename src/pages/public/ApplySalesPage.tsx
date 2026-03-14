@@ -196,7 +196,7 @@ export const ApplySalesPage = () => {
                         High-Ticket Closer
                     </h1>
                     <p className="text-gray-400 font-medium mb-4 leading-relaxed">
-                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for high-ticket closers to join our remote sales team.
+                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for a high-ticket closer to join our remote sales team.
                     </p>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Contact Info</span>
