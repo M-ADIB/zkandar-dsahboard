@@ -3,11 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
 import { Plus, Download, Users, Target, Flame, DollarSign, CheckCircle, Phone, PaintBucket } from 'lucide-react';
-import type { Lead, LeadColumn } from '@/types/database';
+import type { Lead, LeadColumn, LeadColumnOption } from '@/types/database';
 import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
+import { ColumnSettingsPanel } from '@/components/admin/leads/ColumnSettingsPanel';
 import { logAudit } from '@/lib/audit';
-// BUG-10 fix: QuickAddLead removed – "Add Lead" button opens the modal instead
 
 
 export function LeadsPage() {
@@ -19,6 +19,7 @@ export function LeadsPage() {
     const [isExporting, setIsExporting] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
     const [showHighlightedOnly, setShowHighlightedOnly] = useState(false);
+    const [isColumnPanelOpen, setIsColumnPanelOpen] = useState(false);
     const [toast, setToast] = useState<{ message: string } | null>(null);
 
     const showToast = useCallback((message: string) => {
@@ -220,7 +221,7 @@ export function LeadsPage() {
         setIsExporting(false);
     };
 
-    const handleAddColumn = async (label: string, type: string = 'text') => {
+    const handleAddColumn = async (label: string, type: string = 'text', options: LeadColumnOption[] = []) => {
         const tempKey = `custom_${Date.now()}`;
         const newCol = {
             key: tempKey,
@@ -229,6 +230,7 @@ export function LeadsPage() {
             is_custom: true,
             visible: true,
             order_index: leadColumns.length, // Appended to end
+            options,
         };
 
         const { data, error } = await (supabase.from('lead_columns') as any)
@@ -247,6 +249,35 @@ export function LeadsPage() {
             columns: [...(old?.columns || []), data]
         }));
         showToast('Column added');
+    };
+
+    const handleReorderColumn = async (colId: string, direction: 'up' | 'down') => {
+        const sorted = [...leadColumns].sort((a, b) => a.order_index - b.order_index);
+        const idx = sorted.findIndex(c => c.id === colId);
+        if (idx < 0) return;
+        const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= sorted.length) return;
+
+        const col = sorted[idx];
+        const swapCol = sorted[swapIdx];
+        const newOrderA = swapCol.order_index;
+        const newOrderB = col.order_index;
+
+        // Optimistic update
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            columns: old?.columns?.map((c: LeadColumn) => {
+                if (c.id === col.id) return { ...c, order_index: newOrderA };
+                if (c.id === swapCol.id) return { ...c, order_index: newOrderB };
+                return c;
+            }) || []
+        }));
+
+        // Persist both updates
+        await Promise.all([
+            (supabase.from('lead_columns') as any).update({ order_index: newOrderA }).eq('id', col.id),
+            (supabase.from('lead_columns') as any).update({ order_index: newOrderB }).eq('id', swapCol.id),
+        ]);
     };
 
     const handleUpdateColumn = async (colId: string, updates: Partial<LeadColumn>) => {
@@ -425,9 +456,9 @@ export function LeadsPage() {
             <LeadsTable
                 data={showHighlightedOnly ? leads.filter(l => l.is_highlighted) : leads}
                 columnsConfig={leadColumns}
-                onAddColumn={handleAddColumn}
                 onUpdateColumn={handleUpdateColumn}
                 onDeleteColumn={handleDeleteColumn}
+                onOpenColumnSettings={() => setIsColumnPanelOpen(true)}
                 onEdit={(lead) => {
                     setSelectedLead(lead);
                     setIsModalOpen(true);
@@ -438,6 +469,18 @@ export function LeadsPage() {
                 isUpdating={isUpdating}
                 highlightId={highlightId}
             />
+
+            {/* Column Settings Panel */}
+            {isColumnPanelOpen && (
+                <ColumnSettingsPanel
+                    columns={leadColumns}
+                    onClose={() => setIsColumnPanelOpen(false)}
+                    onAddColumn={handleAddColumn}
+                    onUpdateColumn={handleUpdateColumn}
+                    onDeleteColumn={handleDeleteColumn}
+                    onReorderColumn={handleReorderColumn}
+                />
+            )}
 
             {/* Modal */}
             <LeadDetailsModal

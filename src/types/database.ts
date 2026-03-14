@@ -136,6 +136,11 @@ export interface Lead {
     custom_fields?: Record<string, any>;
 }
 
+export interface LeadColumnOption {
+    label: string;
+    color?: string;
+}
+
 export interface LeadColumn {
     id: string;
     key: string;
@@ -144,6 +149,7 @@ export interface LeadColumn {
     is_custom: boolean;
     visible: boolean;
     order_index: number;
+    options: LeadColumnOption[];
     created_at: string;
     updated_at: string;
 }

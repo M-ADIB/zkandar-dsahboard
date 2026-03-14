@@ -18,7 +18,7 @@ import {
     Search,
     Filter,
     ChevronDown,
-    Plus,
+    Settings2,
 } from 'lucide-react';
 import { EditableTextCell } from './cells/EditableTextCell';
 import { EditableSelectCell } from './cells/EditableSelectCell';
@@ -47,15 +47,20 @@ const OFFERING_OPTIONS = [
     { value: 'Sprint Workshop', label: 'Sprint Workshop' },
     { value: '5-Week Masterclass', label: '5-Week Masterclass' },
     { value: 'Data Analytics', label: 'Data Analytics' },
+    { value: 'AI TALK', label: 'AI TALK' },
+    { value: 'Advanced Workflows', label: 'Advanced Workflows' },
+    { value: 'CRASH COURSE', label: 'CRASH COURSE' },
+    { value: 'Full AI Integration', label: 'Full AI Integration' },
+    { value: 'WORLD TOUR', label: 'WORLD TOUR' },
     { value: 'TBA', label: 'TBA' },
 ];
 
 interface LeadsTableProps {
     data: Lead[];
     columnsConfig: LeadColumn[];
-    onAddColumn: (label: string, type?: string) => void;
     onUpdateColumn: (colId: string, updates: Partial<LeadColumn>) => void;
     onDeleteColumn: (colId: string, colKey: string) => void;
+    onOpenColumnSettings?: () => void;
     onEdit: (lead: Lead) => void;
     onDelete: (lead: Lead) => void;
     onUpdatePriority: (leadId: string, priority: string) => void;
@@ -67,9 +72,9 @@ interface LeadsTableProps {
 export function LeadsTable({
     data,
     columnsConfig,
-    onAddColumn,
     onUpdateColumn,
     onDeleteColumn,
+    onOpenColumnSettings,
     onEdit,
     onDelete,
     onUpdatePriority,
@@ -358,9 +363,12 @@ export function LeadsTable({
     const totalFilteredRows = table.getFilteredRowModel().rows.length;
     const visibleCount = visibleRows.length;
 
+    // Only full_name is sticky — priority and all other columns scroll freely behind it.
+    // Having priority also sticky at left-[220px] caused it to overlap Email/adjacent columns
+    // because priority (order_index 2) rendered after full_name (order_index 1) in the DOM,
+    // making the offset calculations wrong.
     const stickyColumns: Record<string, { left: string; width: string }> = {
         full_name: { left: 'left-0', width: 'w-[220px] min-w-[220px] max-w-[220px]' },
-        priority: { left: 'left-[220px]', width: 'w-[160px] min-w-[160px] max-w-[160px]' },
     };
 
     const getStickyHeaderClass = (columnId: string) => {
@@ -467,17 +475,14 @@ export function LeadsTable({
                         {denseMode ? 'Compact rows' : 'Comfort rows'}
                     </button>
 
-                    {/* Add Column */}
+                    {/* Column Settings */}
                     <button
-                        onClick={() => {
-                            const name = prompt('Enter custom column name:');
-                            if (name && name.trim()) onAddColumn(name.trim(), 'text');
-                        }}
+                        onClick={onOpenColumnSettings}
                         className="px-4 py-2 rounded-xl border border-lime/30 text-lime bg-lime/10 hover:bg-lime/20 text-sm transition-colors flex items-center gap-2"
-                        title="Add custom text column"
+                        title="Manage columns — add, hide, reorder, delete"
                     >
-                        <Plus className="h-4 w-4" />
-                        <span>Add Column</span>
+                        <Settings2 className="h-4 w-4" />
+                        <span>Columns</span>
                     </button>
                 </div>
 
