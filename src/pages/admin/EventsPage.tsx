@@ -8,6 +8,7 @@ export function EventsPage() {
     const [events, setEvents] = useState<EventRequest[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [activeTab, setActiveTab] = useState<'active' | 'done'>('active')
     const [statusFilter, setStatusFilter] = useState<string>('all')
     const [selectedEvent, setSelectedEvent] = useState<EventRequest | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -40,13 +41,16 @@ export function EventsPage() {
         }
     }
 
+    const activeStatuses = ['pending', 'approved', 'declined']
+
     const filteredEvents = events.filter(ev => {
         const matchesSearch =
             ev.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
             ev.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             ev.event_type.toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesTab = activeTab === 'done' ? ev.status === 'done' : activeStatuses.includes(ev.status)
         const matchesStatus = statusFilter === 'all' || ev.status === statusFilter
-        return matchesSearch && matchesStatus
+        return matchesSearch && matchesTab && matchesStatus
     })
 
     const getStatusConfig = (status: string) => {
@@ -54,7 +58,7 @@ export function EventsPage() {
             case 'pending': return { bg: 'bg-yellow-500/10', text: 'text-yellow-500', label: 'Pending' }
             case 'approved': return { bg: 'bg-green-500/10', text: 'text-green-500', label: 'Approved' }
             case 'declined': return { bg: 'bg-red-500/10', text: 'text-red-500', label: 'Declined' }
-            case 'done': return { bg: 'bg-brand-lime/10', text: 'text-brand-lime', label: 'Done' }
+            case 'done': return { bg: 'bg-sky-500/15', text: 'text-sky-400', label: 'Done' }
             default: return { bg: 'bg-gray-500/10', text: 'text-gray-500', label: status }
         }
     }
@@ -80,6 +84,30 @@ export function EventsPage() {
                 </div>
             </div>
 
+            {/* Tabs */}
+            <div className="flex gap-1 mb-6 bg-[#0A0A0A] border border-white/5 rounded-xl p-1 w-fit">
+                {(['active', 'done'] as const).map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => { setActiveTab(tab); setStatusFilter('all') }}
+                        className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors capitalize ${
+                            activeTab === tab
+                                ? 'bg-[#1A1A1A] text-white'
+                                : 'text-gray-500 hover:text-gray-300'
+                        }`}
+                    >
+                        {tab === 'active' ? 'Active' : 'Done'}
+                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${
+                            activeTab === tab ? 'bg-white/10 text-gray-300' : 'bg-white/5 text-gray-600'
+                        }`}>
+                            {tab === 'done'
+                                ? events.filter(e => e.status === 'done').length
+                                : events.filter(e => activeStatuses.includes(e.status)).length}
+                        </span>
+                    </button>
+                ))}
+            </div>
+
             {/* Filters */}
             <div className="flex flex-col md:flex-row gap-4 mb-8">
                 <div className="relative flex-1">
@@ -92,20 +120,21 @@ export function EventsPage() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="flex items-center gap-2">
-                    <Filter className="w-5 h-5 text-gray-400" />
-                    <select
-                        className="bg-[#111] border border-white/5 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-brand-lime/50 transition-colors cursor-pointer outline-none"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="all">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="declined">Declined</option>
-                        <option value="done">Done</option>
-                    </select>
-                </div>
+                {activeTab === 'active' && (
+                    <div className="flex items-center gap-2">
+                        <Filter className="w-5 h-5 text-gray-400" />
+                        <select
+                            className="bg-[#111] border border-white/5 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-brand-lime/50 transition-colors cursor-pointer outline-none"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="declined">Declined</option>
+                        </select>
+                    </div>
+                )}
             </div>
 
             {/* Default Table */}

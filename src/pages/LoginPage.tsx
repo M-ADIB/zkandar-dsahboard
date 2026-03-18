@@ -79,7 +79,13 @@ export function LoginPage() {
     // Redirect if already logged in
     useEffect(() => {
         if (!loading && user) {
-            navigate('/')
+            const lastPath = localStorage.getItem('zkandar_last_path')
+            if (lastPath && lastPath !== '/login' && lastPath !== '/signup') {
+                localStorage.removeItem('zkandar_last_path')
+                navigate(lastPath)
+            } else {
+                navigate('/')
+            }
         }
     }, [user, loading, navigate])
 

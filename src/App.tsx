@@ -8,6 +8,7 @@ import { MemberRoute } from '@/components/auth/MemberRoute'
 import { NotificationProvider } from '@/context/NotificationContext'
 import { lazy } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
+import { PageTitleUpdater } from '@/hooks/usePageTitle'
 
 // Public & Onboarding
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(module => ({ default: module.LoginPage })))
@@ -20,6 +21,7 @@ const ThankYouPage = lazy(() => import('@/pages/public/ThankYouPage').then(modul
 const PostCompletionSurvey = lazy(() => import('@/pages/public/PostCompletionSurvey').then(module => ({ default: module.PostCompletionSurvey })))
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
 const TermsOfServicePage = lazy(() => import('@/pages/TermsOfServicePage').then(module => ({ default: module.TermsOfServicePage })))
+const EPKPage = lazy(() => import('@/pages/public/EPKPage').then(module => ({ default: module.EPKPage })))
 const OnboardingSurvey = lazy(() => import('@/components/onboarding/OnboardingSurvey').then(module => ({ default: module.OnboardingSurvey })))
 const SprintWorkshopOnboarding = lazy(() => import('@/pages/onboarding/SprintWorkshopOnboarding').then(module => ({ default: module.SprintWorkshopOnboarding })))
 
@@ -58,6 +60,7 @@ function App() {
                                 <div className="h-8 w-8 rounded-full border-2 border-lime border-t-transparent animate-spin" />
                             </div>
                         }>
+                            <PageTitleUpdater />
                             <Routes>
                                 {/* Public Routes */}
                                 <Route path="/login" element={<LoginPage />} />
@@ -71,6 +74,7 @@ function App() {
                                 <Route path="/survey/post-completion" element={<PostCompletionSurvey />} />
                                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                                 <Route path="/terms" element={<TermsOfServicePage />} />
+                                <Route path="/epk/:slug" element={<EPKPage />} />
 
                                 {/* Onboarding (full-screen) */}
                                 <Route

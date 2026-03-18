@@ -70,7 +70,17 @@ export function LeadsPage() {
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
     const [highlightId, setHighlightId] = useState<string | null>(null);
-    const [showHighlightedOnly, setShowHighlightedOnly] = useState(false);
+    
+    // Read from search params
+    const showHighlightedOnly = searchParams.get('highlighted') === 'true';
+
+    const setShowHighlightedOnly = (val: boolean) => {
+        setSearchParams((prev: URLSearchParams) => {
+            if (val) prev.set('highlighted', 'true');
+            else prev.delete('highlighted');
+            return prev;
+        }, { replace: true });
+    };
     const [isColumnPanelOpen, setIsColumnPanelOpen] = useState(false);
     const [toast, setToast] = useState<{ message: string } | null>(null);
 

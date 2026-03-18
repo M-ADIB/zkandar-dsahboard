@@ -18,12 +18,33 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-        return { hasError: true, error }
+        // Don't show the error UI for chunk load errors — componentDidCatch will reload instead.
+        const isChunkLoadError =
+            error.name === 'ChunkLoadError' ||
+            error.message?.includes('Failed to fetch dynamically imported module') ||
+            error.message?.includes('Importing a module script failed') ||
+            error.message?.includes('Loading chunk')
+
+        return { hasError: !isChunkLoadError, error }
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
         console.error('ErrorBoundary caught an error:', error, errorInfo)
         Sentry.captureException(error, { extra: { componentStack: errorInfo.componentStack } })
+
+        // After a deployment, lazy-loaded chunk URLs change. SPA navigation to a page
+        // whose chunk no longer exists throws a ChunkLoadError. Auto-reload fetches the
+        // updated asset manifest and resolves the issue without user intervention.
+        const isChunkLoadError =
+            error.name === 'ChunkLoadError' ||
+            error.message?.includes('Failed to fetch dynamically imported module') ||
+            error.message?.includes('Importing a module script failed') ||
+            error.message?.includes('Loading chunk')
+
+        if (isChunkLoadError) {
+            console.warn('[ErrorBoundary] Stale deployment chunk detected — reloading for updated assets')
+            window.location.reload()
+        }
     }
 
     render() {

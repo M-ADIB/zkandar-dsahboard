@@ -1,5 +1,3 @@
-import './lib/sentry'   // must be first — initializes Sentry before any app code
-import './lib/analytics' // initialize PostHog early
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -21,10 +19,13 @@ const queryClient = new QueryClient({
     },
 })
 
+import { ScrollRestoration } from './components/layout/ScrollRestoration'
+
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
+                <ScrollRestoration />
                 <App />
                 <Toaster
                     position="top-right"

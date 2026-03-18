@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { ToolboxItem } from '@/types/database'
+import { setDynamicPageTitle } from '@/hooks/usePageTitle'
 
 function getVimeoEmbedUrl(url: string): string | null {
     const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
@@ -51,6 +52,7 @@ export function ToolboxDetailPage() {
                 setNotFound(true)
             } else {
                 setItem(data as ToolboxItem)
+                setDynamicPageTitle((data as ToolboxItem).title)
             }
             setLoading(false)
         }

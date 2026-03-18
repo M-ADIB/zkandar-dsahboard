@@ -20,6 +20,7 @@ import {
     DollarSign,
     Briefcase,
     Wrench,
+    ChevronDown,
 } from 'lucide-react'
 import type { User, UserRole } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -36,112 +37,75 @@ interface NavItem {
     roles: UserRole[]
 }
 
-const adminNavItems: NavItem[] = [
+interface NavSection {
+    title: string
+    id: string
+    items: NavItem[]
+}
+
+const adminNavSections: NavSection[] = [
     {
-        icon: LayoutDashboard,
-        label: 'Dashboard',
-        path: '/admin',
-        roles: ['owner', 'admin'],
+        title: 'Core',
+        id: 'admin_core',
+        items: [
+            { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', roles: ['owner', 'admin'] },
+            { icon: MessageSquare, label: 'Chat', path: '/admin/chat', roles: ['owner', 'admin'] },
+            { icon: BarChart3, label: 'Analytics', path: '/admin/analytics', roles: ['owner', 'admin'] },
+        ]
     },
     {
-        icon: Building2,
-        label: 'Companies',
-        path: '/admin/companies',
-        roles: ['owner', 'admin'],
+        title: 'Network',
+        id: 'admin_network',
+        items: [
+            { icon: Building2, label: 'Companies', path: '/admin/companies', roles: ['owner', 'admin'] },
+            { icon: Users, label: 'Members', path: '/admin/members', roles: ['owner', 'admin'] },
+            { icon: TrendingUp, label: 'Leads', path: '/admin/leads', roles: ['owner', 'admin'] },
+        ]
     },
     {
-        icon: Users,
-        label: 'Members',
-        path: '/admin/members',
-        roles: ['owner', 'admin'],
+        title: 'Operations',
+        id: 'admin_operations',
+        items: [
+            { icon: GraduationCap, label: 'Programs', path: '/admin/programs', roles: ['owner', 'admin'] },
+            { icon: Mic, label: 'Events', path: '/admin/events', roles: ['owner', 'admin'] },
+            { icon: DollarSign, label: 'Costs', path: '/admin/costs', roles: ['owner', 'admin'] },
+            { icon: Briefcase, label: 'Recruiting', path: '/admin/recruiting', roles: ['owner', 'admin'] },
+        ]
     },
     {
-        icon: TrendingUp,
-        label: 'Leads',
-        path: '/admin/leads',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: GraduationCap,
-        label: 'Programs',
-        path: '/admin/programs',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: MessageSquare,
-        label: 'Chat',
-        path: '/admin/chat',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: BarChart3,
-        label: 'Analytics',
-        path: '/admin/analytics',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: Mic,
-        label: 'Events',
-        path: '/admin/events',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: DollarSign,
-        label: 'Costs',
-        path: '/admin/costs',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: Briefcase,
-        label: 'Recruiting',
-        path: '/admin/recruiting',
-        roles: ['owner', 'admin'],
-    },
-    {
-        icon: Settings,
-        label: 'Settings',
-        path: '/settings',
-        roles: ['owner', 'admin'],
-    },
+        title: 'System',
+        id: 'admin_system',
+        items: [
+            { icon: Settings, label: 'Settings', path: '/settings', roles: ['owner', 'admin'] },
+        ]
+    }
 ]
 
-const memberNavItems: NavItem[] = [
+const memberNavSections: NavSection[] = [
     {
-        icon: LayoutDashboard,
-        label: 'Dashboard',
-        path: '/dashboard',
-        roles: ['owner', 'admin', 'executive', 'participant'],
+        title: 'Learning',
+        id: 'member_learning',
+        items: [
+            { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: Wrench, label: 'Toolbox', path: '/toolbox', roles: ['owner', 'admin', 'executive', 'participant'] },
+        ]
     },
     {
-        icon: GraduationCap,
-        label: 'My Program',
-        path: '/my-program',
-        roles: ['owner', 'admin', 'executive', 'participant'],
+        title: 'Connect',
+        id: 'member_connect',
+        items: [
+            { icon: MessageSquare, label: 'Chat', path: '/chat', roles: ['owner', 'admin', 'executive', 'participant'] },
+        ]
     },
     {
-        icon: TrendingUp,
-        label: 'My Performance',
-        path: '/my-performance',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
-        icon: Wrench,
-        label: 'Toolbox',
-        path: '/toolbox',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
-        icon: MessageSquare,
-        label: 'Chat',
-        path: '/chat',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
-    {
-        icon: Settings,
-        label: 'Settings',
-        path: '/settings',
-        roles: ['owner', 'admin', 'executive', 'participant'],
-    },
+        title: 'System',
+        id: 'member_system',
+        items: [
+            { icon: Settings, label: 'Settings', path: '/settings', roles: ['owner', 'admin', 'executive', 'participant'] },
+        ]
+    }
 ]
 
 export function Sidebar({ userRole }: SidebarProps) {
@@ -155,8 +119,34 @@ export function Sidebar({ userRole }: SidebarProps) {
     const [searchQuery, setSearchQuery] = useState('')
     const [loadingMembers, setLoadingMembers] = useState(false)
 
-    const activeItems = canPreview && !isPreviewing ? adminNavItems : memberNavItems
-    const filteredItems = activeItems.filter((item) => item.roles.includes(userRole))
+    const activeSections = canPreview && !isPreviewing ? adminNavSections : memberNavSections
+    const filteredSections = activeSections.map(section => ({
+        ...section,
+        items: section.items.filter(item => item.roles.includes(userRole))
+    })).filter(section => section.items.length > 0)
+
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+        const saved = localStorage.getItem('zkandar_sidebar_state')
+        if (saved) {
+            try {
+                return JSON.parse(saved)
+            } catch (e) {
+                // Return default state on parse error
+            }
+        }
+        return {
+            admin_core: true, admin_network: true, admin_operations: true, admin_system: true,
+            member_learning: true, member_connect: true, member_system: true
+        }
+    })
+
+    const toggleSection = (id: string) => {
+        setOpenSections(prev => {
+            const next = { ...prev, [id]: !prev[id] }
+            localStorage.setItem('zkandar_sidebar_state', JSON.stringify(next))
+            return next
+        })
+    }
 
     // Fetch members when picker opens
     useEffect(() => {
@@ -233,39 +223,71 @@ export function Sidebar({ userRole }: SidebarProps) {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 px-3 py-4 space-y-1">
-                    {filteredItems.map((item) => {
-                        const Icon = item.icon
-                        const isActive = location.pathname === item.path
-                            || (item.path !== '/admin' && location.pathname.startsWith(`${item.path}/`))
+                <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+                    {filteredSections.map((section) => {
+                        const isExpanded = openSections[section.id] !== false // Default to true
 
                         return (
-                            <NavLink
-                                key={item.path}
-                                to={item.path}
-                                onClick={() => setIsOpen(false)}
-                                className={`
-                  relative flex items-center gap-3 px-4 py-3 rounded-xl
-                  transition-all duration-200 group
-                  ${isActive
-                                        ? 'bg-lime/10 text-lime'
-                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                                    }
-                `}
-                            >
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="activeNav"
-                                        className="absolute inset-0 rounded-xl bg-lime/10 glow"
-                                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                                    />
-                                )}
-                                <Icon
-                                    className={`h-5 w-5 relative z-10 ${isActive ? 'text-lime' : ''
+                            <div key={section.id} className="space-y-1">
+                                <button
+                                    onClick={() => toggleSection(section.id)}
+                                    className="w-full flex items-center justify-between px-4 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition"
+                                >
+                                    {section.title}
+                                    <ChevronDown
+                                        className={`h-3 w-3 transition-transform duration-200 ${
+                                            isExpanded ? '' : '-rotate-90'
                                         }`}
-                                />
-                                <span className="relative z-10 font-medium">{item.label}</span>
-                            </NavLink>
+                                    />
+                                </button>
+                                
+                                <AnimatePresence initial={false}>
+                                    {isExpanded && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="space-y-1 overflow-hidden"
+                                        >
+                                            {section.items.map((item) => {
+                                                const Icon = item.icon
+                                                const isActive = location.pathname === item.path
+                                                    || (item.path !== '/admin' && location.pathname !== '/dashboard' && location.pathname.startsWith(`${item.path}/`))
+
+                                                return (
+                                                    <NavLink
+                                                        key={item.path}
+                                                        to={item.path}
+                                                        onClick={() => setIsOpen(false)}
+                                                        className={`
+                                                            relative flex items-center gap-3 px-4 py-2.5 rounded-xl
+                                                            transition-all duration-200 group
+                                                            ${isActive
+                                                                ? 'bg-lime/10 text-lime'
+                                                                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {isActive && (
+                                                            <motion.div
+                                                                layoutId="activeNav"
+                                                                className="absolute inset-0 rounded-xl bg-lime/10 glow"
+                                                                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                                            />
+                                                        )}
+                                                        <Icon
+                                                            className={`h-4 w-4 relative z-10 ${isActive ? 'text-lime' : ''
+                                                                }`}
+                                                        />
+                                                        <span className="relative z-10 font-medium text-sm">{item.label}</span>
+                                                    </NavLink>
+                                                )
+                                            })}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         )
                     })}
                 </nav>

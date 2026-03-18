@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 const resendApiKey = Deno.env.get('RESEND_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const appBaseUrl = Deno.env.get('PUBLIC_APP_URL') ?? 'https://ops.zkandar.com';
 
 // Handle CORS
 // Set ALLOWED_ORIGIN in Supabase Edge Function secrets to your production domain, e.g. https://app.zkandar.com
@@ -53,6 +54,35 @@ Deno.serve(async (req: Request) => {
 
     if (status === 'approved') {
       subject = "You're confirmed — Zkandar AI Talk 🎉";
+
+      // Build the EPK section based on whether an event-specific EPK was generated
+      const epkGenerated = event.epk_generated === true && event.epk_slug;
+      const epkUrl = epkGenerated
+        ? `${appBaseUrl}/epk/${event.epk_slug}`
+        : `${appBaseUrl}/epk`;
+      const epkLinkText = epkGenerated ? 'Access Your Event EPK' : 'Access EPK';
+      const epkDescription = epkGenerated
+        ? "We've prepared an Electronic Press Kit specifically for your event. You can access and share it here:"
+        : "In the meantime, you can access Khaled's official EPK and branding assets here:";
+
+      // Optional: host provides own flyer note
+      const hostProvidesNote = epkGenerated && event.epk_host_provides_flyer
+        ? `
+          <tr>
+            <td style="padding:0 24px 20px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1a1a; border:1px solid #1F2937; border-radius:12px;">
+                <tr>
+                  <td style="padding:14px; font-family:Arial,sans-serif;">
+                    <div style="font-size:13px; color:#D1D5DB;">
+                      <strong style="color:#FFFFFF;">Regarding the event flyer:</strong> Please note that for this event, your team will be responsible for producing the event flyer. Let us know if you need any assets or additional information from our side.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>`
+        : '';
+
       htmlContent = `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
           <tr>
@@ -74,20 +104,21 @@ Deno.serve(async (req: Request) => {
                           <div style="font-family:Arial,sans-serif; font-size:13px; color:#9CA3AF; font-weight:700; text-transform:uppercase;">Speaker Resources</div>
                           <div style="font-family:Arial,sans-serif; font-size:15px; font-weight:700; color:#FFFFFF; margin-top:6px;">Electronic Press Kit</div>
                           <div style="font-family:Arial,sans-serif; font-size:14px; color:#D1D5DB; margin-top:6px;">
-                            In the meantime, you can access Khaled's official EPK and branding assets here:
+                            ${epkDescription}
                           </div>
                           <table cellpadding="0" cellspacing="0" style="margin-top:16px;">
                             <tr>
                               <td bgcolor="#D0FF71" style="border-radius:10px;">
-                                <a href="https://ops.zkandar.com/epk"
+                                <a href="${epkUrl}"
                                    style="display:inline-block; padding:14px 22px; font-family:Arial,sans-serif; font-size:14px; font-weight:700; color:#0B0B0B; text-decoration:none; border-radius:10px;">
-                                  Access EPK
+                                  ${epkLinkText}
                                 </a>
                               </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
+                      ${hostProvidesNote}
                       <tr>
                         <td style="padding:0 24px 24px 24px;">
                           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B; border:1px solid #1F2937; border-radius:12px;">
@@ -126,7 +157,7 @@ Deno.serve(async (req: Request) => {
                         <td style="padding:22px 24px; border-bottom:1px solid #1F2937;">
                           <div style="font-family:Arial,sans-serif; font-size:18px; font-weight:700; color:#FFFFFF;">Hi ${event.full_name},</div>
                           <div style="font-family:Arial,sans-serif; font-size:14px; color:#D1D5DB; margin-top:8px;">
-                            Thank you so much for reaching out and extending this speaking opportunity to Khaled. 
+                            Thank you so much for reaching out and extending this speaking opportunity to Khaled.
                           </div>
                           <div style="font-family:Arial,sans-serif; font-size:14px; color:#D1D5DB; margin-top:12px;">
                             Unfortunately, due to current capacity and scheduling constraints, we are unable to commit to this event at this time.

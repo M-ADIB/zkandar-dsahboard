@@ -24,9 +24,9 @@ export function UsersPage() {
     const [memberships, setMemberships] = useState<CohortMembership[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
-    const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+    const [searchQuery, setSearchQuery] = useSessionStorage('users_search', '');
+    const [roleFilter, setRoleFilter] = useSessionStorage<RoleFilter>('users_role', 'all');
+    const [typeFilter, setTypeFilter] = useSessionStorage<TypeFilter>('users_type', 'all');
     const [invitations, setInvitations] = useState<{ id: string; email: string; role: string; status: string; created_at: string }[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);

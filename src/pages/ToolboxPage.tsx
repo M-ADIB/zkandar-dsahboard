@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Wrench, Search, Filter, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -23,10 +23,23 @@ const toolTypeConfig: Record<string, { label: string; color: string }> = {
 export function ToolboxPage() {
     const [items, setItems] = useState<ToolboxItem[]>([])
     const [loading, setLoading] = useState(true)
-    const [search, setSearch] = useState('')
-    const [filterCategory, setFilterCategory] = useState('all')
-    const [filterType, setFilterType] = useState('all')
-    const [filterImportance, setFilterImportance] = useState('all')
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const search = searchParams.get('q') || ''
+    const filterCategory = searchParams.get('category') || 'all'
+    const filterType = searchParams.get('type') || 'all'
+    const filterImportance = searchParams.get('importance') || 'all'
+
+    const updateFilter = (key: string, value: string) => {
+        setSearchParams((prev: URLSearchParams) => {
+            if (!value || value === 'all') {
+                prev.delete(key)
+            } else {
+                prev.set(key, value)
+            }
+            return prev
+        }, { replace: true })
+    }
 
     useEffect(() => {
         const fetch = async () => {
@@ -89,23 +102,23 @@ export function ToolboxPage() {
                         type="text"
                         placeholder="Search tools…"
                         value={search}
-                        onChange={e => setSearch(e.target.value)}
+                        onChange={e => updateFilter('q', e.target.value)}
                         className="w-full pl-9 pr-3 py-1.5 bg-bg-elevated border border-border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-lime/40 transition"
                     />
                 </div>
                 <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-gray-500" />
-                    <select className={selectClass} value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+                    <select className={selectClass} value={filterCategory} onChange={e => updateFilter('category', e.target.value)}>
                         {categories.map(c => <option key={c} value={c}>{c === 'all' ? 'All Categories' : c}</option>)}
                     </select>
-                    <select className={selectClass} value={filterType} onChange={e => setFilterType(e.target.value)}>
+                    <select className={selectClass} value={filterType} onChange={e => updateFilter('type', e.target.value)}>
                         {toolTypes.map(t => (
                             <option key={t} value={t}>
                                 {t === 'all' ? 'All Types' : toolTypeConfig[t]?.label ?? t}
                             </option>
                         ))}
                     </select>
-                    <select className={selectClass} value={filterImportance} onChange={e => setFilterImportance(e.target.value)}>
+                    <select className={selectClass} value={filterImportance} onChange={e => updateFilter('importance', e.target.value)}>
                         <option value="all">All Levels</option>
                         <option value="essential">Essential</option>
                         <option value="recommended">Recommended</option>

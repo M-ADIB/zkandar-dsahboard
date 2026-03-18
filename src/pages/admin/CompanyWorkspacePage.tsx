@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -18,6 +18,7 @@ import { WorkspaceSessions } from '@/components/admin/company/WorkspaceSessions'
 import { WorkspaceAssignments } from '@/components/admin/company/WorkspaceAssignments'
 import { WorkspaceAttendance } from '@/components/admin/company/WorkspaceAttendance'
 import { Portal } from '@/components/shared/Portal'
+import { setDynamicPageTitle } from '@/hooks/usePageTitle'
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface ManagementSubmission {
@@ -110,7 +111,19 @@ function ScoreGauge({ label, value, max = 10 }: { label: string; value: number; 
 export function CompanyWorkspacePage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const [activeTab, setActiveTab] = useState<WorkspaceTab>('overview')
+    const [searchParams, setSearchParams] = useSearchParams()
+    const activeTab = (searchParams.get('tab') as WorkspaceTab) || 'overview'
+
+    const setActiveTab = (tab: WorkspaceTab) => {
+        setSearchParams((prev: URLSearchParams) => {
+            if (tab === 'overview') {
+                prev.delete('tab')
+            } else {
+                prev.set('tab', tab)
+            }
+            return prev
+        }, { replace: true })
+    }
 
     const [company, setCompany] = useState<Company | null>(null)
     const [cohort, setCohort] = useState<Cohort | null>(null)
@@ -141,6 +154,7 @@ export function CompanyWorkspacePage() {
             if (companyErr) { setError(companyErr.message); setLoading(false); return }
             const co = companyData as Company
             setCompany(co)
+            setDynamicPageTitle(co.name)
 
             // Fetch cohort first (sequential to avoid type issue)
             let cohortData: Cohort | null = null

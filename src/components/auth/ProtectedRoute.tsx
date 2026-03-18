@@ -24,7 +24,10 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }
 
     if (!user) {
-        return <Navigate to="/login" state={{ from: location }} replace />
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('zkandar_last_path', location.pathname + location.search)
+        }
+        return <Navigate to="/login" replace />
     }
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {

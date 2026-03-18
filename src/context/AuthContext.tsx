@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import type { User as AuthUser, Session } from '@supabase/supabase-js'
 import type { User, UserRole } from '@/types/database'
-import { identifyUser, resetAnalytics } from '@/lib/analytics'
+import { identifyUser, resetAnalytics, initAnalytics } from '@/lib/analytics'
+import { initSentry } from '@/lib/sentry'
+import toast from 'react-hot-toast'
 
 interface AuthContextType {
     authUser: AuthUser | null
@@ -45,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const navigate = useNavigate()
     const mountedRef = useRef(true)
     const isFetchingProfileRef = useRef(false)
+    const authInitializedRef = useRef(false)
 
     // Simple delay helper for the retry logic
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
@@ -158,43 +161,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         mountedRef.current = true
 
-        const loadingTimeout = setTimeout(() => {
-            if (mountedRef.current && loading) {
-                console.warn('[Auth] Initialization timeout (15s) — forcing loading=false to prevent infinite hang')
-                setLoading(false)
+        const resolveAuthStatus = () => {
+            if (!authInitializedRef.current) {
+                authInitializedRef.current = true
+                if (mountedRef.current) {
+                    setLoading(false)
+                    console.log('[Auth] Auth gates cleared, initializing app.')
+                    initAnalytics()
+                    initSentry()
+                }
             }
-        }, 15000)
+        }
 
         const initialize = async () => {
             console.log('[Auth] Initializing...')
-            const currentSession = await getSessionWithRetry()
+            try {
+                const currentSession = await getSessionWithRetry()
 
-            if (!mountedRef.current) return
+                if (!mountedRef.current) return
 
-            setSession(currentSession)
-            setAuthUser(currentSession?.user ?? null)
+                setSession(currentSession)
+                setAuthUser(currentSession?.user ?? null)
 
-            if (currentSession?.user) {
-                isFetchingProfileRef.current = true
-                const profile = await fetchUserProfile(
-                    currentSession.user.id,
-                    currentSession.user.email
-                )
-                isFetchingProfileRef.current = false
+                if (currentSession?.user) {
+                    isFetchingProfileRef.current = true
+                    const profile = await fetchUserProfile(
+                        currentSession.user.id,
+                        currentSession.user.email
+                    )
+                    isFetchingProfileRef.current = false
 
-                if (mountedRef.current) {
-                    setUser(profile)
-                    console.log('[Auth] Init profile:', profile?.role ?? 'null')
+                    if (mountedRef.current) {
+                        setUser(profile)
+                        console.log('[Auth] Init profile:', profile?.role ?? 'null')
+                    }
                 }
-            }
-
-            if (mountedRef.current) {
-                setLoading(false)
-                console.log('[Auth] Init complete, loading=false')
+            } catch (err) {
+                console.error('[Auth] Unexpected initialize error:', err)
+                isFetchingProfileRef.current = false
+            } finally {
+                resolveAuthStatus()
             }
         }
 
         initialize()
+
+        // Setup BroadcastChannel for cross-tab sync
+        const authChannel = typeof window !== 'undefined' ? new BroadcastChannel('zkandar_auth') : null
+        if (authChannel) {
+            authChannel.onmessage = async (e) => {
+                const { data } = await supabase.auth.getSession()
+                if (e.data === 'LOGOUT') {
+                    console.log('[Auth] Received LOGOUT broadcast from another tab')
+                    if (!data.session?.user && mountedRef.current) {
+                        setSession(null)
+                        setAuthUser(null)
+                        setUser(null)
+                    }
+                } else if (e.data === 'SESSION_UPDATED') {
+                    console.log('[Auth] Received SESSION_UPDATED broadcast')
+                    if (mountedRef.current) {
+                        setSession(data.session)
+                        setAuthUser(data.session?.user ?? null)
+                    }
+                }
+            }
+        }
 
         const {
             data: { subscription },
@@ -202,11 +234,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log('[Auth] onAuthStateChange:', event)
             if (!mountedRef.current) return
 
+            // Broadcast changes to other tabs
+            if (authChannel) {
+                if (event === 'SIGNED_OUT') {
+                    authChannel.postMessage('LOGOUT')
+                } else if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+                    authChannel.postMessage('SESSION_UPDATED')
+                }
+            }
+
             setSession(newSession)
             setAuthUser(newSession?.user ?? null)
 
+            // Silently handle TOKEN_REFRESHED without refetching profile
+            if (event === 'TOKEN_REFRESHED') {
+                return
+            }
+
             if (newSession?.user) {
-                // Prevent overlapping profile fetches if one is already in flight for init or previous event
+                // Prevent overlapping profile fetches if one is already in flight for init or previous event.
                 if (isFetchingProfileRef.current) {
                     console.log('[Auth] Profile fetch already in progress, skipping redundant fetch on event:', event)
                     return
@@ -221,23 +267,102 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 if (mountedRef.current) {
                     setUser(profile)
-                    setLoading(false)
                     console.log('[Auth] Auth change profile:', profile?.role ?? 'null')
+                    resolveAuthStatus()
                 }
             } else {
                 if (mountedRef.current) {
                     setUser(null)
-                    setLoading(false)
+                    resolveAuthStatus()
                 }
             }
         })
 
         return () => {
             mountedRef.current = false
-            clearTimeout(loadingTimeout)
             subscription.unsubscribe()
+            if (authChannel) authChannel.close()
         }
     }, [])
+
+    // Session Expiry Warning
+    const signOutRef = useRef(signOut)
+    useEffect(() => {
+        signOutRef.current = signOut
+    }, [signOut]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        if (!session?.access_token) return
+
+        let sessionExpiry: number | null = null
+        try {
+            const payload = JSON.parse(atob(session.access_token.split('.')[1]))
+            if (payload.exp) sessionExpiry = payload.exp * 1000
+        } catch {
+            return
+        }
+
+        if (!sessionExpiry) return
+
+        const checkExpiry = () => {
+            const now = Date.now()
+            const timeRemaining = sessionExpiry! - now
+
+            if (timeRemaining <= 0) {
+                // Expired
+                toast.dismiss('session-expiry-warning')
+                toast.error('Session expired. Please log in again.')
+                signOutRef.current()
+            } else if (timeRemaining <= 5 * 60 * 1000) { // 5 mins
+                toast(
+                    (t) => (
+                        <div className="flex flex-col gap-3 p-1">
+                            <p className="font-semibold text-white">Session Expiring Soon</p>
+                            <p className="text-sm text-gray-300">Your session will expire in {Math.ceil(timeRemaining / 60000)} minutes.</p>
+                            <div className="flex gap-2 justify-end mt-2">
+                                <button
+                                    onClick={() => {
+                                        toast.dismiss(t.id)
+                                        signOutRef.current()
+                                    }}
+                                    className="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition"
+                                >
+                                    Log Out
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        toast.dismiss(t.id)
+                                        const { error } = await supabase.auth.refreshSession()
+                                        if (error) {
+                                            toast.error('Failed to refresh session')
+                                            signOutRef.current()
+                                        } else {
+                                            toast.success('Session extended')
+                                        }
+                                    }}
+                                    className="px-3 py-1.5 text-xs bg-lime text-black font-semibold rounded-lg hover:opacity-90 transition"
+                                >
+                                    Stay Logged In
+                                </button>
+                            </div>
+                        </div>
+                    ),
+                    { duration: Infinity, id: 'session-expiry-warning' }
+                )
+            } else {
+                // If the user refreshed the session, we should dismiss the warning if it's showing.
+                toast.dismiss('session-expiry-warning')
+            }
+        }
+
+        const intervalId = setInterval(checkExpiry, 30000) // 30s
+        checkExpiry()
+
+        return () => {
+            clearInterval(intervalId)
+            toast.dismiss('session-expiry-warning')
+        }
+    }, [session])
 
     useEffect(() => {
         if (!authUser) return
@@ -414,7 +539,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    const signOut = async () => {
+    async function signOut() {
         setLoading(true)
         try {
             const { error } = await supabase.auth.signOut()
@@ -488,6 +613,9 @@ export function useRequireAuth(allowedRoles?: UserRole[]) {
     useEffect(() => {
         if (!loading) {
             if (!user) {
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('zkandar_last_path', window.location.pathname + window.location.search)
+                }
                 navigate('/login')
             } else if (allowedRoles && !allowedRoles.includes(user.role)) {
                 navigate('/unauthorized')

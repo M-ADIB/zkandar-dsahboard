@@ -35,7 +35,7 @@
                 },
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com; img-src 'self' data: blob: https:; frame-src 'self' https://calendly.com https://player.vimeo.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://eu.i.posthog.com https://eu-assets.i.posthog.com https://*.posthog.com https://o4511013037735936.ingest.de.sentry.io https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io; img-src 'self' data: blob: https:; frame-src 'self' https://calendly.com https://player.vimeo.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
                 }
             ]
         }

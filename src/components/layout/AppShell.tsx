@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { PageTransition } from './PageTransition'
 import { AnimatePresence } from 'framer-motion'
+import { Breadcrumbs } from '@/components/shared/Breadcrumb'
 
 export function AppShell() {
     const { user } = useAuth()
@@ -39,6 +40,7 @@ export function AppShell() {
 
                 {/* Page Content */}
                 <main className="flex-1 min-w-0 p-4 md:p-6 lg:p-8 overflow-x-hidden">
+                    <Breadcrumbs />
                     <AnimatePresence mode="wait">
                         <PageTransition>
                             <Outlet />

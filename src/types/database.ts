@@ -297,6 +297,18 @@ export interface EventRequest {
     status: 'pending' | 'approved' | 'declined' | 'done'
     admin_notes: string | null
     created_at: string
+    // EPK fields
+    epk_generated: boolean
+    epk_slug: string | null
+    epk_talk_title: string | null
+    epk_bio: string | null
+    epk_flyer_url: string | null
+    epk_host_provides_flyer: boolean
+    epk_headshot_url: string | null
+    epk_speaker_name: string | null
+    epk_speaker_title: string | null
+    epk_company: string | null
+    epk_instagram: string | null
 }
 
 export type ApplicationStatus = 'new' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired'
