@@ -1,4 +1,7 @@
 import React from 'react';
+import * as ContextMenu from '@radix-ui/react-context-menu';
+import { Edit2, Copy, ExternalLink, Trash2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 interface Column<T> {
     header: string;
@@ -15,6 +18,7 @@ interface AdminTableProps<T> {
     isLoading?: boolean;
     selectedIds?: string[];
     onSelectionChange?: (ids: string[]) => void;
+    getRowUrl?: (item: T) => string;
 }
 
 export function AdminTable<T extends { id: string }>({
@@ -26,6 +30,7 @@ export function AdminTable<T extends { id: string }>({
     isLoading,
     selectedIds,
     onSelectionChange,
+    getRowUrl,
 }: AdminTableProps<T>) {
     const hasCheckboxes = Boolean(onSelectionChange);
     const allSelected = hasCheckboxes && data.length > 0 && selectedIds?.length === data.length;
@@ -97,12 +102,9 @@ export function AdminTable<T extends { id: string }>({
                         {data.map((item, index) => {
                             const rowTone = index % 2 === 0 ? 'bg-bg-primary/60' : 'bg-bg-card/60';
                             const isSelected = selectedIds?.includes(item.id) ?? false;
-                            return (
-                                <tr
-                                    key={item.id}
-                                    onClick={() => onRowClick?.(item)}
-                                    className={`${rowTone} hover:bg-white/5 transition-colors ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? 'bg-lime/5' : ''}`}
-                                >
+                            
+                            const rowContent = (
+                                <>
                                     {hasCheckboxes && (
                                         <td className="w-10 px-4 py-3 border-b border-border" onClick={(e) => e.stopPropagation()}>
                                             <input
@@ -143,7 +145,68 @@ export function AdminTable<T extends { id: string }>({
                                             )}
                                         </td>
                                     )}
-                                </tr>
+                                </>
+                            );
+
+                            return (
+                                <ContextMenu.Root key={item.id}>
+                                    <ContextMenu.Trigger asChild>
+                                        <tr
+                                            onClick={() => onRowClick?.(item)}
+                                            className={`${rowTone} hover:bg-white/5 transition-colors ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? 'bg-lime/5' : ''}`}
+                                        >
+                                            {rowContent}
+                                        </tr>
+                                    </ContextMenu.Trigger>
+                                    <ContextMenu.Portal>
+                                        <ContextMenu.Content className="min-w-[220px] bg-bg-elevated border border-border rounded-xl p-1.5 shadow-2xl z-[100] animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95">
+                                            {onEdit && (
+                                                <ContextMenu.Item
+                                                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-200 outline-none hover:bg-white/10 rounded-lg cursor-pointer transition-colors"
+                                                    onSelect={() => onEdit(item)}
+                                                >
+                                                    <Edit2 className="h-4 w-4" />
+                                                    <span>Edit</span>
+                                                    <div className="ml-auto text-xs text-gray-500 tracking-widest font-mono">⌘E</div>
+                                                </ContextMenu.Item>
+                                            )}
+                                            <ContextMenu.Item
+                                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-200 outline-none hover:bg-white/10 rounded-lg cursor-pointer transition-colors"
+                                                onSelect={() => {
+                                                    navigator.clipboard.writeText(item.id);
+                                                    toast.success('ID copied to clipboard');
+                                                }}
+                                            >
+                                                <Copy className="h-4 w-4" />
+                                                <span>Copy ID</span>
+                                                <div className="ml-auto text-xs text-gray-500 tracking-widest font-mono">⌘C</div>
+                                            </ContextMenu.Item>
+                                            {getRowUrl && (
+                                                <ContextMenu.Item
+                                                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-200 outline-none hover:bg-white/10 rounded-lg cursor-pointer transition-colors"
+                                                    onSelect={() => window.open(getRowUrl(item), '_blank')}
+                                                >
+                                                    <ExternalLink className="h-4 w-4" />
+                                                    <span>Open in New Tab</span>
+                                                </ContextMenu.Item>
+                                            )}
+                                            
+                                            {onDelete && (
+                                                <>
+                                                    <ContextMenu.Separator className="h-px bg-border my-1.5" />
+                                                    <ContextMenu.Item
+                                                        className="flex items-center gap-2 px-3 py-2 text-sm text-red-400 outline-none hover:bg-red-500/10 rounded-lg cursor-pointer transition-colors"
+                                                        onSelect={() => onDelete(item)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span>Delete</span>
+                                                        <div className="ml-auto text-xs text-red-500/50 tracking-widest font-mono">⌫</div>
+                                                    </ContextMenu.Item>
+                                                </>
+                                            )}
+                                        </ContextMenu.Content>
+                                    </ContextMenu.Portal>
+                                </ContextMenu.Root>
                             );
                         })}
                     </tbody>

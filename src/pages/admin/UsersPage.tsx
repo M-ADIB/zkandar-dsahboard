@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Search, UserPlus, Mail, Clock } from 'lucide-react';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useSessionStorage } from '@/hooks/useSessionStorage';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { UserModal } from '@/components/admin/users/UserModal';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';

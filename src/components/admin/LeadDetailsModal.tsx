@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { X, Save, Trash2, Calendar, DollarSign, User, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Portal } from '@/components/shared/Portal';
+import { DraftBanner } from '@/components/shared/DraftBanner';
+import { useFormDraft } from '@/hooks/useFormDraft';
 import type { Lead } from '@/types/database';
 
 interface LeadDetailsModalProps {
@@ -20,12 +22,13 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [activeTab, setActiveTab] = useState<'details' | 'financial' | 'schedule' | 'notes'>('details');
 
+    const { hasDraft, saveDraft, clearDraft, restoreDraft, discardDraft } = useFormDraft<Partial<Lead>>(`lead_details_${lead?.id || 'new'}`);
+
     useEffect(() => {
         if (isOpen) {
             if (lead) {
                 setFormData(lead);
             } else {
-                // BUG-1 fix: initialise with sensible defaults for new lead creation
                 setFormData({
                     priority: 'COLD',
                     offering_type: 'TBA',
@@ -36,7 +39,28 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
         }
     }, [lead, isOpen]);
 
-    // BUG-1 fix: removed early `if (!lead) return null;` guard that prevented the modal from rendering in create mode
+    useEffect(() => {
+        if (!isOpen || isSaving) return;
+
+        const defaultFormData = lead || { priority: 'COLD', offering_type: 'TBA' };
+        // Check if formData differs from default
+        const isDirty = JSON.stringify(formData) !== JSON.stringify(defaultFormData);
+
+        const timer = setTimeout(() => {
+            if (isDirty) {
+                saveDraft(formData);
+            }
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, [formData, isOpen, isSaving, lead, saveDraft]);
+
+    const handleRestoreDraft = () => {
+        const draft = restoreDraft();
+        if (draft) {
+            setFormData(draft);
+        }
+    };
 
     const handleInputChange = (field: keyof Lead, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -46,6 +70,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
         setIsSaving(true);
         try {
             await onSave(formData as Lead);
+            clearDraft();
         } catch (error) {
             console.error('Error saving lead:', error);
         } finally {
@@ -138,6 +163,13 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                     </button>
                                 </div>
                             </div>
+
+                            {hasDraft && (
+                                <DraftBanner 
+                                    onRestore={handleRestoreDraft}
+                                    onDiscard={discardDraft}
+                                />
+                            )}
 
                             {/* Tabs */}
                             <div className="flex border-b border-border bg-bg-card/50 px-2">
