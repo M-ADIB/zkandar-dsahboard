@@ -21,10 +21,14 @@ import {
     Briefcase,
     Wrench,
     ChevronDown,
+    User,
+    LogOut,
 } from 'lucide-react'
-import type { User, UserRole } from '@/types/database'
+import type { UserRole } from '@/types/database'
+import type { User as DbUser } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/context/AuthContext'
 
 interface SidebarProps {
     userRole: UserRole
@@ -109,13 +113,15 @@ const memberNavSections: NavSection[] = [
 ]
 
 export function Sidebar({ userRole }: SidebarProps) {
+    const { user, signOut } = useAuth()
     const [isOpen, setIsOpen] = useState(false)
+    const [isProfileOpen, setIsProfileOpen] = useState(false)
     const location = useLocation()
     const { isPreviewing, canPreview, previewUser, setPreviewUser } = useViewMode()
 
     // Member picker state
     const [pickerOpen, setPickerOpen] = useState(false)
-    const [members, setMembers] = useState<User[]>([])
+    const [members, setMembers] = useState<DbUser[]>([])
     const [searchQuery, setSearchQuery] = useState('')
     const [loadingMembers, setLoadingMembers] = useState(false)
 
@@ -158,7 +164,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                 .select('*')
                 .in('role', ['participant', 'executive'])
                 .order('full_name', { ascending: true })
-            setMembers((data as User[]) ?? [])
+            setMembers((data as DbUser[]) ?? [])
             setLoadingMembers(false)
         }
         fetchMembers()
@@ -320,17 +326,14 @@ export function Sidebar({ userRole }: SidebarProps) {
                                 <div className="relative">
                                     <button
                                         onClick={() => setPickerOpen(!pickerOpen)}
-                                        className="w-full rounded-xl border border-border bg-bg-card px-4 py-3 text-left text-xs font-medium text-gray-300 hover:border-lime/40 transition"
+                                        className="w-full rounded-xl border border-border bg-bg-card px-4 py-2 text-left text-xs font-medium text-gray-300 hover:border-lime/40 transition"
                                     >
                                         <div className="flex items-center justify-between">
-                                            <span className="flex items-center gap-2">
-                                                <Eye className="h-4 w-4 text-gray-500" />
+                                            <span className="flex items-center gap-2 text-white font-medium text-sm">
+                                                <Eye className="h-4 w-4 text-gray-400" />
                                                 Preview as Member
                                             </span>
-                                            <span className="text-gray-600 text-[10px]">▾</span>
-                                        </div>
-                                        <div className="mt-1 text-[11px] text-gray-500">
-                                            View dashboard as a specific member
+                                            <ChevronDown className="h-4 w-4 text-gray-500" />
                                         </div>
                                     </button>
 
@@ -407,11 +410,57 @@ export function Sidebar({ userRole }: SidebarProps) {
                             )}
                         </>
                     )}
-                    <div className="px-4 py-3 rounded-xl bg-lime/5 border border-lime/20">
-                        <p className="text-xs text-lime font-medium mb-1">Pro Tip</p>
-                        <p className="text-xs text-gray-400">
-                            Use the chat feature to connect with your cohort!
-                        </p>
+                    
+                    {/* User Profile */}
+                    <div className="relative mt-auto">
+                        <button
+                            onClick={() => setIsProfileOpen(!isProfileOpen)}
+                            className="w-full flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-border hover:bg-bg-card transition-colors group"
+                        >
+                            <div className="h-10 w-10 rounded-lg gradient-lime flex items-center justify-center shrink-0">
+                                <User className="h-5 w-5 text-black" />
+                            </div>
+                            <div className="flex-1 text-left overflow-hidden">
+                                <p className="text-sm font-semibold text-white truncate">{user?.full_name || 'User'}</p>
+                                <p className="text-[10px] text-gray-500 uppercase tracking-widest truncate">{user?.role}</p>
+                            </div>
+                            <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isProfileOpen ? 'rotate-180 text-lime' : 'group-hover:text-white'}`} />
+                        </button>
+
+                        <AnimatePresence>
+                            {isProfileOpen && (
+                                <>
+                                    <div
+                                        className="fixed inset-0 z-40"
+                                        onClick={() => setIsProfileOpen(false)}
+                                    />
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="absolute bottom-full left-0 mb-3 w-full bg-bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden"
+                                    >
+                                        <div className="p-3 border-b border-border">
+                                            <p className="font-medium text-sm text-white truncate">{user?.full_name}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                        </div>
+                                        <div className="p-1.5">
+                                            <button
+                                                onClick={() => {
+                                                    setIsProfileOpen(false)
+                                                    signOut()
+                                                }}
+                                                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                                            >
+                                                <LogOut className="h-4 w-4" />
+                                                Sign Out
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </aside>

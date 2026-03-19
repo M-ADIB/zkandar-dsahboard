@@ -1,14 +1,10 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Search, LogOut, User, ChevronDown } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
+import { Bell, Search } from 'lucide-react'
 import { NotificationsMenu } from '@/components/notifications/NotificationsMenu'
 import { useNotifications } from '@/context/NotificationContext'
 
 export function Navbar() {
-    const { user, signOut } = useAuth()
     const { unreadCount } = useNotifications()
-    const [isProfileOpen, setIsProfileOpen] = useState(false)
     const [isNotifOpen, setIsNotifOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -48,56 +44,6 @@ export function Navbar() {
                         <NotificationsMenu isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                     </div>
 
-                    {/* Profile Dropdown */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsProfileOpen(!isProfileOpen)}
-                            className="flex items-center gap-2 p-2 rounded-xl hover:bg-white/5 transition-colors"
-                        >
-                            <div className="h-8 w-8 rounded-lg gradient-lime flex items-center justify-center">
-                                <User className="h-4 w-4 text-black" />
-                            </div>
-                            <div className="hidden md:block text-left">
-                                <p className="text-sm font-medium">{user?.full_name || 'User'}</p>
-                                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-                            </div>
-                            <ChevronDown className="h-4 w-4 text-gray-500 hidden md:block" />
-                        </button>
-
-                        <AnimatePresence>
-                            {isProfileOpen && (
-                                <>
-                                    <div
-                                        className="fixed inset-0 z-40"
-                                        onClick={() => setIsProfileOpen(false)}
-                                    />
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="absolute right-0 top-full mt-2 w-56 bg-bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden"
-                                    >
-                                        <div className="p-3 border-b border-border">
-                                            <p className="font-medium text-sm">{user?.full_name}</p>
-                                            <p className="text-xs text-gray-500">{user?.email}</p>
-                                        </div>
-                                        <div className="p-1">
-                                            <button
-                                                onClick={() => {
-                                                    setIsProfileOpen(false)
-                                                    signOut()
-                                                }}
-                                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            >
-                                                <LogOut className="h-4 w-4" />
-                                                Sign Out
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                </>
-                            )}
-                        </AnimatePresence>
-                    </div>
                 </div>
             </div>
         </header>
