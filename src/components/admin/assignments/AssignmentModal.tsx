@@ -208,6 +208,20 @@ export function AssignmentModal({
             </div>
 
             <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Submission Format</label>
+                <select
+                    value={formData.submission_format}
+                    onChange={(e) => setFormData({ ...formData, submission_format: e.target.value as SubmissionFormat })}
+                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                >
+                    <option value="any">Any format</option>
+                    <option value="file">File upload</option>
+                    <option value="link">Link</option>
+                    <option value="text">Text</option>
+                </select>
+            </div>
+
+            <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Description / Instructions</label>
                 <textarea
                     value={formData.description}
