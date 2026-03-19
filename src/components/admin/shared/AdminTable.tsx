@@ -66,19 +66,19 @@ export function AdminTable<T extends { id: string }>({
     }
 
     return (
-        <div className="overflow-hidden rounded-xl border border-border bg-bg-card/80">
+        <div className="w-full overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0a0a0a] shadow-sm hover:border-white/[0.12] transition-colors">
             <div className="w-full max-w-full overflow-x-auto">
                 <table className="min-w-full border-separate border-spacing-0 text-sm">
-                    <thead className="bg-bg-elevated">
+                    <thead className="bg-[#0a0a0a]">
                         <tr>
                             {hasCheckboxes && (
-                                <th scope="col" className="w-10 px-4 py-3 border-b border-border">
+                                <th scope="col" className="w-10 px-4 py-3 border-b border-white/[0.08]">
                                     <input
                                         type="checkbox"
                                         checked={allSelected}
                                         ref={(el) => { if (el) el.indeterminate = someSelected; }}
                                         onChange={handleSelectAll}
-                                        className="h-4 w-4 rounded border-border bg-bg-elevated accent-lime cursor-pointer"
+                                        className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer hover:ring-1 hover:ring-lime/50 transition-all"
                                     />
                                 </th>
                             )}
@@ -86,13 +86,13 @@ export function AdminTable<T extends { id: string }>({
                                 <th
                                     key={idx}
                                     scope="col"
-                                    className={`px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border ${col.className || ''}`}
+                                    className={`px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 border-b border-white/[0.08] ${col.className || ''}`}
                                 >
                                     {col.header}
                                 </th>
                             ))}
                             {(onEdit || onDelete) && (
-                                <th scope="col" className="relative px-5 py-3 border-b border-border">
+                                <th scope="col" className="relative px-5 py-3 border-b border-white/[0.08]">
                                     <span className="sr-only">Actions</span>
                                 </th>
                             )}
@@ -100,25 +100,25 @@ export function AdminTable<T extends { id: string }>({
                     </thead>
                     <tbody>
                         {data.map((item, index) => {
-                            const rowTone = index % 2 === 0 ? 'bg-bg-primary/60' : 'bg-bg-card/60';
+                            const rowTone = index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]';
                             const isSelected = selectedIds?.includes(item.id) ?? false;
                             
                             const rowContent = (
                                 <>
                                     {hasCheckboxes && (
-                                        <td className="w-10 px-4 py-3 border-b border-border" onClick={(e) => e.stopPropagation()}>
+                                        <td className="w-10 px-4 py-3 border-b border-white/[0.05]" onClick={(e) => e.stopPropagation()}>
                                             <input
                                                 type="checkbox"
                                                 checked={isSelected}
                                                 onChange={(e) => handleSelectRow(e, item.id)}
-                                                className="h-4 w-4 rounded border-border bg-bg-elevated accent-lime cursor-pointer"
+                                                className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer hover:ring-1 hover:ring-lime/50 transition-all"
                                             />
                                         </td>
                                     )}
                                     {columns.map((col, idx) => (
                                         <td
                                             key={idx}
-                                            className={`whitespace-nowrap px-5 py-3 text-sm text-gray-200 border-b border-border ${col.className || ''}`}
+                                            className={`whitespace-nowrap px-5 py-3 text-sm text-gray-200 border-b border-white/[0.05] ${col.className || ''}`}
                                         >
                                             {typeof col.accessor === 'function'
                                                 ? col.accessor(item)
@@ -126,7 +126,7 @@ export function AdminTable<T extends { id: string }>({
                                         </td>
                                     ))}
                                     {(onEdit || onDelete) && (
-                                        <td className="whitespace-nowrap px-5 py-3 text-right text-sm font-medium border-b border-border">
+                                        <td className="whitespace-nowrap px-5 py-3 text-right text-sm font-medium border-b border-white/[0.05]">
                                             {onEdit && (
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onEdit(item); }}
@@ -153,13 +153,13 @@ export function AdminTable<T extends { id: string }>({
                                     <ContextMenu.Trigger asChild>
                                         <tr
                                             onClick={() => onRowClick?.(item)}
-                                            className={`${rowTone} hover:bg-white/5 transition-colors ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? 'bg-lime/5' : ''}`}
+                                            className={`${rowTone} hover:bg-white/[0.03] transition-colors ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? '!bg-lime/5 shadow-[inset_2px_0_0_0_#D0FF71]' : ''}`}
                                         >
                                             {rowContent}
                                         </tr>
                                     </ContextMenu.Trigger>
                                     <ContextMenu.Portal>
-                                        <ContextMenu.Content className="min-w-[220px] bg-bg-elevated border border-border rounded-xl p-1.5 shadow-2xl z-[100] animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95">
+                                        <ContextMenu.Content className="min-w-[220px] backdrop-blur-xl bg-black/80 border border-white/10 rounded-xl p-1.5 shadow-2xl z-[100] animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95">
                                             {onEdit && (
                                                 <ContextMenu.Item
                                                     className="flex items-center gap-2 px-3 py-2 text-sm text-gray-200 outline-none hover:bg-white/10 rounded-lg cursor-pointer transition-colors"

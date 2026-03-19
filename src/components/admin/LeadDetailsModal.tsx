@@ -126,10 +126,10 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-bg-primary border-l border-border shadow-2xl z-[60] flex flex-col"
+                            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-[#0a0a0a] shadow-2xl z-[60] flex flex-col border-l border-white/[0.08] rounded-l-[24px]"
                         >
                             {/* Header */}
-                            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-bg-card">
+                            <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-[#0a0a0a] bg-opacity-80 backdrop-blur-md rounded-tl-[24px]">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-full gradient-lime/10 flex items-center justify-center text-lime">
                                         <User className="h-6 w-6" />
@@ -172,7 +172,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                             )}
 
                             {/* Tabs */}
-                            <div className="flex border-b border-border bg-bg-card/50 px-2">
+                            <div className="flex border-b border-white/[0.08] bg-[#0a0a0a]/50 px-2">
                                 {tabs.map(tab => (
                                     <button
                                         key={tab.id}
@@ -199,7 +199,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.full_name || ''}
                                                     onChange={e => handleInputChange('full_name', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -208,7 +208,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="email"
                                                     value={formData.email || ''}
                                                     onChange={e => handleInputChange('email', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -217,7 +217,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.phone || ''}
                                                     onChange={e => handleInputChange('phone', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                         </div>
@@ -228,7 +228,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.company_name || ''}
                                                     onChange={e => handleInputChange('company_name', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -237,7 +237,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.job_title || ''}
                                                     onChange={e => handleInputChange('job_title', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -246,7 +246,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.instagram || ''}
                                                     onChange={e => handleInputChange('instagram', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                         </div>
@@ -257,7 +257,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.country || ''}
                                                     onChange={e => handleInputChange('country', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -266,7 +266,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.city || ''}
                                                     onChange={e => handleInputChange('city', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                         </div>
@@ -276,7 +276,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 value={formData.description || ''}
                                                 onChange={e => handleInputChange('description', e.target.value)}
                                                 rows={3}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50 resize-none"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all resize-none"
                                             />
                                         </label>
                                     </div>
@@ -315,7 +315,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="number"
                                                     value={formData.amount_paid || 0}
                                                     onChange={e => handleInputChange('amount_paid', parseFloat(e.target.value))}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -324,7 +324,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="number"
                                                     value={formData.amount_paid_2 || 0}
                                                     onChange={e => handleInputChange('amount_paid_2', parseFloat(e.target.value))}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -333,11 +333,11 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="number"
                                                     value={formData.amount_paid_3 || 0}
                                                     onChange={e => handleInputChange('amount_paid_3', parseFloat(e.target.value))}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-bg-card rounded-lg border border-border">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-white/[0.02] rounded-xl border border-white/[0.05]">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-sm font-medium text-white">Paid Deposit</span>
                                                 <button
@@ -374,7 +374,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <div className="flex items-center justify-between p-4 bg-bg-card rounded-lg border border-border">
+                                            <div className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/[0.05]">
                                                 <span className="text-sm font-medium text-white">Payment Plan</span>
                                                 <button
                                                     onClick={() => {
@@ -398,7 +398,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                         type="text"
                                                         value={formData.coupon_code || ''}
                                                         onChange={e => handleInputChange('coupon_code', e.target.value)}
-                                                        className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                        className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                     />
                                                 </label>
                                                 <label className="block">
@@ -407,7 +407,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                         type="number"
                                                         value={formData.coupon_percent || 0}
                                                         onChange={e => handleInputChange('coupon_percent', parseInt(e.target.value))}
-                                                        className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                        className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                     />
                                                 </label>
                                             </div>
@@ -422,7 +422,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                             <select
                                                 value={formData.priority || 'COLD'}
                                                 onChange={e => handleInputChange('priority', e.target.value)}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                             >
                                                 <option value="ACTIVE">ACTIVE</option>
                                                 <option value="COLD">COLD</option>
@@ -437,7 +437,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 type="date"
                                                 value={formData.discovery_call_date || ''}
                                                 onChange={e => handleInputChange('discovery_call_date', e.target.value)}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                             />
                                         </label>
                                         <div className="md:col-span-2 grid grid-cols-2 gap-4">
@@ -447,7 +447,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="date"
                                                     value={formData.start_date || ''}
                                                     onChange={e => handleInputChange('start_date', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                             <label className="block">
@@ -456,7 +456,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="date"
                                                     value={formData.end_date || ''}
                                                     onChange={e => handleInputChange('end_date', e.target.value)}
-                                                    className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
                                         </div>
@@ -466,7 +466,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 type="text"
                                                 value={formData.day_slot || ''}
                                                 onChange={e => handleInputChange('day_slot', e.target.value)}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                             />
                                         </label>
                                         <label className="block">
@@ -475,7 +475,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 type="text"
                                                 value={formData.time_slot || ''}
                                                 onChange={e => handleInputChange('time_slot', e.target.value)}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                             />
                                         </label>
                                         <label className="block">
@@ -484,7 +484,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 type="text"
                                                 value={formData.offering_type || ''}
                                                 onChange={e => handleInputChange('offering_type', e.target.value)}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                             />
                                         </label>
                                         <label className="block">
@@ -493,7 +493,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                 type="number"
                                                 value={formData.sessions_done || 0}
                                                 onChange={e => handleInputChange('sessions_done', parseInt(e.target.value))}
-                                                className="w-full bg-bg-elevated border border-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-lime/50"
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                             />
                                         </label>
                                     </div>
@@ -544,7 +544,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                     </div>
                                 </div>
                             )}
-                            <div className="px-6 py-4 border-t border-border bg-bg-card flex items-center justify-end gap-3">
+                            <div className="px-6 py-4 border-t border-white/[0.08] bg-[#0a0a0a] flex items-center justify-end gap-3 rounded-bl-[24px]">
                                 <button
                                     onClick={onClose}
                                     className="px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium"

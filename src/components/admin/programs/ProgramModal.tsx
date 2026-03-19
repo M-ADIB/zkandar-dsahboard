@@ -198,8 +198,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="e.g. Spring Sprint Workshop"
                 />
             </div>
@@ -210,7 +210,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     value={formData.company_id}
                     onChange={(e) => setFormData({ ...formData, company_id: e.target.value })}
                     required
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="">Select a company…</option>
                     {companies.map((c) => (
@@ -223,8 +223,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 <label className="block text-sm font-medium text-gray-300 mb-1">Offering Type</label>
                 <select
                     value={formData.offering_type}
-                    onChange={(e) => setFormData({ ...formData, offering_type: e.target.value as OfferingType })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, offering_type: e.target.value as OfferingType }))}
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="sprint_workshop">Sprint Workshop</option>
                     <option value="master_class">Master Class</option>
@@ -235,8 +235,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
                 <select
                     value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as CohortStatus })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value as CohortStatus }))}
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="upcoming">Upcoming</option>
                     <option value="active">Active</option>
@@ -251,8 +251,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         type="date"
                         required
                         value={formData.start_date}
-                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        onChange={(e) => setFormData((prev) => ({ ...prev, start_date: e.target.value }))}
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     />
                 </div>
                 <div>
@@ -261,8 +261,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         type="date"
                         required
                         value={formData.end_date}
-                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        onChange={(e) => setFormData((prev) => ({ ...prev, end_date: e.target.value }))}
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     />
                 </div>
             </div>
@@ -272,8 +272,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 <input
                     type="url"
                     value={formData.miro_board_url}
-                    onChange={(e) => setFormData({ ...formData, miro_board_url: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, miro_board_url: e.target.value }))}
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="https://miro.com/..."
                 />
             </div>

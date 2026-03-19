@@ -168,7 +168,7 @@ export function AssignmentModal({
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="e.g. Workflow audit"
                 />
             </div>
@@ -180,7 +180,7 @@ export function AssignmentModal({
                         value={formData.session_id}
                         onChange={(e) => setFormData({ ...formData, session_id: e.target.value })}
                         required
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         <option value="">Select a session</option>
                         {sessions.map((session) => {
@@ -202,7 +202,7 @@ export function AssignmentModal({
                         required
                         value={formData.due_date}
                         onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     />
                 </div>
             </div>
@@ -212,7 +212,7 @@ export function AssignmentModal({
                 <select
                     value={formData.submission_format}
                     onChange={(e) => setFormData({ ...formData, submission_format: e.target.value as SubmissionFormat })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="any">Any format</option>
                     <option value="file">File upload</option>
@@ -226,7 +226,7 @@ export function AssignmentModal({
                 <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50 resize-none"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all resize-none"
                     rows={4}
                     placeholder="Add context or instructions for participants."
                 />
@@ -255,7 +255,7 @@ export function AssignmentModal({
                                 <select
                                     value={mat.type}
                                     onChange={(e) => updateMaterial(i, { type: e.target.value as SessionMaterial['type'] })}
-                                    className="px-2 py-2 bg-bg-elevated border border-border rounded-lg text-xs text-gray-300 focus:outline-none focus:border-lime/50 shrink-0"
+                                    className="px-2 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-xs text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                 >
                                     <option value="link">Link</option>
                                     <option value="pdf">PDF</option>
@@ -267,14 +267,14 @@ export function AssignmentModal({
                                     value={mat.name}
                                     onChange={(e) => updateMaterial(i, { name: e.target.value })}
                                     placeholder="Label"
-                                    className="flex-1 min-w-0 px-2 py-2 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
+                                    className="flex-1 min-w-0 px-2 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-xs text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                 />
                                 <input
                                     type="url"
                                     value={mat.url}
                                     onChange={(e) => updateMaterial(i, { url: e.target.value })}
                                     placeholder="https://..."
-                                    className="flex-1 min-w-0 px-2 py-2 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
+                                    className="flex-1 min-w-0 px-2 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-xs text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                 />
                                 <button
                                     type="button"

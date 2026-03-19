@@ -207,7 +207,7 @@ export function UserModal({
                     type="email"
                     value={user?.email ?? ''}
                     readOnly
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-gray-400 focus:outline-none"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-gray-400 focus:outline-none focus:border-lime/40 transition-all"
                 />
             </div>
 
@@ -217,7 +217,7 @@ export function UserModal({
                     <select
                         value={formData.role}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         {roleOptions.map((role) => (
                             <option key={role.value} value={role.value}>
@@ -231,7 +231,7 @@ export function UserModal({
                     <select
                         value={formData.user_type}
                         onChange={(e) => setFormData({ ...formData, user_type: e.target.value as UserType | '' })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         {userTypeOptions.map((type) => (
                             <option key={type.value || 'none'} value={type.value}>
@@ -276,7 +276,7 @@ export function UserModal({
                         type="text"
                         value={formData.nationality}
                         onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                         placeholder="e.g. Canadian"
                     />
                 </div>
@@ -287,7 +287,7 @@ export function UserModal({
                         min="1"
                         value={formData.age}
                         onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                         placeholder="e.g. 35"
                     />
                 </div>

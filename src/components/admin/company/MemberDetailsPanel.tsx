@@ -150,12 +150,12 @@ export function MemberDetailsPanel({ member, onClose, companyId }: MemberDetails
                                         </h3>
 
                                         {!teamSub && !mgmtSub ? (
-                                            <div className="bg-bg-elevated border border-border rounded-xl p-6 text-center">
+                                            <div className="bg-white/[0.02] border border-white/[0.05] rounded-[20px] p-6 text-center">
                                                 <Brain className="h-8 w-8 text-gray-600 mx-auto mb-2" />
                                                 <p className="text-sm text-gray-400">No survey data linked to this email.</p>
                                             </div>
                                         ) : (
-                                            <div className="bg-bg-elevated border border-border rounded-xl p-5">
+                                            <div className="bg-white/[0.02] border border-white/[0.05] rounded-[20px] p-5">
                                                 {teamSub && (
                                                     <>
                                                         <ScoreBar label="AI Confidence in Workflow" value={teamSub.q5_confidence_ai_workflow} />
@@ -175,14 +175,14 @@ export function MemberDetailsPanel({ member, onClose, companyId }: MemberDetails
                                         </h3>
 
                                         {submissions.length === 0 ? (
-                                            <div className="bg-bg-elevated border border-border rounded-xl p-6 text-center">
+                                            <div className="bg-white/[0.02] border border-white/[0.05] rounded-[20px] p-6 text-center">
                                                 <Target className="h-8 w-8 text-gray-600 mx-auto mb-2" />
                                                 <p className="text-sm text-gray-400">No assignment submissions yet.</p>
                                             </div>
                                         ) : (
                                             <div className="space-y-3">
                                                 {submissions.map((sub: any) => (
-                                                    <div key={sub.id} className="bg-bg-elevated border border-border rounded-xl p-4">
+                                                    <div key={sub.id} className="bg-white/[0.02] border border-white/[0.05] rounded-[16px] p-4 hover:border-white/[0.1] transition-colors">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <h4 className="text-sm font-medium text-white">{sub.assignment?.title || 'Unknown Assignment'}</h4>
                                                             <span className={`px-2 py-0.5 text-xs rounded-lg border ${sub.status === 'graded' ? 'bg-lime/10 text-lime border-lime/20' :

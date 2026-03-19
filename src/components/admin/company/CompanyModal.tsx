@@ -131,7 +131,7 @@ export function CompanyModal({
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="e.g. Acme Studio"
                 />
             </div>
@@ -142,7 +142,7 @@ export function CompanyModal({
                     type="text"
                     value={formData.industry}
                     onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="e.g. Architecture"
                 />
             </div>
@@ -153,7 +153,7 @@ export function CompanyModal({
                     type="text"
                     value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="e.g. United Arab Emirates"
                 />
             </div>
@@ -166,7 +166,7 @@ export function CompanyModal({
                         min="0"
                         value={formData.team_size}
                         onChange={(e) => setFormData({ ...formData, team_size: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                         placeholder="e.g. 12"
                     />
                 </div>
@@ -185,7 +185,7 @@ export function CompanyModal({
                 <select
                     value={formData.cohort_id}
                     onChange={(e) => setFormData({ ...formData, cohort_id: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="">Unassigned</option>
                     {programs.map((program) => (
@@ -201,7 +201,7 @@ export function CompanyModal({
                 <select
                     value={formData.executive_user_id}
                     onChange={(e) => setFormData({ ...formData, executive_user_id: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="">Unassigned</option>
                     {users.map((user) => (

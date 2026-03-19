@@ -120,10 +120,18 @@ function ChartCard({ title, children, delay = 0 }: { title: string; children: Re
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay }}
-            className="bg-bg-card border border-border rounded-2xl p-6"
+            className="group relative overflow-hidden bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_32px_-4px_rgba(0,0,0,0.5)] hover:border-white/[0.12] transition-colors duration-500"
         >
-            <h3 className="font-heading font-bold mb-5 text-sm text-gray-300 uppercase tracking-widest">{title}</h3>
-            {children}
+            {/* Top glare/hairline */}
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+            
+            {/* Subtle lime glow tied to hover state */}
+            <div className="absolute -z-10 inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(circle_at_50%_0%,rgba(208,255,113,0.03),transparent_70%)]" />
+
+            <h3 className="font-heading font-bold mb-5 text-[11px] text-gray-500 uppercase tracking-[0.12em]">{title}</h3>
+            <div className="relative z-10 w-full">
+                {children}
+            </div>
         </motion.div>
     )
 }
@@ -137,7 +145,7 @@ function MiniBar({ data, color = '#D0FF71', height = 220 }: { data: { name: stri
                 <XAxis type="number" tick={{ fill: '#666', fontSize: 11 }} />
                 <YAxis type="category" dataKey="name" width={160} tick={{ fill: '#aaa', fontSize: 11 }} />
                 <Tooltip
-                    contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', fontSize: 12 }}
+                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: 12, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)' }}
                     cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                 />
                 <Bar dataKey="value" fill={color} radius={[0, 4, 4, 0]} />
@@ -156,7 +164,7 @@ function DonutChart({ data, height = 220 }: { data: { name: string; value: numbe
                         {data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                     </Pie>
                     <Tooltip
-                        contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', fontSize: 12 }}
+                        contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: 12, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)' }}
                         formatter={(v: number) => [`${v}`, 'Count']}
                     />
                 </PieChart>
@@ -221,7 +229,7 @@ function ManagementTab({ data }: { data: ManagementSubmission[] }) {
                             <PolarAngleAxis dataKey="area" tick={{ fill: '#aaa', fontSize: 11 }} />
                             <Radar dataKey="value" stroke="#D0FF71" fill="#D0FF71" fillOpacity={0.15} strokeWidth={2} />
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', fontSize: 12 }}
+                                contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', fontSize: 12, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)' }}
                             />
                         </RadarChart>
                     </ResponsiveContainer>

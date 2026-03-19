@@ -148,7 +148,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
                             onChange={(e) =>
                                 setScoreDrafts((prev) => ({ ...prev, [submission.id]: Number(e.target.value) }))
                             }
-                            className="flex-1 h-2 rounded-full appearance-none bg-bg-elevated accent-lime cursor-pointer"
+                            className="flex-1 h-2 rounded-full appearance-none bg-white/[0.05] accent-lime cursor-pointer"
                         />
                         <span className={`text-sm font-bold min-w-[3ch] text-right ${(scoreDrafts[submission.id] ?? 0) < 30 ? 'text-red-400' :
                             (scoreDrafts[submission.id] ?? 0) < 60 ? 'text-amber-400' : 'text-lime'
@@ -165,7 +165,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
                         onChange={(e) =>
                             setFeedbackDrafts((prev) => ({ ...prev, [submission.id]: e.target.value }))
                         }
-                        className="w-full rounded-lg border border-border bg-bg-elevated px-3 py-2 text-sm text-white focus:outline-none focus:border-lime/50"
+                        className="w-full rounded-xl border border-white/[0.05] bg-white/[0.03] px-3 py-2 text-sm text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                         rows={3}
                         placeholder="Add feedback for this submission"
                     />

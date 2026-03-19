@@ -69,7 +69,7 @@ const STICKY_MAP: Record<string, { left: string; width: string }> = {
 };
 
 // Even/odd row backgrounds — must be opaque so scrolling content disappears cleanly behind sticky cols
-const ROW_BG = ['bg-[#000000]', 'bg-[#111111]'] as const;
+const ROW_BG = ['bg-[#000000]', 'bg-[#050505]'] as const;
 
 interface LeadsTableProps {
     data: Lead[];
@@ -206,7 +206,7 @@ export function LeadsTable({
                         checked={allSelected}
                         ref={(el) => { if (el) el.indeterminate = !allSelected && someSelected; }}
                         onChange={table.getToggleAllPageRowsSelectedHandler()}
-                        className="h-4 w-4 rounded border-gray-600 bg-transparent cursor-pointer accent-lime"
+                        className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] cursor-pointer accent-lime hover:ring-1 hover:ring-lime/50 transition-all"
                         title="Select all rows"
                     />
                 );
@@ -218,7 +218,7 @@ export function LeadsTable({
                     disabled={!row.getCanSelect()}
                     onChange={row.getToggleSelectedHandler()}
                     onClick={(e) => e.stopPropagation()}
-                    className="h-4 w-4 rounded border-gray-600 bg-transparent cursor-pointer accent-lime"
+                    className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] cursor-pointer accent-lime hover:ring-1 hover:ring-lime/50 transition-all"
                 />
             ),
             // No meta width here — width is controlled entirely by STICKY_MAP
@@ -435,18 +435,19 @@ export function LeadsTable({
     return (
         <div className="space-y-4">
             {/* Toolbar */}
-            <div className="rounded-xl border border-border bg-bg-card/60 p-4">
-                <div className="flex flex-wrap items-center gap-3">
+            <div className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0a0a0a] p-4 shadow-sm hover:border-white/[0.12] transition-colors">
+                <div className="absolute inset-0 bg-white/[0.01] pointer-events-none" />
+                <div className="relative z-10 flex flex-wrap items-center gap-3">
                     {/* Search */}
                     <div className="flex-1 min-w-[260px]">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <div className="relative group/search">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within/search:text-lime transition-colors" />
                             <input
                                 type="text"
                                 placeholder="Search all columns..."
                                 value={globalFilter ?? ''}
                                 onChange={(e) => setGlobalFilter(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-bg-primary/60 border border-border rounded-xl text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-gray-500/60 focus:ring-1 focus:ring-white/5"
+                                className="w-full pl-10 pr-4 py-2 bg-white/[0.02] border border-white/[0.05] rounded-xl text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-lime/30 focus:ring-1 focus:ring-lime/10 transition-all font-medium"
                             />
                         </div>
                     </div>
@@ -497,7 +498,7 @@ export function LeadsTable({
                     {/* Density toggle */}
                     <button
                         onClick={() => setDenseMode(p => !p)}
-                        className={`px-4 py-2 rounded-xl border text-sm transition-colors ${denseMode ? 'border-gray-500/60 text-gray-100 bg-white/5' : 'border-border text-gray-400 hover:text-white hover:border-gray-500/60'}`}
+                        className={`px-4 py-2 rounded-xl border text-sm transition-colors font-medium ${denseMode ? 'border-lime/30 text-lime bg-lime/5' : 'border-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.03]'}`}
                     >
                         {denseMode ? 'Compact rows' : 'Comfort rows'}
                     </button>
@@ -505,7 +506,7 @@ export function LeadsTable({
                     {/* Column Settings */}
                     <button
                         onClick={onOpenColumnSettings}
-                        className="px-4 py-2 rounded-xl border border-lime/30 text-lime bg-lime/10 hover:bg-lime/20 text-sm transition-colors flex items-center gap-2"
+                        className="px-4 py-2 rounded-xl border border-white/[0.05] text-gray-300 hover:text-white hover:bg-white/[0.03] text-sm transition-colors flex items-center gap-2 font-medium"
                         title="Manage columns — add, hide, reorder, delete"
                     >
                         <Settings2 className="h-4 w-4" />
@@ -553,25 +554,25 @@ export function LeadsTable({
             </div>
 
             {/* Table */}
-            <div className={`w-full max-w-full overflow-hidden rounded-xl border border-border bg-bg-card ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
+            <div className={`w-full max-w-full overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#0a0a0a] shadow-sm hover:border-white/[0.12] transition-colors ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}>
                 <div className="w-full max-w-full max-h-[60vh] overflow-auto">
                     <table className={`min-w-[3200px] w-max border-separate border-spacing-0 ${denseMode ? 'text-xs' : 'text-sm'}`}>
 
                         {/* ── thead: sticky top + solid background ─────────────── */}
-                        <thead className="sticky top-0 z-30 bg-bg-elevated">
+                        <thead className="sticky top-0 z-30 bg-[#0a0a0a]">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
                                         const isSelect = header.column.id === 'select';
                                         const meta = header.column.columnDef.meta as { headerClassName?: string } | undefined;
-                                        const stickyClass = getStickyHeaderClass(header.column.id);
+                                        const stickyClass = getStickyHeaderClass(header.column.id).replace('bg-bg-elevated', 'bg-[#0a0a0a]').replace('border-border', 'border-white/[0.05]');
                                         return (
                                             <th
                                                 key={header.id}
                                                 className={[
                                                     // Padding: tighter for the checkbox col
                                                     isSelect ? 'px-3 py-3' : 'px-4 py-3',
-                                                    'text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 border-b border-border',
+                                                    'text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 border-b border-white/[0.08]',
                                                     meta?.headerClassName || '',
                                                     stickyClass,
                                                 ].join(' ')}
@@ -614,15 +615,15 @@ export function LeadsTable({
                                                     <td
                                                         key={cell.id}
                                                         className={[
-                                                            'whitespace-nowrap border-b border-border',
+                                                            'whitespace-nowrap border-b border-white/[0.05]',
                                                             isSelect ? 'px-3' : 'px-4',
                                                             denseMode ? 'py-2' : 'py-3',
                                                             'text-gray-200',
                                                             meta?.cellClassName || '',
-                                                            stickyClass,
+                                                            stickyClass.replace('border-border', 'border-white/[0.02]'),
                                                             isHighlighted ? 'bg-lime/5' : '',
                                                             // Lime left-border only on the first sticky col (checkbox) for highlighted rows
-                                                            isHighlighted && isSelect ? 'border-l-2 border-l-lime/60' : '',
+                                                            isHighlighted && isSelect ? 'border-l-2 border-l-lime/50' : '',
                                                         ].filter(Boolean).join(' ')}
                                                     >
                                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

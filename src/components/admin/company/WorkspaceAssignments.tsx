@@ -108,7 +108,7 @@ export function WorkspaceAssignments({ cohortId: _cohortId, cohort, sessions, me
                             <motion.div
                                 key={assignment.id}
                                 layout
-                                className="bg-bg-elevated border border-border rounded-xl p-4 hover:border-lime/20 transition-colors"
+                                className="bg-white/[0.02] border border-white/[0.05] rounded-[20px] p-4 hover:border-lime/20 hover:bg-white/[0.04] transition-all duration-300"
                             >
                                 <div className="flex items-start gap-3">
                                     <div className="flex-1 min-w-0">

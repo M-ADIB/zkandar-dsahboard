@@ -190,7 +190,7 @@ export function SessionModal({
                         value={internalCohortId}
                         onChange={(e) => setInternalCohortId(e.target.value)}
                         required
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         <option value="">Select a program…</option>
                         {programs?.map((p) => (
@@ -221,7 +221,7 @@ export function SessionModal({
                         required
                         value={formData.session_number}
                         onChange={(e) => setFormData({ ...formData, session_number: e.target.value })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     />
                 </div>
                 <div>
@@ -229,7 +229,7 @@ export function SessionModal({
                     <select
                         value={formData.status}
                         onChange={(e) => setFormData({ ...formData, status: e.target.value as SessionStatus })}
-                        className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         <option value="scheduled">Scheduled</option>
                         <option value="completed">Completed</option>
@@ -254,7 +254,7 @@ export function SessionModal({
                     type="url"
                     value={formData.recording_url}
                     onChange={(e) => setFormData({ ...formData, recording_url: e.target.value })}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     placeholder="https://zoom.us/j/..."
                 />
             </div>
@@ -265,7 +265,7 @@ export function SessionModal({
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
-                    className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50 resize-none"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all resize-none"
                     placeholder="Session agenda or notes…"
                 />
             </div>
@@ -293,7 +293,7 @@ export function SessionModal({
                                 <select
                                     value={mat.type}
                                     onChange={(e) => updateMaterial(i, { type: e.target.value as SessionMaterial['type'] })}
-                                    className="px-2 py-2 bg-bg-elevated border border-border rounded-lg text-xs text-gray-300 focus:outline-none focus:border-lime/50 shrink-0"
+                                    className="px-2 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-[11px] text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                 >
                                     <option value="link">Link</option>
                                     <option value="pdf">PDF</option>
@@ -305,14 +305,14 @@ export function SessionModal({
                                     value={mat.name}
                                     onChange={(e) => updateMaterial(i, { name: e.target.value })}
                                     placeholder="Label"
-                                    className="flex-1 min-w-0 px-2 py-2 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
+                                    className="flex-1 min-w-0 px-2 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-[11px] text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                 />
                                 <input
                                     type="url"
                                     value={mat.url}
                                     onChange={(e) => updateMaterial(i, { url: e.target.value })}
                                     placeholder="https://..."
-                                    className="flex-1 min-w-0 px-2 py-2 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
+                                    className="flex-1 min-w-0 px-2 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-[11px] text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                 />
                                 <button
                                     type="button"

@@ -33,9 +33,9 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-bg-card border border-border shadow-2xl"
+                        className="relative w-full max-w-lg overflow-hidden rounded-[24px] bg-[#0a0a0a] border border-white/[0.08] shadow-2xl"
                     >
-                        <div className="px-6 py-4 border-b border-border bg-bg-card">
+                        <div className="px-6 py-4 border-b border-white/[0.08] bg-[#0a0a0a]">
                             <h3 className="text-lg font-semibold text-white">{title}</h3>
                             <button
                                 onClick={onClose}
