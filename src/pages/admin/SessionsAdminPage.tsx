@@ -176,8 +176,7 @@ export function SessionsAdminPage() {
                         setSelectedSession(null)
                         setIsModalOpen(true)
                     }}
-                    disabled={selectedProgramId === 'all'}
-                    className="flex items-center gap-2 px-4 py-2 gradient-lime hover:opacity-90 text-black rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 gradient-lime hover:opacity-90 text-black rounded-lg transition-colors font-medium"
                 >
                     <Plus className="h-5 w-5" />
                     Add Session
@@ -220,20 +219,19 @@ export function SessionsAdminPage() {
                 onDelete={handleDelete}
             />
 
-            {selectedProgramId !== 'all' && (
-                <SessionModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSuccess={() => {
-                        setIsModalOpen(false)
-                        setSelectedSession(null)
-                        fetchSessions(selectedProgramId)
-                    }}
-                    cohortId={selectedSession?.cohort_id ?? selectedProgramId}
-                    session={selectedSession}
-                    defaultSessionNumber={nextSessionNumber}
-                />
-            )}
+            <SessionModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={() => {
+                    setIsModalOpen(false)
+                    setSelectedSession(null)
+                    fetchSessions(selectedProgramId)
+                }}
+                programs={programs}
+                cohortId={selectedProgramId !== 'all' ? selectedProgramId : undefined}
+                session={selectedSession}
+                defaultSessionNumber={nextSessionNumber}
+            />
         </div>
     )
 }

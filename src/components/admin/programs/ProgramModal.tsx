@@ -54,8 +54,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 name: program.name,
                 offering_type: program.offering_type,
                 status: program.status,
-                start_date: program.start_date,
-                end_date: program.end_date,
+                start_date: program.start_date?.slice(0, 10) ?? '',
+                end_date: program.end_date?.slice(0, 10) ?? '',
                 miro_board_url: program.miro_board_url ?? '',
                 company_id: '',
             };

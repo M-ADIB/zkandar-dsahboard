@@ -63,8 +63,10 @@ export function SessionModal({
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Sync the internal cohort ID when prop changes or modal opens
-        setInternalCohortId(cohortId ?? '');
+        // Sync the internal cohort ID: prefer explicit prop, then the session's
+        // own cohort_id (needed when editing from the "All programs" view where
+        // no cohortId prop is passed), then fall back to empty.
+        setInternalCohortId(cohortId ?? session?.cohort_id ?? '');
 
         if (session) {
             setFormData({
