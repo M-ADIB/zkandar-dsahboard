@@ -26,36 +26,32 @@ function LeadStatCard({
     iconColor?: string;
 }) {
     return (
-        <div className="relative bg-[#080808] border border-[#1a1a1a] rounded-2xl px-5 pt-5 pb-6 overflow-hidden">
-            {/* Decorative background circles (21st.dev style) */}
-            <svg
-                className="pointer-events-none absolute right-0 top-0 h-full w-2/3 opacity-[0.06]"
-                viewBox="0 0 200 160"
-                fill="none"
-            >
-                <circle cx="160" cy="40"  r="70" fill="white" />
-                <circle cx="190" cy="110" r="45" fill="white" />
-                <circle cx="130" cy="130" r="30" fill="white" />
-            </svg>
+        <div className="group relative bg-[#0a0a0a] border border-white/[0.08] hover:border-white/[0.15] rounded-[24px] p-6 overflow-hidden transition-all duration-300 shadow-sm">
+            {/* Subtle interactive glow */}
+            <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[50px] opacity-[0.03] group-hover:opacity-[0.10] transition-opacity duration-500 pointer-events-none ${limeAccent ? 'bg-lime' : 'bg-white'}`} />
+            
+            {/* Top gradient hairline (only glows on hover if lime, otherwise just very subtle white) */}
+            <span className={`absolute inset-x-8 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/0 to-transparent transition-all duration-500 ${limeAccent ? 'group-hover:via-lime/50' : 'group-hover:via-white/20'}`} />
 
-            {/* Top lime hairline accent */}
-            <span className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#D0FF71]/50 to-transparent" />
-
-            <div className="relative z-10">
-                {/* Label + icon */}
-                <div className="flex items-start justify-between mb-4">
-                    <p className="text-[10px] font-semibold tracking-[0.16em] uppercase text-gray-500 leading-none">
-                        {label}
-                    </p>
-                    <span className={`flex h-7 w-7 items-center justify-center rounded-lg bg-[#111] border border-[#1f1f1f] ${iconColor}`}>
-                        <Icon className="h-3.5 w-3.5" />
+            <div className="relative z-10 flex flex-col h-full justify-between gap-6">
+                {/* Icon wrapper */}
+                <div className="flex items-center justify-between">
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-[10px] bg-white/[0.03] border border-white/[0.05] shadow-inner ${iconColor}`}>
+                        <Icon className="h-4 w-4" />
                     </span>
+                    {/* Optional small spark indicator for lava/active status */}
+                    {limeAccent && <span className="h-1.5 w-1.5 rounded-full bg-lime shadow-[0_0_8px_rgba(208,255,113,0.8)] animate-pulse" />}
                 </div>
 
-                {/* Value */}
-                <p className={`text-[1.85rem] font-bold leading-none tabular-nums ${limeAccent ? 'text-[#D0FF71]' : 'text-white'}`}>
-                    {value}
-                </p>
+                {/* Content */}
+                <div>
+                    <h3 className={`text-3xl font-semibold tracking-tight tabular-nums ${limeAccent ? 'text-lime drop-shadow-[0_0_12px_rgba(208,255,113,0.15)]' : 'text-white'}`}>
+                        {value}
+                    </h3>
+                    <p className="mt-1.5 text-[11px] font-medium tracking-[0.12em] uppercase text-gray-400">
+                        {label}
+                    </p>
+                </div>
             </div>
         </div>
     );
