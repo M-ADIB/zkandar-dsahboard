@@ -62,15 +62,17 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             setFormData(base);
             setError(null);
 
-            // Look up which company is currently assigned to this program
+            // Look up which company is currently assigned to this program.
+            // Use limit(1) instead of maybeSingle() so we don't fail when
+            // multiple companies share the same cohort_id due to stale data.
             supabase
                 .from('companies')
                 .select('id')
                 .eq('cohort_id', program.id)
-                .maybeSingle()
+                .limit(1)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .then(({ data: companyRow }: { data: any }) => {
-                    setFormData((prev) => ({ ...prev, company_id: companyRow?.id ?? '' }));
+                .then(({ data: rows }: { data: any }) => {
+                    setFormData((prev) => ({ ...prev, company_id: rows?.[0]?.id ?? '' }));
                 });
         } else {
             setFormData(defaultFormData);
@@ -127,7 +129,15 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 return;
             }
 
-            // Update the company's cohort_id
+            // Unlink any company that was previously assigned to this program
+            // (except the newly selected one), then assign the new company.
+            await supabase
+                .from('companies')
+                // @ts-expect-error - Supabase update type inference issue
+                .update({ cohort_id: null })
+                .eq('cohort_id', program.id)
+                .neq('id', formData.company_id);
+
             await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
