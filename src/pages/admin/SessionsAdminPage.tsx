@@ -7,7 +7,7 @@ import { formatDateLabel, formatTimeLabel } from '@/lib/time'
 import type { Cohort, Session, SessionStatus } from '@/types/database'
 
 const statusLabels: Record<SessionStatus, string> = {
-    scheduled: 'Scheduled',
+    upcoming: 'Upcoming',
     completed: 'Completed',
 }
 
@@ -132,7 +132,7 @@ export function SessionsAdminPage() {
             header: 'Status',
             accessor: (session: Session) => {
                 const statusClass: Record<SessionStatus, string> = {
-                    scheduled: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+                    upcoming: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
                     completed: 'bg-lime/10 text-lime border-lime/30',
                 }
                 return (
