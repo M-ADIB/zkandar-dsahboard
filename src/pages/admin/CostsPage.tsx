@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import toast from 'react-hot-toast'
-
+import { MetricCard } from '@/components/shared/MetricCard'
 interface CostCategory {
     id: string
     name: string
@@ -500,18 +500,21 @@ export function CostsPage() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-bg-card border border-border rounded-2xl p-5">
-                    <p className="text-sm text-gray-400 mb-1">
-                        {timeFilter === 'this_month' ? 'This Month' :
-                         timeFilter === 'last_month' ? 'Last Month' :
-                         timeFilter === 'past_90' ? 'Past 90 Days' : 'Upcoming'}
-                    </p>
-                    <p className="text-2xl font-bold text-lime">AED {fmt(periodTotal)}</p>
-                </div>
-                <div className="bg-bg-card border border-border rounded-2xl p-5">
-                    <p className="text-sm text-gray-400 mb-1">Showing Total</p>
-                    <p className="text-2xl font-bold text-white">AED {fmt(allTimeTotal)}</p>
-                </div>
+                <MetricCard 
+                    label={
+                        timeFilter === 'this_month' ? 'This Month' :
+                        timeFilter === 'last_month' ? 'Last Month' :
+                        timeFilter === 'past_90' ? 'Past 90 Days' : 'Upcoming'
+                    }
+                    value={`AED ${fmt(periodTotal)}`}
+                    limeAccent
+                    delay={0}
+                />
+                <MetricCard 
+                    label="Showing Total"
+                    value={`AED ${fmt(allTimeTotal)}`}
+                    delay={0.1}
+                />
             </div>
 
             {/* Table */}

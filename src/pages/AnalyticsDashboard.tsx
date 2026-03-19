@@ -6,7 +6,7 @@ import {
 } from 'recharts'
 import { Users, Brain, Target, Building2, Filter } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-
+import { MetricCard } from '@/components/shared/MetricCard'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ManagementSubmission {
@@ -178,25 +178,6 @@ function Empty() {
     return <div className="h-48 flex items-center justify-center text-gray-600 text-sm">No data</div>
 }
 
-function KpiCard({ icon: Icon, label, value, sub, delay = 0 }: { icon: React.ElementType; label: string; value: string; sub?: string; delay?: number }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay }}
-            className="bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-3"
-        >
-            <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-lime/10">
-                    <Icon className="h-4 w-4 text-lime" />
-                </div>
-                <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">{label}</span>
-            </div>
-            <p className="text-3xl font-bold text-white">{value}</p>
-            {sub && <p className="text-xs text-gray-500">{sub}</p>}
-        </motion.div>
-    )
-}
 
 // ─── Management Tab ───────────────────────────────────────────────────────────
 
@@ -589,7 +570,7 @@ export function AnalyticsDashboard() {
                 <>
                     {/* KPI row */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {kpis.map(k => <KpiCard key={k.label} {...k} />)}
+                        {kpis.map(k => <MetricCard key={k.label} {...k} />)}
                     </div>
 
                     {/* Survey data avg confidence banner */}

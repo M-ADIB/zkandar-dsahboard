@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupabase } from '@/hooks/useSupabase';
+import { MetricCard } from '@/components/shared/MetricCard';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { CompanyModal } from '@/components/admin/company/CompanyModal';
 import { Plus, Users, GraduationCap, MapPin } from 'lucide-react';
@@ -138,51 +139,26 @@ export function CompaniesPage() {
             </div>
 
             {/* Summary metric cards */}
-            <div className="grid grid-cols-3 gap-4">
-                <div className="bg-bg-card border border-border rounded-2xl p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-lime/10 flex items-center justify-center">
-                            <GraduationCap className="h-5 w-5 text-lime" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-white">{activeCount}</p>
-                            <p className="text-xs text-gray-500">Active Masterclasses</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-bg-card border border-border rounded-2xl p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-lime/10 flex items-center justify-center">
-                            <MapPin className="h-5 w-5 text-lime" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-white">{activeLocationsCount}</p>
-                            <p className="text-xs text-gray-500">Number of Locations</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-bg-card border border-border rounded-2xl p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-lime/10 flex items-center justify-center">
-                            <GraduationCap className="h-5 w-5 text-lime" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-white">{activeCount}</p>
-                            <p className="text-xs text-gray-500">Active Masterclasses</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-bg-card border border-border rounded-2xl p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-lime/10 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-lime" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-white">{totalMembers}</p>
-                            <p className="text-xs text-gray-500">Total Members</p>
-                        </div>
-                    </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <MetricCard 
+                    icon={GraduationCap} 
+                    label="Active Masterclasses" 
+                    value={activeCount} 
+                    limeAccent 
+                    delay={0}
+                />
+                <MetricCard 
+                    icon={MapPin} 
+                    label="Number of Locations" 
+                    value={activeLocationsCount} 
+                    delay={0.1}
+                />
+                <MetricCard 
+                    icon={Users} 
+                    label="Total Members" 
+                    value={totalMembers} 
+                    delay={0.2}
+                />
             </div>
 
             {error && (

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { MetricCard } from '@/components/shared/MetricCard'
 import { motion } from 'framer-motion'
 import {
     DollarSign, Flame, Building2, Mic,
@@ -13,49 +14,6 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameMont
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
 const fmt = (n: number) => n.toLocaleString()
-
-function KPICard({
-    icon: Icon, label, value, sub, trend, delay = 0, onClick, accent = false,
-}: {
-    icon: React.ElementType
-    label: string
-    value: string
-    sub?: string
-    trend?: string
-    delay?: number
-    onClick?: () => void
-    accent?: boolean
-}) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay }}
-            onClick={onClick}
-            className={`relative bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 overflow-hidden ${onClick ? 'cursor-pointer hover:border-lime/40 hover:shadow-[0_0_20px_rgba(208,255,113,0.08)] transition-all duration-200' : ''}`}
-        >
-            {accent && (
-                <div className="absolute inset-0 bg-lime/5 pointer-events-none" />
-            )}
-            <div className="flex items-start justify-between">
-                <div className={`w-10 h-10 rounded-xl ${accent ? 'bg-lime/20' : 'bg-white/5'} flex items-center justify-center`}>
-                    <Icon className={`h-5 w-5 ${accent ? 'text-lime' : 'text-gray-400'}`} />
-                </div>
-                {trend && (
-                    <span className="text-xs text-lime bg-lime/10 px-2 py-1 rounded-lg border border-lime/20 font-medium">
-                        {trend}
-                    </span>
-                )}
-            </div>
-            <div>
-                <p className="text-2xl font-bold text-white leading-none">{value}</p>
-                {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
-            </div>
-            <p className="text-sm text-gray-400">{label}</p>
-            {onClick && <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />}
-        </motion.div>
-    )
-}
 
 // ─── Lead status bar ─────────────────────────────────────────────────────────
 function LeadsStatusBar({ counts }: { counts: Record<string, number> }) {
@@ -410,16 +368,16 @@ export function OwnerDashboard() {
 
             {/* ── Row 1: KPIs ── */}
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
-                <KPICard
+                <MetricCard
                     icon={DollarSign}
                     label="Pipeline Value"
                     value={`AED ${fmt(pipelineValue)}`}
                     sub={`AED ${fmt(completedRevenue)} collected`}
                     delay={0}
-                    accent
+                    limeAccent
                     onClick={() => navigate('/admin/leads?priority=COMPLETED')}
                 />
-                <KPICard
+                <MetricCard
                     icon={Flame}
                     label="Lava Leads"
                     value={String(lavaLeads)}
@@ -428,7 +386,7 @@ export function OwnerDashboard() {
                     delay={0.05}
                     onClick={() => navigate('/admin/leads?priority=LAVA')}
                 />
-                <KPICard
+                <MetricCard
                     icon={Building2}
                     label="Active Masterclasses"
                     value={String(activeMasterclasses)}
@@ -436,7 +394,7 @@ export function OwnerDashboard() {
                     delay={0.1}
                     onClick={() => navigate('/admin/programs?type=master_class&status=active')}
                 />
-                <KPICard
+                <MetricCard
                     icon={Mic}
                     label="Active AI Talks"
                     value={String(activeAITalks)}
@@ -444,7 +402,7 @@ export function OwnerDashboard() {
                     delay={0.15}
                     onClick={() => navigate('/admin/programs?type=ai_talk')}
                 />
-                <KPICard
+                <MetricCard
                     icon={Users}
                     label="Active Members"
                     value={String(activeMembers)}

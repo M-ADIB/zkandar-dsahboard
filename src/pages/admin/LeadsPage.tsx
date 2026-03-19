@@ -9,54 +9,7 @@ import { LeadsTable } from '@/components/admin/leads/LeadsTable';
 import { ColumnSettingsPanel } from '@/components/admin/leads/ColumnSettingsPanel';
 import { logAudit } from '@/lib/audit';
 
-// ── Stat card ──────────────────────────────────────────────────────────────────
-// Inspired by 21st.dev dark-stats card pattern.
-// Pure black bg, subtle decorative circles, Lime #D0FF71 accent on the headline number.
-function LeadStatCard({
-    label,
-    value,
-    icon: Icon,
-    limeAccent = false,
-    iconColor = 'text-gray-500',
-}: {
-    label: string;
-    value: string | number;
-    icon: React.ComponentType<{ className?: string }>;
-    limeAccent?: boolean;
-    iconColor?: string;
-}) {
-    return (
-        <div className="group relative bg-[#0a0a0a] border border-white/[0.08] hover:border-white/[0.15] rounded-[24px] p-6 overflow-hidden transition-all duration-300 shadow-sm">
-            {/* Subtle interactive glow */}
-            <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[50px] opacity-[0.03] group-hover:opacity-[0.10] transition-opacity duration-500 pointer-events-none ${limeAccent ? 'bg-lime' : 'bg-white'}`} />
-            
-            {/* Top gradient hairline (only glows on hover if lime, otherwise just very subtle white) */}
-            <span className={`absolute inset-x-8 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/0 to-transparent transition-all duration-500 ${limeAccent ? 'group-hover:via-lime/50' : 'group-hover:via-white/20'}`} />
-
-            <div className="relative z-10 flex flex-col h-full justify-between gap-6">
-                {/* Icon wrapper */}
-                <div className="flex items-center justify-between">
-                    <span className={`flex h-9 w-9 items-center justify-center rounded-[10px] bg-white/[0.03] border border-white/[0.05] shadow-inner ${iconColor}`}>
-                        <Icon className="h-4 w-4" />
-                    </span>
-                    {/* Optional small spark indicator for lava/active status */}
-                    {limeAccent && <span className="h-1.5 w-1.5 rounded-full bg-lime shadow-[0_0_8px_rgba(208,255,113,0.8)] animate-pulse" />}
-                </div>
-
-                {/* Content */}
-                <div>
-                    <h3 className={`text-3xl font-semibold tracking-tight tabular-nums ${limeAccent ? 'text-lime drop-shadow-[0_0_12px_rgba(208,255,113,0.15)]' : 'text-white'}`}>
-                        {value}
-                    </h3>
-                    <p className="mt-1.5 text-[11px] font-medium tracking-[0.12em] uppercase text-gray-400">
-                        {label}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-}
-
+import { MetricCard } from '@/components/shared/MetricCard';
 
 export function LeadsPage() {
     const supabase = useSupabase();
@@ -501,11 +454,11 @@ export function LeadsPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                <LeadStatCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
-                <LeadStatCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
-                <LeadStatCard label="Pipeline (AED)" value={currencyFormatter.format(stats.pipelineValue)} icon={DollarSign} iconColor="text-yellow-400" />
-                <LeadStatCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
-                <LeadStatCard label="Active"        value={stats.active}                             icon={Target}     iconColor="text-[#D0FF71]" limeAccent />
+                <MetricCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
+                <MetricCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
+                <MetricCard label="Pipeline (AED)" value={currencyFormatter.format(stats.pipelineValue)} icon={DollarSign} iconColor="text-yellow-400" />
+                <MetricCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
+                <MetricCard label="Active"        value={stats.active}                             icon={Target}     limeAccent />
             </div>
 
             {/* Table */}
