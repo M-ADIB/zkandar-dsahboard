@@ -72,7 +72,13 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 .limit(1)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .then(({ data: rows }: { data: any }) => {
-                    setFormData((prev) => ({ ...prev, company_id: rows?.[0]?.id ?? '' }));
+                    // Only apply the DB value if the user hasn't already picked one.
+                    // Without this guard, the async response overwrites any selection
+                    // the user made while the query was in-flight (dropdown snaps back).
+                    setFormData((prev) => ({
+                        ...prev,
+                        company_id: prev.company_id || rows?.[0]?.id || '',
+                    }));
                 });
         } else {
             setFormData(defaultFormData);
