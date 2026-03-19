@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupabase } from '@/hooks/useSupabase';
-import { MetricCard } from '@/components/shared/MetricCard';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { CompanyModal } from '@/components/admin/company/CompanyModal';
 import { Plus, Users, GraduationCap, MapPin } from 'lucide-react';
 import { formatDateLabel } from '@/lib/time';
 import type { Cohort, Company, User } from '@/types/database';
-
+import { MetricCard } from '@/components/shared/MetricCard';
 export function CompaniesPage() {
     const supabase = useSupabase();
     const navigate = useNavigate();
@@ -139,24 +138,23 @@ export function CompaniesPage() {
             </div>
 
             {/* Summary metric cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4">
                 <MetricCard 
-                    icon={GraduationCap} 
                     label="Active Masterclasses" 
                     value={activeCount} 
-                    limeAccent 
+                    icon={GraduationCap} 
                     delay={0}
                 />
                 <MetricCard 
-                    icon={MapPin} 
                     label="Number of Locations" 
                     value={activeLocationsCount} 
+                    icon={MapPin} 
                     delay={0.1}
                 />
                 <MetricCard 
-                    icon={Users} 
                     label="Total Members" 
                     value={totalMembers} 
+                    icon={Users} 
                     delay={0.2}
                 />
             </div>
