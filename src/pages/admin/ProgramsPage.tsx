@@ -23,7 +23,7 @@ const offeringLabels: Record<OfferingType, string> = {
 };
 
 const sessionStatusLabels: Record<SessionStatus, string> = {
-    upcoming: 'Upcoming',
+    scheduled: 'Scheduled',
     completed: 'Completed',
 };
 
@@ -345,7 +345,7 @@ function SessionsTab() {
             header: 'Status',
             accessor: (s: Session) => {
                 const cls: Record<SessionStatus, string> = {
-                    upcoming: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+                    scheduled: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
                     completed: 'bg-lime/10 text-lime border-lime/30',
                 };
                 return <span className={`px-2 py-1 text-xs rounded-lg border ${cls[s.status]}`}>{sessionStatusLabels[s.status]}</span>;

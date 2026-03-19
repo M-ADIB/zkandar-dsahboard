@@ -54,7 +54,7 @@ export function SessionModal({
         title: '',
         session_number: String(defaultSessionNumber),
         scheduled_date: '',
-        status: 'upcoming',
+        status: 'scheduled',
         recording_url: '',
         description: '',
     });
@@ -82,7 +82,7 @@ export function SessionModal({
                 title: '',
                 session_number: String(defaultSessionNumber),
                 scheduled_date: '',
-                status: 'upcoming',
+                status: 'scheduled',
                 recording_url: '',
                 description: '',
             });
@@ -229,7 +229,7 @@ export function SessionModal({
                         onChange={(e) => setFormData({ ...formData, status: e.target.value as SessionStatus })}
                         className="w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
                     >
-                        <option value="upcoming">Upcoming</option>
+                        <option value="scheduled">Scheduled</option>
                         <option value="completed">Completed</option>
                     </select>
                 </div>
