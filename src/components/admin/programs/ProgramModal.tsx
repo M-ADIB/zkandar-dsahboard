@@ -17,7 +17,6 @@ type ProgramFormData = {
     start_date: string;
     end_date: string;
     miro_board_url: string;
-    company_id: string;
 };
 
 const defaultFormData: ProgramFormData = {
@@ -27,12 +26,13 @@ const defaultFormData: ProgramFormData = {
     start_date: '',
     end_date: '',
     miro_board_url: '',
-    company_id: '',
 };
 
 export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramModalProps) {
     const supabase = useSupabase();
     const [formData, setFormData] = useState<ProgramFormData>(defaultFormData);
+    // company_id is kept in its own state so no setFormData call can ever reset it.
+    const [companyId, setCompanyId] = useState('');
     const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -50,16 +50,15 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
     useEffect(() => {
         if (program) {
-            const base: ProgramFormData = {
+            setFormData({
                 name: program.name,
                 offering_type: program.offering_type,
                 status: program.status,
                 start_date: program.start_date?.slice(0, 10) ?? '',
                 end_date: program.end_date?.slice(0, 10) ?? '',
                 miro_board_url: program.miro_board_url ?? '',
-                company_id: '',
-            };
-            setFormData(base);
+            });
+            setCompanyId('');
             setError(null);
 
             // Look up which company is currently assigned to this program.
@@ -73,15 +72,11 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .then(({ data: rows }: { data: any }) => {
                     // Only apply the DB value if the user hasn't already picked one.
-                    // Without this guard, the async response overwrites any selection
-                    // the user made while the query was in-flight (dropdown snaps back).
-                    setFormData((prev) => ({
-                        ...prev,
-                        company_id: prev.company_id || rows?.[0]?.id || '',
-                    }));
+                    setCompanyId((prev) => prev || rows?.[0]?.id || '');
                 });
         } else {
             setFormData(defaultFormData);
+            setCompanyId('');
             setError(null);
         }
     }, [program, isOpen]);
@@ -94,7 +89,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             return;
         }
 
-        if (!formData.company_id) {
+        if (!companyId) {
             setError('Please select a company.');
             return;
         }
@@ -142,13 +137,13 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: null })
                 .eq('cohort_id', program.id)
-                .neq('id', formData.company_id);
+                .neq('id', companyId);
 
             await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: program.id })
-                .eq('id', formData.company_id);
+                .eq('id', companyId);
         } else {
             // Create mode: insert cohort, get new ID, then update company
             const { data: newCohort, error: saveError } = await supabase
@@ -171,7 +166,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     // @ts-expect-error - Supabase update type inference issue
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .update({ cohort_id: (newCohort as any).id })
-                    .eq('id', formData.company_id);
+                    .eq('id', companyId);
             }
         }
 
@@ -207,8 +202,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Company <span className="text-red-400">*</span></label>
                 <select
-                    value={formData.company_id}
-                    onChange={(e) => setFormData({ ...formData, company_id: e.target.value })}
+                    value={companyId}
+                    onChange={(e) => setCompanyId(e.target.value)}
                     required
                     className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
