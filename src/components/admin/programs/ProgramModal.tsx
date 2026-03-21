@@ -61,14 +61,11 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             .from('companies')
             .select('id, name, cohort_id')
             .order('name')
-            .then(({ data, error }) => {
-                console.log('[PM] companies fetch —', { error, count: data?.length, data });
+            .then(({ data }) => {
                 const list = (data as Company[]) ?? [];
                 setCompanies(list);
                 if (program) {
-                    console.log('[PM] searching for cohort_id:', program.id, '| cohort_ids in list:', list.map((c) => c.cohort_id));
                     const assigned = list.find((c) => c.cohort_id === program.id);
-                    console.log('[PM] assigned company:', assigned ?? 'NONE');
                     if (assigned) setCompanyId(assigned.id);
                 }
             });
@@ -98,7 +95,6 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             return;
         }
 
-        console.log('[PM] save — companyId:', companyId, '| program?.id:', program?.id ?? '(new)');
         setIsLoading(true);
         setError(null);
 
@@ -125,14 +121,12 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             }
 
             // Unlink any company previously assigned, then assign the new one.
-            const { data: unlinkData, error: unlinkError } = await supabase
+            const { error: unlinkError } = await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: null })
                 .eq('cohort_id', program.id)
-                .neq('id', companyId)
-                .select('id');
-            console.log('[PM] unlink result —', { error: unlinkError, rowsAffected: unlinkData?.length, data: unlinkData });
+                .neq('id', companyId);
 
             if (unlinkError) {
                 setIsLoading(false);
@@ -140,13 +134,11 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 return;
             }
 
-            const { data: linkData, error: linkError } = await supabase
+            const { error: linkError } = await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: program.id })
-                .eq('id', companyId)
-                .select('id');
-            console.log('[PM] link result —', { error: linkError, rowsAffected: linkData?.length, data: linkData });
+                .eq('id', companyId);
 
             if (linkError) {
                 setIsLoading(false);
@@ -170,15 +162,12 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if ((newCohort as any)?.id) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const { data: linkData, error: linkError } = await supabase
+                const { error: linkError } = await supabase
                     .from('companies')
                     // @ts-expect-error - Supabase update type inference issue
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .update({ cohort_id: (newCohort as any).id })
-                    .eq('id', companyId)
-                    .select('id');
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                console.log('[PM] create-link result —', { error: linkError, rowsAffected: (linkData as any)?.length, data: linkData });
+                    .eq('id', companyId);
 
                 if (linkError) {
                     setIsLoading(false);
