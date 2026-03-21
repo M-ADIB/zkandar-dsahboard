@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MetricCard } from '@/components/shared/MetricCard'
+import { PipelineStatCard } from '@/components/dashboard/PipelineStatCard'
 import { motion } from 'framer-motion'
 import {
     DollarSign, Flame, Building2, Mic,
@@ -294,11 +295,21 @@ export function OwnerDashboard() {
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
                 supabase.from('leads').select('id,priority,payment_amount,amount_paid,balance,paid_full,offering_type'),
-                (supabase as any).from('costs').select('total_amount').gte('payment_date', monthStart).lte('payment_date', monthEnd),
+                (supabase as any).from('costs').select('total_amount, payment_date, is_active'),
                 supabase.from('event_requests').select('*').eq('status', 'approved')
             ])
             const costsData = (costsRes as any).data ?? []
-            const monthlyCostsScore = costsData.reduce((s: number, c: any) => s + (c.total_amount ?? 0), 0)
+            
+            // Monthly costs = any cost that is recurring (is_active) OR any one-off cost that occurred specifically this month
+            const monthlyCostsScore = costsData.reduce((s: number, c: any) => {
+                const isActive = c.is_active === true
+                const isThisMonth = c.payment_date && c.payment_date >= monthStart && c.payment_date <= monthEnd
+                
+                if (isActive || isThisMonth) {
+                    return s + (c.total_amount ?? 0)
+                }
+                return s
+            }, 0)
 
             return {
                 companies: (coRes.data as Company[]) ?? [],
@@ -481,36 +492,46 @@ export function OwnerDashboard() {
                     {/* Status distribution bar */}
                     <LeadsStatusBar counts={leadCounts} />
 
-                    {/* Analytics grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
-                            <p className="text-lg font-bold text-lime">{fmt(leads.length)}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">Total Leads</p>
-                        </div>
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
-                            <p className="text-lg font-bold text-orange-400">{conversionRate}%</p>
-                            <p className="text-xs text-gray-500 mt-0.5">Conversion</p>
-                        </div>
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center">
-                            <p className="text-lg font-bold text-yellow-400">AED {fmt(pipelineValue)}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">Pipeline</p>
-                        </div>
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center cursor-pointer hover:border hover:border-lime/20 transition" onClick={() => navigate('/admin/leads?paid=pending')}>
-                            <p className="text-lg font-bold text-amber-400 flex items-center justify-center gap-1">
-                                <AlertCircle className="h-4 w-4" />{pendingLeads}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-0.5">Pending</p>
-                        </div>
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center cursor-pointer hover:border hover:border-lime/20 transition" onClick={() => navigate('/admin/leads?priority=NOT INTERESTED')}>
-                            <p className="text-lg font-bold text-red-400 flex items-center justify-center gap-1">
-                                <XCircle className="h-4 w-4" />{notInterestedLeads}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-0.5">Not Interested</p>
-                        </div>
-                        <div className="bg-bg-elevated rounded-xl p-3 text-center cursor-pointer hover:border hover:border-lime/20 transition" onClick={() => navigate('/admin/costs')}>
-                            <p className="text-lg font-bold text-green-400">AED {fmt(monthlyCosts)}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">Costs (Month)</p>
-                        </div>
+                    {/* Analytics grid upgraded to Magic UI Bento style */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <PipelineStatCard 
+                            label="Total Leads"
+                            value={fmt(leads.length)}
+                            colorMain="text-lime"
+                            onClick={() => navigate('/admin/leads')}
+                        />
+                        <PipelineStatCard 
+                            label="Conversion"
+                            value={`${conversionRate}%`}
+                            colorMain="text-orange-400"
+                            onClick={() => navigate('/admin/leads?priority=COMPLETED')}
+                        />
+                        <PipelineStatCard 
+                            label="Pipeline"
+                            value={<span className="text-xl">AED {fmt(pipelineValue)}</span>}
+                            colorMain="text-yellow-400"
+                            onClick={() => navigate('/admin/leads?priority=ACTIVE')}
+                        />
+                        <PipelineStatCard 
+                            label="Pending"
+                            value={pendingLeads}
+                            icon={<AlertCircle className="h-5 w-5" />}
+                            colorMain="text-amber-400"
+                            onClick={() => navigate('/admin/leads?paid=pending')}
+                        />
+                        <PipelineStatCard 
+                            label="Not Interested"
+                            value={notInterestedLeads}
+                            icon={<XCircle className="h-5 w-5" />}
+                            colorMain="text-red-400"
+                            onClick={() => navigate('/admin/leads?priority=NOT INTERESTED')}
+                        />
+                        <PipelineStatCard 
+                            label="Costs (Month)"
+                            value={<span className="text-xl">AED {fmt(monthlyCosts)}</span>}
+                            colorMain="text-green-400"
+                            onClick={() => navigate('/admin/costs')}
+                        />
                     </div>
                 </motion.div>
 
