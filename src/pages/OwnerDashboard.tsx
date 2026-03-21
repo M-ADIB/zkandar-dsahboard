@@ -121,7 +121,7 @@ const eventTypeColors: Record<string, { bg: string; text: string; dot: string; l
 }
 
 // ─── Mini Calendar Widget ─────────────────────────────────────────────────────
-function CalendarWidget({ cohorts, eventsData }: { cohorts: Cohort[], eventsData: EventRequest[] }) {
+function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], eventsData: EventRequest[], navigate: (path: string) => void }) {
     const [currentDate, setCurrentDate] = useState(new Date())
 
     const monthStart = startOfMonth(currentDate)
@@ -192,24 +192,38 @@ function CalendarWidget({ cohorts, eventsData }: { cohorts: Cohort[], eventsData
                     const dayEvents = getEventsForDay(day)
                     const today = isToday(day)
                     const sameMonth = isSameMonth(day, currentDate)
+                    const hasEvents = dayEvents.length > 0
+
+                    const handleDayClick = () => {
+                        if (!hasEvents) return
+                        const first = dayEvents[0]
+                        if (first.type === 'ai_talk') {
+                            navigate('/admin/programs?type=ai_talk')
+                        } else {
+                            navigate('/admin/programs')
+                        }
+                    }
 
                     return (
-                        <div
+                        <button
                             key={day.toISOString()}
-                            className={`relative h-8 flex items-center justify-center rounded-lg text-xs transition ${today ? 'bg-lime/20 text-lime font-bold' :
+                            onClick={handleDayClick}
+                            disabled={!hasEvents}
+                            className={`relative h-9 flex items-center justify-center rounded-lg text-xs transition ${
+                                today ? 'bg-lime/20 text-lime font-bold' :
                                 sameMonth ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700'
-                                }`}
+                            } ${hasEvents ? 'cursor-pointer hover:ring-1 hover:ring-white/20' : 'cursor-default'}`}
                         >
                             {format(day, 'd')}
-                            {dayEvents.length > 0 && (
+                            {hasEvents && (
                                 <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
                                     {dayEvents.slice(0, 3).map((e, i) => {
                                         const colors = eventTypeColors[e.type] || eventTypeColors.master_class
-                                        return <span key={i} className={`h-1 w-1 rounded-full ${colors.dot}`} />
+                                        return <span key={i} className={`h-[5px] w-[5px] rounded-full ${colors.dot}`} />
                                     })}
                                 </div>
                             )}
-                        </div>
+                        </button>
                     )
                 })}
             </div>
@@ -475,7 +489,7 @@ export function OwnerDashboard() {
                         {/* Middle Focus -> Value */}
                         <div className="relative z-10 mb-10 md:mb-20">
                             <p className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-gray-400 mb-4 ml-1">Total Pipeline Value</p>
-                            <h3 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[6.75rem] font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
+                            <h3 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[6.75rem] font-black text-white tracking-normal drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
                                 <span className="text-lime/90 text-3xl sm:text-4xl lg:text-5xl align-top mr-2">AED</span> 
                                 {fmt(pipelineValue)}
                             </h3>
@@ -512,7 +526,7 @@ export function OwnerDashboard() {
                             Programs <ArrowRight className="h-3 w-3" />
                         </button>
                     </div>
-                    <CalendarWidget cohorts={cohorts} eventsData={eventsData} />
+                    <CalendarWidget cohorts={cohorts} eventsData={eventsData} navigate={navigate} />
                 </motion.div>
             </div>
 
