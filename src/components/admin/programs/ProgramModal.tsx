@@ -30,57 +30,47 @@ const defaultFormData: ProgramFormData = {
     miro_board_url: '',
 };
 
+// ProgramModal is key-mounted by its parent on each open, so this component
+// always starts with fresh state — no effects needed to reset the form.
 export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramModalProps) {
     const supabase = useSupabase();
-    const [formData, setFormData] = useState<ProgramFormData>(defaultFormData);
-    // companyId is its own state — no setFormData call can touch it.
+
+    const [formData, setFormData] = useState<ProgramFormData>(
+        program
+            ? {
+                  name: program.name,
+                  offering_type: program.offering_type,
+                  status: program.status,
+                  start_date: program.start_date?.slice(0, 10) ?? '',
+                  end_date: program.end_date?.slice(0, 10) ?? '',
+                  miro_board_url: program.miro_board_url ?? '',
+              }
+            : defaultFormData,
+    );
+
+    // companyId lives in its own state — cannot be accidentally reset by setFormData.
     const [companyId, setCompanyId] = useState('');
     const [companies, setCompanies] = useState<Company[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Effect 1 — fetch all companies once on mount.
+    // Runs exactly once per mount (parent re-mounts this component on each modal
+    // open via key). Fetches companies and immediately pre-selects the assigned one.
     useEffect(() => {
         supabase
             .from('companies')
             .select('id, name, cohort_id')
             .order('name')
             .then(({ data }) => {
-                setCompanies((data as Company[]) ?? []);
+                const list = (data as Company[]) ?? [];
+                setCompanies(list);
+                if (program) {
+                    const assigned = list.find((c) => c.cohort_id === program.id);
+                    if (assigned) setCompanyId(assigned.id);
+                }
             });
-    }, []);
-
-    // Effect 2 — reset the whole form when the modal opens or the program changes.
-    // Does NOT include `companies` as a dep — changes to the companies list must
-    // not re-run this effect and overwrite a selection the user already made.
-    useEffect(() => {
-        if (program) {
-            setFormData({
-                name: program.name,
-                offering_type: program.offering_type,
-                status: program.status,
-                start_date: program.start_date?.slice(0, 10) ?? '',
-                end_date: program.end_date?.slice(0, 10) ?? '',
-                miro_board_url: program.miro_board_url ?? '',
-            });
-        } else {
-            setFormData(defaultFormData);
-        }
-        setCompanyId(''); // always clear on open/program-change
-        setError(null);
-    }, [program, isOpen]); // ← NO companies dep
-
-    // Effect 3 — pre-select the assigned company once companies are available.
-    // Runs when companies loads (or when program/isOpen changes after companies
-    // is already loaded). The functional `prev ||` guard means it will NEVER
-    // overwrite a selection the user has already made.
-    useEffect(() => {
-        if (!isOpen || !program) return;
-        const assigned = companies.find((c) => c.cohort_id === program.id);
-        if (assigned) {
-            setCompanyId((prev) => prev || assigned.id);
-        }
-    }, [companies, program, isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // intentionally empty — runs once per fresh mount
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -118,7 +108,6 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         };
 
         if (program) {
-            // Edit mode: update cohort, then update the company link.
             const { error: saveError } = await supabase
                 .from('cohorts')
                 // @ts-expect-error - Supabase update type inference issue
@@ -131,8 +120,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 return;
             }
 
-            // Unlink any company previously assigned to this program
-            // (except the newly selected one), then assign the new one.
+            // Unlink any company previously assigned, then assign the new one.
             await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
@@ -146,7 +134,6 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 .update({ cohort_id: program.id })
                 .eq('id', companyId);
         } else {
-            // Create mode: insert cohort, get new ID, then link the company.
             const { data: newCohort, error: saveError } = await supabase
                 .from('cohorts')
                 // @ts-expect-error - Supabase insert type inference issue
@@ -188,6 +175,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     {error}
                 </div>
             )}
+
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Program Name</label>
                 <input

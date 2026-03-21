@@ -268,6 +268,7 @@ function ProgramsTab() {
             />
 
             <ProgramModal
+                key={isModalOpen ? (selectedProgram?.id ?? 'new') : 'closed'}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 program={selectedProgram}
