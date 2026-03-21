@@ -23,6 +23,8 @@ import {
     ChevronDown,
     User,
     LogOut,
+    FileText,
+    Film,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
 import type { User as DbUser } from '@/types/database'
@@ -92,6 +94,8 @@ const memberNavSections: NavSection[] = [
         items: [
             { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: FileText, label: 'Assignments', path: '/assignments', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: Film, label: 'Recordings', path: '/recordings', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: Wrench, label: 'Toolbox', path: '/toolbox', roles: ['owner', 'admin', 'executive', 'participant'] },
         ]

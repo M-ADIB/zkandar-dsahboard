@@ -48,6 +48,8 @@ const MyProgramPage = lazy(() => import('@/pages/MyProgramPage').then(module => 
 const MyPerformancePage = lazy(() => import('@/pages/MyPerformancePage').then(module => ({ default: module.MyPerformancePage })))
 const ToolboxPage = lazy(() => import('@/pages/ToolboxPage').then(module => ({ default: module.ToolboxPage })))
 const ToolboxDetailPage = lazy(() => import('@/pages/ToolboxDetailPage').then(module => ({ default: module.ToolboxDetailPage })))
+const AssignmentsPage = lazy(() => import('@/pages/AssignmentsPage').then(module => ({ default: module.AssignmentsPage })))
+const RecordingsPage = lazy(() => import('@/pages/RecordingsPage').then(module => ({ default: module.RecordingsPage })))
 
 function App() {
     return (
@@ -218,6 +220,22 @@ function App() {
                                         element={
                                             <MemberRoute>
                                                 <MyProgramPage />
+                                            </MemberRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="assignments"
+                                        element={
+                                            <MemberRoute>
+                                                <AssignmentsPage />
+                                            </MemberRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="recordings"
+                                        element={
+                                            <MemberRoute>
+                                                <RecordingsPage />
                                             </MemberRoute>
                                         }
                                     />

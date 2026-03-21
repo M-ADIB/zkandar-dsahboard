@@ -225,20 +225,19 @@ export function MyProgramPage() {
                         const isLast = idx === sessions.length - 1
 
                         return (
-                            <div key={session.id} className="flex gap-3">
-                                {/* ── Left: icon + connector line ── */}
-                                <div className="flex flex-col items-center">
-                                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 z-10 ${
-                                        isCompleted
-                                            ? isAttended ? 'bg-lime/20 text-lime' : 'bg-red-500/10 text-red-400'
-                                            : 'bg-white/5 text-gray-500'
-                                    }`}>
-                                        {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
-                                    </div>
-                                    {!isLast && (
-                                        <div className="w-px flex-1 bg-border mt-1 mb-1" />
-                                    )}
+                            <div key={session.id} className="relative flex gap-3">
+                                {/* ── Left: icon ── */}
+                                <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 relative z-10 ${
+                                    isCompleted
+                                        ? isAttended ? 'bg-lime/20 text-lime' : 'bg-red-500/10 text-red-400'
+                                        : 'bg-white/5 text-gray-500'
+                                }`}>
+                                    {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
                                 </div>
+                                {/* Connector line */}
+                                {!isLast && (
+                                    <div className="absolute left-[17px] top-9 bottom-0 w-px bg-border" />
+                                )}
 
                                 {/* ── Right: content ── */}
                                 <div className="flex-1 min-w-0 pb-3">

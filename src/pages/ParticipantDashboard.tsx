@@ -260,7 +260,7 @@ export function ParticipantDashboard() {
                     </h1>
                     <p className="text-gray-400 max-w-lg">
                         {isSprintWorkshop
-                            ? "Welcome to your sprint! Follow the sessions below and engage with your cohort to maximize your learning."
+                            ? "Welcome to your sprint! Follow the sessions below and engage with your program to maximize your learning."
                             : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
                     </p>
                 </div>
@@ -332,24 +332,23 @@ export function ParticipantDashboard() {
                             {sessionTimeline.map((session, idx) => {
                                 const isLast = idx === sessionTimeline.length - 1
                                 return (
-                                    <div key={session.id} className="flex gap-4">
-                                        {/* Left: icon + connector */}
-                                        <div className="flex flex-col items-center">
-                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
-                                                session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime' : 'bg-white/5'
-                                            }`}>
-                                                {session.completed ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
-                                                ) : session.current ? (
-                                                    <Play className="h-5 w-5 text-black" />
-                                                ) : (
-                                                    <Clock className="h-5 w-5 text-gray-500" />
-                                                )}
-                                            </div>
-                                            {!isLast && (
-                                                <div className="w-px flex-1 bg-border mt-1 mb-1" />
+                                    <div key={session.id} className="relative flex gap-4">
+                                        {/* Left: icon */}
+                                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 relative z-10 ${
+                                            session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime' : 'bg-white/5'
+                                        }`}>
+                                            {session.completed ? (
+                                                <CheckCircle2 className="h-5 w-5 text-lime" />
+                                            ) : session.current ? (
+                                                <Play className="h-5 w-5 text-black" />
+                                            ) : (
+                                                <Clock className="h-5 w-5 text-gray-500" />
                                             )}
                                         </div>
+                                        {/* Connector line */}
+                                        {!isLast && (
+                                            <div className="absolute left-[19px] top-10 bottom-0 w-px bg-border" />
+                                        )}
 
                                         {/* Right: content */}
                                         <div className={`flex-1 flex items-center justify-between gap-4 pb-4 ${

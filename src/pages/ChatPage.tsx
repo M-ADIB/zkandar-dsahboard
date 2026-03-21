@@ -80,7 +80,7 @@ export function ChatPage() {
                         </p>
                         {!loading && (
                             <p className="text-xs text-gray-600 mt-1">
-                                You'll see channels here when you're added to a company or cohort.
+                                You'll see channels here when you're added to a company or program.
                             </p>
                         )}
                     </div>

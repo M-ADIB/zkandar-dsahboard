@@ -203,13 +203,13 @@ export function InviteUserModal({
 
                                 {/* Cohort */}
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Program / Cohort (optional)</label>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Program (optional)</label>
                                     <select
                                         value={cohortId}
                                         onChange={(e) => setCohortId(e.target.value)}
                                         className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
                                     >
-                                        <option value="">No cohort</option>
+                                        <option value="">No program</option>
                                         {programs.map((p) => (
                                             <option key={p.id} value={p.id}>{p.name}</option>
                                         ))}
