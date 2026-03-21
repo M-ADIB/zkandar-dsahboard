@@ -406,10 +406,8 @@ export function LeadsPage() {
         active: leads.filter((l: Lead) => l.priority === 'ACTIVE').length,
         lava: leads.filter((l: Lead) => l.priority === 'LAVA').length,
         followUp: leads.filter((l: Lead) => l.discovery_call_date != null).length,
-        // Pipeline value = payment_amount for active/lava leads
-        pipelineValue: leads
-            .filter((l: Lead) => l.priority === 'ACTIVE' || l.priority === 'LAVA')
-            .reduce((sum: number, l: Lead) => sum + (Number(l.payment_amount) || 0), 0),
+        // Pipeline value = payment_amount for all leads
+        pipelineValue: leads.reduce((sum: number, l: Lead) => sum + (Number(l.payment_amount) || 0), 0),
     };
 
     const currencyFormatter = useMemo(
