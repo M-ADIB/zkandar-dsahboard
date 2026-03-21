@@ -2,7 +2,6 @@ import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MetricCard } from '@/components/shared/MetricCard'
-import { PipelineStatCard } from '@/components/dashboard/PipelineStatCard'
 import { motion } from 'framer-motion'
 import {
     DollarSign, Flame, Building2, Mic,
@@ -289,27 +288,14 @@ export function OwnerDashboard() {
     const { data, isLoading: loading } = useQuery({
         queryKey: ['ownerDashboardData', monthStart, monthEnd],
         queryFn: async () => {
-            const [coRes, cohRes, sessRes, usersRes, leadsRes, costsRes, eventsRes] = await Promise.all([
+            const [coRes, cohRes, sessRes, usersRes, leadsRes, eventsRes] = await Promise.all([
                 supabase.from('companies').select('*').order('name'),
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
                 supabase.from('leads').select('id,priority,payment_amount,amount_paid,balance,paid_full,offering_type'),
-                (supabase as any).from('costs').select('total_amount, payment_date, is_active'),
                 supabase.from('event_requests').select('*').eq('status', 'approved')
             ])
-            const costsData = (costsRes as any).data ?? []
-            
-            // Monthly costs = any cost that is recurring (is_active) OR any one-off cost that occurred specifically this month
-            const monthlyCostsScore = costsData.reduce((s: number, c: any) => {
-                const isActive = c.is_active === true
-                const isThisMonth = c.payment_date && c.payment_date >= monthStart && c.payment_date <= monthEnd
-                
-                if (isActive || isThisMonth) {
-                    return s + (c.total_amount ?? 0)
-                }
-                return s
-            }, 0)
 
             return {
                 companies: (coRes.data as Company[]) ?? [],
@@ -317,7 +303,6 @@ export function OwnerDashboard() {
                 sessions: (sessRes.data as Session[]) ?? [],
                 users: (usersRes.data as User[]) ?? [],
                 leads: (leadsRes.data as Lead[]) ?? [],
-                monthlyCosts: monthlyCostsScore,
                 eventsData: (eventsRes.data as EventRequest[]) ?? []
             }
         }
@@ -328,7 +313,6 @@ export function OwnerDashboard() {
     const sessions = data?.sessions ?? []
     const users = data?.users ?? []
     const leads = data?.leads ?? []
-    const monthlyCosts = data?.monthlyCosts ?? 0
     const eventsData = data?.eventsData ?? []
 
     // ── KPI calculations ──
@@ -366,24 +350,6 @@ export function OwnerDashboard() {
     const activeMembers = useMemo(() =>
         users.filter((u) => u.role === 'participant' || u.role === 'executive').length
         , [users])
-
-    const conversionRate = useMemo(() => {
-        if (leads.length === 0) return 0
-        return Math.round(((leadCounts['COMPLETED'] || 0) / leads.length) * 100)
-    }, [leads, leadCounts])
-
-    // Pending = leads where paid_full is not true/yes and priority is not 'NOT INTERESTED' and not 'COMPLETED'
-    const pendingLeads = useMemo(() =>
-        leads.filter(l => {
-            const p = (l as any).priority
-            // Safely handle both boolean true/false and string "yes"/"no" from before migration
-            const paidFullStr = String((l as any).paid_full || '').toLowerCase()
-            const isPaid = paidFullStr === 'true' || paidFullStr === 'yes'
-            return p !== 'NOT INTERESTED' && p !== 'COMPLETED' && !isPaid
-        }).length
-        , [leads])
-
-
 
     // Company health
     const companyHealth = useMemo(() => {
@@ -425,9 +391,9 @@ export function OwnerDashboard() {
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
                 <MetricCard
                     icon={DollarSign}
-                    label="Pipeline Value"
-                    value={`AED ${fmt(pipelineValue)}`}
-                    sub={`AED ${fmt(completedRevenue)} collected`}
+                    label="Cash Collected"
+                    value={`AED ${fmt(completedRevenue)}`}
+                    sub="from completed leads"
                     delay={0}
                     limeAccent
                     onClick={() => navigate('/admin/leads?priority=COMPLETED')}
@@ -469,82 +435,55 @@ export function OwnerDashboard() {
 
             {/* ── Row 2: Pipeline Analytics + Calendar ── */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                {/* Pipeline Analytics Bento Widget (Massive Redesign) */}
+                {/* Pipeline Analytics Bento Widget (Expanded Banner) */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="lg:col-span-3 flex flex-col sm:flex-row gap-4 h-full"
+                    className="lg:col-span-3 h-full"
                 >
-                    {/* The Main Huge Metric Banner */}
+                    {/* The Main Huge Metric Banner - Now Full Width */}
                     <div 
-                        className="flex-1 bg-gradient-to-br from-[#0a0a0a] to-[#050505] border border-white/[0.08] rounded-[24px] p-6 sm:p-8 relative overflow-hidden group hover:border-lime/30 cursor-pointer transition-all duration-500 shadow-2xl flex flex-col justify-between"
+                        className="w-full h-full bg-gradient-to-br from-[#0a0a0a] to-[#050505] border border-white/[0.08] rounded-[24px] p-6 md:p-10 relative overflow-hidden group hover:border-lime/30 cursor-pointer transition-all duration-500 shadow-2xl flex flex-col justify-between"
                         onClick={() => navigate('/admin/leads?priority=ACTIVE')}
                     >
                         {/* Background Glow */}
                         <div className="absolute top-[-50%] right-[-10%] w-[150%] h-[150%] bg-[radial-gradient(circle_at_top_right,rgba(208,255,113,0.05),transparent_40%)]" />
                         
                         {/* Huge Abstract Icon Background */}
-                        <div className="absolute top-8 right-8 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-110 transition-all duration-700 pointer-events-none rotate-12">
-                            <DollarSign className="w-48 h-48 text-lime" />
+                        <div className="absolute top-10 right-10 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 pointer-events-none">
+                            <DollarSign className="w-56 h-56 md:w-80 md:h-80 text-lime" />
                         </div>
 
                         {/* Top Ribbon */}
-                        <div className="relative z-10 w-full flex items-center justify-between mb-8 sm:mb-12">
-                            <div className="inline-flex items-center gap-2 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-full px-4 py-2 text-xs text-gray-300 font-medium tracking-wide">
+                        <div className="relative z-10 w-full flex items-center justify-between mb-8 md:mb-16">
+                            <div className="inline-flex items-center gap-2 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-full px-5 py-2.5 text-xs md:text-sm text-gray-300 font-medium tracking-wide">
                                 <TrendingUp className="w-4 h-4 text-lime" />
                                 <span>Pipeline Engine</span>
                             </div>
                             {/* Hover Arrow Component */}
-                            <div className="w-10 h-10 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-lime">
-                                <ArrowRight className="w-5 h-5" />
+                            <div className="w-12 h-12 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center opacity-0 -translate-x-6 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 text-lime">
+                                <ArrowRight className="w-6 h-6" />
                             </div>
                         </div>
 
                         {/* Middle Focus -> Value */}
-                        <div className="relative z-10 mb-8 sm:mb-12">
-                            <p className="text-xs sm:text-sm font-bold tracking-[0.15em] uppercase text-gray-500 mb-3 ml-1">Total Pipeline Value</p>
-                            <h3 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(208,255,113,0.1)] group-hover:drop-shadow-[0_0_30px_rgba(208,255,113,0.25)] transition-all duration-500">
-                                <span className="text-lime/90">AED</span> {fmt(pipelineValue)}
+                        <div className="relative z-10 mb-10 md:mb-20">
+                            <p className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-gray-400 mb-4 ml-1">Total Pipeline Value</p>
+                            <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-[9rem] font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
+                                <span className="text-lime/90 text-4xl sm:text-6xl lg:text-7xl align-top mr-2">AED</span> 
+                                {fmt(pipelineValue)}
                             </h3>
                         </div>
 
                         {/* Bottom Focus -> Distribution Bar */}
-                        <div className="relative z-10 w-full mt-auto bg-black/40 p-5 rounded-2xl border border-white/[0.03] backdrop-blur-sm">
-                            <div className="flex items-center justify-between mb-3">
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.15em]">Health Distribution</p>
-                                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-widest">{leads.length} Active Profiles</p>
+                        <div className="relative z-10 w-full mt-auto bg-black/40 p-6 md:p-8 rounded-2xl border border-white/[0.03] backdrop-blur-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-[0.2em]">Health Distribution</p>
+                                <p className="text-[10px] md:text-xs text-lime font-medium uppercase tracking-widest">{leads.length} Active Profiles</p>
                             </div>
                             <LeadsStatusBar counts={leadCounts} />
                         </div>
-                    </div>
-
-                    {/* The 4 Smaller Bento Cards stacked in a 2x2 grid */}
-                    <div className="w-full sm:w-[280px] xl:w-[320px] shrink-0 grid grid-cols-2 grid-rows-2 gap-4">
-                        <PipelineStatCard 
-                            label="Total"
-                            value={fmt(leads.length)}
-                            colorMain="text-white"
-                            onClick={() => navigate('/admin/leads')}
-                        />
-                        <PipelineStatCard 
-                            label="Convert"
-                            value={`${conversionRate}%`}
-                            colorMain="text-orange-400"
-                            onClick={() => navigate('/admin/leads?priority=COMPLETED')}
-                        />
-                        <PipelineStatCard 
-                            label="Pending"
-                            value={pendingLeads}
-                            colorMain="text-amber-400"
-                            onClick={() => navigate('/admin/leads?paid=pending')}
-                        />
-                        <PipelineStatCard 
-                            label="Costs"
-                            value={<span className="text-lg">AED {fmt(monthlyCosts)}</span>}
-                            colorMain="text-green-400"
-                            onClick={() => navigate('/admin/costs')}
-                        />
                     </div>
                 </motion.div>
 
