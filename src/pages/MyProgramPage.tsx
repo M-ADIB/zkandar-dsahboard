@@ -226,7 +226,11 @@ export function MyProgramPage() {
 
                         return (
                             <div key={session.id} className="relative flex gap-4">
-                                {/* Left Side: Icon & Line */}
+                                {/* Connector line - Absolute for perfect alignment */}
+                                {!isLast && (
+                                    <div className="absolute left-[18px] top-9 bottom-[-24px] w-px bg-border -ml-px z-0" />
+                                )}
+                                {/* Left Side: Icon */}
                                 <div className="flex flex-col items-center shrink-0">
                                     <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold relative z-10 shadow-sm ${
                                         isCompleted
@@ -235,7 +239,6 @@ export function MyProgramPage() {
                                     }`}>
                                         {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
                                     </div>
-                                    {!isLast && <div className="w-px h-full bg-border my-2" />}
                                 </div>
 
                                 {/* Right Side: content */}

@@ -5,42 +5,12 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface SurveyAnswers {
-    [key: string]: string | string[] | number | Record<string, number>
-}
+import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
+import type { SurveyAnswers } from '@/types/database'
 
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface GradedSubmission {
     score: number
-}
-
-// ─── Scoring Engine ──────────────────────────────────────────────────────────
-const PENALTY_MULTIPLIER = 0.55
-const ASSIGNMENT_MAX_BOOST = 45
-
-function computeInitialScore(answers: SurveyAnswers, userType: string | null): number {
-    const scaleKeys =
-        userType === 'management'
-            ? ['ai_visibility', 'brand_confidence', 'team_readiness']
-            : ['ai_confidence', 'ai_skill_level', 'quality_confidence', 'workflow_readiness']
-
-    const scaleValues = scaleKeys
-        .map((k) => (typeof answers[k] === 'number' ? (answers[k] as number) : 0))
-        .filter((v) => v > 0)
-
-    if (scaleValues.length === 0) return 15 // No data → very low
-    const avg = scaleValues.reduce((a, b) => a + b, 0) / scaleValues.length
-    return Math.round((avg / 5) * 100 * PENALTY_MULTIPLIER)
-}
-
-function computeAssignmentBoost(scores: number[]): number {
-    if (scores.length === 0) return 0
-    const avg = scores.reduce((a, b) => a + b, 0) / scores.length
-    return Math.round((avg / 100) * ASSIGNMENT_MAX_BOOST)
-}
-
-function computeFinalScore(initial: number, boost: number): number {
-    return Math.min(100, initial + boost)
 }
 
 // ─── Radar Chart Helpers ─────────────────────────────────────────────────────

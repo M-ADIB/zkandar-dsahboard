@@ -16,7 +16,8 @@ import { useViewMode } from '@/context/ViewModeContext'
 import { ProgressBar } from '@/components/shared/ProgressBar'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel, formatRelativeTime } from '@/lib/time'
-import type { Assignment, ChatMessage, Cohort, Session, Submission } from '@/types/database'
+import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
+import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswers } from '@/types/database'
 
 export function ParticipantDashboard() {
     const { user } = useAuth()
@@ -50,7 +51,7 @@ export function ParticipantDashboard() {
             const [profileRes, membershipRes] = await Promise.all([
                 supabase
                     .from('users')
-                    .select('company_id, ai_readiness_score')
+                    .select('company_id, ai_readiness_score, onboarding_data, user_type')
                     .eq('id', effectiveUserId)
                     .single(),
                 supabase
@@ -61,7 +62,9 @@ export function ParticipantDashboard() {
 
             if (ignore) return
 
-            const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number } | null
+            const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number; onboarding_data: Record<string, unknown> | null; user_type: string | null } | null
+            
+            // We will compute the AI score live below, but store the DB value as a fallback
             if (profileRow?.ai_readiness_score !== undefined) {
                 setAiScore(profileRow.ai_readiness_score)
             }
@@ -148,12 +151,27 @@ export function ParticipantDashboard() {
                 if (assignmentRows.length > 0) {
                     const { data: submissionsData } = await supabase
                         .from('submissions')
-                        .select('id, assignment_id, submitted_at')
+                        .select('id, assignment_id, submitted_at, score')
                         .eq('user_id', effectiveUserId)
                         .in('assignment_id', assignmentRows.map((a) => a.id))
 
                     if (ignore) return
-                    setSubmissions((submissionsData as Submission[]) ?? [])
+                    const subs = (submissionsData as (Submission & { score?: number })[]) ?? []
+                    setSubmissions(subs)
+                    
+                    // Live compute the exact AI readiness score using the same engine as My Performance
+                    if (profileRow?.onboarding_data?.survey_answers) {
+                        const answers = profileRow.onboarding_data.survey_answers as SurveyAnswers
+                        const initialScore = computeInitialScore(answers, profileRow.user_type)
+                        const gradedScores = subs.map(s => s.score).filter((s): s is number => typeof s === 'number')
+                        const boost = computeAssignmentBoost(gradedScores)
+                        const finalLiveScore = computeFinalScore(initialScore, boost)
+                        setAiScore(finalLiveScore)
+                    }
+                } else if (profileRow?.onboarding_data?.survey_answers) {
+                    const answers = profileRow.onboarding_data.survey_answers as SurveyAnswers
+                    const initialScore = computeInitialScore(answers, profileRow.user_type)
+                    setAiScore(computeFinalScore(initialScore, 0))
                 }
             }
 
@@ -309,7 +327,17 @@ export function ParticipantDashboard() {
                 >
                     <h2 className="font-heading text-lg font-bold mb-6">Session Timeline</h2>
                     {loading ? (
-                        <div className="p-6 text-center text-gray-500">Loading sessions...</div>
+                        <div className="space-y-6">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex gap-4 animate-pulse">
+                                    <div className="h-10 w-10 rounded-lg bg-white/5 shrink-0" />
+                                    <div className="flex-1 space-y-2 py-1">
+                                        <div className="h-4 bg-white/5 rounded w-1/3" />
+                                        <div className="h-3 bg-white/5 rounded w-1/4" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     ) : error ? (
                         <div className="p-6 text-center text-red-400">{error}</div>
                     ) : sessionTimeline.length === 0 ? (
@@ -320,7 +348,11 @@ export function ParticipantDashboard() {
                                 const isLast = idx === sessionTimeline.length - 1
                                 return (
                                     <div key={session.id} className="relative flex gap-4">
-                                        {/* Left Side: Icon & Line */}
+                                        {/* Connector line - Absolute for perfect alignment */}
+                                        {!isLast && (
+                                            <div className="absolute left-5 top-10 bottom-[-24px] w-px bg-border -ml-px z-0" />
+                                        )}
+                                        {/* Left Side: Icon */}
                                         <div className="flex flex-col items-center shrink-0">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
                                                 session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
@@ -333,7 +365,6 @@ export function ParticipantDashboard() {
                                                     <Clock className="h-5 w-5 text-gray-500" />
                                                 )}
                                             </div>
-                                            {!isLast && <div className="w-px h-full bg-border my-2" />}
                                         </div>
 
                                         {/* Right Side: content */}
@@ -380,7 +411,11 @@ export function ParticipantDashboard() {
                             <Link to="/my-program" className="text-sm text-lime hover:underline">View all</Link>
                         </div>
                         {loading ? (
-                            <div className="p-4 text-sm text-gray-500">Loading assignments...</div>
+                            <div className="space-y-3">
+                                {[1, 2].map(i => (
+                                    <div key={i} className="p-4 rounded-xl bg-white/5 animate-pulse flex justify-between h-20" />
+                                ))}
+                            </div>
                         ) : assignmentSummary.items.length === 0 ? (
                             <div className="p-4 text-sm text-gray-500">No assignments yet.</div>
                         ) : (
@@ -423,7 +458,11 @@ export function ParticipantDashboard() {
                             <MessageSquare className="h-5 w-5 text-gray-500" />
                         </div>
                         {loading ? (
-                            <div className="p-4 text-sm text-gray-500">Loading messages...</div>
+                            <div className="space-y-3">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="p-3 rounded-xl bg-white/5 animate-pulse h-16" />
+                                ))}
+                            </div>
                         ) : chatPreview.length === 0 ? (
                             <div className="p-4 text-sm text-gray-500">No recent messages.</div>
                         ) : (

@@ -12,6 +12,9 @@ export type InvitationStatus = 'pending' | 'accepted' | 'expired'
 export type ToolboxImportance = 'essential' | 'recommended' | 'optional'
 export type ToolboxToolType = 'image_generation' | 'video_generation' | 'text_generation' | 'automation' | 'analytics' | 'other'
 
+export interface SurveyAnswers {
+  [key: string]: string | string[] | number | Record<string, number>
+}
 export type ToolboxSubscriptionType = 'free' | 'freemium' | 'paid' | 'enterprise'
 
 export interface ToolboxItem {
