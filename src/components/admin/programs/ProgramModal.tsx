@@ -19,6 +19,8 @@ type ProgramFormData = {
     miro_board_url: string;
 };
 
+type Company = { id: string; name: string; cohort_id: string | null };
+
 const defaultFormData: ProgramFormData = {
     name: '',
     offering_type: 'master_class',
@@ -31,23 +33,27 @@ const defaultFormData: ProgramFormData = {
 export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramModalProps) {
     const supabase = useSupabase();
     const [formData, setFormData] = useState<ProgramFormData>(defaultFormData);
-    // company_id is kept in its own state so no setFormData call can ever reset it.
+    // company_id lives in its own state — no setFormData call can ever reset it.
     const [companyId, setCompanyId] = useState('');
-    const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
+    // Fetch cohort_id alongside companies so we can look up the assigned company synchronously.
+    const [companies, setCompanies] = useState<Company[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch companies once on mount
+    // Fetch all companies (with their cohort assignment) once on mount.
     useEffect(() => {
         supabase
             .from('companies')
-            .select('id, name')
+            .select('id, name, cohort_id')
             .order('name')
             .then(({ data }) => {
-                setCompanies((data as { id: string; name: string }[]) ?? []);
+                setCompanies((data as Company[]) ?? []);
             });
     }, []);
 
+    // Sync form fields whenever the modal opens or the program changes.
+    // `companies` is included so that if the list loads after the modal opens,
+    // the assigned company is still found correctly.
     useEffect(() => {
         if (program) {
             setFormData({
@@ -58,28 +64,16 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 end_date: program.end_date?.slice(0, 10) ?? '',
                 miro_board_url: program.miro_board_url ?? '',
             });
-            setCompanyId('');
+            // Synchronous lookup — no async query, no race condition.
+            const assigned = companies.find((c) => c.cohort_id === program.id);
+            setCompanyId(assigned?.id ?? '');
             setError(null);
-
-            // Look up which company is currently assigned to this program.
-            // Use limit(1) instead of maybeSingle() so we don't fail when
-            // multiple companies share the same cohort_id due to stale data.
-            supabase
-                .from('companies')
-                .select('id')
-                .eq('cohort_id', program.id)
-                .limit(1)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .then(({ data: rows }: { data: any }) => {
-                    // Only apply the DB value if the user hasn't already picked one.
-                    setCompanyId((prev) => prev || rows?.[0]?.id || '');
-                });
         } else {
             setFormData(defaultFormData);
             setCompanyId('');
             setError(null);
         }
-    }, [program, isOpen]);
+    }, [program, isOpen, companies]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -117,7 +111,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         };
 
         if (program) {
-            // Edit mode: update cohort, then update the company link
+            // Edit mode: update cohort, then update the company link.
             const { error: saveError } = await supabase
                 .from('cohorts')
                 // @ts-expect-error - Supabase update type inference issue
@@ -130,7 +124,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 return;
             }
 
-            // Unlink any company that was previously assigned to this program
+            // Unlink any company previously assigned to this program
             // (except the newly selected one), then assign the new company.
             await supabase
                 .from('companies')
@@ -145,7 +139,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 .update({ cohort_id: program.id })
                 .eq('id', companyId);
         } else {
-            // Create mode: insert cohort, get new ID, then update company
+            // Create mode: insert cohort, get new ID, then link the company.
             const { data: newCohort, error: saveError } = await supabase
                 .from('cohorts')
                 // @ts-expect-error - Supabase insert type inference issue
