@@ -33,7 +33,10 @@ export function ParticipantDashboard() {
     const firstName = user?.full_name?.split(' ')[0] || 'there'
 
     useEffect(() => {
-        if (!effectiveUserId) return
+        if (!effectiveUserId) {
+            setLoading(false)
+            return
+        }
 
         let ignore = false
 

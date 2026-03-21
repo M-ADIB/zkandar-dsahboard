@@ -5,7 +5,6 @@ import type { User as AuthUser, Session } from '@supabase/supabase-js'
 import type { User, UserRole } from '@/types/database'
 import { identifyUser, resetAnalytics, initAnalytics } from '@/lib/analytics'
 import { initSentry } from '@/lib/sentry'
-import toast from 'react-hot-toast'
 
 interface AuthContextType {
     authUser: AuthUser | null
@@ -284,85 +283,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (authChannel) authChannel.close()
         }
     }, [])
-
-    // Session Expiry Warning
-    const signOutRef = useRef(signOut)
-    useEffect(() => {
-        signOutRef.current = signOut
-    }, [signOut]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        if (!session?.access_token) return
-
-        let sessionExpiry: number | null = null
-        try {
-            const payload = JSON.parse(atob(session.access_token.split('.')[1]))
-            if (payload.exp) sessionExpiry = payload.exp * 1000
-        } catch {
-            return
-        }
-
-        if (!sessionExpiry) return
-
-        const checkExpiry = () => {
-            const now = Date.now()
-            const timeRemaining = sessionExpiry! - now
-
-            if (timeRemaining <= 0) {
-                // Expired
-                toast.dismiss('session-expiry-warning')
-                toast.error('Session expired. Please log in again.')
-                signOutRef.current()
-            } else if (timeRemaining <= 5 * 60 * 1000) { // 5 mins
-                toast(
-                    (t) => (
-                        <div className="flex flex-col gap-3 p-1">
-                            <p className="font-semibold text-white">Session Expiring Soon</p>
-                            <p className="text-sm text-gray-300">Your session will expire in {Math.ceil(timeRemaining / 60000)} minutes.</p>
-                            <div className="flex gap-2 justify-end mt-2">
-                                <button
-                                    onClick={() => {
-                                        toast.dismiss(t.id)
-                                        signOutRef.current()
-                                    }}
-                                    className="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition"
-                                >
-                                    Log Out
-                                </button>
-                                <button
-                                    onClick={async () => {
-                                        toast.dismiss(t.id)
-                                        const { error } = await supabase.auth.refreshSession()
-                                        if (error) {
-                                            toast.error('Failed to refresh session')
-                                            signOutRef.current()
-                                        } else {
-                                            toast.success('Session extended')
-                                        }
-                                    }}
-                                    className="px-3 py-1.5 text-xs bg-lime text-black font-semibold rounded-lg hover:opacity-90 transition"
-                                >
-                                    Stay Logged In
-                                </button>
-                            </div>
-                        </div>
-                    ),
-                    { duration: Infinity, id: 'session-expiry-warning' }
-                )
-            } else {
-                // If the user refreshed the session, we should dismiss the warning if it's showing.
-                toast.dismiss('session-expiry-warning')
-            }
-        }
-
-        const intervalId = setInterval(checkExpiry, 30000) // 30s
-        checkExpiry()
-
-        return () => {
-            clearInterval(intervalId)
-            toast.dismiss('session-expiry-warning')
-        }
-    }, [session])
 
     useEffect(() => {
         if (!authUser) return
