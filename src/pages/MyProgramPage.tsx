@@ -4,6 +4,7 @@ import {
     GraduationCap, Calendar, ClipboardList, Film, FileText,
     CheckCircle2, Clock, Upload, ChevronDown, ChevronUp, Link as LinkIcon,
 } from 'lucide-react'
+import { SubmitAssignmentModal } from '@/components/assignments/SubmitAssignmentModal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -15,10 +16,10 @@ interface Submission {
     id: string
     assignment_id: string
     user_id: string
-    file_url: string | null
-    notes: string | null
+    content: { file_url?: string; link?: string; text?: string }
     score: number | null
-    feedback: string | null
+    admin_feedback: string | null
+    status: string
     submitted_at: string | null
 }
 
@@ -34,6 +35,9 @@ export function MyProgramPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [expandedSession, setExpandedSession] = useState<string | null>(null)
+    const [submitTarget, setSubmitTarget] = useState<{
+        id: string; title: string; session: string; submissionFormat: SubmissionFormat
+    } | null>(null)
 
     useEffect(() => {
         if (!user || !effectiveUserId) return
@@ -213,8 +217,8 @@ export function MyProgramPage() {
                 </h2>
 
                 <div className="relative">
-                    {/* Vertical line */}
-                    <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" />
+                    {/* Vertical line — left must match dot center: p-3(12px) + half-w-9(18px) = 30px */}
+                    <div className="absolute left-[30px] top-2 bottom-2 w-px bg-border" />
 
                     <div className="space-y-1">
                         {sessions.map((session) => {
@@ -306,7 +310,12 @@ export function MyProgramPage() {
                                                                         {sub.score != null ? `✓ ${sub.score}pts` : 'Submitted'}
                                                                     </span>
                                                                 ) : (
-                                                                    <span className="px-2 py-0.5 text-[10px] text-gray-500 border border-border rounded-md">Not Submitted</span>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setSubmitTarget({ id: asgn.id, title: asgn.title, session: session.title, submissionFormat: asgn.submission_format }) }}
+                                                                        className="px-2 py-0.5 text-[10px] text-lime border border-lime/30 rounded-md hover:bg-lime/10 transition"
+                                                                    >
+                                                                        Submit
+                                                                    </button>
                                                                 )}
                                                             </div>
                                                         )
@@ -370,17 +379,20 @@ export function MyProgramPage() {
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg ${sub.score != null ? 'bg-lime/10 text-lime' : 'bg-amber-500/10 text-amber-300'}`}>
                                                         {sub.score != null ? <><CheckCircle2 className="h-3.5 w-3.5" /> {sub.score}pts</> : <><Clock className="h-3.5 w-3.5" /> Submitted</>}
                                                     </span>
-                                                    {sub.feedback && (
-                                                        <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.feedback}>
-                                                            💬 {sub.feedback}
+                                                    {sub.admin_feedback && (
+                                                        <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.admin_feedback}>
+                                                            💬 {sub.admin_feedback}
                                                         </p>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-gray-500 border border-border rounded-lg">
+                                                <button
+                                                    onClick={() => setSubmitTarget({ id: asgn.id, title: asgn.title, session: sessionMap.get(asgn.session_id)?.title ?? '', submissionFormat: asgn.submission_format })}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-lime border border-lime/30 rounded-lg hover:bg-lime/10 transition"
+                                                >
                                                     <Upload className="h-3.5 w-3.5" />
-                                                    Not Submitted
-                                                </span>
+                                                    Submit
+                                                </button>
                                             )}
                                         </div>
                                     </div>
@@ -390,6 +402,24 @@ export function MyProgramPage() {
                     </div>
                 </motion.div>
             )}
+
+            {/* ── Submit Assignment Modal ── */}
+            <SubmitAssignmentModal
+                isOpen={submitTarget !== null}
+                onClose={() => setSubmitTarget(null)}
+                assignment={submitTarget}
+                userId={effectiveUserId ?? ''}
+                onSuccess={async () => {
+                    setSubmitTarget(null)
+                    if (assignments.length > 0) {
+                        const { data: subData } = await supabase
+                            .from('submissions').select('*')
+                            .eq('user_id', effectiveUserId)
+                            .in('assignment_id', assignments.map((a) => a.id))
+                        setSubmissions((subData as Submission[]) ?? [])
+                    }
+                }}
+            />
 
             {/* ── Miro Board ── */}
             {cohort.miro_board_url && (

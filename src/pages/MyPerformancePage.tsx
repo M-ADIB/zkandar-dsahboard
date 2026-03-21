@@ -243,6 +243,13 @@ export function MyPerformancePage() {
     const roleKey = userRole ?? 'Other'
     const timeData = TIME_DATA[roleKey] ?? TIME_DATA['Other']
 
+    // Write the computed score back to the DB so the dashboard can read it
+    useEffect(() => {
+        if (loading || !effectiveUserId || finalScore === 0) return
+        // @ts-expect-error - Supabase update type inference issue
+        supabase.from('users').update({ ai_readiness_score: finalScore }).eq('id', effectiveUserId)
+    }, [finalScore, effectiveUserId, loading])
+
     // ─── SVG Gauge ────────────────────────────────────────────────────────────
     const gaugeCircumference = 2 * Math.PI * 70
     const gaugeFill = (finalScore / 100) * gaugeCircumference

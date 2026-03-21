@@ -319,22 +319,20 @@ export function ParticipantDashboard() {
                     ) : sessionTimeline.length === 0 ? (
                         <div className="p-6 text-center text-gray-500">No sessions yet.</div>
                     ) : (
-                        <div className="space-y-4">
-                            {sessionTimeline.map((session, index) => (
+                        <div className="relative space-y-4">
+                            {sessionTimeline.length > 1 && (
+                                <div className="absolute left-[36px] top-9 bottom-9 w-px bg-border pointer-events-none" />
+                            )}
+                            {sessionTimeline.map((session) => (
                                 <div
                                     key={session.id}
                                     className={`relative flex items-center gap-4 p-4 rounded-xl transition
                   ${session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5'}
                 `}
                                 >
-                                    {/* Timeline line */}
-                                    {index < sessionTimeline.length - 1 && (
-                                        <div className="absolute left-7 top-16 w-0.5 h-6 bg-border" />
-                                    )}
-
                                     {/* Status icon */}
                                     <div
-                                        className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0
+                                        className={`relative z-10 h-10 w-10 rounded-lg flex items-center justify-center shrink-0
                     ${session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime' : 'bg-white/5'}
                   `}
                                     >
@@ -383,7 +381,7 @@ export function ParticipantDashboard() {
                     >
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="font-heading text-lg font-bold">Assignments</h2>
-                            <Link to="/assignments" className="text-sm text-lime hover:underline">View all</Link>
+                            <Link to="/my-program" className="text-sm text-lime hover:underline">View all</Link>
                         </div>
                         {loading ? (
                             <div className="p-4 text-sm text-gray-500">Loading assignments...</div>

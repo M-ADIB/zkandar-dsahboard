@@ -23,17 +23,17 @@ export function MemberDetailsPanel({ member, onClose, companyId }: MemberDetails
         const fetchDetails = async () => {
             setLoading(true)
 
-            // Fetch survey data (fuzzy matching by email or name since it's mock data)
+            // Fetch survey data by user_email (the column name in both submission tables)
             const [teamRes, mgmtRes, subsRes] = await Promise.all([
                 supabase.from('team_submissions')
                     .select('*')
                     .eq('company_id', companyId)
-                    .ilike('email', member.email || '')
+                    .ilike('user_email', member.email || '')
                     .maybeSingle(),
                 supabase.from('management_submissions')
                     .select('*')
                     .eq('company_id', companyId)
-                    .ilike('email', member.email || '')
+                    .ilike('user_email', member.email || '')
                     .maybeSingle(),
                 supabase.from('submissions')
                     .select('*, assignment:assignments(*)')
@@ -152,7 +152,7 @@ export function MemberDetailsPanel({ member, onClose, companyId }: MemberDetails
                                         {!teamSub && !mgmtSub ? (
                                             <div className="bg-white/[0.02] border border-white/[0.05] rounded-[20px] p-6 text-center">
                                                 <Brain className="h-8 w-8 text-gray-600 mx-auto mb-2" />
-                                                <p className="text-sm text-gray-400">No survey data linked to this email.</p>
+                                                <p className="text-sm text-gray-400">This member has not submitted a survey yet.</p>
                                             </div>
                                         ) : (
                                             <div className="bg-white/[0.02] border border-white/[0.05] rounded-[20px] p-5">

@@ -142,6 +142,13 @@ export function CompanyWorkspacePage() {
     const [isAssigning, setIsAssigning] = useState(false)
     const [assignError, setAssignError] = useState<string | null>(null)
 
+    // Add Member modal state
+    const [isAddMemberOpen, setIsAddMemberOpen] = useState(false)
+    const [availableUsers, setAvailableUsers] = useState<User[]>([])
+    const [selectedAddUserId, setSelectedAddUserId] = useState<string>('')
+    const [isAddingMember, setIsAddingMember] = useState(false)
+    const [addMemberError, setAddMemberError] = useState<string | null>(null)
+
     useEffect(() => {
         if (!id) return
         const fetchAll = async () => {
@@ -392,7 +399,26 @@ export function CompanyWorkspacePage() {
                 {
                     activeTab === 'members' && (
                         <div className="space-y-4">
-                            <p className="text-gray-400 text-sm">{members.length} member{members.length !== 1 ? 's' : ''} enrolled</p>
+                            <div className="flex items-center justify-between">
+                                <p className="text-gray-400 text-sm">{members.length} member{members.length !== 1 ? 's' : ''} enrolled</p>
+                                <button
+                                    onClick={async () => {
+                                        const { data } = await supabase
+                                            .from('users')
+                                            .select('*')
+                                            .neq('company_id', id ?? '')
+                                            .order('full_name')
+                                        setAvailableUsers((data as User[]) ?? [])
+                                        setSelectedAddUserId('')
+                                        setAddMemberError(null)
+                                        setIsAddMemberOpen(true)
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-lime/30 bg-lime/10 text-lime hover:bg-lime/20 transition"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    Add Member
+                                </button>
+                            </div>
                             {members.length === 0 ? (
                                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-8 text-center">
                                     <Users className="h-10 w-10 text-gray-600 mx-auto mb-3" />
@@ -797,6 +823,113 @@ export function CompanyWorkspacePage() {
                                         >
                                             {isAssigning && <Loader2 className="h-4 w-4 animate-spin" />}
                                             {isAssigning ? 'Assigning...' : 'Assign'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+            </Portal>
+
+            {/* ── Add Member Modal ── */}
+            <Portal>
+                <AnimatePresence>
+                    {isAddMemberOpen && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsAddMemberOpen(false)}
+                                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                                transition={{ type: 'spring', damping: 28, stiffness: 360 }}
+                                className="relative z-10 w-full max-w-sm rounded-[24px] bg-[#0a0a0a] border border-white/[0.08] shadow-2xl overflow-hidden"
+                            >
+                                <div className="flex items-center justify-between gap-4 px-6 py-5 border-b border-border">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-9 w-9 rounded-xl bg-lime/10 flex items-center justify-center">
+                                            <Users className="h-5 w-5 text-lime" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-base font-semibold text-white">Add Member</h2>
+                                            <p className="text-xs text-gray-500">Assign an existing user to {company.name}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsAddMemberOpen(false)}
+                                        className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition-colors"
+                                    >
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </div>
+
+                                <div className="p-6 space-y-4">
+                                    {addMemberError && (
+                                        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{addMemberError}</div>
+                                    )}
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-400 mb-1.5">Select User</label>
+                                        <select
+                                            value={selectedAddUserId}
+                                            onChange={(e) => setSelectedAddUserId(e.target.value)}
+                                            className="w-full px-3 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
+                                        >
+                                            <option value="">Select a user…</option>
+                                            {availableUsers.map((u) => (
+                                                <option key={u.id} value={u.id}>
+                                                    {u.full_name} ({u.email})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {availableUsers.length === 0 && (
+                                            <p className="text-xs text-gray-500 mt-2">No unassigned users found.</p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-3 pt-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsAddMemberOpen(false)}
+                                            className="px-4 py-2 rounded-xl text-sm text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            disabled={isAddingMember || !selectedAddUserId}
+                                            onClick={async () => {
+                                                if (!selectedAddUserId || !id) return
+                                                setIsAddingMember(true)
+                                                setAddMemberError(null)
+                                                const { error: updateErr } = await supabase
+                                                    .from('users')
+                                                    // @ts-expect-error - Supabase update type inference
+                                                    .update({ company_id: id })
+                                                    .eq('id', selectedAddUserId)
+                                                if (updateErr) {
+                                                    setAddMemberError(updateErr.message)
+                                                    setIsAddingMember(false)
+                                                    return
+                                                }
+                                                // Refresh members list
+                                                const { data: updatedMembers } = await supabase
+                                                    .from('users')
+                                                    .select('*')
+                                                    .eq('company_id', id)
+                                                    .order('full_name')
+                                                setMembers((updatedMembers as User[]) ?? [])
+                                                setIsAddingMember(false)
+                                                setIsAddMemberOpen(false)
+                                            }}
+                                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-lime text-black hover:bg-lime/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            {isAddingMember && <Loader2 className="h-4 w-4 animate-spin" />}
+                                            Add Member
                                         </button>
                                     </div>
                                 </div>
