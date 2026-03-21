@@ -488,15 +488,6 @@ export function LeadsPage() {
                 </div>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                <MetricCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
-                <MetricCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
-                <MetricCard label="Pipeline (AED)" value={currencyFormatter.format(stats.pipelineValue)} icon={DollarSign} iconColor="text-yellow-400" />
-                <MetricCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
-                <MetricCard label="Active"        value={stats.active}                             icon={Target}     limeAccent />
-            </div>
-
             {/* Table */}
             <LeadsTable
                 data={showHighlightedOnly ? leads.filter(l => l.is_highlighted) : leads}
@@ -515,6 +506,16 @@ export function LeadsPage() {
                 isUpdating={isUpdating}
                 highlightId={highlightId}
             />
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <MetricCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
+                <MetricCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
+                <MetricCard label="Pipeline (AED)" value={currencyFormatter.format(stats.pipelineValue)} icon={DollarSign} iconColor="text-yellow-400" />
+                <MetricCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
+                <MetricCard label="Active"        value={stats.active}                             icon={Target}     limeAccent />
+            </div>
+
 
             {/* Column Settings Panel */}
             {isColumnPanelOpen && (
