@@ -9,7 +9,7 @@ import {
     ChevronRight, CheckCircle2, AlertCircle, XCircle,
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
-import type { Cohort, Company, Lead, Session, User } from '@/types/database'
+import type { Cohort, Company, Lead, Session, User, EventRequest } from '@/types/database'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameMonth, isToday, parseISO } from 'date-fns'
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ const eventTypeColors: Record<string, { bg: string; text: string; dot: string; l
 }
 
 // ─── Mini Calendar Widget ─────────────────────────────────────────────────────
-function CalendarWidget({ cohorts }: { cohorts: Cohort[] }) {
+function CalendarWidget({ cohorts, eventsData }: { cohorts: Cohort[], eventsData: EventRequest[] }) {
     const [currentDate, setCurrentDate] = useState(new Date())
 
     const monthStart = startOfMonth(currentDate)
@@ -129,9 +129,9 @@ function CalendarWidget({ cohorts }: { cohorts: Cohort[] }) {
     const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
     const startPadding = getDay(monthStart)
 
-    // Map events from cohorts
+    // Map events from cohorts and approved event requests
     const events = useMemo(() => {
-        return cohorts
+        const cohortEvents = cohorts
             .filter(c => c.start_date)
             .map(c => ({
                 date: c.start_date!,
@@ -139,7 +139,25 @@ function CalendarWidget({ cohorts }: { cohorts: Cohort[] }) {
                 type: (c as any).offering_type || 'master_class',
                 status: c.status,
             }))
-    }, [cohorts])
+
+        const requestEvents = eventsData
+            .filter(e => e.proposed_date)
+            .map(e => {
+                // Safely handle timestamp strings by extracting the YYYY-MM-DD part
+                const dateString = typeof e.proposed_date === 'string' 
+                    ? e.proposed_date.split('T')[0] 
+                    : String(e.proposed_date);
+                    
+                return {
+                    date: dateString,
+                    name: e.company ? `${e.company} Talk` : 'AI Talk',
+                    type: 'ai_talk',
+                    status: e.status,
+                }
+            })
+
+        return [...cohortEvents, ...requestEvents]
+    }, [cohorts, eventsData])
 
     const getEventsForDay = (day: Date) => {
         const dayStr = format(day, 'yyyy-MM-dd')
@@ -257,6 +275,9 @@ export function OwnerDashboard() {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'companies' }, () => {
                 queryClient.invalidateQueries({ queryKey: ['ownerDashboardData'] })
             })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'event_requests' }, () => {
+                queryClient.invalidateQueries({ queryKey: ['ownerDashboardData'] })
+            })
             .subscribe()
 
         return () => {
@@ -267,13 +288,14 @@ export function OwnerDashboard() {
     const { data, isLoading: loading } = useQuery({
         queryKey: ['ownerDashboardData', monthStart, monthEnd],
         queryFn: async () => {
-            const [coRes, cohRes, sessRes, usersRes, leadsRes, costsRes] = await Promise.all([
+            const [coRes, cohRes, sessRes, usersRes, leadsRes, costsRes, eventsRes] = await Promise.all([
                 supabase.from('companies').select('*').order('name'),
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
                 supabase.from('leads').select('id,priority,payment_amount,amount_paid,balance,paid_full,offering_type'),
                 (supabase as any).from('costs').select('total_amount').gte('payment_date', monthStart).lte('payment_date', monthEnd),
+                supabase.from('event_requests').select('*').eq('status', 'approved')
             ])
             const costsData = (costsRes as any).data ?? []
             const monthlyCostsScore = costsData.reduce((s: number, c: any) => s + (c.total_amount ?? 0), 0)
@@ -284,7 +306,8 @@ export function OwnerDashboard() {
                 sessions: (sessRes.data as Session[]) ?? [],
                 users: (usersRes.data as User[]) ?? [],
                 leads: (leadsRes.data as Lead[]) ?? [],
-                monthlyCosts: monthlyCostsScore
+                monthlyCosts: monthlyCostsScore,
+                eventsData: (eventsRes.data as EventRequest[]) ?? []
             }
         }
     })
@@ -295,6 +318,7 @@ export function OwnerDashboard() {
     const users = data?.users ?? []
     const leads = data?.leads ?? []
     const monthlyCosts = data?.monthlyCosts ?? 0
+    const eventsData = data?.eventsData ?? []
 
     // ── KPI calculations ──
     const cohortMap = useMemo(() => new Map(cohorts.map((c) => [c.id, c])), [cohorts])
@@ -320,12 +344,13 @@ export function OwnerDashboard() {
         cohorts.filter(c => (c as any).offering_type === 'master_class' && c.status === 'active').length
         , [cohorts])
 
-    // Active AI Talks = cohorts with offering_type that matches ai_talk or leads with offering_type ai_talk
+    // Active AI Talks = cohorts with offering_type that matches ai_talk or leads with offering_type ai_talk, PLUS approved event_requests
     const activeAITalks = useMemo(() => {
         const cohortTalks = cohorts.filter(c => ((c as any).offering_type === 'ai_talk') && c.status === 'active').length
         const leadTalks = leads.filter(l => (l as any).offering_type === 'ai_talk' && ((l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')).length
-        return cohortTalks || leadTalks
-    }, [cohorts, leads])
+        const eventTalks = eventsData.length
+        return cohortTalks + leadTalks + eventTalks
+    }, [cohorts, leads, eventsData])
 
     const activeMembers = useMemo(() =>
         users.filter((u) => u.role === 'participant' || u.role === 'executive').length
@@ -336,12 +361,14 @@ export function OwnerDashboard() {
         return Math.round(((leadCounts['COMPLETED'] || 0) / leads.length) * 100)
     }, [leads, leadCounts])
 
-    // Pending = leads where paid_full is not 'yes' and priority is not 'NOT INTERESTED' and not 'COMPLETED'
+    // Pending = leads where paid_full is not true/yes and priority is not 'NOT INTERESTED' and not 'COMPLETED'
     const pendingLeads = useMemo(() =>
         leads.filter(l => {
             const p = (l as any).priority
-            const paidFull = ((l as any).paid_full || '').toLowerCase()
-            return p !== 'NOT INTERESTED' && p !== 'COMPLETED' && paidFull !== 'yes'
+            // Safely handle both boolean true/false and string "yes"/"no" from before migration
+            const paidFullStr = String((l as any).paid_full || '').toLowerCase()
+            const isPaid = paidFullStr === 'true' || paidFullStr === 'yes'
+            return p !== 'NOT INTERESTED' && p !== 'COMPLETED' && !isPaid
         }).length
         , [leads])
 
@@ -506,7 +533,7 @@ export function OwnerDashboard() {
                             Programs <ArrowRight className="h-3 w-3" />
                         </button>
                     </div>
-                    <CalendarWidget cohorts={cohorts} />
+                    <CalendarWidget cohorts={cohorts} eventsData={eventsData} />
                 </motion.div>
             </div>
 
