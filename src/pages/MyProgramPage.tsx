@@ -217,8 +217,8 @@ export function MyProgramPage() {
                 </h2>
 
                 <div className="relative">
-                    {/* Vertical line — left must match dot center: p-3(12px) + half-w-9(18px) = 30px */}
-                    <div className="absolute left-[30px] top-2 bottom-2 w-px bg-border" />
+                    {/* Vertical line — centered on the h-9 w-9 (36px) dot inside p-3 (12px) padding → 12 + 18 = 30px */}
+                    <div className="absolute left-[30px] top-0 bottom-0 w-px bg-border" />
 
                     <div className="space-y-1">
                         {sessions.map((session) => {
@@ -263,7 +263,7 @@ export function MyProgramPage() {
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="ml-12 pl-3 border-l border-border space-y-2 pb-3"
+                                            className="ml-[60px] pr-3 space-y-2 pb-3"
                                         >
                                             {session.recording_url && (
                                                 <a
