@@ -225,25 +225,26 @@ export function MyProgramPage() {
                         const isLast = idx === sessions.length - 1
 
                         return (
-                            <div key={session.id} className="relative flex gap-3">
-                                {/* ── Left: icon ── */}
-                                <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 relative z-10 ${
-                                    isCompleted
-                                        ? isAttended ? 'bg-lime/20 text-lime' : 'bg-red-500/10 text-red-400'
-                                        : 'bg-white/5 text-gray-500'
-                                }`}>
-                                    {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
+                            <div key={session.id} className="relative flex gap-4">
+                                {/* Left Side: Icon & Line */}
+                                <div className="flex flex-col items-center shrink-0">
+                                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold relative z-10 shadow-sm ${
+                                        isCompleted
+                                            ? isAttended ? 'bg-lime/20 text-lime border border-lime/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                                            : 'bg-white/5 text-gray-500 border border-white/5'
+                                    }`}>
+                                        {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
+                                    </div>
+                                    {!isLast && <div className="w-px h-full bg-border my-2" />}
                                 </div>
-                                {/* Connector line */}
-                                {!isLast && (
-                                    <div className="absolute left-[17px] top-9 bottom-0 w-px bg-border" />
-                                )}
 
-                                {/* ── Right: content ── */}
-                                <div className="flex-1 min-w-0 pb-3">
+                                {/* Right Side: content */}
+                                <div className="flex-1 min-w-0 pb-6">
                                     <button
                                         onClick={() => setExpandedSession(isExpanded ? null : session.id)}
-                                        className="w-full flex items-start justify-between gap-2 py-1 rounded-xl hover:bg-white/5 transition text-left pr-2"
+                                        className={`w-full flex items-start justify-between gap-2 p-3 -ml-3 rounded-xl transition text-left ${
+                                            isExpanded ? 'bg-white/5 border border-white/10' : 'hover:bg-white/5 border border-transparent'
+                                        }`}
                                     >
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-white">{session.title}</p>

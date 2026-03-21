@@ -27,6 +27,7 @@ export function ParticipantDashboard() {
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [submissions, setSubmissions] = useState<Submission[]>([])
     const [recentMessages, setRecentMessages] = useState<ChatMessage[]>([])
+    const [aiScore, setAiScore] = useState<number>(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -61,6 +62,9 @@ export function ParticipantDashboard() {
             if (ignore) return
 
             const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number } | null
+            if (profileRow?.ai_readiness_score !== undefined) {
+                setAiScore(profileRow.ai_readiness_score)
+            }
             const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
 
             const cohortIdSet = new Set<string>(membershipIds)
@@ -91,36 +95,44 @@ export function ParticipantDashboard() {
                 return
             }
 
-            // ── 2. Fetch cohorts ───────────────────────────────────────────────
-            const { data: cohortData } = await supabase
-                .from('cohorts')
-                .select('*')
-                .in('id', cohortIds)
+            // ── 2. Fetch cohorts, sessions, and chats in parallel ──────────────
+            const companyId = profileRow?.company_id
+
+            let chatQuery = supabase
+                .from('chat_messages')
+                .select('id, message, created_at, sender:users(full_name), cohort_id, company_id')
+                .order('created_at', { ascending: false })
+                .limit(4)
+
+            if (cohortIds.length > 0 && companyId) {
+                chatQuery = chatQuery.or(`cohort_id.in.(${cohortIds.join(',')}),company_id.eq.${companyId}`)
+            } else if (cohortIds.length > 0) {
+                chatQuery = chatQuery.in('cohort_id', cohortIds)
+            } else if (companyId) {
+                chatQuery = chatQuery.eq('company_id', companyId)
+            }
+
+            const [cohortsRes, sessionsRes, chatRes] = await Promise.all([
+                supabase.from('cohorts').select('*').in('id', cohortIds),
+                supabase.from('sessions').select('id, title, scheduled_date, status, cohort_id').in('cohort_id', cohortIds).order('scheduled_date', { ascending: true }),
+                chatQuery
+            ])
 
             if (ignore) return
-            setCohorts((cohortData as Cohort[]) ?? [])
 
-            // ── 3. Fetch sessions ─────────────────────────────────────────────
-            const { data: sessionsData, error: sessionsError } = await supabase
-                .from('sessions')
-                .select('id, title, scheduled_date, status, cohort_id')
-                .in('cohort_id', cohortIds)
-                .order('scheduled_date', { ascending: true })
-
-            if (ignore) return
-
-            if (sessionsError) {
-                setError(sessionsError.message)
+            if (sessionsRes.error) {
+                setError(sessionsRes.error.message)
                 setLoading(false)
                 return
             }
 
-            const sessionRows = (sessionsData as Session[]) ?? []
-            const sessionIds = sessionRows.map((s) => s.id)
+            setCohorts((cohortsRes.data as Cohort[]) ?? [])
+            const sessionRows = (sessionsRes.data as Session[]) ?? []
             setSessions(sessionRows)
+            setRecentMessages((chatRes.data as ChatMessage[]) ?? [])
 
-            // ── 4. Fetch assignments ──────────────────────────────────────────
-            let assignmentRows: Assignment[] = []
+            // ── 3. Fetch assignments (needs sessionIds) ───────────────────────
+            const sessionIds = sessionRows.map((s) => s.id)
             if (sessionIds.length > 0) {
                 const { data: assignmentsData } = await supabase
                     .from('assignments')
@@ -129,10 +141,10 @@ export function ParticipantDashboard() {
                     .order('due_date', { ascending: true })
 
                 if (ignore) return
-                assignmentRows = (assignmentsData as Assignment[]) ?? []
+                const assignmentRows = (assignmentsData as Assignment[]) ?? []
                 setAssignments(assignmentRows)
 
-                // ── 5. Fetch submissions ──────────────────────────────────────
+                // ── 4. Fetch submissions (needs assignmentIds) ────────────────
                 if (assignmentRows.length > 0) {
                     const { data: submissionsData } = await supabase
                         .from('submissions')
@@ -143,28 +155,6 @@ export function ParticipantDashboard() {
                     if (ignore) return
                     setSubmissions((submissionsData as Submission[]) ?? [])
                 }
-            }
-
-            // ── 6. Fetch recent chat messages ─────────────────────────────────
-            const companyId = profileRow?.company_id
-            if (cohortIds.length > 0 || companyId) {
-                const chatQuery = supabase
-                    .from('chat_messages')
-                    .select('id, message, created_at, sender:users(full_name), cohort_id, company_id')
-                    .order('created_at', { ascending: false })
-                    .limit(4)
-
-                if (cohortIds.length > 0 && companyId) {
-                    chatQuery.or(`cohort_id.in.(${cohortIds.join(',')}),company_id.eq.${companyId}`)
-                } else if (cohortIds.length > 0) {
-                    chatQuery.in('cohort_id', cohortIds)
-                } else if (companyId) {
-                    chatQuery.eq('company_id', companyId)
-                }
-
-                const { data: chatData } = await chatQuery
-                if (ignore) return
-                setRecentMessages((chatData as ChatMessage[]) ?? [])
             }
 
             if (!ignore) setLoading(false)
@@ -235,9 +225,6 @@ export function ParticipantDashboard() {
 
     const primaryCohort = cohorts[0]
     const isSprintWorkshop = primaryCohort?.offering_type === 'sprint_workshop'
-
-    // AI readiness score — comes from the previewed user's profile
-    const aiScore = user?.ai_readiness_score ?? 0
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -333,43 +320,44 @@ export function ParticipantDashboard() {
                                 const isLast = idx === sessionTimeline.length - 1
                                 return (
                                     <div key={session.id} className="relative flex gap-4">
-                                        {/* Left: icon */}
-                                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 relative z-10 ${
-                                            session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime' : 'bg-white/5'
-                                        }`}>
-                                            {session.completed ? (
-                                                <CheckCircle2 className="h-5 w-5 text-lime" />
-                                            ) : session.current ? (
-                                                <Play className="h-5 w-5 text-black" />
-                                            ) : (
-                                                <Clock className="h-5 w-5 text-gray-500" />
-                                            )}
-                                        </div>
-                                        {/* Connector line */}
-                                        {!isLast && (
-                                            <div className="absolute left-[19px] top-10 bottom-0 w-px bg-border" />
-                                        )}
-
-                                        {/* Right: content */}
-                                        <div className={`flex-1 flex items-center justify-between gap-4 pb-4 ${
-                                            session.current ? 'rounded-xl bg-lime/5 border border-lime/20 px-3 mb-1' : ''
-                                        }`}>
-                                            <div>
-                                                <p className={`font-medium ${session.completed ? 'text-gray-400' : ''}`}>
-                                                    {session.title}
-                                                </p>
-                                                <p className="text-xs text-gray-500">{session.date}</p>
+                                        {/* Left Side: Icon & Line */}
+                                        <div className="flex flex-col items-center shrink-0">
+                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                            }`}>
+                                                {session.completed ? (
+                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                ) : session.current ? (
+                                                    <Play className="h-5 w-5 text-black ml-0.5" />
+                                                ) : (
+                                                    <Clock className="h-5 w-5 text-gray-500" />
+                                                )}
                                             </div>
-                                            {session.current && (
-                                                <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0">
-                                                    Watch Now
-                                                </button>
-                                            )}
-                                            {session.completed && (
-                                                <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 transition shrink-0">
-                                                    Rewatch
-                                                </button>
-                                            )}
+                                            {!isLast && <div className="w-px h-full bg-border my-2" />}
+                                        </div>
+
+                                        {/* Right Side: content */}
+                                        <div className="flex-1 pb-6">
+                                            <div className={`flex items-center justify-between gap-4 p-3 -ml-3 rounded-xl transition-colors ${
+                                                session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
+                                            }`}>
+                                                <div>
+                                                    <p className={`font-medium ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
+                                                        {session.title}
+                                                    </p>
+                                                    <p className={`text-xs mt-0.5 ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
+                                                </div>
+                                                {session.current && (
+                                                    <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform">
+                                                        Watch Now
+                                                    </button>
+                                                )}
+                                                {session.completed && (
+                                                    <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 text-gray-300 hover:text-white transition-colors shrink-0">
+                                                        Rewatch
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 )
