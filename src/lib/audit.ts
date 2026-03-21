@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 
 export type AuditAction =
-    | 'lead.create' | 'lead.update' | 'lead.delete'
+    | 'lead.create' | 'lead.update' | 'lead.delete' | 'lead.bulk_delete'
     | 'user.invite' | 'user.update' | 'user.deactivate' | 'user.delete'
     | 'company.create' | 'company.update' | 'company.delete'
     | 'event.approve' | 'event.decline'

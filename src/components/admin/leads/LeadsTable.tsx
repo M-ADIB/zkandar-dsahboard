@@ -81,6 +81,7 @@ interface LeadsTableProps {
     onDelete: (lead: Lead) => void;
     onUpdatePriority: (leadId: string, priority: string) => void;
     onUpdateLead: (leadId: string, field: keyof Lead, value: any) => void;
+    onBulkDelete?: (leadIds: string[]) => void;
     isUpdating?: string | null;
     highlightId?: string | null;
 }
@@ -95,6 +96,7 @@ export function LeadsTable({
     onDelete,
     onUpdatePriority,
     onUpdateLead,
+    onBulkDelete,
     isUpdating,
     highlightId,
 }: LeadsTableProps) {
@@ -282,7 +284,7 @@ export function LeadsTable({
                         );
                     }
 
-                    if (['has_coupon', 'paid_full', 'is_payment_plan'].includes(col.key)) {
+                    if (['has_coupon', 'paid_full', 'is_payment_plan', 'paid_deposit'].includes(col.key)) {
                         return (
                             <EditableSelectCell
                                 value={val === true || val === 'true' ? 'true' : 'false'}
@@ -292,12 +294,20 @@ export function LeadsTable({
                         );
                     }
 
+                    if (col.key === 'coupon_percent') {
+                        return <EditableMoneyCell value={val as number | undefined} onUpdate={onUpdate} format="percentage" />;
+                    }
+
+                    if (col.key === 'seats' || col.key === 'sessions_done') {
+                        return <EditableMoneyCell value={val as number | undefined} onUpdate={onUpdate} format="number" />;
+                    }
+
                     if (col.type === 'date') {
                         return <EditableDateCell value={val as string} onUpdate={onUpdate} />;
                     }
 
                     if (col.type === 'number') {
-                        return <EditableMoneyCell value={val ?? undefined} onUpdate={onUpdate} />;
+                        return <EditableMoneyCell value={val ?? undefined} onUpdate={onUpdate} format="currency" />;
                     }
 
                     return (
@@ -477,6 +487,27 @@ export function LeadsTable({
                         </select>
                         <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     </div>
+
+                    {/* Bulk Actions Menu */}
+                    {Object.keys(rowSelection).length > 0 && onBulkDelete && (
+                        <div className="flex items-center gap-2 border-l border-white/[0.08] pl-3 ml-1 animate-in fade-in slide-in-from-left-2 duration-300">
+                            <span className="text-sm font-medium text-white px-2 bg-white/[0.05] rounded-lg py-1">
+                                {Object.keys(rowSelection).length} selected
+                            </span>
+                            <button
+                                onClick={() => {
+                                    if (confirm(`Delete ${Object.keys(rowSelection).length} leads? This cannot be undone.`)) {
+                                        onBulkDelete(Object.keys(rowSelection));
+                                        setRowSelection({});
+                                    }
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg transition-colors text-sm font-medium"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                            </button>
+                        </div>
+                    )}
 
                     {/* Rows per page */}
                     <div className="min-w-[140px] relative">

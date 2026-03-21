@@ -76,10 +76,10 @@ export function EditableSelectCell({ value, options, onUpdate, className = '' }:
                                 <Select.Item
                                     key={option.value}
                                     value={option.value}
-                                    className="relative flex items-center px-3 py-2 text-sm text-gray-200 rounded cursor-pointer select-none outline-none hover:bg-white/5 data-[highlighted]:bg-white/10 data-[state=checked]:text-lime"
+                                    className="relative flex items-center pl-8 pr-3 py-2 text-sm text-gray-200 rounded cursor-pointer select-none outline-none hover:bg-white/5 data-[highlighted]:bg-white/10 data-[state=checked]:text-lime"
                                 >
                                     <Select.ItemText>{option.label}</Select.ItemText>
-                                    <Select.ItemIndicator className="absolute left-1">
+                                    <Select.ItemIndicator className="absolute left-2.5">
                                         <Check className="h-3 w-3" />
                                     </Select.ItemIndicator>
                                 </Select.Item>

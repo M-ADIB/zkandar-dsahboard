@@ -8,14 +8,21 @@ const currencyFormatter = new Intl.NumberFormat('en-AE', {
     maximumFractionDigits: 2,
 });
 
+const percentFormatter = new Intl.NumberFormat('en-AE', {
+    style: 'percent',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
+
 interface EditableMoneyCellProps {
     value: number | undefined;
     // BUG-4 fix: allow null so clearing a field saves null instead of 0
     onUpdate: (value: number | null) => void;
     className?: string;
+    format?: 'currency' | 'percentage' | 'number';
 }
 
-export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableMoneyCellProps) {
+export function EditableMoneyCell({ value, onUpdate, className = '', format = 'currency' }: EditableMoneyCellProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [localValue, setLocalValue] = useState(value?.toString() || '');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -106,7 +113,7 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
     if (isEditing) {
         return (
             <div ref={cellRef} tabIndex={-1} className="relative w-full">
-                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">AED</span>
+                {format === 'currency' && <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">AED</span>}
                 <input
                     ref={inputRef}
                     type="number"
@@ -114,8 +121,9 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
                     onChange={(e) => setLocalValue(e.target.value)}
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
-                    className={`w-full bg-bg-elevated border-2 border-lime rounded-md pl-11 pr-2 py-1 text-sm text-white outline-none shadow-[0_0_10px_rgba(182,233,65,0.2)] ${className}`}
+                    className={`w-full bg-bg-elevated border-2 border-lime rounded-md px-2 py-1 text-sm text-white outline-none shadow-[0_0_10px_rgba(182,233,65,0.2)] ${format === 'currency' ? 'pl-11' : ''} ${className}`}
                 />
+                {format === 'percentage' && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>}
             </div>
         );
     }
@@ -135,7 +143,9 @@ export function EditableMoneyCell({ value, onUpdate, className = '' }: EditableM
             }}
             className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors rounded outline-none focus:ring-2 focus:ring-lime focus:ring-inset focus:bg-lime/5 hover:bg-white/5 ${!hasValue ? 'text-gray-500' : 'text-gray-200'} ${className}`}
         >
-            {hasValue ? currencyFormatter.format(value) : '-'}
+            {hasValue 
+                ? (format === 'percentage' ? percentFormatter.format(value / 100) : format === 'number' ? value : currencyFormatter.format(value)) 
+                : '-'}
         </div>
     );
 }

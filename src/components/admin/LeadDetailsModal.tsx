@@ -192,6 +192,21 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                             <div className="flex-1 overflow-y-auto p-6 space-y-8">
                                 {activeTab === 'details' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <label className="md:col-span-2 block">
+                                            <span className="text-sm text-gray-400 mb-1 block">Priority Status</span>
+                                            <select
+                                                value={formData.priority || 'COLD'}
+                                                onChange={e => handleInputChange('priority', e.target.value)}
+                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all font-medium"
+                                            >
+                                                <option value="ACTIVE">ACTIVE</option>
+                                                <option value="HOT">HOT</option>
+                                                <option value="LAVA">LAVA</option>
+                                                <option value="COLD">COLD</option>
+                                                <option value="COMPLETED">COMPLETED</option>
+                                                <option value="NOT INTERESTED">NOT INTERESTED</option>
+                                            </select>
+                                        </label>
                                         <div className="space-y-4">
                                             <label className="block">
                                                 <span className="text-sm text-gray-400 mb-1 block">Full Name</span>
@@ -246,6 +261,15 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                                                     type="text"
                                                     value={formData.instagram || ''}
                                                     onChange={e => handleInputChange('instagram', e.target.value)}
+                                                    className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
+                                                />
+                                            </label>
+                                            <label className="block">
+                                                <span className="text-sm text-gray-400 mb-1 block">LinkedIn</span>
+                                                <input
+                                                    type="text"
+                                                    value={formData.custom_fields?.linkedin || ''}
+                                                    onChange={e => handleInputChange('custom_fields', { ...(formData.custom_fields || {}), linkedin: e.target.value })}
                                                     className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                                 />
                                             </label>
@@ -417,20 +441,6 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
 
                                 {activeTab === 'schedule' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <label className="block">
-                                            <span className="text-sm text-gray-400 mb-1 block">Priority Status</span>
-                                            <select
-                                                value={formData.priority || 'COLD'}
-                                                onChange={e => handleInputChange('priority', e.target.value)}
-                                                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl px-4 py-2 text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
-                                            >
-                                                <option value="ACTIVE">ACTIVE</option>
-                                                <option value="COLD">COLD</option>
-                                                <option value="LAVA">LAVA</option>
-                                                <option value="COMPLETED">COMPLETED</option>
-                                                <option value="NOT INTERESTED">NOT INTERESTED</option>
-                                            </select>
-                                        </label>
                                         <label className="block">
                                             <span className="text-sm text-gray-400 mb-1 block">Discovery Call Date</span>
                                             <input

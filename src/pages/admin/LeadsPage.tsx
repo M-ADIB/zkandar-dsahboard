@@ -215,6 +215,27 @@ export function LeadsPage() {
         }
     };
 
+    const handleBulkDelete = async (leadIds: string[]) => {
+        // Optimistically remove
+        queryClient.setQueryData(['leadsData'], (old: any) => ({
+            ...old,
+            leads: old?.leads?.filter((l: Lead) => !leadIds.includes(l.id)) || []
+        }));
+
+        const { error } = await (supabase.from('leads') as any)
+            .delete()
+            .in('id', leadIds);
+
+        if (error) {
+            console.error('Error bulk deleting leads:', error);
+            showToast('Failed to delete leads');
+            fetchLeads(); // Revert
+        } else {
+            void logAudit('lead.bulk_delete', 'lead', leadIds.join(','), { count: leadIds.length });
+            showToast(`${leadIds.length} lead${leadIds.length > 1 ? 's' : ''} deleted`);
+        }
+    };
+
     const formatCsvValue = (value: any) => {
         if (value === null || value === undefined) return '';
         if (Array.isArray(value)) return value.join('; ');
@@ -371,7 +392,7 @@ export function LeadsPage() {
         // Pipeline value = payment_amount for active/lava leads
         pipelineValue: leads
             .filter((l: Lead) => l.priority === 'ACTIVE' || l.priority === 'LAVA')
-            .reduce((sum: number, l: Lead) => sum + (l.payment_amount || 0), 0),
+            .reduce((sum: number, l: Lead) => sum + (Number(l.payment_amount) || 0), 0),
     };
 
     const currencyFormatter = useMemo(
@@ -473,6 +494,7 @@ export function LeadsPage() {
                     setIsModalOpen(true);
                 }}
                 onDelete={handleDeleteLead}
+                onBulkDelete={handleBulkDelete}
                 onUpdatePriority={handleUpdatePriority}
                 onUpdateLead={handleUpdateLead}
                 isUpdating={isUpdating}
