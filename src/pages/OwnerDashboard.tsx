@@ -202,7 +202,7 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                         if (!hasEvents) return
                         const first = dayEvents[0]
                         if (first.type === 'ai_talk') {
-                            navigate('/admin/programs?type=ai_talk')
+                            navigate('/admin/events')
                         } else if (first.cohortId) {
                             navigate(`/admin/programs?cohort=${first.cohortId}`)
                         } else {
