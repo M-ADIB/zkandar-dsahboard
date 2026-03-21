@@ -78,6 +78,16 @@ export function CompanyModal({
             return;
         }
 
+        if (!formData.industry.trim()) {
+            setError('Industry is required.');
+            return;
+        }
+
+        if (!formData.country.trim()) {
+            setError('Country is required.');
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
@@ -137,9 +147,10 @@ export function CompanyModal({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Industry</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Industry <span className="text-red-400">*</span></label>
                 <input
                     type="text"
+                    required
                     value={formData.industry}
                     onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                     className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
@@ -148,9 +159,10 @@ export function CompanyModal({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Country</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Country <span className="text-red-400">*</span></label>
                 <input
                     type="text"
+                    required
                     value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                     className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
@@ -176,6 +188,7 @@ export function CompanyModal({
                         type="date"
                         value={formData.enrollment_date}
                         onChange={(e) => setFormData({ ...formData, enrollment_date: e.target.value })}
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all [color-scheme:dark]"
                     />
                 </div>
             </div>
