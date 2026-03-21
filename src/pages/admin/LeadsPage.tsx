@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
@@ -39,6 +39,12 @@ export function LeadsPage() {
     }, []);
 
     const queryClient = useQueryClient();
+
+    // Tracks which lead IDs have a pending (in-flight) update dispatched by this client.
+    // The realtime subscription must check this to avoid overwriting optimistic UI with the
+    // echoed `payload.new` that Supabase sends back to the same client.
+    const pendingSavesRef = useRef<Set<string>>(new Set());
+
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['leadsData'],
         queryFn: async () => {
@@ -73,12 +79,16 @@ export function LeadsPage() {
                 });
             })
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'leads' }, (payload) => {
+                const updatedLead = payload.new as Lead;
+                // Skip if this client sent the update — we already applied optimistic state
+                if (pendingSavesRef.current.has(updatedLead.id)) return;
+
                 queryClient.setQueryData(['leadsData'], (old: any) => {
                     if (!old) return old;
                     return {
                         ...old,
                         leads: old.leads?.map((l: Lead) =>
-                            l.id === (payload.new as Lead).id ? (payload.new as Lead) : l
+                            l.id === updatedLead.id ? updatedLead : l
                         ) || [],
                     };
                 });
@@ -150,12 +160,17 @@ export function LeadsPage() {
         setIsUpdating(null);
     };
 
+    // Track which lead IDs have a pending update from THIS client.
+    // The realtime UPDATE subscription must skip these to avoid overwriting optimistic UI.
     const handleUpdateLead = async (leadId: string, field: keyof Lead, value: any) => {
-        // optimistically update local state
+        // Optimistic update
         queryClient.setQueryData(['leadsData'], (old: any) => ({
             ...old,
             leads: old?.leads?.map((l: Lead) => l.id === leadId ? { ...l, [field]: value } : l) || []
         }));
+
+        // Mark as in-flight so realtime ignores the echoed UPDATE
+        pendingSavesRef.current.add(leadId);
 
         const { error } = await (supabase.from('leads') as any)
             .update({
@@ -164,9 +179,11 @@ export function LeadsPage() {
             })
             .eq('id', leadId);
 
+        // Unlock — realtime can now accept updates for this lead again
+        pendingSavesRef.current.delete(leadId);
+
         if (error) {
             console.error(`Error updating lead ${field}:`, error);
-            // revert if error (could add toast notification here)
             fetchLeads();
         }
     };
