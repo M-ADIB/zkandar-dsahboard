@@ -325,53 +325,53 @@ export function ParticipantDashboard() {
                     ) : sessionTimeline.length === 0 ? (
                         <div className="p-6 text-center text-gray-500">No sessions yet.</div>
                     ) : (
-                        <div className="relative space-y-4">
-                            {sessionTimeline.length > 1 && (
-                                <div className="absolute left-[36px] top-0 bottom-0 w-px bg-border pointer-events-none" />
-                            )}
-                            {sessionTimeline.map((session) => (
-                                <div
-                                    key={session.id}
-                                    className={`relative flex items-center gap-4 p-4 rounded-xl transition
-                  ${session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5'}
-                `}
-                                >
-                                    {/* Status icon */}
-                                    <div
-                                        className={`relative z-10 h-10 w-10 rounded-lg flex items-center justify-center shrink-0
-                    ${session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime' : 'bg-white/5'}
-                  `}
-                                    >
-                                        {session.completed ? (
-                                            <CheckCircle2 className="h-5 w-5 text-lime" />
-                                        ) : session.current ? (
-                                            <Play className="h-5 w-5 text-black" />
-                                        ) : (
-                                            <Clock className="h-5 w-5 text-gray-500" />
-                                        )}
-                                    </div>
+                        <div className="space-y-0">
+                            {sessionTimeline.map((session, idx) => {
+                                const isLast = idx === sessionTimeline.length - 1
+                                return (
+                                    <div key={session.id} className="flex gap-4">
+                                        {/* Left: icon + connector */}
+                                        <div className="flex flex-col items-center">
+                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
+                                                session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime' : 'bg-white/5'
+                                            }`}>
+                                                {session.completed ? (
+                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                ) : session.current ? (
+                                                    <Play className="h-5 w-5 text-black" />
+                                                ) : (
+                                                    <Clock className="h-5 w-5 text-gray-500" />
+                                                )}
+                                            </div>
+                                            {!isLast && (
+                                                <div className="w-px flex-1 bg-border mt-1 mb-1" />
+                                            )}
+                                        </div>
 
-                                    {/* Content */}
-                                    <div className="flex-1">
-                                        <p className={`font-medium ${session.completed ? 'text-gray-400' : ''}`}>
-                                            {session.title}
-                                        </p>
-                                        <p className="text-xs text-gray-500">{session.date}</p>
+                                        {/* Right: content */}
+                                        <div className={`flex-1 flex items-center justify-between gap-4 pb-4 ${
+                                            session.current ? 'rounded-xl bg-lime/5 border border-lime/20 px-3 mb-1' : ''
+                                        }`}>
+                                            <div>
+                                                <p className={`font-medium ${session.completed ? 'text-gray-400' : ''}`}>
+                                                    {session.title}
+                                                </p>
+                                                <p className="text-xs text-gray-500">{session.date}</p>
+                                            </div>
+                                            {session.current && (
+                                                <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0">
+                                                    Watch Now
+                                                </button>
+                                            )}
+                                            {session.completed && (
+                                                <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 transition shrink-0">
+                                                    Rewatch
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
-
-                                    {/* Action */}
-                                    {session.current && (
-                                        <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg">
-                                            Watch Now
-                                        </button>
-                                    )}
-                                    {session.completed && (
-                                        <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 transition">
-                                            Rewatch
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     )}
                 </motion.div>

@@ -216,36 +216,43 @@ export function MyProgramPage() {
                     Session Timeline
                 </h2>
 
-                <div className="relative">
-                    {/* Vertical line — centered on the h-9 w-9 (36px) dot inside p-3 (12px) padding → 12 + 18 = 30px */}
-                    <div className="absolute left-[30px] top-0 bottom-0 w-px bg-border" />
+                <div className="space-y-0">
+                    {sessions.map((session, idx) => {
+                        const isCompleted = session.status === 'completed'
+                        const isAttended = attendance.has(session.id)
+                        const isExpanded = expandedSession === session.id
+                        const sessionAssignments = assignments.filter((a) => a.session_id === session.id)
+                        const isLast = idx === sessions.length - 1
 
-                    <div className="space-y-1">
-                        {sessions.map((session) => {
-                            const isCompleted = session.status === 'completed'
-                            const isAttended = attendance.has(session.id)
-                            const isExpanded = expandedSession === session.id
-                            const sessionAssignments = assignments.filter((a) => a.session_id === session.id)
+                        return (
+                            <div key={session.id} className="flex gap-3">
+                                {/* ── Left: icon + connector line ── */}
+                                <div className="flex flex-col items-center">
+                                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 z-10 ${
+                                        isCompleted
+                                            ? isAttended ? 'bg-lime/20 text-lime' : 'bg-red-500/10 text-red-400'
+                                            : 'bg-white/5 text-gray-500'
+                                    }`}>
+                                        {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
+                                    </div>
+                                    {!isLast && (
+                                        <div className="w-px flex-1 bg-border mt-1 mb-1" />
+                                    )}
+                                </div>
 
-                            return (
-                                <div key={session.id}>
+                                {/* ── Right: content ── */}
+                                <div className="flex-1 min-w-0 pb-3">
                                     <button
                                         onClick={() => setExpandedSession(isExpanded ? null : session.id)}
-                                        className="w-full flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition text-left"
+                                        className="w-full flex items-start justify-between gap-2 py-1 rounded-xl hover:bg-white/5 transition text-left pr-2"
                                     >
-                                        {/* Timeline dot */}
-                                        <div className={`relative z-10 h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${isCompleted ? (isAttended ? 'bg-lime/20 text-lime' : 'bg-red-500/10 text-red-400') : 'bg-white/5 text-gray-500'}`}>
-                                            {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
+                                        <div className="min-w-0">
                                             <p className="text-sm font-medium text-white">{session.title}</p>
                                             <p className="text-xs text-gray-500 mt-0.5">
                                                 {formatDateLabel(session.scheduled_date) || 'TBD'}
                                                 {formatTimeLabel(session.scheduled_date) ? ` · ${formatTimeLabel(session.scheduled_date)}` : ''}
                                             </p>
                                         </div>
-
                                         <div className="flex items-center gap-2 shrink-0">
                                             {session.recording_url && (
                                                 <span className="text-[10px] text-lime bg-lime/5 px-2 py-0.5 rounded border border-lime/20">Recording</span>
@@ -263,7 +270,7 @@ export function MyProgramPage() {
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="ml-[60px] pr-3 space-y-2 pb-3"
+                                            className="space-y-2 pt-1 pb-2"
                                         >
                                             {session.recording_url && (
                                                 <a
@@ -325,9 +332,9 @@ export function MyProgramPage() {
                                         </motion.div>
                                     )}
                                 </div>
-                            )
-                        })}
-                    </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </motion.div>
 
