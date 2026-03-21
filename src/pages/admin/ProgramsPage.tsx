@@ -35,8 +35,8 @@ const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
 ];
 
 // ─── Filter box shared style ────────────────────────────────────────────────
-const filterBoxClass = 'bg-bg-card border border-border rounded-2xl p-4 flex flex-wrap gap-4';
-const selectClass = 'w-full px-3 py-2 bg-bg-elevated border border-border rounded-xl text-white text-sm focus:outline-none focus:border-lime/50 transition-colors';
+const filterBoxClass = 'bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-4 flex flex-wrap gap-4';
+const selectClass = 'w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all';
 
 // ─── Shared action bar ────────────────────────────────────────────────────────
 interface ActionBarProps {
@@ -46,7 +46,7 @@ interface ActionBarProps {
 }
 function SelectionActionBar({ selectedCount, onEdit, onDelete }: ActionBarProps) {
     return (
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-elevated border border-border">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <span className="text-sm text-gray-400 font-medium">{selectedCount} selected</span>
             <div className="h-4 w-px bg-border" />
             {selectedCount === 1 && (
@@ -632,7 +632,7 @@ export function ProgramsPage() {
             </div>
 
             {/* Tab bar */}
-            <div className="flex items-center gap-1 bg-bg-card border border-border rounded-2xl p-1 w-fit">
+            <div className="flex items-center gap-1 bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-1 w-fit">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;

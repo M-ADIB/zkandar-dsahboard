@@ -70,7 +70,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'text-lime' }: {
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-3"
+            className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-5 flex flex-col gap-3"
         >
             <div className="w-10 h-10 rounded-xl bg-lime/10 flex items-center justify-center">
                 <Icon className={`h-5 w-5 ${color}`} />
@@ -265,7 +265,7 @@ export function CompanyWorkspacePage() {
             </div>
 
             {/* ── Tab bar ── */}
-            <div className="flex items-center gap-1 bg-bg-card border border-border rounded-2xl p-1 w-fit flex-wrap">
+            <div className="flex items-center gap-1 bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-1 w-fit flex-wrap">
                 {workspaceTabs.map((tab) => {
                     const Icon = tab.icon
                     const isActive = activeTab === tab.id
@@ -313,7 +313,7 @@ export function CompanyWorkspacePage() {
                             (mgmtSubmissions.length > 0 || teamSubmissions.length > 0) && (
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {mgmtSubmissions.length > 0 && (
-                                        <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
+                                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 space-y-4">
                                             <h3 className="font-semibold text-white flex items-center gap-2">
                                                 <TrendingUp className="h-4 w-4 text-lime" />
                                                 Management Survey Scores
@@ -328,7 +328,7 @@ export function CompanyWorkspacePage() {
                                     )}
 
                                     {teamSubmissions.length > 0 && (
-                                        <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
+                                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 space-y-4">
                                             <h3 className="font-semibold text-white flex items-center gap-2">
                                                 <Users className="h-4 w-4 text-lime" />
                                                 Team Survey Scores
@@ -345,7 +345,7 @@ export function CompanyWorkspacePage() {
 
                         {
                             mgmtSubmissions.length === 0 && teamSubmissions.length === 0 && (
-                                <div className="bg-bg-card border border-border rounded-2xl p-8 text-center">
+                                <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-8 text-center">
                                     <Brain className="h-10 w-10 text-gray-600 mx-auto mb-3" />
                                     <p className="text-gray-400 text-sm">No survey submissions yet for this company.</p>
                                 </div>
@@ -353,7 +353,7 @@ export function CompanyWorkspacePage() {
                         }
 
                         {/* ── Company Actions ── */}
-                        <div className="bg-bg-card border border-red-500/20 rounded-2xl p-6 space-y-4">
+                        <div className="bg-white/[0.02] border border-red-500/20 rounded-[24px] p-6 space-y-4">
                             <h3 className="font-semibold text-white flex items-center gap-2">
                                 <AlertTriangle className="h-4 w-4 text-red-400" />
                                 Company Actions
@@ -394,12 +394,12 @@ export function CompanyWorkspacePage() {
                         <div className="space-y-4">
                             <p className="text-gray-400 text-sm">{members.length} member{members.length !== 1 ? 's' : ''} enrolled</p>
                             {members.length === 0 ? (
-                                <div className="bg-bg-card border border-border rounded-2xl p-8 text-center">
+                                <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-8 text-center">
                                     <Users className="h-10 w-10 text-gray-600 mx-auto mb-3" />
                                     <p className="text-gray-400 text-sm">No members found for this company.</p>
                                 </div>
                             ) : (
-                                <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
+                                <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] overflow-hidden">
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b border-border">
@@ -464,7 +464,7 @@ export function CompanyWorkspacePage() {
                     activeTab === 'analytics' && (
                         <div className="space-y-6">
                             {mgmtSubmissions.length === 0 && teamSubmissions.length === 0 ? (
-                                <div className="bg-bg-card border border-border rounded-2xl p-8 text-center">
+                                <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-8 text-center">
                                     <BarChart3 className="h-10 w-10 text-gray-600 mx-auto mb-3" />
                                     <p className="text-gray-400 text-sm">No survey data available for analytics.</p>
                                 </div>
@@ -473,7 +473,7 @@ export function CompanyWorkspacePage() {
                                     {/* Top: Radar + Team Bar */}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                         {mgmtSubmissions.length > 0 && (
-                                            <div className="bg-bg-card border border-border rounded-2xl p-6">
+                                            <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6">
                                                 <h3 className="font-semibold text-white mb-4">Management — Readiness Radar</h3>
                                                 <ResponsiveContainer width="100%" height={260}>
                                                     <RadarChart data={radarData}>
@@ -486,7 +486,7 @@ export function CompanyWorkspacePage() {
                                         )}
 
                                         {teamSubmissions.length > 0 && (
-                                            <div className="bg-bg-card border border-border rounded-2xl p-6">
+                                            <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6">
                                                 <h3 className="font-semibold text-white mb-4">Team — Avg Scores</h3>
                                                 <ResponsiveContainer width="100%" height={260}>
                                                     <BarChart data={teamScoreData} barSize={36}>
@@ -507,11 +507,11 @@ export function CompanyWorkspacePage() {
 
                                     {/* Individual score gauges */}
                                     {teamSubmissions.length > 0 && (
-                                        <div className="bg-bg-card border border-border rounded-2xl p-6">
+                                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6">
                                             <h3 className="font-semibold text-white mb-5">Team Members — Individual Scores</h3>
                                             <div className="space-y-4">
                                                 {teamSubmissions.map((t, i) => (
-                                                    <div key={t.id} className="border border-border rounded-xl p-4 space-y-3">
+                                                    <div key={t.id} className="border border-white/[0.06] rounded-xl p-4 space-y-3 bg-white/[0.015]">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-7 w-7 rounded-lg bg-lime/10 flex items-center justify-center">
@@ -540,7 +540,7 @@ export function CompanyWorkspacePage() {
                     activeTab === 'program' && (
                         <div className="space-y-6">
                             {!cohort ? (
-                                <div className="bg-bg-card border border-border rounded-2xl p-8 text-center space-y-4">
+                                <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-8 text-center space-y-4">
                                     <GraduationCap className="h-10 w-10 text-gray-600 mx-auto mb-3" />
                                     <p className="text-gray-400 text-sm">No masterclass program assigned to this company yet.</p>
                                     <button
@@ -560,7 +560,7 @@ export function CompanyWorkspacePage() {
                             ) : (
                                 <>
                                     {/* Program header card */}
-                                    <div className="bg-bg-card border border-border rounded-2xl p-6">
+                                    <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6">
                                         <div className="flex items-start justify-between gap-4">
                                             <div>
                                                 <h3 className="text-lg font-bold text-white mb-1">{cohort.name}</h3>
@@ -651,7 +651,7 @@ export function CompanyWorkspacePage() {
                 {/* ══ CHAT ══ */}
                 {activeTab === 'chat' && (
                     <div className="space-y-6">
-                        <div className="bg-bg-card border border-border rounded-2xl p-6 text-center space-y-4">
+                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 text-center space-y-4">
                             <MessageSquare className="h-10 w-10 text-lime mx-auto" />
                             <div>
                                 <h3 className="text-lg font-semibold text-white">Company Chat</h3>
@@ -669,7 +669,7 @@ export function CompanyWorkspacePage() {
                         </div>
 
                         {/* Quick member list for DMs */}
-                        <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-3">
+                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 space-y-3">
                             <h4 className="text-sm font-semibold text-white">Members — Quick DM</h4>
                             <p className="text-xs text-gray-500">Click a member to start a direct message from the Chat page.</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -677,7 +677,7 @@ export function CompanyWorkspacePage() {
                                     <button
                                         key={m.id}
                                         onClick={() => navigate('/admin/chat')}
-                                        className="flex items-center gap-3 px-3 py-2.5 bg-bg-elevated border border-border rounded-xl hover:border-lime/30 transition text-left"
+                                        className="flex items-center gap-3 px-3 py-2.5 bg-white/[0.025] border border-white/[0.05] rounded-xl hover:border-lime/30 transition text-left"
                                     >
                                         <div className="h-8 w-8 rounded-lg bg-lime/10 flex items-center justify-center text-xs font-bold text-lime shrink-0">
                                             {m.full_name?.charAt(0)?.toUpperCase() ?? '?'}
@@ -722,7 +722,7 @@ export function CompanyWorkspacePage() {
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
                                 transition={{ type: 'spring', damping: 28, stiffness: 360 }}
-                                className="relative z-10 w-full max-w-sm rounded-2xl bg-bg-card border border-border shadow-2xl overflow-hidden"
+                                className="relative z-10 w-full max-w-sm rounded-[24px] bg-[#0a0a0a] border border-white/[0.08] shadow-2xl overflow-hidden"
                             >
                                 <div className="flex items-center justify-between gap-4 px-6 py-5 border-b border-border">
                                     <div className="flex items-center gap-3">
@@ -751,7 +751,7 @@ export function CompanyWorkspacePage() {
                                         <select
                                             value={selectedCohortId}
                                             onChange={(e) => setSelectedCohortId(e.target.value)}
-                                            className="w-full px-3 py-2.5 bg-bg-elevated border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
+                                            className="w-full px-3 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                                         >
                                             {allCohorts.length === 0 && <option value="">No programs available</option>}
                                             {allCohorts.map((c) => (

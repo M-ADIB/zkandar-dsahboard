@@ -183,13 +183,13 @@ export function SessionsAdminPage() {
                 </button>
             </div>
 
-            <div className="bg-bg-card border border-border rounded-lg p-4 flex flex-wrap gap-4">
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-4 flex flex-wrap gap-4">
                 <div className="min-w-[220px]">
                     <label className="block text-xs text-gray-400 mb-1">Program</label>
                     <select
                         value={selectedProgramId}
                         onChange={(e) => setSelectedProgramId(e.target.value)}
-                        className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         <option value="all">All Programs</option>
                         {programs.map((program) => (

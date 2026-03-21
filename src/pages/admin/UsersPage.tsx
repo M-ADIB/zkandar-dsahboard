@@ -199,7 +199,7 @@ export function UsersPage() {
                 </button>
             </div>
 
-            <div className="bg-bg-card border border-border rounded-lg p-4 flex flex-wrap gap-4">
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-4 flex flex-wrap gap-4">
                 <div className="min-w-[240px] flex-1">
                     <label className="block text-xs text-gray-400 mb-1">Search</label>
                     <div className="relative">
@@ -208,7 +208,7 @@ export function UsersPage() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search name or email..."
-                            className="w-full pl-9 pr-3 py-2 bg-bg-primary border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                            className="w-full pl-9 pr-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                         />
                     </div>
                 </div>
@@ -217,7 +217,7 @@ export function UsersPage() {
                     <select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value as RoleFilter)}
-                        className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         <option value="all">All Roles</option>
                         {Object.entries(roleLabel).map(([value, label]) => (
@@ -232,7 +232,7 @@ export function UsersPage() {
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-                        className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-white focus:outline-none focus:border-lime/50"
+                        className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                     >
                         <option value="all">All Types</option>
                         <option value="management">Management</option>
@@ -278,7 +278,7 @@ export function UsersPage() {
             )}
 
             {invitations.length > 0 && (
-                <div className="bg-bg-card border border-border rounded-lg overflow-hidden">
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-[20px] overflow-hidden">
                     <div className="px-4 py-3 border-b border-border">
                         <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                             <Clock className="h-4 w-4 text-lime" />

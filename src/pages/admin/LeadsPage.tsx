@@ -395,7 +395,7 @@ export function LeadsPage() {
 
     if (loadError) {
         return (
-            <div className="rounded-xl border border-border bg-bg-card/60 px-6 py-8 text-center text-gray-300">
+            <div className="rounded-[20px] border border-white/[0.06] bg-white/[0.02] px-6 py-8 text-center text-gray-300">
                 <p className="text-sm">{loadError}</p>
                 <button
                     onClick={fetchLeads}
@@ -426,7 +426,7 @@ export function LeadsPage() {
                 <div className="flex gap-3">
                     <button
                         onClick={() => setShowHighlightedOnly(!showHighlightedOnly)}
-                        className={`flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors font-medium border ${showHighlightedOnly ? 'bg-lime/20 text-lime border-lime/50' : 'bg-bg-card text-gray-400 border-border'}`}
+                        className={`flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors font-medium border ${showHighlightedOnly ? 'bg-lime/20 text-lime border-lime/50' : 'bg-white/[0.025] text-gray-400 border-white/[0.06]'}`}
                     >
                         <PaintBucket className="h-5 w-5" />
                         <span className="hidden sm:inline">Highlighted</span>
@@ -434,7 +434,7 @@ export function LeadsPage() {
                     <button
                         onClick={handleExport}
                         disabled={isExporting || leads.length === 0}
-                        className="flex items-center gap-2 px-4 py-2 bg-bg-card hover:bg-white/10 text-white rounded-lg transition-colors font-medium border border-border disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/[0.025] hover:bg-white/10 text-white rounded-lg transition-colors font-medium border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Download className="h-5 w-5" />
                         {isExporting ? 'Exporting...' : 'Export'}

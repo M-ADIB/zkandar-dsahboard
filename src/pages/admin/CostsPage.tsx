@@ -430,7 +430,7 @@ export function CostsPage() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setCategoriesModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition text-sm"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition text-sm"
                     >
                         <Settings className="h-4 w-4" /> Manage Categories
                     </button>
@@ -444,7 +444,7 @@ export function CostsPage() {
             </div>
 
             {/* Filters Row */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-bg-card border border-border p-4 rounded-2xl">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white/[0.02] border border-white/[0.06] p-4 rounded-[20px]">
                 
                 {/* Time Filters */}
                 <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 w-max overflow-x-auto">
@@ -472,7 +472,7 @@ export function CostsPage() {
                         <select 
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                            className="bg-transparent text-sm text-white focus:outline-none cursor-pointer"
+                            className="bg-[#111] text-sm text-white focus:outline-none cursor-pointer"
                         >
                             <option value="all" className="bg-bg-card">All Status</option>
                             <option value="active" className="bg-bg-card">Active Only</option>
@@ -486,7 +486,7 @@ export function CostsPage() {
                         <select 
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="bg-transparent text-sm text-white focus:outline-none cursor-pointer max-w-[150px] truncate"
+                            className="bg-[#111] text-sm text-white focus:outline-none cursor-pointer max-w-[150px] truncate"
                         >
                             <option value="all" className="bg-bg-card">All Categories</option>
                             {categories.map(c => (
@@ -518,7 +518,7 @@ export function CostsPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
@@ -611,8 +611,8 @@ export function CostsPage() {
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="fixed inset-0 z-[60] flex items-center justify-center p-4"
                         >
-                            <div className="bg-bg-elevated border border-border rounded-2xl w-full max-w-lg p-6 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-                                <div className="flex items-center justify-between sticky top-0 bg-bg-elevated z-10 pb-2 border-b border-border/50">
+                            <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] w-full max-w-lg p-6 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                                <div className="flex items-center justify-between sticky top-0 bg-[#0a0a0a] z-10 pb-2 border-b border-white/[0.06]">
                                     <h3 className="text-lg font-bold text-white">{editingCost ? 'Edit Cost' : 'Add Cost'}</h3>
                                     <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400">
                                         <X className="h-4 w-4" />
@@ -639,7 +639,7 @@ export function CostsPage() {
                                             <input
                                                 value={form.item_name}
                                                 onChange={e => setForm(p => ({ ...p, item_name: e.target.value }))}
-                                                className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white placeholder-gray-600"
+                                                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all text-white placeholder-gray-600"
                                                 placeholder="e.g. Midjourney Pro Plan"
                                             />
                                         </div>
@@ -648,7 +648,7 @@ export function CostsPage() {
                                             <select
                                                 value={form.category}
                                                 onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
-                                                className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white appearance-none"
+                                                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all text-white appearance-none"
                                             >
                                                 {categories.map(c => (
                                                     <option key={c.id} value={c.name}>{c.name}</option>
@@ -693,7 +693,7 @@ export function CostsPage() {
                                         <textarea
                                             value={form.notes || ''}
                                             onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
-                                            className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 min-h-[60px] text-white placeholder-gray-600"
+                                            className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all min-h-[60px] text-white placeholder-gray-600"
                                             placeholder="Links, details, context..."
                                         />
                                     </div>
@@ -704,7 +704,7 @@ export function CostsPage() {
                                                 type="date"
                                                 value={form.invoice_date || ''}
                                                 onChange={e => setForm(p => ({ ...p, invoice_date: e.target.value }))}
-                                                className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white"
+                                                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all text-white"
                                             />
                                         </div>
                                         <div className="col-span-2 sm:col-span-1">
@@ -713,7 +713,7 @@ export function CostsPage() {
                                                 type="date"
                                                 value={form.payment_date || ''}
                                                 onChange={e => setForm(p => ({ ...p, payment_date: e.target.value }))}
-                                                className="w-full px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white"
+                                                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all text-white"
                                             />
                                         </div>
                                     </div>
@@ -725,7 +725,7 @@ export function CostsPage() {
                                                 type="number"
                                                 value={form.total_amount || ''}
                                                 onChange={e => setForm(p => ({ ...p, total_amount: e.target.value === '' ? 0 : Number(e.target.value) }))}
-                                                className="w-full pl-12 pr-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white"
+                                                className="w-full pl-12 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all text-white"
                                                 placeholder="0.00"
                                             />
                                         </div>
@@ -769,7 +769,7 @@ export function CostsPage() {
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="fixed inset-0 z-[60] flex items-center justify-center p-4"
                         >
-                            <div className="bg-bg-elevated border border-border rounded-2xl w-full max-w-md p-6 space-y-5">
+                            <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] w-full max-w-md p-6 space-y-5">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                                         <Settings className="h-5 w-5 text-lime"/> Manage Categories
@@ -811,7 +811,7 @@ export function CostsPage() {
                                     {categories.length === 0 ? (
                                         <p className="text-center text-gray-500 text-sm py-4">No categories created.</p>
                                     ) : categories.map(cat => (
-                                        <div key={cat.id} className="flex items-center justify-between p-3 bg-bg-card border border-border rounded-xl group">
+                                        <div key={cat.id} className="flex items-center justify-between p-3 bg-white/[0.025] border border-white/[0.05] rounded-xl group">
                                             <div className="flex items-center gap-3 flex-1 mr-3">
                                                 <input
                                                     type="color"
