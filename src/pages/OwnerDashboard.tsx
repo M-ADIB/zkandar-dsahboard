@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import {
     DollarSign, Flame, Building2, Mic,
     Users, ArrowRight, TrendingUp,
-    ChevronRight, CheckCircle2, AlertCircle, XCircle,
+    ChevronRight, CheckCircle2,
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import type { Cohort, Company, Lead, Session, User, EventRequest } from '@/types/database'
@@ -383,7 +383,7 @@ export function OwnerDashboard() {
         }).length
         , [leads])
 
-    const notInterestedLeads = leadCounts['NOT INTERESTED'] || 0
+
 
     // Company health
     const companyHealth = useMemo(() => {
@@ -469,71 +469,85 @@ export function OwnerDashboard() {
 
             {/* ── Row 2: Pipeline Analytics + Calendar ── */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                {/* Pipeline Analytics */}
+                {/* Pipeline Analytics Bento Widget (Massive Redesign) */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="lg:col-span-3 bg-bg-card border border-border rounded-2xl p-6 space-y-5"
+                    className="lg:col-span-3 flex flex-col sm:flex-row gap-4 h-full"
                 >
-                    <div className="flex items-center justify-between">
-                        <h2 className="font-semibold text-white flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-lime" />
-                            Pipeline Analytics
-                        </h2>
-                        <button
-                            onClick={() => navigate('/admin/leads')}
-                            className="text-xs text-gray-400 hover:text-lime transition flex items-center gap-1"
-                        >
-                            View all <ArrowRight className="h-3 w-3" />
-                        </button>
+                    {/* The Main Huge Metric Banner */}
+                    <div 
+                        className="flex-1 bg-gradient-to-br from-[#0a0a0a] to-[#050505] border border-white/[0.08] rounded-[24px] p-6 sm:p-8 relative overflow-hidden group hover:border-lime/30 cursor-pointer transition-all duration-500 shadow-2xl flex flex-col justify-between"
+                        onClick={() => navigate('/admin/leads?priority=ACTIVE')}
+                    >
+                        {/* Background Glow */}
+                        <div className="absolute top-[-50%] right-[-10%] w-[150%] h-[150%] bg-[radial-gradient(circle_at_top_right,rgba(208,255,113,0.05),transparent_40%)]" />
+                        
+                        {/* Huge Abstract Icon Background */}
+                        <div className="absolute top-8 right-8 opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-110 transition-all duration-700 pointer-events-none rotate-12">
+                            <DollarSign className="w-48 h-48 text-lime" />
+                        </div>
+
+                        {/* Top Ribbon */}
+                        <div className="relative z-10 w-full flex items-center justify-between mb-8 sm:mb-12">
+                            <div className="inline-flex items-center gap-2 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-full px-4 py-2 text-xs text-gray-300 font-medium tracking-wide">
+                                <TrendingUp className="w-4 h-4 text-lime" />
+                                <span>Pipeline Engine</span>
+                            </div>
+                            {/* Hover Arrow Component */}
+                            <div className="w-10 h-10 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-lime">
+                                <ArrowRight className="w-5 h-5" />
+                            </div>
+                        </div>
+
+                        {/* Middle Focus -> Value */}
+                        <div className="relative z-10 mb-8 sm:mb-12">
+                            <p className="text-xs sm:text-sm font-bold tracking-[0.15em] uppercase text-gray-500 mb-3 ml-1">Total Pipeline Value</p>
+                            <h3 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(208,255,113,0.1)] group-hover:drop-shadow-[0_0_30px_rgba(208,255,113,0.25)] transition-all duration-500">
+                                <span className="text-lime/90">AED</span> {fmt(pipelineValue)}
+                            </h3>
+                        </div>
+
+                        {/* Bottom Focus -> Distribution Bar */}
+                        <div className="relative z-10 w-full mt-auto bg-black/40 p-5 rounded-2xl border border-white/[0.03] backdrop-blur-sm">
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.15em]">Health Distribution</p>
+                                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-widest">{leads.length} Active Profiles</p>
+                            </div>
+                            <LeadsStatusBar counts={leadCounts} />
+                        </div>
                     </div>
 
-                    {/* Status distribution bar */}
-                    <LeadsStatusBar counts={leadCounts} />
-
-                    {/* Analytics grid upgraded to Magic UI Bento style */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {/* The 4 Smaller Bento Cards stacked in a 2x2 grid */}
+                    <div className="w-full sm:w-[280px] xl:w-[320px] shrink-0 grid grid-cols-2 grid-rows-2 gap-4">
                         <PipelineStatCard 
-                            label="Total Leads"
+                            label="Total"
                             value={fmt(leads.length)}
-                            colorMain="text-lime"
+                            colorMain="text-white"
                             onClick={() => navigate('/admin/leads')}
                         />
                         <PipelineStatCard 
-                            label="Conversion"
+                            label="Convert"
                             value={`${conversionRate}%`}
                             colorMain="text-orange-400"
                             onClick={() => navigate('/admin/leads?priority=COMPLETED')}
                         />
                         <PipelineStatCard 
-                            label="Pipeline"
-                            value={<span className="text-xl">AED {fmt(pipelineValue)}</span>}
-                            colorMain="text-yellow-400"
-                            onClick={() => navigate('/admin/leads?priority=ACTIVE')}
-                        />
-                        <PipelineStatCard 
                             label="Pending"
                             value={pendingLeads}
-                            icon={<AlertCircle className="h-5 w-5" />}
                             colorMain="text-amber-400"
                             onClick={() => navigate('/admin/leads?paid=pending')}
                         />
                         <PipelineStatCard 
-                            label="Not Interested"
-                            value={notInterestedLeads}
-                            icon={<XCircle className="h-5 w-5" />}
-                            colorMain="text-red-400"
-                            onClick={() => navigate('/admin/leads?priority=NOT INTERESTED')}
-                        />
-                        <PipelineStatCard 
-                            label="Costs (Month)"
-                            value={<span className="text-xl">AED {fmt(monthlyCosts)}</span>}
+                            label="Costs"
+                            value={<span className="text-lg">AED {fmt(monthlyCosts)}</span>}
                             colorMain="text-green-400"
                             onClick={() => navigate('/admin/costs')}
                         />
                     </div>
                 </motion.div>
+
 
                 {/* Calendar Widget (replaced Recent Leads) */}
                 <motion.div

@@ -14,7 +14,7 @@ export function PipelineStatCard({ value, label, icon, colorMain = "text-white",
     return (
         <div
             onClick={onClick}
-            className={`group relative w-full h-[120px] rounded-xl overflow-hidden p-[1px] bg-gradient-to-br from-white/[0.08] via-transparent to-white/[0.02] cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98] ${className || ''}`}
+            className={`group relative w-full h-full min-h-[120px] rounded-xl overflow-hidden p-[1px] bg-gradient-to-br from-white/[0.08] via-transparent to-white/[0.02] cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98] ${className || ''}`}
         >
             {/* The animated moving halo inside the card border */}
             <motion.div
