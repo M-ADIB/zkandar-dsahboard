@@ -138,6 +138,8 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                 name: c.name,
                 type: (c as any).offering_type || 'master_class',
                 status: c.status,
+                cohortId: c.id,
+                eventId: null as string | null,
             }))
 
         const requestEvents = eventsData
@@ -153,6 +155,8 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                     name: e.company ? `${e.company} Talk` : 'AI Talk',
                     type: 'ai_talk',
                     status: e.status,
+                    cohortId: null as string | null,
+                    eventId: e.id,
                 }
             })
 
@@ -199,6 +203,8 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                         const first = dayEvents[0]
                         if (first.type === 'ai_talk') {
                             navigate('/admin/programs?type=ai_talk')
+                        } else if (first.cohortId) {
+                            navigate(`/admin/programs?cohort=${first.cohortId}`)
                         } else {
                             navigate('/admin/programs')
                         }
@@ -489,8 +495,8 @@ export function OwnerDashboard() {
                         {/* Middle Focus -> Value */}
                         <div className="relative z-10 mb-10 md:mb-20">
                             <p className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-gray-400 mb-4 ml-1">Total Pipeline Value</p>
-                            <h3 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[6.75rem] font-black text-white tracking-normal drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
-                                <span className="text-lime/90 text-3xl sm:text-4xl lg:text-5xl align-top mr-2">AED</span> 
+                            <h3 className="text-3xl sm:text-[2.55rem] lg:text-5xl xl:text-[5.75rem] font-black text-white tracking-normal drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
+                                <span className="text-lime/90 text-2xl sm:text-3xl lg:text-4xl align-top mr-2">AED</span> 
                                 {fmt(pipelineValue)}
                             </h3>
                         </div>
