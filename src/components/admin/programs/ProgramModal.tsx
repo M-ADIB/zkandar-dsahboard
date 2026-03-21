@@ -121,18 +121,30 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             }
 
             // Unlink any company previously assigned, then assign the new one.
-            await supabase
+            const { error: unlinkError } = await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: null })
                 .eq('cohort_id', program.id)
                 .neq('id', companyId);
 
-            await supabase
+            if (unlinkError) {
+                setIsLoading(false);
+                setError(unlinkError.message);
+                return;
+            }
+
+            const { error: linkError } = await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: program.id })
                 .eq('id', companyId);
+
+            if (linkError) {
+                setIsLoading(false);
+                setError(linkError.message);
+                return;
+            }
         } else {
             const { data: newCohort, error: saveError } = await supabase
                 .from('cohorts')
@@ -149,12 +161,19 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if ((newCohort as any)?.id) {
-                await supabase
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { error: linkError } = await supabase
                     .from('companies')
                     // @ts-expect-error - Supabase update type inference issue
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .update({ cohort_id: (newCohort as any).id })
                     .eq('id', companyId);
+
+                if (linkError) {
+                    setIsLoading(false);
+                    setError(linkError.message);
+                    return;
+                }
             }
         }
 
