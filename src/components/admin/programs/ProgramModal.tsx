@@ -33,14 +33,13 @@ const defaultFormData: ProgramFormData = {
 export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramModalProps) {
     const supabase = useSupabase();
     const [formData, setFormData] = useState<ProgramFormData>(defaultFormData);
-    // company_id lives in its own state — no setFormData call can ever reset it.
+    // companyId is its own state — no setFormData call can touch it.
     const [companyId, setCompanyId] = useState('');
-    // Fetch cohort_id alongside companies so we can look up the assigned company synchronously.
     const [companies, setCompanies] = useState<Company[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch all companies (with their cohort assignment) once on mount.
+    // Effect 1 — fetch all companies once on mount.
     useEffect(() => {
         supabase
             .from('companies')
@@ -51,9 +50,9 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             });
     }, []);
 
-    // Sync form fields whenever the modal opens or the program changes.
-    // `companies` is included so that if the list loads after the modal opens,
-    // the assigned company is still found correctly.
+    // Effect 2 — reset the whole form when the modal opens or the program changes.
+    // Does NOT include `companies` as a dep — changes to the companies list must
+    // not re-run this effect and overwrite a selection the user already made.
     useEffect(() => {
         if (program) {
             setFormData({
@@ -64,16 +63,24 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 end_date: program.end_date?.slice(0, 10) ?? '',
                 miro_board_url: program.miro_board_url ?? '',
             });
-            // Synchronous lookup — no async query, no race condition.
-            const assigned = companies.find((c) => c.cohort_id === program.id);
-            setCompanyId(assigned?.id ?? '');
-            setError(null);
         } else {
             setFormData(defaultFormData);
-            setCompanyId('');
-            setError(null);
         }
-    }, [program, isOpen, companies]);
+        setCompanyId(''); // always clear on open/program-change
+        setError(null);
+    }, [program, isOpen]); // ← NO companies dep
+
+    // Effect 3 — pre-select the assigned company once companies are available.
+    // Runs when companies loads (or when program/isOpen changes after companies
+    // is already loaded). The functional `prev ||` guard means it will NEVER
+    // overwrite a selection the user has already made.
+    useEffect(() => {
+        if (!isOpen || !program) return;
+        const assigned = companies.find((c) => c.cohort_id === program.id);
+        if (assigned) {
+            setCompanyId((prev) => prev || assigned.id);
+        }
+    }, [companies, program, isOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -125,7 +132,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             }
 
             // Unlink any company previously assigned to this program
-            // (except the newly selected one), then assign the new company.
+            // (except the newly selected one), then assign the new one.
             await supabase
                 .from('companies')
                 // @ts-expect-error - Supabase update type inference issue
