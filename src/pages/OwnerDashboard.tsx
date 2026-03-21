@@ -4,12 +4,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MetricCard } from '@/components/shared/MetricCard'
 import { motion } from 'framer-motion'
 import {
-    DollarSign, Flame, Building2, Mic,
+    DollarSign, Building2, Mic,
     Users, ArrowRight, TrendingUp,
-    ChevronRight, CheckCircle2,
+    ChevronRight, CheckCircle2, Briefcase
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
-import type { Cohort, Company, Lead, Session, User, EventRequest } from '@/types/database'
+import type { Cohort, Company, Lead, Session, User, EventRequest, JobApplication } from '@/types/database'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameMonth, isToday, parseISO } from 'date-fns'
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
@@ -288,13 +288,14 @@ export function OwnerDashboard() {
     const { data, isLoading: loading } = useQuery({
         queryKey: ['ownerDashboardData', monthStart, monthEnd],
         queryFn: async () => {
-            const [coRes, cohRes, sessRes, usersRes, leadsRes, eventsRes] = await Promise.all([
+            const [coRes, cohRes, sessRes, usersRes, leadsRes, eventsRes, appsRes] = await Promise.all([
                 supabase.from('companies').select('*').order('name'),
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
                 supabase.from('leads').select('id,priority,payment_amount,amount_paid,balance,paid_full,offering_type'),
-                supabase.from('event_requests').select('*').eq('status', 'approved')
+                supabase.from('event_requests').select('*').eq('status', 'approved'),
+                supabase.from('job_applications').select('id,status')
             ])
 
             return {
@@ -303,7 +304,8 @@ export function OwnerDashboard() {
                 sessions: (sessRes.data as Session[]) ?? [],
                 users: (usersRes.data as User[]) ?? [],
                 leads: (leadsRes.data as Lead[]) ?? [],
-                eventsData: (eventsRes.data as EventRequest[]) ?? []
+                eventsData: (eventsRes.data as EventRequest[]) ?? [],
+                applicationsData: (appsRes.data as JobApplication[]) ?? []
             }
         }
     })
@@ -314,6 +316,7 @@ export function OwnerDashboard() {
     const users = data?.users ?? []
     const leads = data?.leads ?? []
     const eventsData = data?.eventsData ?? []
+    const applicationsData = data?.applicationsData ?? []
 
     // ── KPI calculations ──
     const cohortMap = useMemo(() => new Map(cohorts.map((c) => [c.id, c])), [cohorts])
@@ -324,11 +327,13 @@ export function OwnerDashboard() {
         return counts
     }, [leads])
 
-    const lavaLeads = leadCounts['LAVA'] || 0
-
     const pipelineValue = useMemo(() => {
         return leads.reduce((sum, l) => sum + (Number((l as any).payment_amount) || 0), 0)
     }, [leads])
+
+    const pendingApplications = useMemo(() => {
+        return applicationsData.filter(a => a.status === 'new' || a.status === 'reviewing').length
+    }, [applicationsData])
 
     const completedRevenue = useMemo(() =>
         leads.filter((l) => (l as any).priority === 'COMPLETED').reduce((sum, l) => sum + ((l as any).amount_paid ?? 0), 0)
@@ -399,13 +404,13 @@ export function OwnerDashboard() {
                     onClick={() => navigate('/admin/leads?priority=COMPLETED')}
                 />
                 <MetricCard
-                    icon={Flame}
-                    label="Lava Leads"
-                    value={String(lavaLeads)}
-                    sub={`${leads.length} total leads`}
-                    trend={lavaLeads > 0 ? `${lavaLeads} active` : undefined}
+                    icon={Briefcase}
+                    label="Pending Applications"
+                    value={String(pendingApplications)}
+                    sub={`${applicationsData.length} total applications`}
+                    trend={pendingApplications > 0 ? `${pendingApplications} new` : undefined}
                     delay={0.05}
-                    onClick={() => navigate('/admin/leads?priority=LAVA')}
+                    onClick={() => navigate('/admin/recruiting')}
                 />
                 <MetricCard
                     icon={Building2}
