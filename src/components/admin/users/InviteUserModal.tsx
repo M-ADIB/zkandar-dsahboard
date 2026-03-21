@@ -14,9 +14,8 @@ interface InviteUserModalProps {
 }
 
 const roleOptions: { value: UserRole; label: string }[] = [
-    { value: 'participant', label: 'Participant' },
-    { value: 'executive', label: 'Executive' },
-    { value: 'admin', label: 'Admin' },
+    { value: 'participant', label: 'Team' },
+    { value: 'executive', label: 'Management' },
 ];
 
 export function InviteUserModal({
