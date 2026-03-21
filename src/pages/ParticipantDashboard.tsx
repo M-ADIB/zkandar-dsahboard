@@ -12,52 +12,95 @@ import {
     Play,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import { ProgressBar } from '@/components/shared/ProgressBar'
 import { supabase } from '@/lib/supabase'
-import { useCompany } from '@/hooks/useCompany'
-import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { formatDateLabel, formatRelativeTime } from '@/lib/time'
-import type { Assignment, ChatMessage, Session, Submission } from '@/types/database'
+import type { Assignment, ChatMessage, Cohort, Session, Submission } from '@/types/database'
 
 export function ParticipantDashboard() {
     const { user } = useAuth()
-    const { company } = useCompany()
-    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
+    const { effectiveUserId } = useViewMode()
+
+    const [cohorts, setCohorts] = useState<Cohort[]>([])
     const [sessions, setSessions] = useState<Session[]>([])
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [submissions, setSubmissions] = useState<Submission[]>([])
     const [recentMessages, setRecentMessages] = useState<ChatMessage[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
     const firstName = user?.full_name?.split(' ')[0] || 'there'
 
     useEffect(() => {
+        if (!effectiveUserId) return
+
         let ignore = false
 
         const fetchDashboard = async () => {
-            if (!user || cohortsLoading) return
+            setLoading(true)
+            setError(null)
 
-            if (cohortsError) {
-                setError(cohortsError)
-                setLoading(false)
-                return
+            // ── 1. Get all cohort IDs accessible to this user ──────────────────
+            // Via their company's cohort_id
+            const [profileRes, membershipRes] = await Promise.all([
+                supabase
+                    .from('users')
+                    .select('company_id, ai_readiness_score')
+                    .eq('id', effectiveUserId)
+                    .single(),
+                supabase
+                    .from('cohort_memberships')
+                    .select('cohort_id')
+                    .eq('user_id', effectiveUserId),
+            ])
+
+            if (ignore) return
+
+            const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number } | null
+            const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
+
+            const cohortIdSet = new Set<string>(membershipIds)
+
+            // Also check if the user's company has a cohort
+            if (profileRow?.company_id) {
+                const { data: companyData } = await supabase
+                    .from('companies')
+                    .select('cohort_id')
+                    .eq('id', profileRow.company_id)
+                    .single()
+
+                if (ignore) return
+
+                const compRow = companyData as { cohort_id: string | null } | null
+                if (compRow?.cohort_id) cohortIdSet.add(compRow.cohort_id)
             }
+
+            const cohortIds = Array.from(cohortIdSet)
 
             if (cohortIds.length === 0) {
                 setSessions([])
                 setAssignments([])
                 setSubmissions([])
                 setRecentMessages([])
+                setCohorts([])
                 setLoading(false)
                 return
             }
 
-            setLoading(true)
-            setError(null)
+            // ── 2. Fetch cohorts ───────────────────────────────────────────────
+            const { data: cohortData } = await supabase
+                .from('cohorts')
+                .select('*')
+                .in('id', cohortIds)
 
+            if (ignore) return
+            setCohorts((cohortData as Cohort[]) ?? [])
+
+            // ── 3. Fetch sessions ─────────────────────────────────────────────
             const { data: sessionsData, error: sessionsError } = await supabase
                 .from('sessions')
-                .select('id, title, scheduled_date, status')
+                .select('id, title, scheduled_date, status, cohort_id')
                 .in('cohort_id', cohortIds)
                 .order('scheduled_date', { ascending: true })
 
@@ -70,83 +113,65 @@ export function ParticipantDashboard() {
             }
 
             const sessionRows = (sessionsData as Session[]) ?? []
-            const sessionIds = sessionRows.map((session) => session.id)
+            const sessionIds = sessionRows.map((s) => s.id)
+            setSessions(sessionRows)
 
+            // ── 4. Fetch assignments ──────────────────────────────────────────
             let assignmentRows: Assignment[] = []
-            let submissionRows: Submission[] = []
-
             if (sessionIds.length > 0) {
-                const { data: assignmentsData, error: assignmentsError } = await supabase
+                const { data: assignmentsData } = await supabase
                     .from('assignments')
                     .select('id, title, due_date, session_id, submission_format')
                     .in('session_id', sessionIds)
                     .order('due_date', { ascending: true })
 
-                if (assignmentsError) {
-                    setError(assignmentsError.message)
-                } else {
-                    assignmentRows = (assignmentsData as Assignment[]) ?? []
-                }
+                if (ignore) return
+                assignmentRows = (assignmentsData as Assignment[]) ?? []
+                setAssignments(assignmentRows)
 
-                const assignmentIds = assignmentRows.map((assignment) => assignment.id)
-
-                if (assignmentIds.length > 0) {
-                    const { data: submissionsData, error: submissionsError } = await supabase
+                // ── 5. Fetch submissions ──────────────────────────────────────
+                if (assignmentRows.length > 0) {
+                    const { data: submissionsData } = await supabase
                         .from('submissions')
                         .select('id, assignment_id, submitted_at')
-                        .eq('user_id', user.id)
-                        .in('assignment_id', assignmentIds)
+                        .eq('user_id', effectiveUserId)
+                        .in('assignment_id', assignmentRows.map((a) => a.id))
 
-                    if (submissionsError) {
-                        setError(submissionsError.message)
-                    } else {
-                        submissionRows = (submissionsData as Submission[]) ?? []
-                    }
+                    if (ignore) return
+                    setSubmissions((submissionsData as Submission[]) ?? [])
                 }
             }
 
-            let chatData: ChatMessage[] = []
-
-            if (cohortIds.length > 0 || company?.id) {
+            // ── 6. Fetch recent chat messages ─────────────────────────────────
+            const companyId = profileRow?.company_id
+            if (cohortIds.length > 0 || companyId) {
                 const chatQuery = supabase
                     .from('chat_messages')
                     .select('id, message, created_at, sender:users(full_name), cohort_id, company_id')
                     .order('created_at', { ascending: false })
                     .limit(4)
 
-                if (cohortIds.length > 0 && company?.id) {
-                    chatQuery.or(`cohort_id.in.(${cohortIds.join(',')}),company_id.eq.${company.id}`)
+                if (cohortIds.length > 0 && companyId) {
+                    chatQuery.or(`cohort_id.in.(${cohortIds.join(',')}),company_id.eq.${companyId}`)
                 } else if (cohortIds.length > 0) {
                     chatQuery.in('cohort_id', cohortIds)
-                } else if (company?.id) {
-                    chatQuery.eq('company_id', company.id)
+                } else if (companyId) {
+                    chatQuery.eq('company_id', companyId)
                 }
 
-                const { data, error: chatError } = await chatQuery
-
-                if (chatError) {
-                    setError(chatError.message)
-                } else {
-                    chatData = (data as ChatMessage[]) ?? []
-                }
+                const { data: chatData } = await chatQuery
+                if (ignore) return
+                setRecentMessages((chatData as ChatMessage[]) ?? [])
             }
 
-            if (ignore) return
-
-            setSessions(sessionRows)
-            setAssignments(assignmentRows)
-            setSubmissions(submissionRows)
-            setRecentMessages(chatData)
-            setLoading(false)
+            if (!ignore) setLoading(false)
         }
 
         fetchDashboard()
+        return () => { ignore = true }
+    }, [effectiveUserId])
 
-        return () => {
-            ignore = true
-        }
-    }, [user?.id, cohortIds, cohortsLoading, cohortsError, company?.id, user])
-
+    // ── Derived state ──────────────────────────────────────────────────────────
     const sessionTimeline = useMemo(() => {
         const now = Date.now()
         let currentMarked = false
@@ -160,7 +185,6 @@ export function ParticipantDashboard() {
                 const completed = session.status === 'completed' || scheduledAt < now
                 const current = !completed && !currentMarked
                 if (current) currentMarked = true
-
                 return {
                     id: session.id,
                     title: session.title,
@@ -174,35 +198,20 @@ export function ParticipantDashboard() {
     const totalSessions = sessions.length
     const completedSessions = useMemo(() => {
         const now = Date.now()
-        return sessions.filter((session) => {
-            const date = new Date(session.scheduled_date).getTime()
-            return session.status === 'completed' || date < now
-        }).length
+        return sessions.filter((s) => s.status === 'completed' || new Date(s.scheduled_date).getTime() < now).length
     }, [sessions])
 
     const assignmentSummary = useMemo(() => {
-        const submissionIds = new Set(submissions.map((submission) => submission.assignment_id))
+        const submissionIds = new Set(submissions.map((s) => s.assignment_id))
         const now = Date.now()
 
         const items = assignments
-            .map((assignment) => {
-                const submitted = submissionIds.has(assignment.id)
-                const dueDate = assignment.due_date ? new Date(assignment.due_date).getTime() : null
+            .map((a) => {
+                const submitted = submissionIds.has(a.id)
+                const dueDate = a.due_date ? new Date(a.due_date).getTime() : null
                 const isOverdue = dueDate ? dueDate < now : false
-
-                const status: 'pending' | 'upcoming' | 'submitted' = submitted
-                    ? 'submitted'
-                    : isOverdue
-                        ? 'pending'
-                        : 'upcoming'
-
-                return {
-                    id: assignment.id,
-                    title: assignment.title,
-                    dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
-                    status,
-                    dueSort: dueDate ?? Number.MAX_SAFE_INTEGER,
-                }
+                const status: 'pending' | 'upcoming' | 'submitted' = submitted ? 'submitted' : isOverdue ? 'pending' : 'upcoming'
+                return { id: a.id, title: a.title, dueDate: a.due_date ? formatDateLabel(a.due_date) : 'TBD', status, dueSort: dueDate ?? Number.MAX_SAFE_INTEGER }
             })
             .sort((a, b) => {
                 const order = { pending: 0, upcoming: 1, submitted: 2 }
@@ -211,24 +220,21 @@ export function ParticipantDashboard() {
             })
             .slice(0, 3)
 
-        return {
-            total: assignments.length,
-            completed: submissionIds.size,
-            items,
-        }
+        return { total: assignments.length, completed: submissionIds.size, items }
     }, [assignments, submissions])
 
-    const chatPreview = useMemo(() => {
-        return recentMessages.map((message) => ({
-            id: message.id,
-            sender: message.sender?.full_name ?? 'Member',
-            message: message.message,
-            time: formatRelativeTime(message.created_at),
-        }))
-    }, [recentMessages])
+    const chatPreview = useMemo(() => recentMessages.map((m) => ({
+        id: m.id,
+        sender: m.sender?.full_name ?? 'Member',
+        message: m.message,
+        time: formatRelativeTime(m.created_at),
+    })), [recentMessages])
 
     const primaryCohort = cohorts[0]
     const isSprintWorkshop = primaryCohort?.offering_type === 'sprint_workshop'
+
+    // AI readiness score — comes from the previewed user's profile
+    const aiScore = user?.ai_readiness_score ?? 0
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -294,11 +300,11 @@ export function ParticipantDashboard() {
                             <Sparkles className="h-5 w-5 text-lime" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold">{user?.ai_readiness_score || 0}%</p>
+                            <p className="text-2xl font-bold">{aiScore}%</p>
                             <p className="text-xs text-gray-500">AI Readiness Score</p>
                         </div>
                     </div>
-                    <ProgressBar current={user?.ai_readiness_score || 0} total={100} />
+                    <ProgressBar current={aiScore} total={100} />
                 </div>
             </motion.div>
 
@@ -321,7 +327,7 @@ export function ParticipantDashboard() {
                     ) : (
                         <div className="relative space-y-4">
                             {sessionTimeline.length > 1 && (
-                                <div className="absolute left-[36px] top-9 bottom-9 w-px bg-border pointer-events-none" />
+                                <div className="absolute left-[36px] top-0 bottom-0 w-px bg-border pointer-events-none" />
                             )}
                             {sessionTimeline.map((session) => (
                                 <div
@@ -400,19 +406,13 @@ export function ParticipantDashboard() {
                                                 <p className="text-xs text-gray-500 mt-1">Due: {assignment.dueDate}</p>
                                             </div>
                                             {assignment.status === 'pending' && (
-                                                <span className="px-2 py-1 text-xs bg-yellow-500/10 text-yellow-400 rounded-lg">
-                                                    Pending
-                                                </span>
+                                                <span className="px-2 py-1 text-xs bg-yellow-500/10 text-yellow-400 rounded-lg">Pending</span>
                                             )}
                                             {assignment.status === 'upcoming' && (
-                                                <span className="px-2 py-1 text-xs bg-gray-500/10 text-gray-400 rounded-lg">
-                                                    Upcoming
-                                                </span>
+                                                <span className="px-2 py-1 text-xs bg-gray-500/10 text-gray-400 rounded-lg">Upcoming</span>
                                             )}
                                             {assignment.status === 'submitted' && (
-                                                <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg">
-                                                    Submitted
-                                                </span>
+                                                <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg">Submitted</span>
                                             )}
                                         </div>
                                     </div>
