@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MetricCard } from '@/components/shared/MetricCard'
 import { motion } from 'framer-motion'
 import {
@@ -240,10 +240,29 @@ function CalendarWidget({ cohorts }: { cohorts: Cohort[] }) {
 export function OwnerDashboard() {
     const supabase = useSupabase()
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     const now = new Date()
     const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
     const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
+
+    useEffect(() => {
+        const channel = supabase.channel('dashboard-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
+                queryClient.invalidateQueries({ queryKey: ['ownerDashboardData'] })
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'cohorts' }, () => {
+                queryClient.invalidateQueries({ queryKey: ['ownerDashboardData'] })
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'companies' }, () => {
+                queryClient.invalidateQueries({ queryKey: ['ownerDashboardData'] })
+            })
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [supabase, queryClient])
 
     const { data, isLoading: loading } = useQuery({
         queryKey: ['ownerDashboardData', monthStart, monthEnd],
@@ -253,7 +272,7 @@ export function OwnerDashboard() {
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
-                supabase.from('leads').select('id,priority,payment,amount_paid,balance,paid_full,offering_type'),
+                supabase.from('leads').select('id,priority,payment_amount,amount_paid,balance,paid_full,offering_type'),
                 (supabase as any).from('costs').select('total_amount').gte('payment_date', monthStart).lte('payment_date', monthEnd),
             ])
             const costsData = (costsRes as any).data ?? []
@@ -289,9 +308,7 @@ export function OwnerDashboard() {
     const lavaLeads = leadCounts['LAVA'] || 0
 
     const pipelineValue = useMemo(() => {
-        return leads
-            .filter((l) => (l as any).priority === 'ACTIVE' || (l as any).priority === 'LAVA')
-            .reduce((sum, l) => sum + ((l as any).payment ?? 0), 0)
+        return leads.reduce((sum, l) => sum + (Number((l as any).payment_amount) || 0), 0)
     }, [leads])
 
     const completedRevenue = useMemo(() =>
