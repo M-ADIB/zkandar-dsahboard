@@ -95,11 +95,22 @@ export function UserModal({
     const isCompanyMissing = !formData.company_id;
 
     const handleProgramToggle = (programId: string) => {
-        setSelectedPrograms((prev) =>
-            prev.includes(programId)
-                ? prev.filter((id) => id !== programId)
-                : [...prev, programId]
-        );
+        const isSprint = programGroups.sprint.some(p => p.id === programId);
+
+        setSelectedPrograms((prev) => {
+            if (prev.includes(programId)) {
+                return prev.filter(id => id !== programId);
+            }
+
+            if (isSprint) {
+                // Remove all other sprint workshops from prev
+                const sprintIds = new Set(programGroups.sprint.map(p => p.id));
+                const filteredPrev = prev.filter(id => !sprintIds.has(id));
+                return [...filteredPrev, programId];
+            }
+
+            return [...prev, programId];
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

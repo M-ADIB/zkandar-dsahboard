@@ -50,6 +50,9 @@ export function CompanyModal({
 }: CompanyModalProps) {
     const supabase = useSupabase();
     const [formData, setFormData] = useState<CompanyFormData>(defaultFormData);
+    const [initialCohortId, setInitialCohortId] = useState<string>('');
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [pendingCohortId, setPendingCohortId] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -64,14 +67,22 @@ export function CompanyModal({
                 executive_user_id: company.executive_user_id ?? '',
                 country: company.country ?? '',
             });
+            setInitialCohortId(company.cohort_id ?? '');
         } else {
             setFormData(defaultFormData);
+            setInitialCohortId('');
         }
+        setShowConfirm(false);
         setError(null);
     }, [company, isOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (showConfirm) {
+            setError('Please confirm or cancel the pending program change before saving.');
+            return;
+        }
 
         if (!formData.name.trim()) {
             setError('Company name is required.');
@@ -196,8 +207,17 @@ export function CompanyModal({
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Program (Master Class)</label>
                 <select
-                    value={formData.cohort_id}
-                    onChange={(e) => setFormData({ ...formData, cohort_id: e.target.value })}
+                    value={showConfirm ? pendingCohortId : formData.cohort_id}
+                    onChange={(e) => {
+                        const newId = e.target.value;
+                        if (initialCohortId && newId !== initialCohortId) {
+                            setPendingCohortId(newId);
+                            setShowConfirm(true);
+                        } else {
+                            setShowConfirm(false);
+                            setFormData({ ...formData, cohort_id: newId });
+                        }
+                    }}
                     className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
                 >
                     <option value="">Unassigned</option>
@@ -207,6 +227,31 @@ export function CompanyModal({
                         </option>
                     ))}
                 </select>
+
+                {showConfirm && (
+                    <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                        <p className="text-sm text-amber-300 mb-3">Changing the assigned program will affect all active members of this company.</p>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setFormData({ ...formData, cohort_id: pendingCohortId });
+                                    setShowConfirm(false);
+                                }}
+                                className="px-3 py-1.5 text-xs font-medium bg-amber-500/20 text-amber-300 rounded hover:bg-amber-500/30 transition-colors"
+                            >
+                                Confirm Change
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirm(false)}
+                                className="px-3 py-1.5 text-xs font-medium bg-white/5 text-gray-300 rounded hover:bg-white/10 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div>

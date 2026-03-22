@@ -25,6 +25,8 @@ export function InviteUserModal({
     companies,
     programs,
 }: InviteUserModalProps) {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [role, setRole] = useState<UserRole>('participant');
     const [companyId, setCompanyId] = useState('');
@@ -34,6 +36,8 @@ export function InviteUserModal({
     const [done, setDone] = useState(false);
 
     const reset = () => {
+        setFirstName('');
+        setLastName('');
         setEmail('');
         setRole('participant');
         setCompanyId('');
@@ -70,15 +74,20 @@ export function InviteUserModal({
 
         const res = await supabase.functions.invoke('invite-user', {
             body: {
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
                 email: email.trim().toLowerCase(),
                 role,
                 company_id: companyId || undefined,
                 cohort_id: cohortId || undefined,
             },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         });
 
-        if (res.error || (res.data as { error?: string })?.error) {
-            const msg = res.error?.message ?? (res.data as { error?: string }).error ?? 'Failed to send invite.';
+        if (res.error) {
+            const msg = res.error?.message ?? 'Failed to send invite.';
             setError(msg);
             setIsSending(false);
             return;
@@ -148,6 +157,61 @@ export function InviteUserModal({
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                                {/* Program */}
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                                        Program <span className="text-red-400">*</span>
+                                    </label>
+                                    <select
+                                        required
+                                        value={cohortId}
+                                        onChange={(e) => {
+                                            const newCohortId = e.target.value;
+                                            setCohortId(newCohortId);
+                                            const program = programs.find(p => p.id === newCohortId);
+                                            if (program?.offering_type === 'sprint_workshop') {
+                                                setCompanyId('');
+                                            }
+                                        }}
+                                        className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
+                                    >
+                                        <option value="" disabled>Select a program</option>
+                                        {programs.map((p) => (
+                                            <option key={p.id} value={p.id}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* First & Last Name */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                                            First name <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={firstName}
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                            placeholder="Jane"
+                                            className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors placeholder:text-gray-600"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                                            Last name <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={lastName}
+                                            onChange={(e) => setLastName(e.target.value)}
+                                            placeholder="Smith"
+                                            className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors placeholder:text-gray-600"
+                                        />
+                                    </div>
+                                </div>
+
                                 {/* Email */}
                                 <div>
                                     <label className="block text-xs font-medium text-gray-400 mb-1.5">
@@ -166,55 +230,58 @@ export function InviteUserModal({
                                     </div>
                                 </div>
 
-                                {/* Role */}
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Role</label>
-                                    <div className="flex gap-2">
-                                        {roleOptions.map((opt) => (
-                                            <button
-                                                key={opt.value}
-                                                type="button"
-                                                onClick={() => setRole(opt.value)}
-                                                className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${role === opt.value
-                                                    ? 'bg-lime/10 border-lime/30 text-lime'
-                                                    : 'bg-bg-card border-border text-gray-400 hover:border-lime/20'
-                                                    }`}
+                                {/* Role - Conditionally Rendered */}
+                                {(() => {
+                                    const selectedProgram = programs.find(p => p.id === cohortId);
+                                    if (selectedProgram?.offering_type === 'sprint_workshop') return null;
+
+                                    return (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label className="block text-xs font-medium text-gray-400 mb-1.5">Role</label>
+                                            <div className="flex gap-2">
+                                                {roleOptions.map((opt) => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => setRole(opt.value)}
+                                                        className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${role === opt.value
+                                                            ? 'bg-lime/10 border-lime/30 text-lime'
+                                                            : 'bg-bg-card border-border text-gray-400 hover:border-lime/20'
+                                                            }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+
+                                {/* Company - Conditionally Rendered */}
+                                {(() => {
+                                    const selectedProgram = programs.find(p => p.id === cohortId);
+                                    if (selectedProgram?.offering_type === 'sprint_workshop') return null;
+
+                                    return (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                                                Company {selectedProgram?.offering_type === 'master_class' && <span className="text-red-400">*</span>}
+                                            </label>
+                                            <select
+                                                required={selectedProgram?.offering_type === 'master_class'}
+                                                value={companyId}
+                                                onChange={(e) => setCompanyId(e.target.value)}
+                                                className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
                                             >
-                                                {opt.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                                <option value="" disabled>Select a company</option>
+                                                {companies.map((c) => (
+                                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    );
+                                })()}
 
-                                {/* Company */}
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Company (optional)</label>
-                                    <select
-                                        value={companyId}
-                                        onChange={(e) => setCompanyId(e.target.value)}
-                                        className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
-                                    >
-                                        <option value="">No company</option>
-                                        {companies.map((c) => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Cohort */}
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Program (optional)</label>
-                                    <select
-                                        value={cohortId}
-                                        onChange={(e) => setCohortId(e.target.value)}
-                                        className="w-full px-3 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-white focus:outline-none focus:border-lime/50 transition-colors"
-                                    >
-                                        <option value="">No program</option>
-                                        {programs.map((p) => (
-                                            <option key={p.id} value={p.id}>{p.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
 
                                 {error && (
                                     <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-xs text-red-300">

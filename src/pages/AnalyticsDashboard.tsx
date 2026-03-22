@@ -7,6 +7,7 @@ import {
 import { Users, Brain, Target, Building2, Filter } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { MetricCard } from '@/components/shared/MetricCard'
+import { RespondentListModal, type RespondentData } from '@/components/admin/shared/RespondentListModal'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ManagementSubmission {
@@ -447,6 +448,9 @@ export function AnalyticsDashboard() {
     const [error, setError] = useState<string | null>(null)
     const [phaseTab, setPhaseTab] = useState<'pre' | 'post'>('pre')
     const [roleTab, setRoleTab] = useState<'management' | 'team'>('management')
+    const [isDrillDownOpen, setIsDrillDownOpen] = useState(false)
+
+    // Data lists
     const [companyFilter, setCompanyFilter] = useState<string>('all')
 
     useEffect(() => {
@@ -503,13 +507,77 @@ export function AnalyticsDashboard() {
     }, [filteredMgmt, filteredTeam, filteredPostMgmt, filteredPostTeam, phaseTab])
 
     const avgTeamReadiness = avg(filteredMgmt.map(d => d.q10_team_readiness))
-    const avgAiConfidence = avg(filteredTeam.map(d => d.q5_confidence_ai_workflow))
+    const avgAiConfidencePre = avg(filteredTeam.map(d => d.q5_confidence_ai_workflow))
+    const avgAiConfidencePost = avg(filteredPostTeam.map(d => d.answers.post_ai_confidence))
+    const avgOverallValuePostMgmt = avg(filteredPostMgmt.map(d => d.answers.overall_value))
+
+    const avgAlignMgmtPre = avg(filteredMgmt.map(d => d.q7_alignment_confidence))
+    const avgSkillTeamPre = avg(filteredTeam.map(d => d.q6_skill_level_ai_tools))
+    const avgRelevancePostMgmt = avg(filteredPostMgmt.map(d => d.answers.content_relevance))
+    const avgSkillPostTeam = avg(filteredPostTeam.map(d => d.answers.post_ai_skill))
+
+    const activeListCount = phaseTab === 'pre' 
+        ? (roleTab === 'management' ? filteredMgmt.length : filteredTeam.length)
+        : (roleTab === 'management' ? filteredPostMgmt.length : filteredPostTeam.length)
+
+    const currentRespondents: RespondentData[] = useMemo(() => {
+        if (phaseTab === 'pre') {
+            const list = roleTab === 'management' ? filteredMgmt : filteredTeam;
+            return list.map((d, i) => ({
+                id: d.id || `pre-${roleTab}-${i}`,
+                name: d.full_name || 'Unknown',
+                email: d.user_email,
+                company: d.company_name || 'Unknown'
+            }));
+        } else {
+            const list = roleTab === 'management' ? filteredPostMgmt : filteredPostTeam;
+            return list.map((d, i) => ({
+                id: d.id || `post-${roleTab}-${i}`,
+                name: d.respondent_name || 'Unknown',
+                email: d.respondent_email || '',
+                company: d.company_name || 'Unknown'
+            }));
+        }
+    }, [phaseTab, roleTab, filteredMgmt, filteredTeam, filteredPostMgmt, filteredPostTeam]);
 
     const kpis = [
-        { icon: Users, label: 'Management Respondents', value: String(phaseTab === 'pre' ? filteredMgmt.length : filteredPostMgmt.length), sub: 'from survey', delay: 0 },
-        { icon: Brain, label: 'Team Respondents', value: String(phaseTab === 'pre' ? filteredTeam.length : filteredPostTeam.length), sub: 'from survey', delay: 0.07 },
-        { icon: Target, label: phaseTab === 'pre' ? 'Avg Team Readiness' : 'Avg Success Rate', value: phaseTab === 'pre' ? `${avgTeamReadiness}/5` : '-', sub: phaseTab === 'pre' ? 'management-rated' : 'post-completion', delay: 0.14 },
-        { icon: Building2, label: 'Companies Represented', value: String(companies), sub: phaseTab === 'pre' ? 'unique studios (pre)' : 'unique studios (post)', delay: 0.21 },
+        { 
+            icon: roleTab === 'management' ? Users : Brain, 
+            label: `${roleTab === 'management' ? 'Management' : 'Team'} Respondents`, 
+            value: String(activeListCount), 
+            sub: 'Click to view list', 
+            delay: 0,
+            onClick: () => setIsDrillDownOpen(true)
+        },
+        { 
+            icon: Target, 
+            label: phaseTab === 'pre' 
+                ? (roleTab === 'management' ? 'Avg Team Readiness' : 'Avg AI Confidence') 
+                : (roleTab === 'management' ? 'Avg Overall Value' : 'Post AI Confidence'), 
+            value: phaseTab === 'pre' 
+                ? (roleTab === 'management' ? `${avgTeamReadiness}/5` : `${avgAiConfidencePre}/5`) 
+                : (roleTab === 'management' ? `${avgOverallValuePostMgmt}/5` : `${avgAiConfidencePost}/5`),
+            sub: phaseTab === 'pre' ? 'self-rated' : 'post-completion', 
+            delay: 0.07 
+        },
+        { 
+            icon: Building2, 
+            label: 'Companies Represented', 
+            value: String(companies), 
+            sub: phaseTab === 'pre' ? 'unique studios (pre)' : 'unique studios (post)', 
+            delay: 0.14 
+        },
+        { 
+            icon: Target, 
+            label: phaseTab === 'pre' 
+                ? (roleTab === 'management' ? 'Avg Alignment' : 'Avg AI Skill') 
+                : (roleTab === 'management' ? 'Avg Relevance' : 'Post AI Skill'), 
+            value: phaseTab === 'pre' 
+                ? (roleTab === 'management' ? `${avgAlignMgmtPre}/5` : `${avgSkillTeamPre}/5`) 
+                : (roleTab === 'management' ? `${avgRelevancePostMgmt}/5` : `${avgSkillPostTeam}/5`),
+            sub: phaseTab === 'pre' ? 'self-rated' : 'post-completion', 
+            delay: 0.21 
+        },
     ]
 
     return (
@@ -586,7 +654,7 @@ export function AnalyticsDashboard() {
                         <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-lime/5 border border-lime/20 text-sm text-gray-300">
                             <Brain className="h-4 w-4 text-lime shrink-0" />
                             Avg AI Workflow Confidence across {filteredTeam.length} team members:
-                            <span className="font-bold text-lime ml-1">{avgAiConfidence} / 5</span>
+                            <span className="font-bold text-lime ml-1">{avgAiConfidencePre} / 5</span>
                         </div>
                     )}
 
@@ -606,6 +674,13 @@ export function AnalyticsDashboard() {
                     )}
                 </>
             )}
+
+            <RespondentListModal
+                isOpen={isDrillDownOpen}
+                onClose={() => setIsDrillDownOpen(false)}
+                title={`${roleTab === 'management' ? 'Management' : 'Team'} Respondents (${phaseTab === 'pre' ? 'Pre' : 'Post'})`}
+                respondents={currentRespondents}
+            />
         </div>
     )
 }
