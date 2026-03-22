@@ -33,9 +33,9 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="relative w-full max-w-lg overflow-hidden rounded-[24px] bg-[#0a0a0a] border border-white/[0.08] shadow-2xl"
+                        className="relative w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-[24px] bg-[#0a0a0a] border border-white/[0.08] shadow-2xl"
                     >
-                        <div className="px-6 py-4 border-b border-white/[0.08] bg-[#0a0a0a]">
+                        <div className="px-6 py-4 border-b border-white/[0.08] bg-[#0a0a0a] shrink-0">
                             <h3 className="text-lg font-semibold text-white">{title}</h3>
                             <button
                                 onClick={onClose}
@@ -48,13 +48,13 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                             </button>
                         </div>
 
-                        <form onSubmit={onSubmit} className="p-6">
-                            <div className="space-y-4">
+                        <form onSubmit={onSubmit} className="flex-1 overflow-y-auto p-6 flex flex-col">
+                            <div className="space-y-4 flex-1">
                                 {children}
                             </div>
 
                             {showActions && (
-                                <div className="mt-8 flex justify-end space-x-3">
+                                <div className="mt-8 shrink-0 flex justify-end space-x-3">
                                     <button
                                         type="button"
                                         onClick={onClose}

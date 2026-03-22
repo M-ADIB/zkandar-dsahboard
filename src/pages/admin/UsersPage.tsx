@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Search, UserPlus, Mail, Clock } from 'lucide-react';
+import { Search, UserPlus, Mail, Clock, Trash2 } from 'lucide-react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSessionStorage } from '@/hooks/useSessionStorage';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Portal } from '@/components/shared/Portal';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
 import { UserModal } from '@/components/admin/users/UserModal';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
@@ -30,8 +34,11 @@ export function UsersPage() {
     const [typeFilter, setTypeFilter] = useSessionStorage<TypeFilter>('users_type', 'all');
     const [invitations, setInvitations] = useState<{ id: string; email: string; role: string; status: string; created_at: string }[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isInviteOpen, setIsInviteOpen] = useState(false);
+    const { session } = useAuth();
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -83,6 +90,38 @@ export function UsersPage() {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    const handleDeleteConfirm = async () => {
+        if (!userToDelete || !session?.access_token) return;
+        setIsDeleting(true);
+        setError(null);
+    
+        try {
+            const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ user_id: userToDelete.id })
+            });
+    
+            const data = await res.json();
+            
+            if (!res.ok || data.error) {
+                throw new Error(data.error || 'Failed to delete user');
+            }
+    
+            toast.success(`User ${userToDelete.full_name} deleted successfully from Zkandar AI.`);
+            
+            setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
+            setUserToDelete(null);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     const companyMap = useMemo(() => new Map(companies.map((company) => [company.id, company])), [companies]);
     const programMap = useMemo(() => new Map(programs.map((program) => [program.id, program])), [programs]);
@@ -256,6 +295,9 @@ export function UsersPage() {
                     setSelectedUser(user);
                     setIsModalOpen(true);
                 }}
+                onDelete={(user) => {
+                    setUserToDelete(user);
+                }}
             />
 
             {selectedUser && (
@@ -312,6 +354,56 @@ export function UsersPage() {
                 companies={companies}
                 programs={programs}
             />
+
+            <AnimatePresence>
+                {userToDelete && (
+                    <Portal>
+                        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => !isDeleting && setUserToDelete(null)}
+                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="relative w-full max-w-md overflow-hidden rounded-[24px] bg-[#0a0a0a] border border-white/[0.08] shadow-2xl p-6 flex flex-col items-center text-center"
+                            >
+                                <div className="h-14 w-14 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+                                    <Trash2 className="h-7 w-7 text-red-500" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-white mb-2">Delete User</h3>
+                                
+                                <p className="text-sm text-gray-300 mb-8 leading-relaxed">
+                                    Are you sure you want to permanently delete <strong className="text-white">{userToDelete.full_name}</strong>? All associated data including memberships, applications, and authentication records will be erased. This action cannot be undone.
+                                </p>
+            
+                                <div className="flex justify-center w-full space-x-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setUserToDelete(null)}
+                                        disabled={isDeleting}
+                                        className="px-6 py-2.5 text-sm font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteConfirm}
+                                        disabled={isDeleting}
+                                        className="px-6 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-500 rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-red-500/20 hover:shadow-red-500/30"
+                                    >
+                                        {isDeleting ? 'Deleting...' : 'Yes, delete user'}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </Portal>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
