@@ -1,6 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const FROM = 'Zkandar AI <admin@zkandar.com>'
+const FROM = 'Zkandar AI <admin@app.zkandar.com>'
 const BRAND_BG = '#0B0B0B'
 const CARD_BG = '#111111'
 const BORDER = '#1F2937'
