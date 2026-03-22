@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, Download, MessageSquare, Loader2, CheckCircle2, Clock } from 'lucide-react'
+import { X, Download, MessageSquare, Loader2, CheckCircle2, Clock, Link as LinkIcon, FileText } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { Portal } from '@/components/shared/Portal'
@@ -10,10 +10,10 @@ interface Submission {
     id: string
     assignment_id: string
     user_id: string
-    file_url: string | null
-    notes: string | null
+    content: { link?: string; file_url?: string; text?: string } | null
     score: number | null
-    feedback: string | null
+    admin_feedback: string | null
+    status: string
     submitted_at: string | null
 }
 
@@ -33,7 +33,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
         setIsLoading(true)
         const { data } = await supabase
             .from('submissions')
-            .select('*')
+            .select('id, assignment_id, user_id, content, score, admin_feedback, status, submitted_at')
             .eq('assignment_id', assignment.id)
         setSubmissions((data as Submission[]) ?? [])
         setIsLoading(false)
@@ -54,9 +54,9 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
         const score = draft.score.trim() ? parseInt(draft.score, 10) : null
         // @ts-expect-error - Supabase update type
         await supabase.from('submissions').update({
-            feedback: draft.feedback.trim() || null,
+            admin_feedback: draft.feedback.trim() || null,
             score: Number.isNaN(score) ? null : score,
-            graded_at: new Date().toISOString(),
+            status: 'reviewed',
         }).eq('id', sub.id)
 
         setSavingId(null)
@@ -68,7 +68,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
         setFeedbackDrafts((prev) => ({
             ...prev,
             [userId]: {
-                feedback: sub?.feedback ?? '',
+                feedback: sub?.admin_feedback ?? '',
                 score: sub?.score != null ? String(sub.score) : '',
             },
         }))
@@ -117,7 +117,9 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                     const sub = subMap.get(member.id)
                                     const draft = feedbackDrafts[member.id]
                                     const hasSubmitted = !!sub
-                                    const isReviewed = sub?.feedback || sub?.score != null
+                                    const isReviewed = sub?.status === 'reviewed'
+                                    const content = sub?.content ?? {}
+                                    const linkOrFile = content.link || content.file_url
 
                                     return (
                                         <div key={member.id} className="bg-bg-elevated border border-border rounded-xl p-4">
@@ -135,7 +137,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                                         {isReviewed ? <><CheckCircle2 className="h-3 w-3" /> Reviewed</> : <><Clock className="h-3 w-3" /> Submitted</>}
                                                     </span>
                                                 ) : (
-                                                    <span className="px-2 py-0.5 text-[10px] text-gray-500 border border-border rounded-md">Pending</span>
+                                                    <span className="px-2 py-0.5 text-[10px] text-gray-500 border border-border rounded-md">Not submitted</span>
                                                 )}
                                             </div>
 
@@ -143,20 +145,23 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                                 <div className="mt-3 space-y-2">
                                                     <p className="text-xs text-gray-500">Submitted {sub.submitted_at ? formatDateLabel(sub.submitted_at) : ''}</p>
 
-                                                    {sub.file_url && (
+                                                    {/* Submission content */}
+                                                    {linkOrFile && (
                                                         <a
-                                                            href={sub.file_url}
+                                                            href={linkOrFile}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline"
                                                         >
-                                                            <Download className="h-3.5 w-3.5" />
-                                                            Download Submission
+                                                            {content.file_url ? <Download className="h-3.5 w-3.5" /> : <LinkIcon className="h-3.5 w-3.5" />}
+                                                            {content.file_url ? 'Download Submission' : linkOrFile}
                                                         </a>
                                                     )}
-
-                                                    {sub.notes && (
-                                                        <p className="text-xs text-gray-400 bg-white/5 rounded-lg p-2">{sub.notes}</p>
+                                                    {content.text && (
+                                                        <div className="flex items-start gap-1.5">
+                                                            <FileText className="h-3.5 w-3.5 text-gray-500 shrink-0 mt-0.5" />
+                                                            <p className="text-xs text-gray-400 bg-white/5 rounded-lg p-2 flex-1">{content.text}</p>
+                                                        </div>
                                                     )}
 
                                                     {/* Feedback section */}
@@ -207,7 +212,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                                             {isReviewed && (
                                                                 <div className="text-xs text-gray-400 mb-1">
                                                                     {sub.score != null && <span className="text-lime font-medium">Score: {sub.score}</span>}
-                                                                    {sub.feedback && <p className="mt-1">{sub.feedback}</p>}
+                                                                    {sub.admin_feedback && <p className="mt-1">{sub.admin_feedback}</p>}
                                                                 </div>
                                                             )}
                                                             <button

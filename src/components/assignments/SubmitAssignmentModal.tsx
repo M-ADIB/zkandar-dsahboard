@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, FileText, Link as LinkIcon, Upload, CheckCircle2, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -48,6 +48,19 @@ export function SubmitAssignmentModal({
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const isAny = assignment?.submissionFormat === ('any' as SubmissionFormat)
+
+    // Reset form state whenever a new assignment is opened
+    useEffect(() => {
+        if (isOpen && assignment) {
+            setMode(modeForFormat(assignment.submissionFormat))
+            setTextValue('')
+            setLinkValue('')
+            setFile(null)
+            setError(null)
+            setDone(false)
+            setIsSubmitting(false)
+        }
+    }, [assignment?.id, isOpen])
 
     const reset = () => {
         setTextValue('')
