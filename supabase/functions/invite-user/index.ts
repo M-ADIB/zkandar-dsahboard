@@ -212,7 +212,8 @@ Deno.serve(async (req) => {
             })
         }
 
-        const tempPassword = crypto.randomUUID().slice(0, 12) + "A1!"
+        const randomDigits = Math.floor(10000 + Math.random() * 90000)
+        const tempPassword = `Zkandar-${randomDigits}!`
         const fullName = [first_name, last_name].filter(Boolean).join(' ').trim()
 
         // Create the user with email auto-confirmed
