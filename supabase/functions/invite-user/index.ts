@@ -140,12 +140,14 @@ function buildWelcomeEmailMasterclassMgmt(actionUrl: string, email: string, pass
 function getCorsHeaders(req: Request): Record<string, string> {
     const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN')
     const requestOrigin = req.headers.get('origin') ?? ''
-    const origin = allowedOrigin
-        ? (requestOrigin === allowedOrigin ? requestOrigin : allowedOrigin)
-        : requestOrigin || '*'
+    
+    const isLocalhost = requestOrigin.startsWith('http://localhost:') || requestOrigin.startsWith('http://127.0.0.1:')
+    const origin = isLocalhost ? requestOrigin : (allowedOrigin || '*')
+    
     return {
         'Access-Control-Allow-Origin': origin,
         'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
     }
 }
 
@@ -159,6 +161,7 @@ Deno.serve(async (req) => {
     try {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
+            console.error("Missing Auth Header!");
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -173,6 +176,7 @@ Deno.serve(async (req) => {
         const token = authHeader.replace(/^Bearer\s+/i, '')
         const { data: { user: callerAuth }, error: authError } = await adminClient.auth.getUser(token)
         if (authError || !callerAuth) {
+            console.error("Auth Error fetching user:", authError);
             return new Response(JSON.stringify({ error: `Unauthorized user fetch: ${authError?.message}` }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },

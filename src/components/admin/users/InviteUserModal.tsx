@@ -4,6 +4,7 @@ import { X, Mail, CheckCircle2, Loader2, UserPlus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Portal } from '@/components/shared/Portal';
 import type { Cohort, Company, UserRole } from '@/types/database';
+import { useAuth } from '@/context/AuthContext';
 
 interface InviteUserModalProps {
     isOpen: boolean;
@@ -35,6 +36,8 @@ export function InviteUserModal({
     const [error, setError] = useState<string | null>(null);
     const [done, setDone] = useState(false);
 
+    const { session } = useAuth();
+
     const reset = () => {
         setFirstName('');
         setLastName('');
@@ -63,7 +66,6 @@ export function InviteUserModal({
         setIsSending(true);
         setError(null);
 
-        const { data: { session } } = await supabase.auth.getSession();
         const token = session?.access_token;
 
         if (!token) {
