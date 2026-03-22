@@ -90,7 +90,13 @@ export function InviteUserModal({
 
         if (res.error) {
             const msg = res.error?.message ?? 'Failed to send invite.';
-            setError(msg);
+            setError(`HTTP Error: ${msg}`);
+            setIsSending(false);
+            return;
+        }
+
+        if (res.data && res.data.error) {
+            setError(res.data.error);
             setIsSending(false);
             return;
         }

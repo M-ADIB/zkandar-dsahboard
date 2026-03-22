@@ -161,9 +161,8 @@ Deno.serve(async (req) => {
     try {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
-            console.error("Missing Auth Header!");
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-                status: 401,
+            return new Response(JSON.stringify({ error: 'DEBUG 401: Missing Auth Header entirely in the request.' }), {
+                status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
         }
@@ -176,9 +175,8 @@ Deno.serve(async (req) => {
         const token = authHeader.replace(/^Bearer\s+/i, '')
         const { data: { user: callerAuth }, error: authError } = await adminClient.auth.getUser(token)
         if (authError || !callerAuth) {
-            console.error("Auth Error fetching user:", authError);
-            return new Response(JSON.stringify({ error: `Unauthorized user fetch: ${authError?.message}` }), {
-                status: 401,
+            return new Response(JSON.stringify({ error: `DEBUG 401: Unauthorized user fetch. Token snippet: ${token.substring(0, 10)}... Error: ${authError?.message || 'No user found'}` }), {
+                status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
         }
@@ -191,8 +189,8 @@ Deno.serve(async (req) => {
             .single()
 
         if (!callerProfile || !['owner', 'admin'].includes(callerProfile.role)) {
-            return new Response(JSON.stringify({ error: 'Forbidden: admin access required' }), {
-                status: 403,
+            return new Response(JSON.stringify({ error: `DEBUG 403: Forbidden admins only. Caller role: ${callerProfile?.role}` }), {
+                status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
         }
@@ -208,8 +206,8 @@ Deno.serve(async (req) => {
         }
 
         if (!email || !role) {
-            return new Response(JSON.stringify({ error: 'email and role are required' }), {
-                status: 400,
+            return new Response(JSON.stringify({ error: 'DEBUG 400: email and role are required' }), {
+                status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
         }
@@ -236,8 +234,8 @@ Deno.serve(async (req) => {
             const msg = inviteError.message.toLowerCase().includes('already registered')
                 ? 'This email is already registered'
                 : inviteError.message
-            return new Response(JSON.stringify({ error: msg }), {
-                status: 400,
+            return new Response(JSON.stringify({ error: `DEBUG 400 Invite Error: ${msg}` }), {
+                status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
         }
@@ -249,7 +247,10 @@ Deno.serve(async (req) => {
 
         const resendApiKey = Deno.env.get('RESEND_API_KEY')
         if (!resendApiKey) {
-            return new Response(JSON.stringify({ error: 'Email service not configured' }), { status: 500 })
+            return new Response(JSON.stringify({ error: 'DEBUG 500: Email service not configured' }), { 
+                status: 200,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            })
         }
 
         const actionUrl = `${Deno.env.get('ALLOWED_ORIGIN') ?? 'https://app.zkandar.com'}/auth`
@@ -266,11 +267,9 @@ Deno.serve(async (req) => {
                     emailContent = buildWelcomeEmailMasterclassTeam(actionUrl, email, tempPassword);
                 }
             } else {
-                // Fallback safe defaults if somehow unmatched
                 emailContent = buildWelcomeEmailSprintWorkshop(actionUrl, email, tempPassword);
             }
         } else {
-            // General fallback
             emailContent = buildWelcomeEmailSprintWorkshop(actionUrl, email, tempPassword);
         }
         
@@ -291,9 +290,10 @@ Deno.serve(async (req) => {
 
         if (!res.ok) {
             const errText = await res.text()
-            console.error('Resend error:', res.status, errText)
-            // Even if email fails, user was created, but let's notify
-            return new Response(JSON.stringify({ error: `Invite created but failed to send email: ${errText}` }), { status: 500, headers: corsHeaders })
+            return new Response(JSON.stringify({ error: `DEBUG 500: Invite created but failed to send email: ${errText}` }), { 
+                status: 200, 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            })
         }
 
         // Insert tracking record in the invitations table for admin UI display
@@ -308,13 +308,13 @@ Deno.serve(async (req) => {
         })
 
         return new Response(JSON.stringify({ success: true }), {
+            status: 200,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
     } catch (err) {
         const message = err instanceof Error ? err.message : 'Internal error'
-        console.error('invite-user error:', message)
-        return new Response(JSON.stringify({ error: message }), {
-            status: 500,
+        return new Response(JSON.stringify({ error: `DEBUG 500 Catch: ${message}` }), {
+            status: 200,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
     }
