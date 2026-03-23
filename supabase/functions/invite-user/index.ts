@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
         }
 
         const randomDigits = Math.floor(10000 + Math.random() * 90000)
-        const tempPassword = `Zkandar-${randomDigits}!`
+        const tempPassword = "Zkandar-" + randomDigits + "!"
         const fullName = [first_name, last_name].filter(Boolean).join(' ').trim()
 
         // Create the user with email auto-confirmed
@@ -254,7 +254,7 @@ Deno.serve(async (req) => {
             })
         }
 
-        const actionUrl = `${Deno.env.get('ALLOWED_ORIGIN') ?? 'https://app.zkandar.com'}/auth`
+        const actionUrl = `${Deno.env.get('ALLOWED_ORIGIN') ?? 'https://app.zkandar.com'}/login`
         
         let emailContent = { subject: "Welcome to Zkandar AI", html: "" };
         if (cohort_id) {
