@@ -5,7 +5,7 @@ import { MetricCard } from '@/components/shared/MetricCard'
 import { motion } from 'framer-motion'
 import {
     DollarSign, Building2, Mic,
-    Users, ArrowRight, TrendingUp,
+    ArrowRight, TrendingUp,
     ChevronRight, CheckCircle2, Briefcase, Receipt
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -446,9 +446,7 @@ export function OwnerDashboard() {
         return cohortTalks + leadTalks + eventTalks
     }, [cohorts, leads, eventsData])
 
-    const activeMembers = useMemo(() =>
-        users.filter((u) => u.role === 'participant' || u.role === 'executive').length
-        , [users])
+
 
     // Company health
     const companyHealth = useMemo(() => {
@@ -523,20 +521,12 @@ export function OwnerDashboard() {
                     onClick={() => navigate('/admin/programs?type=ai_talk')}
                 />
                 <MetricCard
-                    icon={Users}
-                    label="Active Members"
-                    value={String(activeMembers)}
-                    sub="executives + participants"
-                    delay={0.2}
-                    onClick={() => navigate('/admin/members')}
-                />
-                <MetricCard
                     icon={Receipt}
                     label="Upcoming Costs"
                     value={`AED ${fmt(upcomingCosts)}`}
                     sub="next recurring payment"
                     iconColor="text-red-400"
-                    delay={0.25}
+                    delay={0.2}
                     onClick={() => navigate('/admin/costs?tab=upcoming')}
                 />
             </div>
