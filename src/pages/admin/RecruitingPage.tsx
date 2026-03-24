@@ -86,18 +86,16 @@ export function RecruitingPage() {
     }, {} as Record<string, number>)
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black font-base-neue text-white tracking-widest uppercase mb-2">
-                        Recruiting
-                    </h1>
-                    <p className="text-gray-400">Review and manage job applications.</p>
+                    <h1 className="text-2xl font-bold text-white">Recruiting</h1>
+                    <p className="text-gray-400 text-sm mt-1">Review and manage job applications.</p>
                 </div>
                 <button
                     onClick={() => window.open('/apply/sales', '_blank')}
-                    className="px-5 py-3 bg-[#111] hover:bg-[#1A1A1A] text-white font-medium rounded-xl border border-white/10 transition-colors flex items-center gap-2 text-sm"
+                    className="px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition-colors flex items-center gap-2 text-sm"
                 >
                     <ExternalLink className="w-4 h-4 text-[#D0FF71]" />
                     Closer Application Form
@@ -105,7 +103,7 @@ export function RecruitingPage() {
             </div>
 
             {/* Top-Level Tabs */}
-            <div className="flex items-center gap-4 border-b border-white/10 mb-8 pb-px">
+            <div className="flex items-center gap-4 border-b border-white/10 pb-px">
                 <button
                     onClick={() => { setViewTab('active'); setStatusFilter('all') }}
                     className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
@@ -129,7 +127,7 @@ export function RecruitingPage() {
             </div>
 
             {/* Status Badges */}
-            <div className="flex flex-wrap gap-3 mb-8">
+            <div className="flex flex-wrap gap-3">
                 {(Object.keys(STATUS_CONFIG) as ApplicationStatus[])
                     .filter(s => viewTab === 'active' ? s !== 'rejected' : s === 'rejected')
                     .map(s => {
@@ -160,7 +158,7 @@ export function RecruitingPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-3 mb-6">
+            <div className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input

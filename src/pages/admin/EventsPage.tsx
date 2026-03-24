@@ -64,28 +64,26 @@ export function EventsPage() {
     }
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black font-base-neue text-white tracking-widest uppercase mb-2">
-                        Speaking Events
-                    </h1>
-                    <p className="text-gray-400">Review and manage book-Khaled requests.</p>
+                    <h1 className="text-2xl font-bold text-white">Speaking Events</h1>
+                    <p className="text-gray-400 text-sm mt-1">Review and manage book-Khaled requests.</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => window.open('/events-apply', '_blank')}
-                        className="px-6 py-3 bg-[#111] hover:bg-[#1A1A1A] text-white font-medium rounded-xl border border-white/10 transition-colors flex items-center gap-2"
+                        className="px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition-colors flex items-center gap-2 text-sm"
                     >
-                        <Plus className="w-5 h-5 text-brand-lime" />
+                        <Plus className="w-4 h-4" />
                         New Request Form
                     </button>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 mb-6 bg-[#0A0A0A] border border-white/5 rounded-xl p-1 w-fit">
+            <div className="flex gap-1 bg-[#0A0A0A] border border-white/5 rounded-xl p-1 w-fit">
                 {(['active', 'done'] as const).map(tab => (
                     <button
                         key={tab}
@@ -109,7 +107,7 @@ export function EventsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
