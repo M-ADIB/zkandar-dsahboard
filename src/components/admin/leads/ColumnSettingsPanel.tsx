@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Lock, Eye, EyeOff, Settings2, Pencil } from 'lucide-react';
 import { LeadColumn, LeadColumnOption } from '@/types/database';
+import { Portal } from '@/components/shared/Portal';
 
 // Columns that cannot be deleted, hidden, or reordered before NAME
 const PROTECTED_KEYS = new Set(['full_name', 'email', 'priority']);
@@ -170,7 +171,8 @@ export function ColumnSettingsPanel({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <Portal>
+        <div className="fixed inset-0 z-[71] flex justify-end">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
@@ -475,5 +477,6 @@ export function ColumnSettingsPanel({
                 </div>
             )}
         </div>
+        </Portal>
     );
 }

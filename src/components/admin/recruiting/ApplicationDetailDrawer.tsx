@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Mail, Phone, Globe, Clock, DollarSign, Briefcase, Video, ExternalLink } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { JobApplication, ApplicationStatus } from '@/types/database'
+import { Portal } from '@/components/shared/Portal'
 
 interface ApplicationDetailDrawerProps {
     isOpen: boolean
@@ -84,8 +85,9 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
     }
 
     return (
-        <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex justify-end">
+        <Portal>
+            <AnimatePresence>
+                <div className="fixed inset-0 z-[71] flex justify-end">
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -309,8 +311,9 @@ export function ApplicationDetailDrawer({ isOpen, onClose, application, onUpdate
                             Applied on {new Date(application.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </div>
                     </div>
-                </motion.div>
-            </div>
-        </AnimatePresence>
+                    </motion.div>
+                </div>
+            </AnimatePresence>
+        </Portal>
     )
 }

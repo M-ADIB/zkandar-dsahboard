@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabase'
 import { userProfileSchema } from '@/lib/validation'
 import toast from 'react-hot-toast'
 import { AvatarCropModal } from '@/components/admin/settings/AvatarCropModal'
+import { Portal } from '@/components/shared/Portal'
 import { ModalForm } from '@/components/admin/shared/ModalForm'
 
 type SettingsTab = 'profile' | 'team' | 'notifications' | 'security'
@@ -835,7 +836,8 @@ export function SettingsPage() {
 
             {/* Password Reset Modal */}
             {showPasswordConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                <Portal>
+                    <div className="fixed inset-0 z-[71] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -887,13 +889,15 @@ export function SettingsPage() {
                                 Update Password
                             </button>
                         </div>
-                    </motion.div>
-                </div>
+                        </motion.div>
+                    </div>
+                </Portal>
             )}
 
             {/* Delete Account Confirmation Modal */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                <Portal>
+                    <div className="fixed inset-0 z-[71] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -932,8 +936,9 @@ export function SettingsPage() {
                                 Delete Account
                             </button>
                         </div>
-                    </motion.div>
-                </div>
+                        </motion.div>
+                    </div>
+                </Portal>
             )}
         </div>
     )

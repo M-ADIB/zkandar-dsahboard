@@ -220,7 +220,7 @@ export function ChatMessageBubble({
             {/* Expanded Image Overlay — portalled to body */}
             {imageExpanded && isImage && createPortal(
                 <div
-                    className="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center cursor-pointer"
+                    className="fixed inset-0 bg-black/80 z-[71] flex items-center justify-center cursor-pointer"
                     onClick={() => setImageExpanded(false)}
                 >
                     <img

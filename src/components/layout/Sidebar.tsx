@@ -21,7 +21,6 @@ import {
     Briefcase,
     Wrench,
     ChevronDown,
-    User,
     LogOut,
     FileText,
     Film,
@@ -428,9 +427,13 @@ export function Sidebar({ userRole }: SidebarProps) {
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
                             className="w-full flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-border hover:bg-bg-card transition-colors group"
                         >
-                            <div className="h-10 w-10 rounded-lg gradient-lime flex items-center justify-center shrink-0">
-                                <User className="h-5 w-5 text-black" />
-                            </div>
+                            {user?.avatar_url ? (
+                                <img src={user.avatar_url} alt="" className="h-10 w-10 rounded-lg object-cover shrink-0" />
+                            ) : (
+                                <div className="h-10 w-10 rounded-lg gradient-lime flex items-center justify-center shrink-0">
+                                    <span className="text-sm font-bold text-black">{user?.full_name?.charAt(0) || 'U'}</span>
+                                </div>
+                            )}
                             <div className="flex-1 text-left overflow-hidden">
                                 <p className="text-sm font-semibold text-white truncate">{user?.full_name || 'User'}</p>
                                 <p className="text-[10px] text-gray-500 uppercase tracking-widest truncate">{user?.role}</p>

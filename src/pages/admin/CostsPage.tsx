@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     Plus, Pencil, Trash2, X, Check,
@@ -7,6 +7,9 @@ import {
 import { useSupabase } from '@/hooks/useSupabase'
 import toast from 'react-hot-toast'
 import { MetricCard } from '@/components/shared/MetricCard'
+import { Portal } from '@/components/shared/Portal'
+import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar'
+import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm'
 interface CostCategory {
     id: string
     name: string
@@ -103,6 +106,12 @@ export function CostsPage() {
     const [editingCost, setEditingCost] = useState<Cost | null>(null)
     const [form, setForm] = useState(emptyCost)
     const [saving, setSaving] = useState(false)
+
+    // Selection
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+    const selectAllRef = useRef<HTMLInputElement>(null)
 
     // Category CRUD state
     const [newCatName, setNewCatName] = useState('')
@@ -330,6 +339,17 @@ export function CostsPage() {
         setCosts(prev => prev.filter(c => c.id !== id))
     }
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true)
+        const { error } = await (supabase as any).from('costs').delete().in('id', selectedIds)
+        setIsBulkDeleting(false)
+        if (error) { toast.error('Failed to delete'); return }
+        toast.success(`${selectedIds.length} cost${selectedIds.length !== 1 ? 's' : ''} deleted`)
+        setCosts(prev => prev.filter(c => !selectedIds.includes(c.id)))
+        setSelectedIds([])
+        setShowBulkDeleteConfirm(false)
+    }
+
     const handleToggleActive = async (cost: Cost) => {
         const newValue = !cost.is_active
         
@@ -440,6 +460,12 @@ export function CostsPage() {
                     <p className="text-gray-400 text-sm mt-1">Track salaries, subscriptions, and contractor costs</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
                     <button
                         onClick={() => setCategoriesModalOpen(true)}
                         className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition text-sm"
@@ -550,6 +576,17 @@ export function CostsPage() {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-border text-left">
+                                <th className="w-10 px-4 py-3">
+                                    <input
+                                        ref={selectAllRef}
+                                        type="checkbox"
+                                        checked={filteredCosts.length > 0 && selectedIds.length === filteredCosts.length}
+                                        onChange={(e) => {
+                                            setSelectedIds(e.target.checked ? filteredCosts.map(c => c.id) : [])
+                                        }}
+                                        className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer"
+                                    />
+                                </th>
                                 <th className="px-5 py-3 text-gray-500 font-medium whitespace-nowrap">Active</th>
                                 <th className="px-5 py-3 text-gray-500 font-medium">Item Name</th>
                                 <th className="px-5 py-3 text-gray-500 font-medium">Category</th>
@@ -561,9 +598,17 @@ export function CostsPage() {
                         </thead>
                         <tbody>
                             {filteredCosts.length === 0 ? (
-                                <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-500">No cost entries match the filters.</td></tr>
+                                <tr><td colSpan={8} className="px-5 py-12 text-center text-gray-500">No cost entries match the filters.</td></tr>
                             ) : filteredCosts.map((cost) => (
-                                <tr key={cost.id} className={`border-b border-border last:border-0 hover:bg-white/5 transition ${!cost.is_active ? 'opacity-60' : ''}`}>
+                                <tr key={cost.id} className={`border-b border-border last:border-0 hover:bg-white/5 transition ${!cost.is_active ? 'opacity-60' : ''} ${selectedIds.includes(cost.id) ? '!bg-lime/5 shadow-[inset_2px_0_0_0_#D0FF71]' : ''}`}>
+                                    <td className="w-10 px-4 py-3">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(cost.id)}
+                                            onChange={(e) => setSelectedIds(e.target.checked ? [...selectedIds, cost.id] : selectedIds.filter(id => id !== cost.id))}
+                                            className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer"
+                                        />
+                                    </td>
                                     <td className="px-5 py-3 align-middle w-16">
                                         <button 
                                             onClick={() => handleToggleActive(cost)}
@@ -624,19 +669,20 @@ export function CostsPage() {
             </div>
 
             {/* Editing / Adding Cost Modal */}
-            <AnimatePresence>
-                {modalOpen && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => setModalOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+            <Portal>
+                <AnimatePresence>
+                    {modalOpen && (
+                        <>
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                onClick={() => setModalOpen(false)}
+                                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[71]"
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="fixed inset-0 z-[71] flex items-center justify-center p-4"
                         >
                             <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] w-full max-w-lg p-6 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
                                 <div className="flex items-center justify-between sticky top-0 bg-[#0a0a0a] z-10 pb-2 border-b border-white/[0.06]">
@@ -776,25 +822,27 @@ export function CostsPage() {
                                     </button>
                                 </div>
                             </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
+            </Portal>
 
             {/* Manage Categories Modal */}
-            <AnimatePresence>
-                {categoriesModalOpen && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => setCategoriesModalOpen(false)}
-                            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[70]"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                            className="fixed inset-0 z-[71] flex items-center justify-center p-4 pointer-events-none"
+            <Portal>
+                <AnimatePresence>
+                    {categoriesModalOpen && (
+                        <>
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                onClick={() => setCategoriesModalOpen(false)}
+                                className="fixed inset-0 bg-black/70 backdrop-blur-md z-[71]"
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                className="fixed inset-0 z-[71] flex items-center justify-center p-4 pointer-events-none"
                         >
                             <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] w-full max-w-md p-6 space-y-5 pointer-events-auto">
                                 <div className="flex items-center justify-between">
@@ -879,10 +927,20 @@ export function CostsPage() {
                                     Close
                                 </button>
                             </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
+            </Portal>
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
+                itemLabel="cost"
+            />
         </div>
     )
 }

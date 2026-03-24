@@ -4,6 +4,7 @@ import { X, Calendar, MapPin, Users, Globe, Clock, Activity, CheckCircle2, Utens
 import { supabase } from '@/lib/supabase'
 import { EventRequest } from '@/types/database'
 import { EPKGenerationDialog, EPKFormData } from './EPKGenerationDialog'
+import { Portal } from '@/components/shared/Portal'
 
 interface EventDetailDrawerProps {
     isOpen: boolean
@@ -184,8 +185,9 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
 
     return (
         <>
-            <AnimatePresence>
-                <div className="fixed inset-0 z-50 flex justify-end">
+            <Portal>
+                <AnimatePresence>
+                    <div className="fixed inset-0 z-[71] flex justify-end">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -472,8 +474,9 @@ export function EventDetailDrawer({ isOpen, onClose, event, onUpdate }: EventDet
                             </div>
                         </div>
                     </motion.div>
-                </div>
-            </AnimatePresence>
+                    </div>
+                </AnimatePresence>
+            </Portal>
 
             {/* EPK dialog rendered via portal — not inside the animated drawer panel */}
             {showEPKDialog && (

@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Filter, ChevronRight, Users, ExternalLink } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { JobApplication, ApplicationStatus } from '@/types/database'
 import { ApplicationDetailDrawer } from '@/components/admin/recruiting/ApplicationDetailDrawer'
+import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar'
+import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm'
+import { toast } from 'react-hot-toast'
 
 const STATUS_CONFIG: Record<ApplicationStatus, { bg: string; text: string; label: string }> = {
     new: { bg: 'bg-blue-500/10', text: 'text-blue-400', label: 'New' },
@@ -35,6 +38,10 @@ export function RecruitingPage() {
     const [selectedApp, setSelectedApp] = useState<JobApplication | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [viewTab, setViewTab] = useState<'active' | 'archived'>('active')
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+    const selectAllRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         fetchApplications()
@@ -85,6 +92,21 @@ export function RecruitingPage() {
         return acc
     }, {} as Record<string, number>)
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true)
+        const { error } = await (supabase.from('job_applications') as any).delete().in('id', selectedIds)
+        setIsBulkDeleting(false)
+        if (error) { console.error(error); return }
+        toast.success(`${selectedIds.length} application${selectedIds.length !== 1 ? 's' : ''} deleted`)
+        setApplications(prev => prev.filter(a => !selectedIds.includes(a.id)))
+        setSelectedIds([])
+        setShowBulkDeleteConfirm(false)
+    }
+
+    const allSelected = filtered.length > 0 && selectedIds.length === filtered.length
+    const someSelected = selectedIds.length > 0 && !allSelected
+    if (selectAllRef.current) selectAllRef.current.indeterminate = someSelected
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -93,13 +115,21 @@ export function RecruitingPage() {
                     <h1 className="text-2xl font-bold text-white">Recruiting</h1>
                     <p className="text-gray-400 text-sm mt-1">Review and manage job applications.</p>
                 </div>
-                <button
-                    onClick={() => window.open('/apply/sales', '_blank')}
-                    className="px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition-colors flex items-center gap-2 text-sm"
-                >
-                    <ExternalLink className="w-4 h-4 text-[#D0FF71]" />
-                    Closer Application Form
-                </button>
+                <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
+                    <button
+                        onClick={() => window.open('/apply/sales', '_blank')}
+                        className="px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition-colors flex items-center gap-2 text-sm"
+                    >
+                        <ExternalLink className="w-4 h-4 text-[#D0FF71]" />
+                        Closer Application Form
+                    </button>
+                </div>
             </div>
 
             {/* Top-Level Tabs */}
@@ -212,6 +242,15 @@ export function RecruitingPage() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/5 bg-[#0A0A0A]">
+                                <th className="w-10 px-4 py-3">
+                                    <input
+                                        ref={selectAllRef}
+                                        type="checkbox"
+                                        checked={allSelected}
+                                        onChange={(e) => setSelectedIds(e.target.checked ? filtered.map(a => a.id) : [])}
+                                        className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer"
+                                    />
+                                </th>
                                 <th className="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Applicant</th>
                                 <th className="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Position</th>
                                 <th className="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Experience</th>
@@ -226,6 +265,7 @@ export function RecruitingPage() {
                             {loading ? (
                                 Array(5).fill(0).map((_, i) => (
                                     <tr key={i} className="animate-pulse">
+                                        <td className="px-4 py-3"></td>
                                         <td className="p-4"><div className="h-4 bg-white/5 rounded w-32 mb-1"></div><div className="h-3 bg-white/5 rounded w-44"></div></td>
                                         <td className="p-4"><div className="h-4 bg-white/5 rounded w-28"></div></td>
                                         <td className="p-4"><div className="h-4 bg-white/5 rounded w-16"></div></td>
@@ -238,7 +278,7 @@ export function RecruitingPage() {
                                 ))
                             ) : filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="p-12 text-center">
+                                    <td colSpan={9} className="p-12 text-center">
                                         <Users className="w-8 h-8 text-gray-700 mx-auto mb-3" />
                                         <p className="text-gray-500 text-sm">No applications found.</p>
                                     </td>
@@ -249,9 +289,17 @@ export function RecruitingPage() {
                                     return (
                                         <tr
                                             key={app.id}
-                                            className="hover:bg-white/[0.02] transition-colors cursor-pointer group"
+                                            className={`hover:bg-white/[0.02] transition-colors cursor-pointer group ${selectedIds.includes(app.id) ? '!bg-lime/5 shadow-[inset_2px_0_0_0_#D0FF71]' : ''}`}
                                             onClick={() => { setSelectedApp(app); setIsDrawerOpen(true) }}
                                         >
+                                            <td className="w-10 px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(app.id)}
+                                                    onChange={(e) => setSelectedIds(e.target.checked ? [...selectedIds, app.id] : selectedIds.filter(id => id !== app.id))}
+                                                    className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="p-4">
                                                 <div className="font-medium text-white">{app.full_name}</div>
                                                 <div className="text-sm text-gray-400 mt-0.5">{app.email}</div>
@@ -303,6 +351,15 @@ export function RecruitingPage() {
                 onClose={() => setIsDrawerOpen(false)}
                 application={selectedApp}
                 onUpdate={handleUpdate}
+            />
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
+                itemLabel="application"
             />
         </div>
     )

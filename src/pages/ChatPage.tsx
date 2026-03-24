@@ -169,7 +169,7 @@ export function ChatPage() {
         return () => { ignore = true }
     }, [user?.id, selectedChannel?.id])
 
-    // Real-time subscription — fixed filter includes channel_type
+    // Real-time subscription — single-column filter + client-side channel_type guard
     useEffect(() => {
         if (!user || !selectedChannel) return
 
@@ -177,11 +177,12 @@ export function ChatPage() {
         const companyId = selectedChannel.companyId || null
         const cohortId = selectedChannel.cohortId || null
 
+        // Supabase realtime only supports single-column filters
         let filter: string
         if (channelType === 'sprint' && cohortId) {
-            filter = `channel_type=eq.${channelType}&cohort_id=eq.${cohortId}`
+            filter = `cohort_id=eq.${cohortId}`
         } else if (companyId) {
-            filter = `channel_type=eq.${channelType}&company_id=eq.${companyId}`
+            filter = `company_id=eq.${companyId}`
         } else {
             return
         }
@@ -205,6 +206,9 @@ export function ChatPage() {
 
                     const row = payload.new as any
                     if (!row) return
+
+                    // Client-side channel_type guard — reject messages for other channel types
+                    if (row.channel_type !== channelType) return
 
                     const senderInfo = await resolveSender(row.user_id, {
                         id: user.id,
