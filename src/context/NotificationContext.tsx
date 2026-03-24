@@ -59,6 +59,14 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         fetchNotifications()
     }, [authLoading, user?.id])
 
+    // Request browser notification permission on first load
+    useEffect(() => {
+        if (authLoading || !user) return
+        if ('Notification' in window && window.Notification.permission === 'default') {
+            window.Notification.requestPermission()
+        }
+    }, [authLoading, user?.id])
+
     useEffect(() => {
         if (authLoading || !user) return
 
@@ -79,6 +87,20 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
                             if (prev.some((n) => n.id === newNotification.id)) return prev
                             return sortByCreatedAt([newNotification, ...prev])
                         })
+
+                        // Fire browser push notification if permission granted
+                        if ('Notification' in window && window.Notification.permission === 'granted') {
+                            try {
+                                new window.Notification(newNotification.title || 'Zkandar AI', {
+                                    body: newNotification.message || '',
+                                    icon: '/favicon.png',
+                                    tag: newNotification.id, // prevents duplicate browser notifications
+                                })
+                            } catch {
+                                // Silent fail — some browsers don't allow Notification from foreground
+                            }
+                        }
+
                         return
                     }
 

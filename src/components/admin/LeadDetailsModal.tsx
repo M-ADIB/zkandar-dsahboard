@@ -117,7 +117,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={onClose}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[71]"
                         />
 
                         {/* Modal Panel */}
@@ -126,7 +126,7 @@ export function LeadDetailsModal({ isOpen, onClose, lead, onSave, onDelete }: Le
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-[#0a0a0a] shadow-2xl z-[60] flex flex-col border-l border-white/[0.08] rounded-l-[24px]"
+                            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-[#0a0a0a] shadow-2xl z-[71] flex flex-col border-l border-white/[0.08] rounded-l-[24px]"
                         >
                             {/* Header */}
                             <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-[#0a0a0a] bg-opacity-80 backdrop-blur-md rounded-tl-[24px]">

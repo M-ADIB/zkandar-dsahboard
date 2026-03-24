@@ -4,7 +4,7 @@ import { Plus, GraduationCap, Calendar, FileText, Wrench } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
-import { ModalForm } from '@/components/admin/shared/ModalForm';
+
 import { ProgramModal } from '@/components/admin/programs/ProgramModal';
 import { SessionModal } from '@/components/admin/programs/SessionModal';
 import { AssignmentModal } from '@/components/admin/assignments/AssignmentModal';
@@ -38,75 +38,9 @@ const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
 const filterBoxClass = 'bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-4 flex flex-wrap gap-4';
 const selectClass = 'w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all';
 
-// ─── Shared action bar ────────────────────────────────────────────────────────
-interface ActionBarProps {
-    selectedCount: number;
-    onEdit: () => void;
-    onDelete: () => void;
-}
-function SelectionActionBar({ selectedCount, onEdit, onDelete }: ActionBarProps) {
-    return (
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-            <span className="text-sm text-gray-400 font-medium">{selectedCount} selected</span>
-            <div className="h-4 w-px bg-border" />
-            {selectedCount === 1 && (
-                <button
-                    onClick={onEdit}
-                    className="text-sm text-gray-300 hover:text-white transition-colors font-medium"
-                >
-                    Edit
-                </button>
-            )}
-            <button
-                onClick={onDelete}
-                className="text-sm text-red-400 hover:text-red-300 transition-colors font-medium"
-            >
-                Delete
-            </button>
-        </div>
-    );
-}
+import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar';
+import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm';
 
-// ─── Shared bulk-delete confirm modal ─────────────────────────────────────────
-interface BulkDeleteConfirmProps {
-    isOpen: boolean;
-    count: number;
-    isLoading: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-}
-function BulkDeleteConfirm({ isOpen, count, isLoading, onClose, onConfirm }: BulkDeleteConfirmProps) {
-    return (
-        <ModalForm
-            isOpen={isOpen}
-            onClose={onClose}
-            title="Confirm Delete"
-            showActions={false}
-        >
-            <p className="text-gray-300 text-sm">
-                Delete <span className="text-white font-semibold">{count}</span> item{count !== 1 ? 's' : ''}? This cannot be undone.
-            </p>
-            <div className="flex justify-end gap-3 mt-6">
-                <button
-                    type="button"
-                    onClick={onClose}
-                    disabled={isLoading}
-                    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
-                >
-                    Cancel
-                </button>
-                <button
-                    type="button"
-                    onClick={onConfirm}
-                    disabled={isLoading}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50"
-                >
-                    {isLoading ? 'Deleting…' : 'Delete'}
-                </button>
-            </div>
-        </ModalForm>
-    );
-}
 
 // ─── Programs Tab ────────────────────────────────────────────────────────────
 function ProgramsTab() {

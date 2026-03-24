@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ArrowLeft, Lock, Users, Zap } from 'lucide-react'
 import { useChatChannels, ChatChannel } from '@/hooks/useChatChannels'
+import { useChatMembers } from '@/hooks/useChatMembers'
 import { ChatSidebar } from '@/components/chat/ChatSidebar'
 import { ChatInput } from '@/components/chat/ChatInput'
 import { useAuth } from '@/context/AuthContext'
@@ -42,6 +43,7 @@ export function ChatPage() {
     const [messagesError, setMessagesError] = useState<string | null>(null)
     const senderCache = useRef(new Map<string, { name: string; isAdmin: boolean }>())
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const { members } = useChatMembers(selectedChannel)
 
     // Auto-select first channel when channels load (desktop only)
     useEffect(() => {
@@ -246,13 +248,14 @@ export function ChatPage() {
         }
     }, [user?.id, user?.role, selectedChannel?.id, resolveSender])
 
-    // Optimistic send handler
+    // Optimistic send handler + notification insertion for @mentions
     const handleOptimisticSend = useCallback((msg: {
         id: string
         message: string
         messageType: 'text' | 'file'
         fileUrl: string | null
         fileName?: string
+        mentionedUserIds?: string[]
     }) => {
         if (!user) return
 
@@ -271,7 +274,29 @@ export function ChatPage() {
         }
 
         setMessages(prev => [...prev, optimistic])
-    }, [user])
+
+        // Insert in-app notifications for each mentioned user
+        if (msg.mentionedUserIds && msg.mentionedUserIds.length > 0 && selectedChannel) {
+            const channelName = selectedChannel.parentName + ' · ' + selectedChannel.name
+            const notifications = msg.mentionedUserIds.map(mentionedUserId => ({
+                user_id: mentionedUserId,
+                title: `Mentioned in ${channelName}`,
+                message: `${user.full_name} mentioned you: "${msg.message.slice(0, 80)}${msg.message.length > 80 ? '…' : ''}"`,
+                type: 'info',
+                read: false,
+                action_url: '/chat',
+            }))
+
+            // Fire and forget — don't block on this
+            supabase
+                .from('notifications')
+                // @ts-expect-error - supabase insert type inference
+                .insert(notifications)
+                .then(({ error }) => {
+                    if (error) console.error('Failed to insert mention notifications:', error)
+                })
+        }
+    }, [user, selectedChannel])
 
     const handleSelectChannel = useCallback((channel: ChatChannel) => {
         setSelectedChannel(channel)
@@ -368,7 +393,7 @@ export function ChatPage() {
                                         const { isSending, ...bubbleProps } = msg
                                         return (
                                             <div key={msg.id} className="animate-fade-in">
-                                                <ChatMessageBubbleInline {...bubbleProps} isSending={isSending} />
+                                                <ChatMessageBubbleInline {...bubbleProps} isSending={isSending} currentUserName={user?.full_name} />
                                             </div>
                                         )
                                     })}
@@ -380,6 +405,7 @@ export function ChatPage() {
                         {/* Input */}
                         <ChatInput
                             channel={selectedChannel}
+                            members={members}
                             onOptimisticSend={handleOptimisticSend}
                         />
                     </>

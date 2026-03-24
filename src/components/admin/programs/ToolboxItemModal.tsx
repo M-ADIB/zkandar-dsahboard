@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ExternalLink } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
+import { Portal } from '@/components/shared/Portal'
 import type { ToolboxItem, ToolboxImportance, ToolboxToolType, ToolboxSubscriptionType } from '@/types/database'
 
 interface ToolboxItemModalProps {
@@ -101,9 +102,10 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
     }
 
     return (
-        <AnimatePresence>
-            {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <Portal>
+            <AnimatePresence>
+                {isOpen && (
+                    <div className="fixed inset-0 z-[71] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -219,9 +221,10 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                 </button>
                             </div>
                         </form>
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        </Portal>
     )
 }

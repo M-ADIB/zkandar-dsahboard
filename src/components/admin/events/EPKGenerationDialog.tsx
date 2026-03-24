@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, Image as ImageIcon, Link as LinkIcon } from 'lucide-react'
+import { Portal } from '@/components/shared/Portal'
 import { supabase } from '@/lib/supabase'
 import { EventRequest } from '@/types/database'
 import { EPK_DEFAULTS, generateEPKSlug } from '@/constants/epk'
@@ -133,10 +133,11 @@ export function EPKGenerationDialog({
     const inputClass = 'w-full bg-[#1A1A1A] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D0FF71]/50 transition-colors'
     const labelClass = 'block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'
 
-    return createPortal(
-        <AnimatePresence>
-            {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    return (
+        <Portal>
+            <AnimatePresence>
+                {isOpen && (
+                    <div className="fixed inset-0 z-[71] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -379,10 +380,10 @@ export function EPKGenerationDialog({
                                 </button>
                             </div>
                         </div>
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>,
-        document.body
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        </Portal>
     )
 }

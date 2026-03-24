@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Users, Building2, Mail } from 'lucide-react';
+import { Portal } from '@/components/shared/Portal';
 
 export interface RespondentData {
     id: string;
@@ -36,8 +37,9 @@ export function RespondentListModal({
     if (!isOpen) return null;
 
     return (
-        <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <Portal>
+            <AnimatePresence>
+                <div className="fixed inset-0 z-[71] flex items-center justify-center p-4">
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -118,7 +120,8 @@ export function RespondentListModal({
                         )}
                     </div>
                 </motion.div>
-            </div>
-        </AnimatePresence>
+                </div>
+            </AnimatePresence>
+        </Portal>
     );
 }

@@ -14,6 +14,51 @@ interface ChatMessageBubbleProps {
     timestamp: string
     isPinned: boolean
     isSending?: boolean
+    currentUserName?: string
+}
+
+/** Parse @Name mentions in message text and return JSX with highlights */
+function renderMessageWithMentions(text: string, isOwnBubble: boolean, currentUserName?: string) {
+    // Match @Word Word patterns (1-3 words after @)
+    const mentionRegex = /@([A-Za-z\u00C0-\u024F]+(?:\s[A-Za-z\u00C0-\u024F]+){0,2})/g
+    const parts: (string | JSX.Element)[] = []
+    let lastIndex = 0
+    let match: RegExpExecArray | null
+
+    while ((match = mentionRegex.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+            parts.push(text.slice(lastIndex, match.index))
+        }
+
+        const mentionedName = match[1]
+        const isCurrentUser = currentUserName && mentionedName.toLowerCase() === currentUserName.toLowerCase()
+
+        parts.push(
+            <span
+                key={match.index}
+                className={`font-semibold ${
+                    isOwnBubble
+                        ? isCurrentUser
+                            ? 'bg-black/20 px-1 rounded text-black'
+                            : 'text-black/80'
+                        : isCurrentUser
+                            ? 'bg-lime/20 px-1 rounded text-lime'
+                            : 'text-lime'
+                }`}
+            >
+                @{mentionedName}
+            </span>
+        )
+
+        lastIndex = match.index + match[0].length
+    }
+
+    if (lastIndex < text.length) {
+        parts.push(text.slice(lastIndex))
+    }
+
+    return parts.length > 0 ? parts : text
 }
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'avif']
@@ -40,6 +85,7 @@ function getFileExtension(url: string): string {
 
 export function ChatMessageBubble({
     senderName,
+    currentUserName,
     senderInitial,
     isAdmin,
     isOwn,
@@ -166,7 +212,7 @@ export function ChatMessageBubble({
                                 : 'bg-white/5 rounded-bl-md'
                             }`}
                     >
-                        {message}
+                        {renderMessageWithMentions(message, isOwn, currentUserName)}
                     </div>
                 )}
             </div>
