@@ -121,7 +121,7 @@ const eventTypeColors: Record<string, { bg: string; text: string; dot: string; l
 }
 
 // ─── Mini Calendar Widget ─────────────────────────────────────────────────────
-function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], eventsData: EventRequest[], navigate: (path: string) => void }) {
+function CalendarWidget({ cohorts, eventsData, sessions, navigate }: { cohorts: Cohort[], eventsData: EventRequest[], sessions: Session[], navigate: (path: string) => void }) {
     const [currentDate, setCurrentDate] = useState(new Date())
 
     const monthStart = startOfMonth(currentDate)
@@ -129,29 +129,46 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
     const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
     const startPadding = getDay(monthStart)
 
-    // Map events from cohorts and approved event requests
+    // Build a cohort lookup for names
+    const cohortMap = useMemo(() => new Map(cohorts.map(c => [c.id, c])), [cohorts])
+
+    // Map events from cohorts, sessions, and approved event requests
     const events = useMemo(() => {
-        const cohortEvents = cohorts
-            .filter(c => c.start_date)
-            .map(c => ({
-                date: c.start_date!,
-                name: c.name,
-                type: (c as any).offering_type || 'master_class',
-                status: c.status,
-                cohortId: c.id,
-                eventId: null as string | null,
-            }))
+        // Individual sessions (these have exact times)
+        const sessionEvents = sessions
+            .filter(s => s.scheduled_date)
+            .map(s => {
+                const cohort = cohortMap.get(s.cohort_id)
+                const dateStr = typeof s.scheduled_date === 'string'
+                    ? s.scheduled_date.split('T')[0]
+                    : String(s.scheduled_date)
+                // Extract time if available
+                const timeStr = typeof s.scheduled_date === 'string' && s.scheduled_date.includes('T')
+                    ? s.scheduled_date.split('T')[1]?.substring(0, 5) || null
+                    : null
+                return {
+                    date: dateStr,
+                    time: timeStr,
+                    name: cohort ? `${cohort.name} - Session ${s.session_number}` : `Session ${s.session_number}`,
+                    type: (cohort as any)?.offering_type || 'master_class',
+                    status: s.status,
+                    cohortId: s.cohort_id,
+                    eventId: null as string | null,
+                }
+            })
 
         const requestEvents = eventsData
             .filter(e => e.proposed_date)
             .map(e => {
-                // Safely handle timestamp strings by extracting the YYYY-MM-DD part
                 const dateString = typeof e.proposed_date === 'string' 
                     ? e.proposed_date.split('T')[0] 
-                    : String(e.proposed_date);
-                    
+                    : String(e.proposed_date)
+                const timeStr = typeof e.proposed_date === 'string' && e.proposed_date.includes('T')
+                    ? e.proposed_date.split('T')[1]?.substring(0, 5) || null
+                    : null
                 return {
                     date: dateString,
+                    time: timeStr,
                     name: e.company ? `${e.company} Talk` : 'AI Talk',
                     type: 'ai_talk',
                     status: e.status,
@@ -160,16 +177,37 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                 }
             })
 
-        return [...cohortEvents, ...requestEvents]
-    }, [cohorts, eventsData])
+        return [...sessionEvents, ...requestEvents]
+    }, [cohorts, eventsData, sessions, cohortMap])
 
     const getEventsForDay = (day: Date) => {
         const dayStr = format(day, 'yyyy-MM-dd')
         return events.filter(e => e.date === dayStr)
     }
 
+    // Get dominant event type color for a day (for background highlight)
+    const getDayHighlight = (dayEvents: typeof events) => {
+        if (dayEvents.length === 0) return null
+        // Use the first event's type for the background color
+        const type = dayEvents[0].type
+        const colors = eventTypeColors[type] || eventTypeColors.master_class
+        return colors
+    }
+
     const prevMonth = () => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
     const nextMonth = () => setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
+
+    const handleEventClick = (e: typeof events[0]) => {
+        if (e.type === 'ai_talk' && e.eventId) {
+            navigate(`/admin/events?highlight=${e.eventId}`)
+        } else if (e.type === 'ai_talk') {
+            navigate('/admin/events')
+        } else if (e.cohortId) {
+            navigate(`/admin/programs/${e.cohortId}`)
+        } else {
+            navigate('/admin/programs')
+        }
+    }
 
     return (
         <div className="space-y-4">
@@ -197,17 +235,11 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                     const today = isToday(day)
                     const sameMonth = isSameMonth(day, currentDate)
                     const hasEvents = dayEvents.length > 0
+                    const highlight = getDayHighlight(dayEvents)
 
                     const handleDayClick = () => {
                         if (!hasEvents) return
-                        const first = dayEvents[0]
-                        if (first.type === 'ai_talk') {
-                            navigate('/admin/events')
-                        } else if (first.cohortId) {
-                            navigate(`/admin/programs?cohort=${first.cohortId}`)
-                        } else {
-                            navigate('/admin/programs')
-                        }
+                        handleEventClick(dayEvents[0])
                     }
 
                     return (
@@ -215,19 +247,27 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
                             key={day.toISOString()}
                             onClick={handleDayClick}
                             disabled={!hasEvents}
-                            className={`relative h-9 flex items-center justify-center rounded-lg text-xs transition ${
-                                today ? 'bg-lime/20 text-lime font-bold' :
-                                sameMonth ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700'
-                            } ${hasEvents ? 'cursor-pointer hover:ring-1 hover:ring-white/20' : 'cursor-default'}`}
+                            title={hasEvents ? dayEvents.map(e => e.name).join(', ') : undefined}
+                            className={`relative h-9 flex items-center justify-center rounded-lg text-xs font-medium transition-all ${
+                                today && hasEvents
+                                    ? 'ring-2 ring-lime text-lime font-bold'
+                                    : today
+                                    ? 'bg-lime/20 text-lime font-bold'
+                                    : hasEvents && highlight
+                                    ? `${highlight.bg} ${highlight.text} font-semibold ring-1 ring-inset`
+                                    : sameMonth
+                                    ? 'text-gray-300 hover:bg-white/5'
+                                    : 'text-gray-700'
+                            } ${hasEvents ? 'cursor-pointer hover:scale-110 hover:shadow-lg' : 'cursor-default'}`}
+                            style={hasEvents && highlight ? { 
+                                boxShadow: `0 0 8px ${highlight.dot.includes('lime') ? 'rgba(208,255,113,0.15)' : highlight.dot.includes('orange') ? 'rgba(249,115,22,0.15)' : 'rgba(168,85,247,0.15)'}` 
+                            } : undefined}
                         >
                             {format(day, 'd')}
-                            {hasEvents && (
-                                <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
-                                    {dayEvents.slice(0, 3).map((e, i) => {
-                                        const colors = eventTypeColors[e.type] || eventTypeColors.master_class
-                                        return <span key={i} className={`h-[5px] w-[5px] rounded-full ${colors.dot}`} />
-                                    })}
-                                </div>
+                            {dayEvents.length > 1 && (
+                                <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-white/20 text-[8px] text-white flex items-center justify-center font-bold">
+                                    {dayEvents.length}
+                                </span>
                             )}
                         </button>
                     )
@@ -245,27 +285,37 @@ function CalendarWidget({ cohorts, eventsData, navigate }: { cohorts: Cohort[], 
             </div>
 
             {/* Upcoming events list */}
-            <div className="space-y-2 pt-2 border-t border-border">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Upcoming</p>
+            <div className="space-y-1 pt-2 border-t border-border">
+                <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-2">Upcoming</p>
                 {events.length === 0 ? (
                     <p className="text-xs text-gray-600">No events scheduled</p>
                 ) : (
                     events
                         .filter(e => e.date >= format(new Date(), 'yyyy-MM-dd'))
                         .sort((a, b) => a.date.localeCompare(b.date))
-                        .slice(0, 4)
+                        .slice(0, 5)
                         .map((e, i) => {
                             const colors = eventTypeColors[e.type] || eventTypeColors.master_class
                             return (
-                                <div key={i} className="flex items-center gap-2.5 py-1.5">
-                                    <span className={`h-2 w-2 rounded-full ${colors.dot} shrink-0`} />
+                                <button
+                                    key={i}
+                                    onClick={() => handleEventClick(e)}
+                                    className="w-full flex items-center gap-2.5 py-2 px-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors group text-left"
+                                >
+                                    <span className={`h-2 w-2 rounded-full ${colors.dot} shrink-0 group-hover:scale-125 transition-transform`} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-white truncate">{e.name}</p>
+                                        <p className="text-xs text-white truncate group-hover:text-lime transition-colors">{e.name}</p>
+                                        {e.time && (
+                                            <p className="text-[10px] text-gray-500 mt-0.5">{e.time}</p>
+                                        )}
                                     </div>
-                                    <span className="text-[10px] text-gray-500 shrink-0">
-                                        {format(parseISO(e.date), 'MMM d')}
-                                    </span>
-                                </div>
+                                    <div className="text-right shrink-0">
+                                        <span className="text-[10px] text-gray-500">
+                                            {format(parseISO(e.date), 'MMM d')}
+                                        </span>
+                                    </div>
+                                    <ChevronRight className="h-3 w-3 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                                </button>
                             )
                         })
                 )}
@@ -566,7 +616,7 @@ export function OwnerDashboard() {
                             Programs <ArrowRight className="h-3 w-3" />
                         </button>
                     </div>
-                    <CalendarWidget cohorts={cohorts} eventsData={eventsData} navigate={navigate} />
+                    <CalendarWidget cohorts={cohorts} eventsData={eventsData} sessions={sessions} navigate={navigate} />
                 </motion.div>
             </div>
 
