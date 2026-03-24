@@ -34,6 +34,7 @@ export function RecruitingPage() {
     const [timezoneFilter, setTimezoneFilter] = useState<string>('all')
     const [selectedApp, setSelectedApp] = useState<JobApplication | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [viewTab, setViewTab] = useState<'active' | 'archived'>('active')
 
     useEffect(() => {
         fetchApplications()
@@ -60,7 +61,12 @@ export function RecruitingPage() {
         if (selectedApp?.id === updated.id) setSelectedApp(updated)
     }
 
-    const filtered = applications.filter(app => {
+    const visibleApps = applications.filter(app => {
+        if (viewTab === 'active') return app.status !== 'rejected'
+        return app.status === 'rejected'
+    })
+
+    const filtered = visibleApps.filter(app => {
         const q = searchTerm.toLowerCase()
         const matchSearch = !q
             || app.full_name.toLowerCase().includes(q)
@@ -74,7 +80,7 @@ export function RecruitingPage() {
     })
 
     // Counts per status for header badges
-    const counts = applications.reduce((acc, a) => {
+    const counts = visibleApps.reduce((acc, a) => {
         acc[a.status] = (acc[a.status] || 0) + 1
         return acc
     }, {} as Record<string, number>)
@@ -82,7 +88,7 @@ export function RecruitingPage() {
     return (
         <div className="p-8 max-w-[1600px] mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-3xl font-black font-base-neue text-white tracking-widest uppercase mb-2">
                         Recruiting
@@ -98,9 +104,35 @@ export function RecruitingPage() {
                 </button>
             </div>
 
+            {/* Top-Level Tabs */}
+            <div className="flex items-center gap-4 border-b border-white/10 mb-8 pb-px">
+                <button
+                    onClick={() => { setViewTab('active'); setStatusFilter('all') }}
+                    className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+                        viewTab === 'active' 
+                        ? 'border-[#D0FF71] text-white' 
+                        : 'border-transparent text-gray-500 hover:text-gray-300'
+                    }`}
+                >
+                    Active Candidates
+                </button>
+                <button
+                    onClick={() => { setViewTab('archived'); setStatusFilter('all') }}
+                    className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${
+                        viewTab === 'archived' 
+                        ? 'border-red-500 text-red-400' 
+                        : 'border-transparent text-gray-500 hover:text-gray-300'
+                    }`}
+                >
+                    Archive / Rejected
+                </button>
+            </div>
+
             {/* Status Badges */}
             <div className="flex flex-wrap gap-3 mb-8">
-                {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map(s => {
+                {(Object.keys(STATUS_CONFIG) as ApplicationStatus[])
+                    .filter(s => viewTab === 'active' ? s !== 'rejected' : s === 'rejected')
+                    .map(s => {
                     const cfg = STATUS_CONFIG[s]
                     const count = counts[s] || 0
                     return (
@@ -123,7 +155,7 @@ export function RecruitingPage() {
                     )
                 })}
                 <span className="ml-auto text-xs text-gray-500 self-center">
-                    {filtered.length} / {applications.length} applications
+                    {filtered.length} / {visibleApps.length} applications
                 </span>
             </div>
 
