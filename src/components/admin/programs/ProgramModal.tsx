@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
-import { X, Check } from 'lucide-react';
+import { X, Check, UserPlus, Mail, Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import type { Cohort, CohortStatus, OfferingType, User } from '@/types/database';
 
 interface ProgramModalProps {
@@ -22,6 +23,12 @@ type ProgramFormData = {
 
 type Company = { id: string; name: string; cohort_id: string | null };
 
+type PendingInvite = {
+    firstName: string;
+    lastName: string;
+    email: string;
+};
+
 const defaultFormData: ProgramFormData = {
     name: '',
     offering_type: 'master_class',
@@ -37,6 +44,7 @@ const inputClass = 'w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] 
 // always starts with fresh state — no effects needed to reset the form.
 export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramModalProps) {
     const supabase = useSupabase();
+    const { session: authSession } = useAuth();
 
     const [formData, setFormData] = useState<ProgramFormData>(
         program
@@ -59,6 +67,14 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
     const [allUsers, setAllUsers] = useState<Pick<User, 'id' | 'full_name' | 'email'>[]>([]);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [userSearch, setUserSearch] = useState('');
+
+    // Inline invite state
+    const [showInviteForm, setShowInviteForm] = useState(false);
+    const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+    const [inviteFirstName, setInviteFirstName] = useState('');
+    const [inviteLastName, setInviteLastName] = useState('');
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteError, setInviteError] = useState<string | null>(null);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -111,6 +127,66 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             u.email.toLowerCase().includes(userSearch.toLowerCase())
     );
 
+    const handleAddInvite = () => {
+        setInviteError(null);
+        if (!inviteEmail.trim()) {
+            setInviteError('Email is required.');
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(inviteEmail.trim())) {
+            setInviteError('Please enter a valid email address.');
+            return;
+        }
+        // Prevent duplicate invites
+        if (pendingInvites.some((inv) => inv.email.toLowerCase() === inviteEmail.trim().toLowerCase())) {
+            setInviteError('This person has already been added to the invite list.');
+            return;
+        }
+        setPendingInvites((prev) => [
+            ...prev,
+            { firstName: inviteFirstName.trim(), lastName: inviteLastName.trim(), email: inviteEmail.trim().toLowerCase() },
+        ]);
+        setInviteFirstName('');
+        setInviteLastName('');
+        setInviteEmail('');
+        setShowInviteForm(false);
+    };
+
+    const removePendingInvite = (email: string) => {
+        setPendingInvites((prev) => prev.filter((inv) => inv.email !== email));
+    };
+
+    /**
+     * Auto-create 3 sessions for a new Sprint Workshop.
+     * Session dates start at start_date, incrementing by 1 day each.
+     */
+    const createSprintSessions = async (cohortId: string, startDate: string) => {
+        // Parse as local date (YYYY-MM-DD) to avoid UTC offset issues
+        const [year, month, day] = startDate.split('-').map(Number);
+
+        const sessions = [0, 1, 2].map((offset) => {
+            const d = new Date(year, month - 1, day + offset);
+            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            return {
+                cohort_id: cohortId,
+                session_number: offset + 1,
+                title: `Session ${offset + 1}`,
+                // sessions table uses both session_date (NOT NULL) and scheduled_date
+                session_date: dateStr,
+                scheduled_date: dateStr,
+                status: 'scheduled',
+                materials: [],
+            };
+        });
+
+        // @ts-expect-error - Supabase insert type inference
+        const { error: sessionsError } = await supabase.from('sessions').insert(sessions);
+        if (sessionsError) {
+            console.error('Auto-create sessions failed:', sessionsError.message);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -147,6 +223,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         };
 
         let cohortId: string = program?.id ?? '';
+        const isNew = !program;
 
         if (program) {
             // Update existing cohort
@@ -206,7 +283,12 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 return;
             }
         } else {
-            // Sprint Workshop: Save members to cohort_memberships.
+            // Sprint Workshop: auto-create 3 sessions on new program creation
+            if (isNew && formData.start_date) {
+                await createSprintSessions(cohortId, formData.start_date);
+            }
+
+            // Save members to cohort_memberships.
             // First remove all existing memberships for this cohort.
             await supabase.from('cohort_memberships').delete().eq('cohort_id', cohortId);
 
@@ -224,6 +306,31 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     setIsLoading(false);
                     setError(memberError.message);
                     return;
+                }
+            }
+
+            // Send invites for pending (new) members
+            if (pendingInvites.length > 0) {
+                const token = authSession?.access_token;
+                if (token) {
+                    const inviteResults = await Promise.allSettled(
+                        pendingInvites.map((inv) =>
+                            supabase.functions.invoke('invite-user', {
+                                body: {
+                                    first_name: inv.firstName,
+                                    last_name: inv.lastName,
+                                    email: inv.email,
+                                    role: 'participant',
+                                    cohort_id: cohortId,
+                                },
+                                headers: { Authorization: `Bearer ${token}` },
+                            })
+                        )
+                    );
+                    const failed = inviteResults.filter((r) => r.status === 'rejected');
+                    if (failed.length > 0) {
+                        console.error('Some invites failed to send:', failed);
+                    }
                 }
             }
         }
@@ -295,9 +402,9 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                         Members
-                        {selectedUserIds.length > 0 && (
+                        {(selectedUserIds.length + pendingInvites.length) > 0 && (
                             <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-lime/10 text-lime border border-lime/20">
-                                {selectedUserIds.length} selected
+                                {selectedUserIds.length + pendingInvites.length} selected
                             </span>
                         )}
                     </label>
@@ -305,10 +412,10 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         type="text"
                         value={userSearch}
                         onChange={(e) => setUserSearch(e.target.value)}
-                        placeholder="Search members…"
+                        placeholder="Search existing members…"
                         className={`${inputClass} mb-2`}
                     />
-                    <div className="max-h-48 overflow-y-auto rounded-xl border border-white/[0.05] bg-white/[0.03] divide-y divide-white/[0.04]">
+                    <div className="max-h-40 overflow-y-auto rounded-xl border border-white/[0.05] bg-white/[0.03] divide-y divide-white/[0.04]">
                         {filteredUsers.length === 0 && (
                             <p className="text-xs text-gray-500 text-center py-4">No members found</p>
                         )}
@@ -337,7 +444,76 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                             );
                         })}
                     </div>
-                    {selectedUserIds.length > 0 && (
+
+                    {/* Inline invite form */}
+                    <div className="mt-3">
+                        {!showInviteForm ? (
+                            <button
+                                type="button"
+                                onClick={() => { setShowInviteForm(true); setInviteError(null); }}
+                                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-lime transition-colors"
+                            >
+                                <UserPlus className="h-3.5 w-3.5" />
+                                Invite a new member
+                            </button>
+                        ) : (
+                            <div className="rounded-xl border border-lime/20 bg-lime/5 p-3 space-y-2">
+                                <p className="text-xs font-medium text-lime flex items-center gap-1.5">
+                                    <UserPlus className="h-3.5 w-3.5" />
+                                    Invite New Member
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                        type="text"
+                                        value={inviteFirstName}
+                                        onChange={(e) => setInviteFirstName(e.target.value)}
+                                        placeholder="First name"
+                                        className="w-full px-2.5 py-1.5 text-xs bg-white/[0.03] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-lime/40 placeholder:text-gray-600"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={inviteLastName}
+                                        onChange={(e) => setInviteLastName(e.target.value)}
+                                        placeholder="Last name"
+                                        className="w-full px-2.5 py-1.5 text-xs bg-white/[0.03] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-lime/40 placeholder:text-gray-600"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Mail className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-500" />
+                                    <input
+                                        type="email"
+                                        value={inviteEmail}
+                                        onChange={(e) => setInviteEmail(e.target.value)}
+                                        placeholder="email@company.com"
+                                        className="w-full pl-8 pr-2.5 py-1.5 text-xs bg-white/[0.03] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-lime/40 placeholder:text-gray-600"
+                                    />
+                                </div>
+                                {inviteError && (
+                                    <p className="text-xs text-red-300">{inviteError}</p>
+                                )}
+                                <div className="flex items-center gap-2 pt-0.5">
+                                    <button
+                                        type="button"
+                                        onClick={handleAddInvite}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg gradient-lime text-black hover:opacity-90 transition"
+                                    >
+                                        <Loader2 className="h-3 w-3 hidden" />
+                                        Add to invite list
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setShowInviteForm(false); setInviteError(null); setInviteFirstName(''); setInviteLastName(''); setInviteEmail(''); }}
+                                        className="text-xs text-gray-500 hover:text-white transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Selected & pending chips */}
+                    {(selectedUserIds.length > 0 || pendingInvites.length > 0) && (
                         <div className="mt-2 flex flex-wrap gap-1.5">
                             {selectedUserIds.map((uid) => {
                                 const user = allUsers.find((u) => u.id === uid);
@@ -358,7 +534,31 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                                     </span>
                                 );
                             })}
+                            {pendingInvites.map((inv) => (
+                                <span
+                                    key={inv.email}
+                                    className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/20"
+                                    title={`Will be invited as new member`}
+                                >
+                                    <Mail className="h-3 w-3 opacity-60" />
+                                    {inv.firstName || inv.email}
+                                    <button
+                                        type="button"
+                                        onClick={() => removePendingInvite(inv.email)}
+                                        className="opacity-60 hover:opacity-100 transition-opacity"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </span>
+                            ))}
                         </div>
+                    )}
+
+                    {/* Sprint Workshop session info note */}
+                    {!program && formData.start_date && (
+                        <p className="mt-2 text-[11px] text-gray-500 italic">
+                            3 sessions will be auto-created starting {formData.start_date}.
+                        </p>
                     )}
                 </div>
             )}
