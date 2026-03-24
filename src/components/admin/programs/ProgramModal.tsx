@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
+import { DateTimePicker } from '@/components/shared/DateTimePicker';
 import { X, Check, UserPlus, Mail, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import type { Cohort, CohortStatus, OfferingType, User } from '@/types/database';
@@ -577,26 +578,20 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
-                    <input
-                        type="date"
-                        required
-                        value={formData.start_date}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, start_date: e.target.value }))}
-                        className={inputClass}
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">End Date</label>
-                    <input
-                        type="date"
-                        required
-                        value={formData.end_date}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, end_date: e.target.value }))}
-                        className={inputClass}
-                    />
-                </div>
+                <DateTimePicker
+                    label="Start Date"
+                    value={formData.start_date}
+                    onChange={(val) => setFormData((prev) => ({ ...prev, start_date: val }))}
+                    required
+                    showTime
+                />
+                <DateTimePicker
+                    label="End Date"
+                    value={formData.end_date}
+                    onChange={(val) => setFormData((prev) => ({ ...prev, end_date: val }))}
+                    required
+                    showTime
+                />
             </div>
 
             <div>
