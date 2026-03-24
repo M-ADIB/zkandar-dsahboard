@@ -477,11 +477,51 @@
 
 ---
 
+## 📐 Dashboard UI Standards (MUST FOLLOW)
+
+### Page Headers (ALL Pages)
+Every admin/participant page MUST use this exact pattern:
+```tsx
+<h1 className="text-2xl font-bold text-white">Page Title</h1>
+<p className="text-gray-400 text-sm mt-1">Subtitle description here</p>
+```
+- **NEVER** use `text-3xl`, `hero-text`, `gradient-text`, or `font-heading` on page-level h1 elements
+- **Exception:** `ParticipantDashboard` uses a hero greeting banner ("Hey {name}") — this is intentional
+- **Exception:** `OwnerDashboard` also uses a personalized hero banner — this is intentional
+
+### Layout Rules
+- **Root wrapper:** `<div className="space-y-6">` — vertical spacing between sections
+- **NO redundant padding:** Pages must NOT add `p-8`, `max-w-[1600px]`, or `mx-auto` — `AppShell` provides `p-4 md:p-6 lg:p-8`
+- **Animations:** Use `animate-fade-in` on root wrapper where appropriate
+
+### Subtitles
+- Always `text-gray-400 text-sm mt-1`
+- Never `text-gray-500` (too faint), never `text-gray-300` (too bright)
+
+### Section Headers (Inside Cards)
+- Use `font-heading text-lg font-bold` for card-level h2 headers
+- Pair with icon + `text-lime` for visual hierarchy
+
+### Filter Pills
+- Active: `bg-lime/10 text-lime border border-lime/20`
+- Inactive: `bg-bg-card border border-border hover:border-lime/20`
+
+### MetricCard Component
+- Always use `<MetricCard>` from `@/components/shared/MetricCard` for KPI displays
+- Grid: `grid grid-cols-2 lg:grid-cols-4 gap-4`
+
+### Modal Z-Index
+- All modals: `z-[71]` (above sidebar z-70)
+- Backdrop: `bg-black/60 backdrop-blur-sm`
+
+---
+
 ## 🔄 Maintenance Log
 
 | Date | Change | Reason |
 |------|--------|--------|
 | 2026-02-06 | Initial constitution | Project kickoff |
+| 2026-03-24 | Added Dashboard UI Standards section | Full audit + standardization of all page headers |
 
 ---
 

@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { PageTitleUpdater } from '@/hooks/usePageTitle'
 import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 import { SessionExpiryWarning } from '@/components/auth/SessionExpiryWarning'
+import { CommandPalette } from '@/components/layout/CommandPalette'
 
 // Public & Onboarding
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(module => ({ default: module.LoginPage })))
@@ -66,6 +67,7 @@ function App() {
                         }>
                             <PageTitleUpdater />
                             <SessionExpiryWarning />
+                            <CommandPalette />
                             <InstallPrompt />
                             <Routes>
                                 {/* Public Routes */}

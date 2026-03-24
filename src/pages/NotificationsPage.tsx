@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Check, Trash2, Search, ExternalLink } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useNotifications } from '@/context/NotificationContext'
 import { formatRelativeTime } from '@/lib/time'
 
