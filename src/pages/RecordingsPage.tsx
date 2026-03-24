@@ -129,13 +129,8 @@ export function RecordingsPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-heading font-bold flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl gradient-lime flex items-center justify-center">
-                            <Film className="h-5 w-5 text-black" />
-                        </div>
-                        Recordings
-                    </h1>
-                    <p className="text-gray-400 text-sm mt-2">
+                    <h1 className="text-2xl font-bold text-white">Recordings</h1>
+                    <p className="text-gray-400 text-sm mt-1">
                         Rewatch your session recordings at any time
                     </p>
                 </div>

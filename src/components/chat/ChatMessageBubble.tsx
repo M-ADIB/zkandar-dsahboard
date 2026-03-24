@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { motion } from 'framer-motion'
-import { Pin } from 'lucide-react'
+import { Pin, FileText, Download, Loader2 } from 'lucide-react'
 
 interface ChatMessageBubbleProps {
     id: string
@@ -14,6 +13,29 @@ interface ChatMessageBubbleProps {
     fileUrl: string | null
     timestamp: string
     isPinned: boolean
+    isSending?: boolean
+}
+
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'avif']
+
+function isImageUrl(url: string): boolean {
+    const ext = url.split('.').pop()?.split('?')[0]?.toLowerCase() || ''
+    return IMAGE_EXTENSIONS.includes(ext)
+}
+
+function getFileNameFromUrl(url: string): string {
+    try {
+        const pathname = new URL(url).pathname
+        const segments = pathname.split('/')
+        return decodeURIComponent(segments[segments.length - 1] || 'File')
+    } catch {
+        return 'File'
+    }
+}
+
+function getFileExtension(url: string): string {
+    const name = getFileNameFromUrl(url)
+    return name.split('.').pop()?.toUpperCase() || 'FILE'
 }
 
 export function ChatMessageBubble({
@@ -26,16 +48,17 @@ export function ChatMessageBubble({
     fileUrl,
     timestamp,
     isPinned,
+    isSending,
 }: ChatMessageBubbleProps) {
     const [imageExpanded, setImageExpanded] = useState(false)
 
-    const isImage = messageType === 'file' && fileUrl
+    const isFile = messageType === 'file' && fileUrl
+    const isImage = isFile && isImageUrl(fileUrl)
+    const isDocument = isFile && !isImage
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : ''}`}
+        <div
+            className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : ''} animate-fade-in`}
         >
             {/* Avatar */}
             <div
@@ -57,11 +80,20 @@ export function ChatMessageBubble({
             {/* Message Content */}
             <div className={`max-w-md ${isOwn ? 'text-right' : ''}`}>
                 {/* Sender + Timestamp */}
-                <div className="flex items-center gap-2 mb-1">
+                <div className={`flex items-center gap-2 mb-1 ${isOwn ? 'justify-end' : ''}`}>
                     <span className={`text-sm font-medium ${isOwn ? 'order-2' : ''}`}>
                         {senderName}
                     </span>
-                    <span className="text-xs text-gray-500">{timestamp}</span>
+                    <span className="text-xs text-gray-500">
+                        {isSending ? (
+                            <span className="flex items-center gap-1">
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                Sending…
+                            </span>
+                        ) : (
+                            timestamp
+                        )}
+                    </span>
                     {isPinned && <Pin className="h-3 w-3 text-lime" />}
                 </div>
 
@@ -83,9 +115,41 @@ export function ChatMessageBubble({
                                 loading="lazy"
                             />
                         </div>
-                        {message && message !== fileUrl && (
+                        {message && message !== fileUrl && message !== getFileNameFromUrl(fileUrl) && (
                             <p className="text-xs text-gray-500">{message}</p>
                         )}
+                    </div>
+                ) : isDocument ? (
+                    /* Document / File Message */
+                    <div
+                        className={`inline-flex items-center gap-3 px-4 py-3 rounded-2xl border transition-colors ${isOwn
+                            ? 'bg-lime/10 border-lime/20 rounded-br-md'
+                            : 'bg-white/5 border-white/10 rounded-bl-md'
+                            }`}
+                    >
+                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${isOwn ? 'bg-lime/20' : 'bg-white/10'
+                            }`}>
+                            <FileText className={`h-5 w-5 ${isOwn ? 'text-lime' : 'text-gray-400'}`} />
+                        </div>
+                        <div className="min-w-0 text-left">
+                            <p className="text-sm font-medium truncate max-w-[180px]">
+                                {getFileNameFromUrl(fileUrl)}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                                {getFileExtension(fileUrl)} Document
+                            </p>
+                        </div>
+                        <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download
+                            className={`p-2 rounded-lg transition shrink-0 ${isOwn ? 'hover:bg-lime/20 text-lime' : 'hover:bg-white/10 text-gray-400'
+                                }`}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <Download className="h-4 w-4" />
+                        </a>
                     </div>
                 ) : messageType === 'system' ? (
                     /* System Message */
@@ -95,7 +159,7 @@ export function ChatMessageBubble({
                 ) : (
                     /* Text Message */
                     <div
-                        className={`inline-block px-4 py-2.5 rounded-2xl text-sm ${isOwn
+                        className={`inline-block px-4 py-2.5 rounded-2xl text-sm whitespace-pre-wrap break-words ${isOwn
                             ? 'bg-lime text-black rounded-br-md'
                             : isAdmin
                                 ? 'bg-lime/10 border border-lime/20 rounded-bl-md'
@@ -121,6 +185,6 @@ export function ChatMessageBubble({
                 </div>,
                 document.body
             )}
-        </motion.div>
+        </div>
     )
 }

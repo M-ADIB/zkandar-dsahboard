@@ -7,6 +7,7 @@ interface ChatSidebarProps {
     loading: boolean
     selectedChannelId: string
     onSelectChannel: (channel: ChatChannel) => void
+    className?: string
 }
 
 const channelIcons = {
@@ -15,7 +16,7 @@ const channelIcons = {
     sprint: Zap,
 }
 
-export function ChatSidebar({ groups, loading, selectedChannelId, onSelectChannel }: ChatSidebarProps) {
+export function ChatSidebar({ groups, loading, selectedChannelId, onSelectChannel, className = '' }: ChatSidebarProps) {
     const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
 
     const toggleGroup = (parentId: string) => {
@@ -23,7 +24,7 @@ export function ChatSidebar({ groups, loading, selectedChannelId, onSelectChanne
     }
 
     return (
-        <div className="w-72 bg-bg-elevated border-r border-border hidden md:flex flex-col">
+        <div className={`bg-bg-elevated border-r border-border flex flex-col ${className}`}>
             <div className="p-4 border-b border-border">
                 <h2 className="font-heading font-bold text-lg">Chat</h2>
                 <p className="text-xs text-gray-500 mt-0.5">Company channels</p>

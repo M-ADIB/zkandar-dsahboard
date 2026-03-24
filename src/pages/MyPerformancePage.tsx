@@ -236,8 +236,8 @@ export function MyPerformancePage() {
         <div className="space-y-8 max-w-6xl mx-auto">
             {/* Header */}
             <div>
-                <h1 className="hero-text text-3xl mb-2">My Performance</h1>
-                <p className="text-gray-500 text-sm">
+                <h1 className="text-2xl font-bold text-white">My Performance</h1>
+                <p className="text-gray-400 text-sm mt-1">
                     Your AI readiness assessment based on your survey responses and assignment performance.
                 </p>
             </div>

@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { Send, Paperclip, X, Loader2, Image as ImageIcon } from 'lucide-react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { Send, Paperclip, X, Loader2, Image as ImageIcon, FileText } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import type { ChatChannel } from '@/hooks/useChatChannels'
@@ -8,17 +8,46 @@ import toast from 'react-hot-toast'
 interface ChatInputProps {
     channel: ChatChannel
     disabled?: boolean
+    onOptimisticSend?: (msg: {
+        id: string
+        message: string
+        messageType: 'text' | 'file'
+        fileUrl: string | null
+        fileName?: string
+    }) => void
 }
 
-export function ChatInput({ channel, disabled }: ChatInputProps) {
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'avif']
+const MAX_SIZE_MB = 10
+
+function isImageFile(file: File): boolean {
+    if (file.type.startsWith('image/')) return true
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    return IMAGE_EXTENSIONS.includes(ext)
+}
+
+export function ChatInput({ channel, disabled, onOptimisticSend }: ChatInputProps) {
     const { user } = useAuth()
     const [message, setMessage] = useState('')
     const [uploading, setUploading] = useState(false)
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const [pendingFile, setPendingFile] = useState<File | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     const canSend = !disabled && user && (message.trim() || pendingFile)
+
+    // Auto-resize textarea
+    const resizeTextarea = useCallback(() => {
+        const el = textareaRef.current
+        if (!el) return
+        el.style.height = 'auto'
+        el.style.height = `${Math.min(el.scrollHeight, 160)}px`
+    }, [])
+
+    useEffect(() => {
+        resizeTextarea()
+    }, [message, resizeTextarea])
 
     const uploadFile = async (file: File): Promise<string | null> => {
         const ext = file.name.split('.').pop()
@@ -31,6 +60,7 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
 
         if (error) {
             console.error('Upload error:', error)
+            toast.error('Failed to upload file')
             return null
         }
 
@@ -46,8 +76,25 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
 
         const textMessage = message.trim()
 
-        // If there's a pending file, upload it first
+        // If there's a pending file, upload it
         if (pendingFile) {
+            const optimisticId = crypto.randomUUID()
+            const fileName = pendingFile.name
+
+            // Show optimistic message immediately
+            onOptimisticSend?.({
+                id: optimisticId,
+                message: textMessage || fileName,
+                messageType: 'file',
+                fileUrl: previewUrl, // use local preview for images
+                fileName,
+            })
+
+            setPendingFile(null)
+            setPreviewUrl(null)
+            setMessage('')
+
+            // Upload in background
             setUploading(true)
             const fileUrl = await uploadFile(pendingFile)
             setUploading(false)
@@ -57,7 +104,7 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
                     .from('chat_messages')
                     // @ts-expect-error - supabase insert type inference
                     .insert({
-                        message: textMessage || pendingFile.name,
+                        message: textMessage || fileName,
                         message_type: 'file',
                         file_url: fileUrl,
                         channel_type: channel.type,
@@ -67,15 +114,23 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
                         is_pinned: false,
                     })
             }
-
-            setPendingFile(null)
-            setPreviewUrl(null)
-            setMessage('')
             return
         }
 
         // Text-only message
         if (textMessage) {
+            const optimisticId = crypto.randomUUID()
+
+            // Show optimistic message immediately
+            onOptimisticSend?.({
+                id: optimisticId,
+                message: textMessage,
+                messageType: 'text',
+                fileUrl: null,
+            })
+
+            setMessage('')
+
             await supabase
                 .from('chat_messages')
                 // @ts-expect-error - supabase insert type inference
@@ -89,8 +144,6 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
                     user_id: user.id,
                     is_pinned: false,
                 })
-
-            setMessage('')
         }
     }
 
@@ -105,15 +158,8 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
         const file = e.target.files?.[0]
         if (!file) return
 
-        const MAX_SIZE_MB = 10
         if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-            toast.error(`Image must be under ${MAX_SIZE_MB} MB`)
-            if (fileInputRef.current) fileInputRef.current.value = ''
-            return
-        }
-
-        if (!file.type.startsWith('image/')) {
-            toast.error('Only image files are allowed here')
+            toast.error(`File must be under ${MAX_SIZE_MB} MB`)
             if (fileInputRef.current) fileInputRef.current.value = ''
             return
         }
@@ -121,7 +167,7 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
         setPendingFile(file)
 
         // Create preview if image
-        if (file.type.startsWith('image/')) {
+        if (isImageFile(file)) {
             const reader = new FileReader()
             reader.onload = (ev) => setPreviewUrl(ev.target?.result as string)
             reader.readAsDataURL(file)
@@ -138,12 +184,14 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
         setPreviewUrl(null)
     }
 
+    const isImage = pendingFile && isImageFile(pendingFile)
+
     return (
         <div className="p-4 border-t border-border">
-            {/* Image Preview */}
+            {/* File Preview */}
             {pendingFile && (
                 <div className="mb-3 flex items-start gap-3 p-3 bg-white/5 rounded-xl">
-                    {previewUrl ? (
+                    {isImage && previewUrl ? (
                         <img
                             src={previewUrl}
                             alt="Preview"
@@ -151,13 +199,22 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
                         />
                     ) : (
                         <div className="h-20 w-20 bg-white/10 rounded-lg flex items-center justify-center">
-                            <ImageIcon className="h-8 w-8 text-gray-400" />
+                            {isImage ? (
+                                <ImageIcon className="h-8 w-8 text-gray-400" />
+                            ) : (
+                                <FileText className="h-8 w-8 text-lime" />
+                            )}
                         </div>
                     )}
                     <div className="flex-1 min-w-0">
                         <p className="text-sm text-gray-300 truncate">{pendingFile.name}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
                             {(pendingFile.size / 1024).toFixed(0)} KB
+                            {!isImage && (
+                                <span className="ml-2 text-lime/60">
+                                    {pendingFile.name.split('.').pop()?.toUpperCase()}
+                                </span>
+                            )}
                         </p>
                     </div>
                     <button
@@ -170,12 +227,13 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
             )}
 
             {/* Input Row */}
-            <div className="flex items-center gap-3 bg-bg-elevated rounded-xl p-2">
+            <div className="flex items-end gap-3 bg-bg-elevated rounded-xl p-2">
                 {/* File Upload Button */}
                 <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={disabled || uploading}
-                    className="p-2 rounded-lg hover:bg-white/5 transition disabled:opacity-50"
+                    className="p-2 rounded-lg hover:bg-white/5 transition disabled:opacity-50 shrink-0"
+                    title="Attach file"
                 >
                     <Paperclip className="h-5 w-5 text-gray-400" />
                 </button>
@@ -183,19 +241,21 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"
                     onChange={handleFileSelect}
                     className="hidden"
                 />
 
-                {/* Text Input */}
-                <input
-                    type="text"
+                {/* Textarea Input */}
+                <textarea
+                    ref={textareaRef}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={disabled ? 'Chat unavailable' : 'Type a message...'}
-                    className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-gray-500"
+                    className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-gray-500 resize-none overflow-y-auto leading-relaxed py-1.5"
+                    style={{ maxHeight: 160, minHeight: 24 }}
+                    rows={1}
                     disabled={disabled || uploading}
                 />
 
@@ -203,7 +263,7 @@ export function ChatInput({ channel, disabled }: ChatInputProps) {
                 <button
                     onClick={handleSend}
                     disabled={!canSend || uploading}
-                    className="p-2 rounded-lg gradient-lime text-black disabled:opacity-50 transition"
+                    className="p-2 rounded-lg gradient-lime text-black disabled:opacity-50 transition shrink-0"
                 >
                     {uploading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />

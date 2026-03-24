@@ -1,17 +1,19 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import {
     User, Bell, Lock, Loader2, Sparkles, ArrowRight, Users,
-    Download, Trash2, KeyRound, AlertTriangle,
+    Download, Trash2, KeyRound, AlertTriangle, Camera, UserPlus, Mail,
+    Briefcase, Globe, Calendar,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { userProfileSchema } from '@/lib/validation'
 import toast from 'react-hot-toast'
-import { UsersPage } from '@/pages/admin/UsersPage'
+import { AvatarCropModal } from '@/components/admin/settings/AvatarCropModal'
+import { ModalForm } from '@/components/admin/shared/ModalForm'
 
-type SettingsTab = 'profile' | 'users' | 'notifications' | 'security'
+type SettingsTab = 'profile' | 'team' | 'notifications' | 'security'
 
 interface TabDef {
     id: SettingsTab
@@ -43,19 +45,120 @@ const NOTIF_SETTINGS: { key: keyof NotificationPrefs; label: string; description
 
 const settingsTabs: TabDef[] = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'users', label: 'Users', icon: Users, adminOnly: true },
+    { id: 'team', label: 'Team', icon: Users, adminOnly: true },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'security', label: 'Security', icon: Lock },
 ]
 
+const inputClass = 'w-full px-4 py-3 bg-bg-elevated border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white'
+
+// ─── Team member type ─────────────────────
+type TeamMember = {
+    id: string
+    full_name: string
+    email: string
+    role: string
+    avatar_url: string | null
+    created_at: string
+}
+
+// ─── Invite Admin Modal ─────────────────────
+function InviteAdminModal({ isOpen, onClose, onSuccess }: { isOpen: boolean; onClose: () => void; onSuccess: () => void }) {
+    const { session: authSession } = useAuth()
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+    const [email, setEmail] = useState('')
+    const [role, setRole] = useState('admin')
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!email.trim()) { setError('Email is required'); return }
+        setIsLoading(true)
+        setError(null)
+
+        try {
+            const token = authSession?.access_token
+            if (!token) throw new Error('Not authenticated')
+
+            const res = await supabase.functions.invoke('invite-team', {
+                body: { first_name: firstName.trim(), last_name: lastName.trim(), email: email.trim().toLowerCase(), role },
+                headers: { Authorization: `Bearer ${token}` },
+            })
+
+            if (res.error) throw new Error(res.error.message || 'Invite failed')
+            const data = res.data as { error?: string; success?: boolean }
+            if (data?.error) throw new Error(data.error)
+
+            toast.success('Invite sent successfully!')
+            onSuccess()
+            onClose()
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to send invite')
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    return (
+        <ModalForm isOpen={isOpen} onClose={onClose} title="Invite Team Member" onSubmit={handleSubmit} isLoading={isLoading} submitLabel="Send Invite">
+            {error && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</div>
+            )}
+            <div className="grid grid-cols-2 gap-3">
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">First Name</label>
+                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className={inputClass} placeholder="John" />
+                </div>
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">Last Name</label>
+                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className={inputClass} placeholder="Doe" />
+                </div>
+            </div>
+            <div>
+                <label className="block text-sm text-gray-400 mb-1">Email <span className="text-red-400">*</span></label>
+                <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputClass} pl-10`} placeholder="john@company.com" />
+                </div>
+            </div>
+            <div>
+                <label className="block text-sm text-gray-400 mb-1">Role</label>
+                <select value={role} onChange={(e) => setRole(e.target.value)} className={inputClass}>
+                    <option value="admin">Admin</option>
+                    <option value="owner">Owner</option>
+                </select>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+                They'll receive a branded email with temporary credentials to sign in.
+            </p>
+        </ModalForm>
+    )
+}
+
+// ─── Main Settings Page ─────────────────────
 export function SettingsPage() {
     const { user, refreshUser, signOut } = useAuth()
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile')
     const [fullName, setFullName] = useState(user?.full_name || '')
+    const [position, setPosition] = useState(user?.position || '')
+    const [nationality, setNationality] = useState(user?.nationality || '')
+    const [age, setAge] = useState(user?.age?.toString() || '')
     const [isSaving, setIsSaving] = useState(false)
     const [isResetting, setIsResetting] = useState(false)
     const navigate = useNavigate()
     const isDev = import.meta.env.DEV
+
+    // Avatar
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null)
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+
+    // Team
+    const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+    const [isLoadingTeam, setIsLoadingTeam] = useState(false)
+    const [showInviteModal, setShowInviteModal] = useState(false)
 
     // Notification prefs
     const [prefs, setPrefs] = useState<NotificationPrefs>(() => {
@@ -74,18 +177,83 @@ export function SettingsPage() {
     const isAdmin = user?.role === 'owner' || user?.role === 'admin'
     const visibleTabs = settingsTabs.filter((t) => !t.adminOnly || isAdmin)
 
-    // Keep fullName in sync if user changes (e.g. after save → refreshUser)
+    // Keep fields in sync
     useEffect(() => {
         setFullName(user?.full_name || '')
-    }, [user?.full_name])
+        setPosition(user?.position || '')
+        setNationality(user?.nationality || '')
+        setAge(user?.age?.toString() || '')
+    }, [user?.full_name, user?.position, user?.nationality, user?.age])
 
+    // Load team members
+    const loadTeam = useCallback(async () => {
+        setIsLoadingTeam(true)
+        const { data } = await supabase
+            .from('users')
+            .select('id, full_name, email, role, avatar_url, created_at')
+            .in('role', ['owner', 'admin'])
+            .order('created_at', { ascending: true })
+        setTeamMembers((data as TeamMember[]) ?? [])
+        setIsLoadingTeam(false)
+    }, [])
+
+    useEffect(() => {
+        if (activeTab === 'team' && isAdmin) loadTeam()
+    }, [activeTab, isAdmin, loadTeam])
+
+    // ─── Avatar handlers ─────────────────────
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        const reader = new FileReader()
+        reader.onload = () => setCropImageSrc(reader.result as string)
+        reader.readAsDataURL(file)
+        e.target.value = '' // reset so re-selecting same file triggers onChange
+    }
+
+    const handleCropComplete = async (blob: Blob) => {
+        if (!user) return
+        setIsUploadingAvatar(true)
+        try {
+            const filePath = `${user.id}/avatar.webp`
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, blob, { contentType: 'image/webp', upsert: true })
+            if (uploadError) throw uploadError
+
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
+            const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`
+
+            const { error: dbError } = await supabase
+                .from('users')
+                .update({ avatar_url: publicUrl } as never)
+                .eq('id', user.id)
+            if (dbError) throw dbError
+
+            await refreshUser()
+            toast.success('Profile picture updated!')
+            setCropImageSrc(null)
+        } catch {
+            toast.error('Failed to upload profile picture')
+        } finally {
+            setIsUploadingAvatar(false)
+        }
+    }
+
+    // ─── Profile save ─────────────────────
     const handleSave = async () => {
         if (!user) return
         const validation = userProfileSchema.safeParse({ full_name: fullName })
         if (!validation.success) { toast.error(validation.error.errors[0].message); return }
         setIsSaving(true)
         try {
-            const { error } = await supabase.from('users').update({ full_name: fullName } as never).eq('id', user.id)
+            const updatePayload: Record<string, unknown> = { full_name: fullName }
+            if (position !== (user.position || '')) updatePayload.position = position || null
+            if (nationality !== (user.nationality || '')) updatePayload.nationality = nationality || null
+            const ageNum = age ? parseInt(age) : null
+            if (ageNum !== user.age) updatePayload.age = ageNum
+
+            const { error } = await supabase.from('users').update(updatePayload as never).eq('id', user.id)
             if (error) throw error
             await refreshUser()
             toast.success('Profile updated successfully')
@@ -125,7 +293,6 @@ export function SettingsPage() {
                 .eq('id', user.id)
             if (error) throw error
         } catch {
-            // Revert on failure
             setPrefs(prefs)
             toast.error('Failed to save preference')
         } finally {
@@ -153,7 +320,6 @@ export function SettingsPage() {
         if (!user) return
         setIsExporting(true)
         try {
-            // Fetch user's own data from the platform
             const [submissionsRes, chatRes] = await Promise.all([
                 supabase.from('assignment_submissions').select('*').eq('user_id', user.id),
                 supabase.from('chat_messages').select('*').eq('user_id', user.id),
@@ -197,7 +363,6 @@ export function SettingsPage() {
         }
         setIsDeleting(true)
         try {
-            // Call edge function which uses service role to delete auth user
             const { data: { session } } = await supabase.auth.getSession()
             const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`, {
                 method: 'POST',
@@ -219,11 +384,13 @@ export function SettingsPage() {
         }
     }
 
+    const avatarUrl = user?.avatar_url
+
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-heading font-bold">Settings</h1>
+                <h1 className="text-2xl font-bold text-white">Settings</h1>
                 <p className="text-gray-400 text-sm mt-1">Manage your account, team, and preferences</p>
             </div>
 
@@ -259,11 +426,6 @@ export function SettingsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
             >
-                {/* ── Users Tab ── */}
-                {activeTab === 'users' && isAdmin && (
-                    <UsersPage />
-                )}
-
                 {/* ── Profile Tab ── */}
                 {activeTab === 'profile' && (
                     <div className="max-w-3xl space-y-6">
@@ -276,15 +438,53 @@ export function SettingsPage() {
                                 <User className="h-5 w-5 text-lime" />
                                 <h2 className="font-heading font-bold">Profile</h2>
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-5">
+                                {/* Avatar */}
                                 <div className="flex items-center gap-6">
-                                    <div className="h-20 w-20 rounded-2xl gradient-lime flex items-center justify-center">
-                                        <span className="text-2xl text-black font-bold">{user?.full_name?.charAt(0) || 'U'}</span>
+                                    <div className="relative group">
+                                        {avatarUrl ? (
+                                            <img
+                                                src={avatarUrl}
+                                                alt="Avatar"
+                                                className="h-20 w-20 rounded-2xl object-cover border-2 border-border"
+                                            />
+                                        ) : (
+                                            <div className="h-20 w-20 rounded-2xl gradient-lime flex items-center justify-center">
+                                                <span className="text-2xl text-black font-bold">{user?.full_name?.charAt(0) || 'U'}</span>
+                                            </div>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={isUploadingAvatar}
+                                            className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
+                                        >
+                                            {isUploadingAvatar ? (
+                                                <Loader2 className="h-5 w-5 text-white animate-spin" />
+                                            ) : (
+                                                <Camera className="h-5 w-5 text-white" />
+                                            )}
+                                        </button>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileSelect}
+                                            className="hidden"
+                                        />
                                     </div>
                                     <div>
-                                        <button className="px-4 py-2 border border-border rounded-xl text-sm hover:border-lime/50 transition">Upload Photo</button>
+                                        <button
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="px-4 py-2 border border-border rounded-xl text-sm hover:border-lime/50 transition"
+                                        >
+                                            Upload Photo
+                                        </button>
+                                        <p className="text-xs text-gray-500 mt-1">JPG, PNG or WebP. Max 5MB.</p>
                                     </div>
                                 </div>
+
+                                {/* Name & Email */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm text-gray-400 mb-2">Full Name</label>
@@ -292,7 +492,7 @@ export function SettingsPage() {
                                             type="text"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
-                                            className="w-full px-4 py-3 bg-bg-elevated border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50"
+                                            className={inputClass}
                                         />
                                     </div>
                                     <div>
@@ -301,9 +501,59 @@ export function SettingsPage() {
                                             type="email"
                                             defaultValue={user?.email}
                                             disabled
-                                            className="w-full px-4 py-3 bg-bg-elevated border border-border rounded-xl text-sm text-gray-500"
+                                            className={`${inputClass} !text-gray-500`}
                                         />
                                     </div>
+                                </div>
+
+                                {/* Extended fields */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2 flex items-center gap-1.5">
+                                            <Briefcase className="h-3.5 w-3.5" /> Job Title
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={position}
+                                            onChange={(e) => setPosition(e.target.value)}
+                                            className={inputClass}
+                                            placeholder="e.g. Senior Architect"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2 flex items-center gap-1.5">
+                                            <Globe className="h-3.5 w-3.5" /> Nationality
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={nationality}
+                                            onChange={(e) => setNationality(e.target.value)}
+                                            className={inputClass}
+                                            placeholder="e.g. UAE"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2 flex items-center gap-1.5">
+                                            <Calendar className="h-3.5 w-3.5" /> Age
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={age}
+                                            onChange={(e) => setAge(e.target.value)}
+                                            className={inputClass}
+                                            placeholder="30"
+                                            min="16"
+                                            max="100"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Role badge */}
+                                <div className="flex items-center gap-2 pt-2">
+                                    <span className="text-xs text-gray-500">Role:</span>
+                                    <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-lime/10 text-lime border border-lime/20 uppercase tracking-wider">
+                                        {user?.role}
+                                    </span>
                                 </div>
                             </div>
                         </motion.div>
@@ -358,6 +608,70 @@ export function SettingsPage() {
                                 Save Changes
                             </button>
                         </div>
+                    </div>
+                )}
+
+                {/* ── Team Tab ── */}
+                {activeTab === 'team' && isAdmin && (
+                    <div className="max-w-3xl space-y-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-bg-card border border-border rounded-2xl p-6"
+                        >
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <Users className="h-5 w-5 text-lime" />
+                                    <h2 className="font-heading font-bold">Zkandar AI Team</h2>
+                                    <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full">{teamMembers.length} members</span>
+                                </div>
+                                <button
+                                    onClick={() => setShowInviteModal(true)}
+                                    className="flex items-center gap-2 px-4 py-2 gradient-lime text-black font-bold text-sm rounded-xl hover:opacity-90 transition"
+                                >
+                                    <UserPlus className="h-4 w-4" /> Invite
+                                </button>
+                            </div>
+
+                            {isLoadingTeam ? (
+                                <div className="flex items-center justify-center py-12">
+                                    <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {teamMembers.map((member) => (
+                                        <div
+                                            key={member.id}
+                                            className="flex items-center justify-between p-4 bg-bg-elevated rounded-xl"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                {member.avatar_url ? (
+                                                    <img src={member.avatar_url} alt="" className="h-10 w-10 rounded-xl object-cover" />
+                                                ) : (
+                                                    <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center text-sm font-bold text-gray-400">
+                                                        {member.full_name?.charAt(0) || '?'}
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <p className="font-medium text-sm text-white">{member.full_name}</p>
+                                                    <p className="text-xs text-gray-500">{member.email}</p>
+                                                </div>
+                                            </div>
+                                            <span className={`px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider ${
+                                                member.role === 'owner'
+                                                    ? 'bg-lime/10 text-lime border border-lime/20'
+                                                    : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                                            }`}>
+                                                {member.role}
+                                            </span>
+                                        </div>
+                                    ))}
+                                    {teamMembers.length === 0 && (
+                                        <p className="text-center text-sm text-gray-500 py-8">No team members yet. Invite your first admin!</p>
+                                    )}
+                                </div>
+                            )}
+                        </motion.div>
                     </div>
                 )}
 
@@ -496,6 +810,22 @@ export function SettingsPage() {
                     </div>
                 )}
             </motion.div>
+
+            {/* ── Modals ── */}
+            {cropImageSrc && (
+                <AvatarCropModal
+                    isOpen={!!cropImageSrc}
+                    onClose={() => setCropImageSrc(null)}
+                    imageSrc={cropImageSrc}
+                    onCropComplete={handleCropComplete}
+                />
+            )}
+
+            <InviteAdminModal
+                isOpen={showInviteModal}
+                onClose={() => setShowInviteModal(false)}
+                onSuccess={loadTeam}
+            />
 
             {/* Delete Account Confirmation Modal */}
             {showDeleteConfirm && (

@@ -40,6 +40,7 @@ export interface User {
     role: UserRole
     user_type: UserType | null
     company_id: string | null
+    avatar_url: string | null
     onboarding_completed: boolean
     ai_readiness_score: number
     profile_data: Record<string, unknown> | null

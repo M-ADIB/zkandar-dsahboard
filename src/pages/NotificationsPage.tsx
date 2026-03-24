@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Check, Trash2, Search, ArrowLeft, ExternalLink } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Bell, Check, Trash2, Search, ExternalLink } from 'lucide-react'
 import { useNotifications } from '@/context/NotificationContext'
 import { formatRelativeTime } from '@/lib/time'
 
@@ -19,15 +18,11 @@ export function NotificationsPage() {
     })
 
     return (
-        <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
+        <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors mb-4">
-                        <ArrowLeft className="h-4 w-4" />
-                        Back to Dashboard
-                    </Link>
-                    <h1 className="text-3xl font-heading font-bold gradient-text">Notifications</h1>
+                    <h1 className="text-2xl font-bold text-white">Notifications</h1>
                 </div>
                 <div className="flex items-center gap-3">
                     <button

@@ -585,7 +585,7 @@ export function AnalyticsDashboard() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-heading font-bold">Analytics</h1>
+                    <h1 className="text-2xl font-bold text-white">Analytics</h1>
                     <p className="text-gray-400 text-sm mt-1">Sprint Workshop & Master Class survey insights</p>
                 </div>
                 <div className="flex items-center gap-3">

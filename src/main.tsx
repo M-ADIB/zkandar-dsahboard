@@ -20,12 +20,14 @@ const queryClient = new QueryClient({
 })
 
 import { ScrollRestoration } from './components/layout/ScrollRestoration'
+import { OfflineBanner } from './components/layout/OfflineBanner'
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
                 <ScrollRestoration />
+                <OfflineBanner />
                 <App />
                 <Toaster
                     position="top-right"

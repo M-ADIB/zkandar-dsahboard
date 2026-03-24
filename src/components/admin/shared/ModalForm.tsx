@@ -10,9 +10,10 @@ interface ModalFormProps {
     onSubmit?: (e: React.FormEvent) => void;
     isLoading?: boolean;
     showActions?: boolean;
+    submitLabel?: string;
 }
 
-export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoading, showActions = true }: ModalFormProps) {
+export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoading, showActions = true, submitLabel }: ModalFormProps) {
     if (!isOpen) return null;
 
     return (
@@ -67,7 +68,7 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                                         disabled={isLoading}
                                         className="px-4 py-2 text-sm font-medium text-black gradient-lime rounded-xl transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {isLoading ? 'Saving...' : 'Save Changes'}
+                                        {isLoading ? 'Saving...' : (submitLabel || 'Save Changes')}
                                     </button>
                                 </div>
                             )}

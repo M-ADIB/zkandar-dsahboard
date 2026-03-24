@@ -1,0 +1,261 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const FROM = 'Zkandar AI <admin@app.zkandar.com>'
+const BRAND_BG = '#0B0B0B'
+const CARD_BG = '#111111'
+const BORDER = '#1F2937'
+const LIME = '#D0FF71'
+const LIME_TEXT = '#0B0B0B'
+const GRAY_300 = '#D1D5DB'
+const GRAY_400 = '#9CA3AF'
+
+function wrapHtml(subject: string, bodyRows: string): string {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>${subject}</title>
+  <style>body,table,td{font-family:Arial,sans-serif!important;}</style>
+</head>
+<body style="margin:0;padding:0;background:${BRAND_BG};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_BG};">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td style="background:${CARD_BG};border:1px solid ${BORDER};border-radius:16px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:24px 24px 0 24px;">
+                    <div style="font-family:Arial,sans-serif;font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">
+                      Zkandar <span style="color:${LIME};">AI</span>
+                    </div>
+                  </td>
+                </tr>
+                ${bodyRows}
+                <tr>
+                  <td style="padding:0 24px 24px 24px;border-top:1px solid ${BORDER};margin-top:24px;">
+                    <div style="font-family:Arial,sans-serif;font-size:11px;color:${GRAY_400};margin-top:20px;line-height:1.6;">
+                      You received this email because an action was requested on your Zkandar AI account.
+                      If you did not request this, you can safely ignore this email.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+function ctaButton(url: string, label: string): string {
+    return `<table cellpadding="0" cellspacing="0" style="margin-top:20px;">
+  <tr>
+    <td bgcolor="${LIME}" style="border-radius:10px;">
+      <a href="${url}" style="display:inline-block;padding:14px 24px;font-family:Arial,sans-serif;font-size:14px;font-weight:700;color:${LIME_TEXT};text-decoration:none;border-radius:10px;">
+        ${label}
+      </a>
+    </td>
+  </tr>
+</table>`
+}
+
+function infoBox(content: string): string {
+    return `<table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_BG};border:1px solid ${BORDER};border-radius:12px;margin-top:16px;">
+  <tr>
+    <td style="padding:14px;font-family:Arial,sans-serif;font-size:13px;color:${GRAY_300};line-height:1.6;">
+      ${content}
+    </td>
+  </tr>
+</table>`
+}
+
+function buildTeamInviteEmail(actionUrl: string, email: string, password: string, role: string): { subject: string; html: string } {
+    const subject = "You've been invited to the Zkandar AI Team"
+    const roleLabel = role === 'owner' ? 'Owner' : 'Admin'
+    const rows = [
+        `<tr>
+  <td style="padding:20px 24px 16px 24px;border-bottom:1px solid ${BORDER};">
+    <div style="font-family:Arial,sans-serif;font-size:18px;font-weight:700;color:#FFFFFF;">Welcome to the Team! 🎉</div>
+    <div style="font-family:Arial,sans-serif;font-size:14px;color:${GRAY_300};margin-top:8px;line-height:1.6;">
+      You've been invited to join the <strong style="color:#FFFFFF;">Zkandar AI</strong> platform as an <strong style="color:${LIME};">${roleLabel}</strong>.
+      Use the credentials below to sign in and get started.
+    </div>
+  </td>
+</tr>`,
+        `<tr>
+  <td style="padding:20px 24px 20px 24px;">
+    ${infoBox(`<strong>Email:</strong> ${email}<br/><strong>Temporary Password:</strong> ${password}<br/><br/><em>Please change your password after your first sign-in.</em>`)}
+    ${ctaButton(actionUrl, 'Sign In to Dashboard')}
+  </td>
+</tr>`,
+    ].join('')
+    return { subject, html: wrapHtml(subject, rows) }
+}
+
+function getCorsHeaders(req: Request): Record<string, string> {
+    const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN')
+    const requestOrigin = req.headers.get('origin') ?? ''
+    const isLocalhost = requestOrigin.startsWith('http://localhost:') || requestOrigin.startsWith('http://127.0.0.1:')
+    const origin = isLocalhost ? requestOrigin : (allowedOrigin || '*')
+    return {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    }
+}
+
+Deno.serve(async (req) => {
+    const corsHeaders = getCorsHeaders(req)
+
+    if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders })
+    }
+
+    try {
+        const authHeader = req.headers.get('Authorization')
+        if (!authHeader) {
+            return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+        const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+        const adminClient = createClient(supabaseUrl, serviceRoleKey)
+
+        // Verify caller
+        const token = authHeader.replace(/^Bearer\s+/i, '')
+        const { data: { user: callerAuth }, error: authError } = await adminClient.auth.getUser(token)
+        if (authError || !callerAuth) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        // Only owners/admins can invite team members
+        const { data: callerProfile } = await adminClient
+            .from('users')
+            .select('role')
+            .eq('id', callerAuth.id)
+            .single()
+
+        if (!callerProfile || !['owner', 'admin'].includes(callerProfile.role)) {
+            return new Response(JSON.stringify({ error: 'Only administrators can invite team members' }), {
+                status: 403,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        // Parse body
+        const { email, role, first_name, last_name } = await req.json() as {
+            email: string
+            role: string
+            first_name?: string
+            last_name?: string
+        }
+
+        if (!email || !role) {
+            return new Response(JSON.stringify({ error: 'Email and role are required' }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        // Only allow admin/owner roles through this function
+        if (!['admin', 'owner'].includes(role)) {
+            return new Response(JSON.stringify({ error: 'This endpoint only supports admin/owner role invitations' }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        const randomDigits = Math.floor(10000 + Math.random() * 90000)
+        const tempPassword = "Zkandar-" + randomDigits + "!"
+        const fullName = [first_name, last_name].filter(Boolean).join(' ').trim()
+
+        // Create the auth user
+        const { data: invitedUser, error: inviteError } = await adminClient.auth.admin.createUser({
+            email,
+            password: tempPassword,
+            email_confirm: true,
+            user_metadata: {
+                role,
+                first_name: first_name ?? null,
+                last_name: last_name ?? null,
+                full_name: fullName || null,
+            }
+        })
+
+        if (inviteError) {
+            const msg = inviteError.message.toLowerCase().includes('already registered')
+                ? 'This email is already registered'
+                : inviteError.message
+            return new Response(JSON.stringify({ error: msg }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        // Update user profile in public.users table
+        if (invitedUser?.user?.id) {
+            await adminClient.from('users').update({
+                full_name: fullName || email.split('@')[0],
+                role,
+            }).eq('id', invitedUser.user.id)
+        }
+
+        // Send branded email
+        const resendApiKey = Deno.env.get('RESEND_API_KEY')
+        if (!resendApiKey) {
+            return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        const actionUrl = `${Deno.env.get('ALLOWED_ORIGIN') ?? 'https://app.zkandar.com'}/login`
+        const emailContent = buildTeamInviteEmail(actionUrl, email, tempPassword, role)
+
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${resendApiKey}`,
+            },
+            body: JSON.stringify({
+                from: FROM,
+                reply_to: 'admin@zkandar.com',
+                to: email,
+                subject: emailContent.subject,
+                html: emailContent.html,
+            }),
+        })
+
+        if (!res.ok) {
+            const errText = await res.text()
+            return new Response(JSON.stringify({ error: `Invite created but email failed: ${errText}` }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        return new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+    } catch (err) {
+        const message = err instanceof Error ? err.message : 'Internal error'
+        return new Response(JSON.stringify({ error: message }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+    }
+})

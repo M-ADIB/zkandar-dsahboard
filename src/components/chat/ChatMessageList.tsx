@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { formatTimeLabel } from '@/lib/time'
@@ -16,6 +16,7 @@ interface MessageDisplay {
     fileUrl: string | null
     timestamp: string
     isPinned: boolean
+    isSending?: boolean
 }
 
 interface ChatMessageListProps {
@@ -42,6 +43,44 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
     const channelType = channel.type
     const companyId = channel.companyId || null
     const cohortId = channel.cohortId || null
+
+    // Resolve sender info, fetching from DB on cache miss
+    const resolveSender = useCallback(async (
+        userId: string,
+        currentUser: { id: string; full_name: string; role: string }
+    ): Promise<{ name: string; isAdmin: boolean }> => {
+        if (userId === currentUser.id) {
+            return {
+                name: currentUser.full_name,
+                isAdmin: currentUser.role === 'owner' || currentUser.role === 'admin',
+            }
+        }
+
+        const cached = senderCache.current.get(userId)
+        if (cached) return cached
+
+        // Fetch from DB on cache miss
+        try {
+            const { data } = await supabase
+                .from('users')
+                .select('full_name, role')
+                .eq('id', userId)
+                .single()
+
+            if (data) {
+                const info = {
+                    name: (data as any).full_name || 'Member',
+                    isAdmin: (data as any).role === 'owner' || (data as any).role === 'admin',
+                }
+                senderCache.current.set(userId, info)
+                return info
+            }
+        } catch {
+            // Silently fall through
+        }
+
+        return { name: 'Member', isAdmin: false }
+    }, [])
 
     // Fetch messages
     useEffect(() => {
@@ -115,16 +154,16 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
         }
     }, [user?.id, channelType, companyId, cohortId])
 
-    // Real-time subscription
+    // Real-time subscription — fixed filter includes channel_type
     useEffect(() => {
         if (!user) return
 
-        // Build filter based on channel type
+        // Build filter that includes BOTH the scope AND channel_type
         let filter: string
         if (channelType === 'sprint' && cohortId) {
-            filter = `cohort_id=eq.${cohortId}`
+            filter = `channel_type=eq.${channelType}&cohort_id=eq.${cohortId}`
         } else if (companyId) {
-            filter = `company_id=eq.${companyId}`
+            filter = `channel_type=eq.${channelType}&company_id=eq.${companyId}`
         } else {
             return
         }
@@ -139,7 +178,7 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
                     table: 'chat_messages',
                     filter,
                 },
-                (payload) => {
+                async (payload) => {
                     if (payload.eventType === 'DELETE') {
                         const removed = payload.old as any
                         setMessages(prev => prev.filter(msg => msg.id !== removed.id))
@@ -147,18 +186,20 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
                     }
 
                     const row = payload.new as any
-                    if (!row || row.channel_type !== channelType) return
+                    if (!row) return
 
-                    const cached = senderCache.current.get(row.user_id)
-                    const senderName = row.user_id === user.id
-                        ? user.full_name
-                        : cached?.name ?? 'Member'
+                    // Resolve sender info (fetches from DB on cache miss)
+                    const senderInfo = await resolveSender(row.user_id, {
+                        id: user.id,
+                        full_name: user.full_name,
+                        role: user.role,
+                    })
 
                     const entry: MessageDisplay = {
                         id: row.id,
-                        senderName,
-                        senderInitial: senderName.charAt(0).toUpperCase(),
-                        isAdmin: cached?.isAdmin ?? (row.user_id === user.id && (user.role === 'owner' || user.role === 'admin')),
+                        senderName: senderInfo.name,
+                        senderInitial: senderInfo.name.charAt(0).toUpperCase(),
+                        isAdmin: senderInfo.isAdmin,
                         isOwn: row.user_id === user.id,
                         message: row.message,
                         messageType: row.message_type ?? 'text',
@@ -168,11 +209,17 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
                     }
 
                     setMessages(prev => {
-                        const existingIndex = prev.findIndex(msg => msg.id === row.id)
+                        // Remove any optimistic message from the same user with same text
+                        // (our own messages that were shown optimistically)
+                        const withoutOptimistic = entry.isOwn
+                            ? prev.filter(msg => !(msg.isSending && msg.message === entry.message))
+                            : prev
+
+                        const existingIndex = withoutOptimistic.findIndex(msg => msg.id === row.id)
                         if (existingIndex === -1) {
-                            return [...prev, entry]
+                            return [...withoutOptimistic, entry]
                         }
-                        const next = [...prev]
+                        const next = [...withoutOptimistic]
                         next[existingIndex] = entry
                         return next
                     })
@@ -183,8 +230,62 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
         return () => {
             void supabase.removeChannel(realtimeChannel)
         }
-    }, [user?.id, user?.role, channelType, companyId, cohortId, channel.id])
+    }, [user?.id, user?.role, channelType, companyId, cohortId, channel.id, resolveSender])
 
+    // Optimistic send handler — called by ChatInput
+    const handleOptimisticSend = useCallback((msg: {
+        id: string
+        message: string
+        messageType: 'text' | 'file'
+        fileUrl: string | null
+        fileName?: string
+    }) => {
+        if (!user) return
+
+        const optimistic: MessageDisplay = {
+            id: msg.id,
+            senderName: user.full_name,
+            senderInitial: user.full_name.charAt(0).toUpperCase(),
+            isAdmin: user.role === 'owner' || user.role === 'admin',
+            isOwn: true,
+            message: msg.message,
+            messageType: msg.messageType,
+            fileUrl: msg.fileUrl,
+            timestamp: formatTimeLabel(new Date().toISOString()) || '—',
+            isPinned: false,
+            isSending: true,
+        }
+
+        setMessages(prev => [...prev, optimistic])
+    }, [user])
+
+    return (
+        <ChatMessageListView
+            messages={messages}
+            loading={loading}
+            error={error}
+            messagesEndRef={messagesEndRef}
+            onOptimisticSend={handleOptimisticSend}
+        />
+    )
+}
+
+// Extracted view so ChatPage can pass the onOptimisticSend down
+interface ChatMessageListViewProps {
+    messages: MessageDisplay[]
+    loading: boolean
+    error: string | null
+    messagesEndRef: React.RefObject<HTMLDivElement | null>
+    onOptimisticSend: (msg: {
+        id: string
+        message: string
+        messageType: 'text' | 'file'
+        fileUrl: string | null
+        fileName?: string
+    }) => void
+}
+
+function ChatMessageListView({ messages, loading, error, messagesEndRef }: ChatMessageListViewProps) {
     return (
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {loading ? (
@@ -209,7 +310,10 @@ export function ChatMessageList({ channel }: ChatMessageListProps) {
                     <ChatMessageBubble key={msg.id} {...msg} />
                 ))
             )}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} />
         </div>
     )
 }
+
+// Re-export the list component with optimistic support accessible from parent
+export { ChatMessageListView }
