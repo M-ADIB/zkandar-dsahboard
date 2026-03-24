@@ -41,7 +41,6 @@ const emptyCost: Omit<Cost, 'id' | 'created_at'> = {
 }
 
 type TimeFilter = 'this_month' | 'last_month' | 'past_90' | 'upcoming' | 'archived'
-type StatusFilter = 'all' | 'active' | 'inactive'
 
 function CredentialDisplay({ email, password, notes }: { email?: string | null, password?: string | null, notes?: string | null }) {
     const [showPass, setShowPass] = useState(false)
@@ -97,7 +96,6 @@ export function CostsPage() {
     // Filters
     const [categoryFilter, setCategoryFilter] = useState('all') // 'all' or category name
     const [timeFilter, setTimeFilter] = useState<TimeFilter>('this_month')
-    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
 
     // Modals & Forms
     const [modalOpen, setModalOpen] = useState(false)
@@ -130,11 +128,7 @@ export function CostsPage() {
     const filteredCosts = useMemo(() => {
         let result = costs
 
-        // 1. Status Filter
-        if (statusFilter === 'active') result = result.filter(c => c.is_active)
-        else if (statusFilter === 'inactive') result = result.filter(c => !c.is_active)
-
-        // 2. Category Filter
+        // 1. Category Filter
         if (categoryFilter !== 'all') result = result.filter(c => c.category === categoryFilter)
 
         // 3. Time Filter
@@ -241,7 +235,7 @@ export function CostsPage() {
         }
 
         return result
-    }, [costs, categoryFilter, timeFilter, statusFilter])
+    }, [costs, categoryFilter, timeFilter])
 
     const periodTotal = useMemo(() => 
         filteredCosts.filter(c => c.is_active).reduce((s, c) => s + (c.total_amount ?? 0), 0)
