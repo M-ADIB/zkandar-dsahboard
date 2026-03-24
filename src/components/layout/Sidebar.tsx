@@ -29,6 +29,7 @@ import {
 import type { UserRole } from '@/types/database'
 import type { User as DbUser } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
+import { useNotifications } from '@/context/NotificationContext'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 
@@ -122,6 +123,7 @@ export function Sidebar({ userRole }: SidebarProps) {
     const [isProfileOpen, setIsProfileOpen] = useState(false)
     const location = useLocation()
     const { isPreviewing, canPreview, previewUser, setPreviewUser } = useViewMode()
+    const { unreadCount } = useNotifications()
 
     // Member picker state
     const [pickerOpen, setPickerOpen] = useState(false)
@@ -216,14 +218,14 @@ export function Sidebar({ userRole }: SidebarProps) {
             >
                 {/* Logo */}
                 <div className="p-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <NavLink to={canPreview && !isPreviewing ? '/admin' : '/dashboard'} className="flex items-center gap-3 hover:opacity-80 transition" onClick={() => setIsOpen(false)}>
                         <img src={logo} alt="Skender AI" className="h-12 w-auto object-contain" />
                         <div>
                             <h1 className="font-heading text-lg font-bold tracking-wide">
                                 ZKANDAR AI
                             </h1>
                         </div>
-                    </div>
+                    </NavLink>
                     <button
                         onClick={() => setIsOpen(false)}
                         className="lg:hidden p-1 rounded-lg hover:bg-white/5"
@@ -290,7 +292,12 @@ export function Sidebar({ userRole }: SidebarProps) {
                                                             className={`h-4 w-4 relative z-10 ${isActive ? 'text-lime' : ''
                                                                 }`}
                                                         />
-                                                        <span className="relative z-10 font-medium text-sm">{item.label}</span>
+                                                        <span className="relative z-10 font-medium text-sm flex-1">{item.label}</span>
+                                                        {item.label === 'Chat' && unreadCount > 0 && (
+                                                            <span className="relative z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
+                                                                {unreadCount > 99 ? '99+' : unreadCount}
+                                                            </span>
+                                                        )}
                                                     </NavLink>
                                                 )
                                             })}

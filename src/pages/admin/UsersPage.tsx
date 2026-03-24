@@ -7,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Portal } from '@/components/shared/Portal';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
+import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar';
+import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm';
 import { UserModal } from '@/components/admin/users/UserModal';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
 import type { Cohort, CohortMembership, Company, User, UserRole, UserType } from '@/types/database';
@@ -38,6 +40,9 @@ export function UsersPage() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isInviteOpen, setIsInviteOpen] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
     const { session } = useAuth();
 
     const fetchUsers = async () => {
@@ -121,6 +126,34 @@ export function UsersPage() {
         } finally {
             setIsDeleting(false);
         }
+    };
+
+    const handleBulkDelete = async () => {
+        if (!session?.access_token) return;
+        setIsBulkDeleting(true);
+        let successCount = 0;
+        for (const userId of selectedIds) {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+                    body: JSON.stringify({ user_id: userId }),
+                });
+                if (res.ok) successCount++;
+            } catch { /* skip failed */ }
+        }
+        setIsBulkDeleting(false);
+        if (successCount > 0) {
+            toast.success(`${successCount} member${successCount !== 1 ? 's' : ''} deleted`);
+            setUsers(prev => prev.filter(u => !selectedIds.includes(u.id)));
+        }
+        setSelectedIds([]);
+        setShowBulkDeleteConfirm(false);
+    };
+
+    const handleBulkEdit = () => {
+        const item = filteredUsers.find((u) => u.id === selectedIds[0]);
+        if (item) { setSelectedUser(item); setIsModalOpen(true); }
     };
 
     const companyMap = useMemo(() => new Map(companies.map((company) => [company.id, company])), [companies]);
@@ -229,13 +262,22 @@ export function UsersPage() {
                     <h1 className="text-2xl font-bold text-white">Members</h1>
                     <p className="text-gray-400 mt-1">Manage roles, companies, and program memberships</p>
                 </div>
-                <button
-                    onClick={() => setIsInviteOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium gradient-lime text-black hover:opacity-90 transition"
-                >
-                    <UserPlus className="h-4 w-4" />
-                    Add Member
-                </button>
+                <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onEdit={handleBulkEdit}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
+                    <button
+                        onClick={() => setIsInviteOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium gradient-lime text-black hover:opacity-90 transition"
+                    >
+                        <UserPlus className="h-4 w-4" />
+                        Add Member
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-4 flex flex-wrap gap-4">
@@ -298,6 +340,8 @@ export function UsersPage() {
                 onDelete={(user) => {
                     setUserToDelete(user);
                 }}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
             />
 
             {selectedUser && (
@@ -404,6 +448,15 @@ export function UsersPage() {
                     </Portal>
                 )}
             </AnimatePresence>
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
+                itemLabel="member"
+            />
         </div>
     );
 }

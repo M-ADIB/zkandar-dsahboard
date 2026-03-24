@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Plus, Search, Filter, Mail, Calendar, MapPin, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { EventRequest } from '@/types/database'
 import { EventDetailDrawer } from '@/components/admin/events/EventDetailDrawer'
+import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar'
+import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm'
+import { toast } from 'react-hot-toast'
 
 export function EventsPage() {
     const [events, setEvents] = useState<EventRequest[]>([])
@@ -12,6 +15,10 @@ export function EventsPage() {
     const [statusFilter, setStatusFilter] = useState<string>('all')
     const [selectedEvent, setSelectedEvent] = useState<EventRequest | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+    const selectAllRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         fetchEvents()
@@ -63,6 +70,21 @@ export function EventsPage() {
         }
     }
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true)
+        const { error } = await supabase.from('event_requests').delete().in('id', selectedIds)
+        setIsBulkDeleting(false)
+        if (error) { console.error(error); return }
+        toast.success(`${selectedIds.length} event${selectedIds.length !== 1 ? 's' : ''} deleted`)
+        setSelectedIds([])
+        setShowBulkDeleteConfirm(false)
+        fetchEvents()
+    }
+
+    const allSelected = filteredEvents.length > 0 && selectedIds.length === filteredEvents.length
+    const someSelected = selectedIds.length > 0 && !allSelected
+    if (selectAllRef.current) selectAllRef.current.indeterminate = someSelected
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -72,6 +94,12 @@ export function EventsPage() {
                     <p className="text-gray-400 text-sm mt-1">Review and manage book-Khaled requests.</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
                     <button
                         onClick={() => window.open('/events-apply', '_blank')}
                         className="px-4 py-2.5 bg-white/[0.03] border border-white/[0.06] text-white font-medium rounded-xl hover:border-lime/50 hover:text-lime transition-colors flex items-center gap-2 text-sm"
@@ -141,6 +169,15 @@ export function EventsPage() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/5 bg-[#0A0A0A]">
+                                <th className="w-10 px-4 py-3">
+                                    <input
+                                        ref={selectAllRef}
+                                        type="checkbox"
+                                        checked={allSelected}
+                                        onChange={(e) => setSelectedIds(e.target.checked ? filteredEvents.map(ev => ev.id) : [])}
+                                        className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer"
+                                    />
+                                </th>
                                 <th className="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
                                 <th className="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</th>
                                 <th className="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Event Details</th>
@@ -153,6 +190,7 @@ export function EventsPage() {
                             {loading ? (
                                 Array(5).fill(0).map((_, i) => (
                                     <tr key={i} className="animate-pulse">
+                                        <td className="px-4 py-3"></td>
                                         <td className="p-4"><div className="h-4 bg-white/5 rounded w-24"></div></td>
                                         <td className="p-4"><div className="h-4 bg-white/5 rounded w-32"></div></td>
                                         <td className="p-4"><div className="h-4 bg-white/5 rounded w-48"></div></td>
@@ -163,7 +201,7 @@ export function EventsPage() {
                                 ))
                             ) : filteredEvents.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-gray-400">
+                                    <td colSpan={7} className="p-8 text-center text-gray-400">
                                         No event requests found.
                                     </td>
                                 </tr>
@@ -173,12 +211,20 @@ export function EventsPage() {
                                     return (
                                         <tr
                                             key={ev.id}
-                                            className="hover:bg-white/[0.02] transition-colors cursor-pointer group"
+                                            className={`hover:bg-white/[0.02] transition-colors cursor-pointer group ${selectedIds.includes(ev.id) ? '!bg-lime/5 shadow-[inset_2px_0_0_0_#D0FF71]' : ''}`}
                                             onClick={() => {
                                                 setSelectedEvent(ev)
                                                 setIsDrawerOpen(true)
                                             }}
                                         >
+                                            <td className="w-10 px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(ev.id)}
+                                                    onChange={(e) => setSelectedIds(e.target.checked ? [...selectedIds, ev.id] : selectedIds.filter(id => id !== ev.id))}
+                                                    className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.05] accent-lime cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="p-4">
                                                 <div className="font-medium text-white">{ev.company}</div>
                                             </td>
@@ -226,6 +272,15 @@ export function EventsPage() {
                 onClose={() => setIsDrawerOpen(false)}
                 event={selectedEvent}
                 onUpdate={handleEventUpdate}
+            />
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
+                itemLabel="event"
             />
         </div >
     )

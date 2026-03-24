@@ -2,11 +2,14 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
+import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar';
+import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm';
 import { CompanyModal } from '@/components/admin/company/CompanyModal';
 import { Plus, Users, GraduationCap, MapPin } from 'lucide-react';
 import { formatDateLabel } from '@/lib/time';
 import type { Cohort, Company, User } from '@/types/database';
 import { MetricCard } from '@/components/shared/MetricCard';
+import { toast } from 'react-hot-toast';
 export function CompaniesPage() {
     const supabase = useSupabase();
     const navigate = useNavigate();
@@ -17,6 +20,9 @@ export function CompaniesPage() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const fetchCompanies = async () => {
         setIsLoading(true);
@@ -120,6 +126,22 @@ export function CompaniesPage() {
         fetchCompanies();
     };
 
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
+        const { error: deleteError } = await supabase.from('companies').delete().in('id', selectedIds);
+        setIsBulkDeleting(false);
+        if (deleteError) { setError(deleteError.message); return; }
+        toast.success(`${selectedIds.length} company${selectedIds.length !== 1 ? 'ies' : 'y'} deleted`);
+        setSelectedIds([]);
+        setShowBulkDeleteConfirm(false);
+        fetchCompanies();
+    };
+
+    const handleBulkEdit = () => {
+        const item = companies.find((c) => c.id === selectedIds[0]);
+        if (item) { setSelectedCompany(item); setIsModalOpen(true); }
+    };
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -128,13 +150,22 @@ export function CompaniesPage() {
                     <h1 className="text-2xl font-bold text-white">Companies</h1>
                     <p className="text-gray-400 mt-1 text-sm">Manage partner companies and their masterclass workspaces</p>
                 </div>
-                <button
-                    onClick={() => { setSelectedCompany(null); setIsModalOpen(true); }}
-                    className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl transition font-medium hover:opacity-90"
-                >
-                    <Plus className="h-4 w-4" />
-                    Add Company
-                </button>
+                <div className="flex items-center gap-3">
+                    {selectedIds.length > 0 && (
+                        <SelectionActionBar
+                            selectedCount={selectedIds.length}
+                            onEdit={handleBulkEdit}
+                            onDelete={() => setShowBulkDeleteConfirm(true)}
+                        />
+                    )}
+                    <button
+                        onClick={() => { setSelectedCompany(null); setIsModalOpen(true); }}
+                        className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl transition font-medium hover:opacity-90"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add Company
+                    </button>
+                </div>
             </div>
 
             {/* Summary metric cards */}
@@ -172,6 +203,8 @@ export function CompaniesPage() {
                 onRowClick={(company) => navigate(`/admin/companies/${company.id}`)}
                 onEdit={(company) => { setSelectedCompany(company); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
             />
 
             <CompanyModal
@@ -181,6 +214,15 @@ export function CompaniesPage() {
                 programs={programs}
                 users={users}
                 onSuccess={() => { setIsModalOpen(false); setSelectedCompany(null); fetchCompanies(); }}
+            />
+
+            <BulkDeleteConfirm
+                isOpen={showBulkDeleteConfirm}
+                count={selectedIds.length}
+                isLoading={isBulkDeleting}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={handleBulkDelete}
+                itemLabel="company"
             />
         </div>
     );
