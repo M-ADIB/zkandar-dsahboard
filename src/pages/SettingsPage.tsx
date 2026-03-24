@@ -168,7 +168,11 @@ export function SettingsPage() {
     const [savingPref, setSavingPref] = useState<string | null>(null)
 
     // Security tab
-    const [isSendingReset, setIsSendingReset] = useState(false)
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
+    const [newPassword, setNewPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [passwordError, setPasswordError] = useState<string | null>(null)
+    const [isSavingPassword, setIsSavingPassword] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const [deleteConfirmEmail, setDeleteConfirmEmail] = useState('')
@@ -301,18 +305,21 @@ export function SettingsPage() {
     }, [user, prefs])
 
     const handleChangePassword = async () => {
-        if (!user?.email) return
-        setIsSendingReset(true)
+        setPasswordError(null)
+        if (newPassword.length < 6) { setPasswordError('Password must be at least 6 characters'); return }
+        if (newPassword !== confirmPassword) { setPasswordError('Passwords do not match'); return }
+        setIsSavingPassword(true)
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-                redirectTo: `${window.location.origin}/settings`,
-            })
+            const { error } = await supabase.auth.updateUser({ password: newPassword })
             if (error) throw error
-            toast.success('Password reset email sent — check your inbox')
+            toast.success('Password updated successfully!')
+            setShowPasswordConfirm(false)
+            setNewPassword('')
+            setConfirmPassword('')
         } catch {
-            toast.error('Failed to send reset email')
+            toast.error('Failed to update password')
         } finally {
-            setIsSendingReset(false)
+            setIsSavingPassword(false)
         }
     }
 
@@ -729,18 +736,17 @@ export function SettingsPage() {
                             </div>
                             <div className="space-y-4">
                                 <button
-                                    onClick={handleChangePassword}
-                                    disabled={isSendingReset}
-                                    className="w-full flex items-center justify-between p-4 bg-bg-elevated rounded-xl hover:bg-white/5 transition disabled:opacity-70"
+                                    onClick={() => setShowPasswordConfirm(true)}
+                                    className="w-full flex items-center justify-between p-4 bg-bg-elevated rounded-xl hover:bg-white/5 transition"
                                 >
                                     <div className="flex items-center gap-3">
                                         <KeyRound className="h-4 w-4 text-gray-400" />
                                         <div className="text-left">
-                                            <p className="font-medium text-sm">Change Password</p>
-                                            <p className="text-xs text-gray-500">Send a password reset link to {user?.email}</p>
+                                            <p className="font-medium text-sm">Reset Password</p>
+                                            <p className="text-xs text-gray-500">Set a new password for your account</p>
                                         </div>
                                     </div>
-                                    {isSendingReset ? <Loader2 className="h-4 w-4 animate-spin text-gray-400" /> : <span className="text-gray-400 text-sm">→</span>}
+                                    <span className="text-gray-400 text-sm">→</span>
                                 </button>
                                 <button className="w-full flex items-center justify-between p-4 bg-bg-elevated rounded-xl hover:bg-white/5 transition">
                                     <div className="flex items-center gap-3">
@@ -826,6 +832,64 @@ export function SettingsPage() {
                 onClose={() => setShowInviteModal(false)}
                 onSuccess={loadTeam}
             />
+
+            {/* Password Reset Modal */}
+            {showPasswordConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl"
+                    >
+                        <div className="flex items-center gap-3 mb-4">
+                            <KeyRound className="h-5 w-5 text-lime shrink-0" />
+                            <h2 className="font-heading font-bold">Reset Password</h2>
+                        </div>
+                        {passwordError && (
+                            <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 mb-4">{passwordError}</div>
+                        )}
+                        <div className="space-y-4 mb-6">
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">New Password</label>
+                                <input
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className={inputClass}
+                                    placeholder="Min. 6 characters"
+                                    autoFocus
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className={inputClass}
+                                    placeholder="Repeat your new password"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => { setShowPasswordConfirm(false); setNewPassword(''); setConfirmPassword(''); setPasswordError(null) }}
+                                className="flex-1 px-4 py-2.5 border border-border rounded-xl text-sm hover:bg-white/5 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleChangePassword}
+                                disabled={isSavingPassword || !newPassword}
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 gradient-lime text-black rounded-xl text-sm font-bold hover:opacity-90 transition disabled:opacity-50"
+                            >
+                                {isSavingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+                                Update Password
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
 
             {/* Delete Account Confirmation Modal */}
             {showDeleteConfirm && (
