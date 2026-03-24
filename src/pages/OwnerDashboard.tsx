@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import {
     DollarSign, Building2, Mic,
     Users, ArrowRight, TrendingUp,
-    ChevronRight, CheckCircle2, Briefcase
+    ChevronRight, CheckCircle2, Briefcase, Receipt
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import type { Cohort, Company, Lead, Session, User, EventRequest, JobApplication } from '@/types/database'
@@ -308,14 +308,15 @@ export function OwnerDashboard() {
     const { data, isLoading: loading } = useQuery({
         queryKey: ['ownerDashboardData', monthStart, monthEnd],
         queryFn: async () => {
-            const [coRes, cohRes, sessRes, usersRes, leadsRes, eventsRes, appsRes] = await Promise.all([
+            const [coRes, cohRes, sessRes, usersRes, leadsRes, eventsRes, appsRes, costsRes] = await Promise.all([
                 supabase.from('companies').select('*').order('name'),
                 supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
                 supabase.from('sessions').select('id,cohort_id,status,scheduled_date,session_number').order('scheduled_date', { ascending: true }),
                 supabase.from('users').select('id,role,company_id,onboarding_completed').order('created_at'),
                 supabase.from('leads').select('id,priority,payment_amount,amount_paid,balance,paid_full,offering_type'),
                 supabase.from('event_requests').select('*').eq('status', 'approved'),
-                supabase.from('job_applications').select('id,status')
+                supabase.from('job_applications').select('id,status'),
+                supabase.from('costs').select('id,total_amount,payment_date,is_active')
             ])
 
             return {
@@ -325,7 +326,8 @@ export function OwnerDashboard() {
                 users: (usersRes.data as User[]) ?? [],
                 leads: (leadsRes.data as Lead[]) ?? [],
                 eventsData: (eventsRes.data as EventRequest[]) ?? [],
-                applicationsData: (appsRes.data as JobApplication[]) ?? []
+                applicationsData: (appsRes.data as JobApplication[]) ?? [],
+                costs: (costsRes.data as { id: string; total_amount: number; payment_date: string | null; is_active: boolean }[]) ?? []
             }
         }
     })
@@ -337,6 +339,7 @@ export function OwnerDashboard() {
     const leads = data?.leads ?? []
     const eventsData = data?.eventsData ?? []
     const applicationsData = data?.applicationsData ?? []
+    const costs = data?.costs ?? []
 
     // ── KPI calculations ──
     const cohortMap = useMemo(() => new Map(cohorts.map((c) => [c.id, c])), [cohorts])
@@ -350,6 +353,27 @@ export function OwnerDashboard() {
     const pipelineValue = useMemo(() => {
         return leads.reduce((sum, l) => sum + (Number((l as any).payment_amount) || 0), 0)
     }, [leads])
+
+    const activePipelineValue = useMemo(() => {
+        return leads
+            .filter((l) => (l as any).priority !== 'NOT INTERESTED')
+            .reduce((sum, l) => sum + (Number((l as any).payment_amount) || 0), 0)
+    }, [leads])
+
+    const upcomingCosts = useMemo(() => {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const currentMonth = today.getMonth()
+        const currentYear = today.getFullYear()
+        return costs.filter((c) => {
+            if (!c.is_active || !c.payment_date) return false
+            const orig = new Date(c.payment_date)
+            const rolled = new Date(currentYear, currentMonth, orig.getDate())
+            if (rolled > today) return true
+            // Check next month too
+            return new Date(currentYear, currentMonth + 1, orig.getDate()) > today
+        }).reduce((sum, c) => sum + (c.total_amount ?? 0), 0)
+    }, [costs])
 
     const pendingApplications = useMemo(() => {
         return applicationsData.filter(a => a.status === 'new' || a.status === 'reviewing').length
@@ -456,6 +480,15 @@ export function OwnerDashboard() {
                     delay={0.2}
                     onClick={() => navigate('/admin/members')}
                 />
+                <MetricCard
+                    icon={Receipt}
+                    label="Upcoming Costs"
+                    value={`AED ${fmt(upcomingCosts)}`}
+                    sub="next recurring payment"
+                    iconColor="text-red-400"
+                    delay={0.25}
+                    onClick={() => navigate('/admin/costs?tab=upcoming')}
+                />
             </div>
 
             {/* ── Row 2: Pipeline Analytics + Calendar ── */}
@@ -494,11 +527,12 @@ export function OwnerDashboard() {
 
                         {/* Middle Focus -> Value */}
                         <div className="relative z-10 mb-10 md:mb-20">
-                            <p className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-gray-400 mb-4 ml-1">Total Pipeline Value</p>
-                            <h3 className="text-3xl sm:text-[2.55rem] lg:text-5xl xl:text-[5.75rem] font-black text-white tracking-normal drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
-                                <span className="text-lime/90 text-2xl sm:text-3xl lg:text-4xl align-top mr-2">AED</span> 
-                                {fmt(pipelineValue)}
+                            <p className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-gray-400 mb-4 ml-1">Active Pipeline</p>
+                            <h3 className="text-3xl sm:text-[2.55rem] lg:text-5xl xl:text-[5.75rem] font-black text-lime tracking-normal drop-shadow-[0_0_15px_rgba(208,255,113,0.08)] group-hover:drop-shadow-[0_0_35px_rgba(208,255,113,0.2)] transition-all duration-700 leading-none">
+                                <span className="text-lime/60 text-2xl sm:text-3xl lg:text-4xl align-top mr-2">AED</span> 
+                                {fmt(activePipelineValue)}
                             </h3>
+                            <p className="text-xs text-gray-500 mt-3 ml-1">Total: AED {fmt(pipelineValue)}</p>
                         </div>
 
                         {/* Bottom Focus -> Distribution Bar */}

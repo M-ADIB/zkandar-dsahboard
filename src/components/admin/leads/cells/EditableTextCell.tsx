@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useGridNavigation } from '../hooks/useGridNavigation';
 
 interface EditableTextCellProps {
@@ -22,12 +23,13 @@ export function EditableTextCell({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const cellRef = useRef<HTMLDivElement>(null);
 
-    // Apply the navigation hook (listens for arrows on the cellRef)
-    // We pass handleEditStart as a callback for when Enter or typing occurs
+    // For the floating popover
+    const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
+
+    // Apply the navigation hook
     useGridNavigation(cellRef, isEditing, (initialChar?: string) => {
         if (initialChar) {
             setLocalValue(initialChar);
-            // Wait for next tick so textarea/input has rendered
             setTimeout(() => {
                 if (multiline && textareaRef.current) {
                     textareaRef.current.focus();
@@ -45,40 +47,49 @@ export function EditableTextCell({
         setLocalValue(value);
     }, [value]);
 
+    // When entering edit mode, compute position for multiline popover
     useEffect(() => {
-        if (isEditing) {
-            if (multiline && textareaRef.current) {
-                const el = textareaRef.current;
-                el.focus();
-                // Place cursor at end
-                const len = el.value.length;
-                el.setSelectionRange(len, len);
+        if (isEditing && multiline && cellRef.current) {
+            const rect = cellRef.current.getBoundingClientRect();
+            setPopoverStyle({
+                position: 'fixed',
+                top: rect.top,
+                left: rect.left,
+                width: Math.max(rect.width, 320),
+                zIndex: 9999,
+            });
+        }
+    }, [isEditing, multiline]);
 
-                // Auto-expand height to fit content
-                el.style.height = 'auto';
-                el.style.height = `${el.scrollHeight}px`;
-            } else if (!multiline && inputRef.current) {
-                inputRef.current.focus();
-            }
+    // Auto-size the textarea whenever it renders
+    useEffect(() => {
+        if (isEditing && multiline && textareaRef.current) {
+            const el = textareaRef.current;
+            el.style.height = 'auto';
+            el.style.height = `${Math.min(el.scrollHeight, 400)}px`;
+            el.focus();
+            const len = el.value.length;
+            el.setSelectionRange(len, len);
+        } else if (isEditing && !multiline && inputRef.current) {
+            inputRef.current.focus();
         }
     }, [isEditing, multiline]);
 
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setLocalValue(e.target.value);
         e.target.style.height = 'auto';
-        e.target.style.height = `${e.target.scrollHeight}px`;
+        e.target.style.height = `${Math.min(e.target.scrollHeight, 400)}px`;
     };
 
     const handleBlur = (e?: React.FocusEvent) => {
-        // If relatedTarget is inside our cell (like moving from input to something else internally), ignore
         if (e && cellRef.current && cellRef.current.contains(e.relatedTarget as Node)) return;
+        // Also allow clicks inside the portal textarea to not count as blur
+        if (e && textareaRef.current && textareaRef.current.contains(e.relatedTarget as Node)) return;
 
         setIsEditing(false);
         if (localValue !== value) {
             onUpdate(localValue);
         }
-        // Refocus our cell wrapper
-        // Optional: comment out if you prefer focus to be lost entirely on external click
         requestAnimationFrame(() => {
             if (!document.activeElement || document.activeElement.tagName === 'BODY') {
                 cellRef.current?.focus();
@@ -91,18 +102,13 @@ export function EditableTextCell({
             e.preventDefault();
             setIsEditing(false);
             setLocalValue(value);
-            // Return focus to cell
             requestAnimationFrame(() => cellRef.current?.focus());
             return;
         }
 
-        // Handle Enter/Tab specifically to blur and allow navigation hook to take over, 
-        // OR manually move focus ourselves to guarantee Excel-like speed.
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter' && !e.shiftKey && !multiline) {
             e.preventDefault();
             handleBlur();
-
-            // Excel style: Enter moves Down.
             const td = cellRef.current?.closest('td');
             const tr = td?.closest('tr');
             if (td && tr && tr.nextElementSibling) {
@@ -113,11 +119,18 @@ export function EditableTextCell({
             return;
         }
 
+        // For multiline: Shift+Enter inserts newline (default), plain Enter commits
+        if (e.key === 'Enter' && !e.shiftKey && multiline) {
+            e.preventDefault();
+            setIsEditing(false);
+            if (localValue !== value) onUpdate(localValue);
+            requestAnimationFrame(() => cellRef.current?.focus());
+            return;
+        }
+
         if (e.key === 'Tab') {
             e.preventDefault();
             handleBlur();
-
-            // Excel style: Tab moves Right. Shift+Tab moves Left.
             const td = cellRef.current?.closest('td');
             if (td) {
                 const targetTd = e.shiftKey ? td.previousElementSibling : td.nextElementSibling;
@@ -127,23 +140,53 @@ export function EditableTextCell({
         }
     };
 
-    if (isEditing) {
-        if (multiline) {
-            return (
-                <div ref={cellRef} tabIndex={-1} className="w-full relative">
-                    <textarea
-                        ref={textareaRef}
-                        value={localValue}
-                        rows={1}
-                        onChange={handleTextareaChange}
-                        onBlur={handleBlur}
-                        onKeyDown={handleKeyDown}
-                        className={`w-full bg-bg-elevated border-2 border-lime rounded-md px-2 py-1 text-sm text-white outline-none resize-none overflow-hidden min-h-[40px] shadow-[0_0_10px_rgba(182,233,65,0.2)] ${className}`}
-                        style={{ height: textareaRef.current ? `${textareaRef.current.scrollHeight}px` : 'auto' }}
-                    />
+    // Render floating popover editor for multiline cells
+    if (isEditing && multiline) {
+        return (
+            <>
+                {/* Show a dim placeholder in the cell itself so layout doesn't shift */}
+                <div
+                    ref={cellRef}
+                    tabIndex={-1}
+                    className="w-full px-2 py-1 min-h-[28px] text-lime/40 text-sm italic"
+                >
+                    Editing…
                 </div>
-            );
-        }
+
+                {/* Floating textarea via portal */}
+                {createPortal(
+                    <>
+                        {/* Backdrop to catch outside clicks */}
+                        <div
+                            className="fixed inset-0 z-[9998]"
+                            onMouseDown={() => {
+                                setIsEditing(false);
+                                if (localValue !== value) onUpdate(localValue);
+                                requestAnimationFrame(() => cellRef.current?.focus());
+                            }}
+                        />
+                        <div style={popoverStyle} className="rounded-lg shadow-2xl ring-2 ring-lime/60 bg-[#111]">
+                            <textarea
+                                ref={textareaRef}
+                                value={localValue}
+                                onChange={handleTextareaChange}
+                                onKeyDown={handleKeyDown}
+                                className="w-full bg-transparent px-3 py-2 text-sm text-white outline-none resize-none overflow-hidden rounded-lg min-h-[40px]"
+                                style={{ height: 'auto' }}
+                                placeholder={placeholder}
+                            />
+                            <div className="px-3 pb-2 flex items-center gap-2 text-[10px] text-gray-600">
+                                <span>Enter to save · Shift+Enter for new line · Esc to cancel</span>
+                            </div>
+                        </div>
+                    </>,
+                    document.body
+                )}
+            </>
+        );
+    }
+
+    if (isEditing) {
         return (
             <div ref={cellRef} tabIndex={-1} className="w-full relative">
                 <input

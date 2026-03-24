@@ -9,7 +9,7 @@ export function Navbar() {
     const [searchQuery, setSearchQuery] = useState('')
 
     return (
-        <header className="sticky top-0 z-20 bg-bg-primary/80 backdrop-blur-xl border-b border-border">
+        <header className="sticky top-0 z-20 bg-bg-primary backdrop-blur-xl border-b border-border">
             <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 h-16">
                 {/* Search */}
                 <div className="flex-1 max-w-md ml-12 lg:ml-0">
