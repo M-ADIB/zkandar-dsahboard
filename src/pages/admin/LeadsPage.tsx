@@ -408,6 +408,7 @@ export function LeadsPage() {
         followUp: leads.filter((l: Lead) => l.discovery_call_date != null).length,
         // Pipeline value = payment_amount for all leads
         pipelineValue: leads.reduce((sum: number, l: Lead) => sum + (Number(l.payment_amount) || 0), 0),
+        activePipelineValue: leads.filter((l: Lead) => l.priority !== 'NOT INTERESTED').reduce((sum: number, l: Lead) => sum + (Number(l.payment_amount) || 0), 0),
     };
 
     const currencyFormatter = useMemo(
@@ -511,9 +512,15 @@ export function LeadsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 <MetricCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
                 <MetricCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
-                <MetricCard label="Pipeline (AED)" value={currencyFormatter.format(stats.pipelineValue)} icon={DollarSign} iconColor="text-yellow-400" />
+                <MetricCard 
+                    label="Active Pipeline" 
+                    value={currencyFormatter.format(stats.activePipelineValue)} 
+                    icon={DollarSign} 
+                    limeAccent
+                    sub={<span className="text-gray-500">Total: {currencyFormatter.format(stats.pipelineValue)}</span>}
+                />
                 <MetricCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
-                <MetricCard label="Active"        value={stats.active}                             icon={Target}     limeAccent />
+                <MetricCard label="Active"        value={stats.active}                             icon={Target}     />
             </div>
 
 

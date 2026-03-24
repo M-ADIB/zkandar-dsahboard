@@ -40,7 +40,7 @@ const emptyCost: Omit<Cost, 'id' | 'created_at'> = {
     is_active: true
 }
 
-type TimeFilter = 'this_month' | 'last_month' | 'past_90' | 'upcoming'
+type TimeFilter = 'this_month' | 'last_month' | 'past_90' | 'upcoming' | 'archived'
 type StatusFilter = 'all' | 'active' | 'inactive'
 
 function CredentialDisplay({ email, password, notes }: { email?: string | null, password?: string | null, notes?: string | null }) {
@@ -235,16 +235,34 @@ export function CostsPage() {
             return true
         })
 
+        // Special case: archived tab shows all inactive costs regardless of date
+        if (timeFilter === 'archived') {
+            return result.filter(c => !c.is_active)
+        }
+
         return result
     }, [costs, categoryFilter, timeFilter, statusFilter])
 
     const periodTotal = useMemo(() => 
-        filteredCosts.reduce((s, c) => s + (c.total_amount ?? 0), 0)
+        filteredCosts.filter(c => c.is_active).reduce((s, c) => s + (c.total_amount ?? 0), 0)
     , [filteredCosts])
 
     const allTimeTotal = useMemo(() => 
-        costs.reduce((s, c) => s + (c.total_amount ?? 0), 0)
+        costs.filter(c => c.is_active).reduce((s, c) => s + (c.total_amount ?? 0), 0)
     , [costs])
+
+    const upcomingTotal = useMemo(() => {
+        const now = new Date()
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const currentMonth = now.getMonth()
+        const currentYear = now.getFullYear()
+        return costs.filter(c => {
+            if (!c.is_active || !c.payment_date) return false
+            const orig = new Date(c.payment_date)
+            const rolled = new Date(currentYear, currentMonth, orig.getDate())
+            return rolled > today ? true : new Date(currentYear, currentMonth + 1, orig.getDate()) > today
+        }).reduce((s, c) => s + (c.total_amount ?? 0), 0)
+    }, [costs])
 
     // --- Handlers ---
 
@@ -444,76 +462,91 @@ export function CostsPage() {
             </div>
 
             {/* Filters Row */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white/[0.02] border border-white/[0.06] p-4 rounded-[20px]">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 
                 {/* Time Filters */}
                 <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 w-max overflow-x-auto">
-                    {(['this_month', 'last_month', 'past_90', 'upcoming'] as TimeFilter[]).map(t => (
+                    {([
+                        { key: 'this_month', label: 'This Month' },
+                        { key: 'last_month', label: 'Last Month' },
+                        { key: 'past_90', label: 'Past 90 Days' },
+                        { key: 'upcoming', label: 'Upcoming' },
+                        { key: 'archived', label: 'Archived' },
+                    ] as { key: TimeFilter; label: string }[]).map(t => (
                         <button
-                            key={t}
-                            onClick={() => setTimeFilter(t)}
+                            key={t.key}
+                            onClick={() => setTimeFilter(t.key)}
                             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition whitespace-nowrap ${
-                                timeFilter === t 
-                                ? 'bg-white/10 text-white shadow-sm' 
+                                timeFilter === t.key 
+                                ? t.key === 'archived'
+                                    ? 'bg-red-500/20 text-red-400 shadow-sm'
+                                    : 'bg-white/10 text-white shadow-sm' 
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                             }`}
                         >
-                            {t === 'this_month' ? 'This Month' :
-                             t === 'last_month' ? 'Last Month' :
-                             t === 'past_90' ? 'Past 90 Days' : 'Upcoming'}
+                            {t.label}
                         </button>
                     ))}
                 </div>
 
-                <div className="flex items-center gap-4 flex-wrap">
-                    {/* Status Filter */}
-                    <div className="flex items-center gap-2 border-r border-border pr-4">
-                        <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Status</span>
-                        <select 
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                            className="bg-[#111] text-sm text-white focus:outline-none cursor-pointer"
+                {/* Category Pill Filters */}
+                <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                        onClick={() => setCategoryFilter('all')}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition ${
+                            categoryFilter === 'all'
+                            ? 'bg-white/10 border-white/20 text-white'
+                            : 'bg-transparent border-white/[0.06] text-gray-400 hover:text-white hover:border-white/20'
+                        }`}
+                    >
+                        All
+                    </button>
+                    {categories.map(cat => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setCategoryFilter(categoryFilter === cat.name ? 'all' : cat.name)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition ${
+                                categoryFilter === cat.name
+                                ? 'border-opacity-60 text-white'
+                                : 'bg-transparent border-white/[0.06] text-gray-400 hover:text-white'
+                            }`}
+                            style={categoryFilter === cat.name ? {
+                                backgroundColor: `${cat.color}18`,
+                                borderColor: `${cat.color}60`,
+                                color: cat.color,
+                            } : {}}
                         >
-                            <option value="all" className="bg-bg-card">All Status</option>
-                            <option value="active" className="bg-bg-card">Active Only</option>
-                            <option value="inactive" className="bg-bg-card">Inactive Only</option>
-                        </select>
-                    </div>
-
-                    {/* Category Filter */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Category</span>
-                        <select 
-                            value={categoryFilter}
-                            onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="bg-[#111] text-sm text-white focus:outline-none cursor-pointer max-w-[150px] truncate"
-                        >
-                            <option value="all" className="bg-bg-card">All Categories</option>
-                            {categories.map(c => (
-                                <option key={c.id} value={c.name} className="bg-bg-card">{c.name}</option>
-                            ))}
-                        </select>
-                    </div>
+                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                            {cat.name}
+                        </button>
+                    ))}
                 </div>
 
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <MetricCard 
                     label={
                         timeFilter === 'this_month' ? 'This Month' :
                         timeFilter === 'last_month' ? 'Last Month' :
-                        timeFilter === 'past_90' ? 'Past 90 Days' : 'Upcoming'
+                        timeFilter === 'past_90' ? 'Past 90 Days' :
+                        timeFilter === 'archived' ? 'Archived' : 'Upcoming'
                     }
                     value={`AED ${fmt(periodTotal)}`}
                     limeAccent
                     delay={0}
                 />
                 <MetricCard 
-                    label="Showing Total"
+                    label="Active Total"
                     value={`AED ${fmt(allTimeTotal)}`}
                     delay={0.1}
+                />
+                <MetricCard 
+                    label="Upcoming This Cycle"
+                    value={`AED ${fmt(upcomingTotal)}`}
+                    sub="Next recurring payment"
+                    delay={0.2}
                 />
             </div>
 
@@ -761,15 +794,15 @@ export function CostsPage() {
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             onClick={() => setCategoriesModalOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+                            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[70]"
                         />
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className="fixed inset-0 z-[71] flex items-center justify-center p-4 pointer-events-none"
                         >
-                            <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] w-full max-w-md p-6 space-y-5">
+                            <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] w-full max-w-md p-6 space-y-5 pointer-events-auto">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                                         <Settings className="h-5 w-5 text-lime"/> Manage Categories

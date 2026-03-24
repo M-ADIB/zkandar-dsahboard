@@ -436,6 +436,19 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
 
     const handlePasswordUpdate = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (isUpdatingPassword) {
+            console.warn('[Onboarding] Password update already in progress, skipping')
+            return
+        }
+        
+        const timeoutId = setTimeout(() => {
+            if (isUpdatingPassword) {
+                console.error('[Onboarding] Password update timed out after 15s')
+                setIsUpdatingPassword(false)
+                toast.error('Update timed out. Please check your connection and try again.')
+            }
+        }, 15000)
+
         console.info('[Onboarding] Password update started')
         
         if (!user) {
@@ -455,27 +468,35 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
         setIsUpdatingPassword(true)
         try {
             console.info('[Onboarding] Calling supabase.auth.updateUser...')
-            const { error: authError } = await supabase.auth.updateUser({
+            const { data: authData, error: authError } = await supabase.auth.updateUser({
                 password: passwordData.newPassword
             })
 
             if (authError) {
                 console.error('[Onboarding] Auth update failed:', authError)
-                throw authError
+                if (authError.message?.toLowerCase().includes('different from the old')) {
+                    toast.error('New password must be different from your temporary password')
+                } else {
+                    toast.error(authError.message)
+                }
+                clearTimeout(timeoutId)
+                setIsUpdatingPassword(false)
+                return
             }
-            console.info('[Onboarding] Auth update successful')
+            console.info('[Onboarding] Auth update successful:', authData?.user?.id)
 
             // Update public.users profile_data to track that password was changed
+            // We do this BEFORE hiding the modal to ensure the DB is updated
             console.info('[Onboarding] Updating public.users profile_data...')
             const { error: dbError } = await (supabase
-                .from('users')
+                .from('users') as any)
                 .update({
                     profile_data: {
                         ...(user.profile_data as Record<string, any> || {}),
                         password_changed: true,
                         password_changed_at: new Date().toISOString()
                     }
-                } as any) as any)
+                })
                 .eq('id', user.id)
 
             if (dbError) {
@@ -485,15 +506,21 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
             console.info('[Onboarding] DB update successful')
 
             toast.success('Password updated successfully')
-            setShowPasswordChange(false)
             
-            console.info('[Onboarding] Refreshing user profile...')
-            await refreshUser()
-            console.info('[Onboarding] User profile refreshed')
+            // Give AuthContext a moment to pick up the changes via Realtime or listener
+            // before we close the modal and potentially re-render
+            setShowPasswordChange(false)
+            console.info('[Onboarding] Password change modal closed')
+            // We no longer call refreshUser() manually here because onAuthStateChange 
+            // in AuthContext will trigger on USER_UPDATED and update the profile.
+            // This prevents race conditions and hangs.
         } catch (error) {
             console.error('[Onboarding] Error updating password:', error)
             toast.error(error instanceof Error ? error.message : 'Failed to update password')
+            // Reset password fields on error so user can try again
+            setPasswordData(prev => ({ ...prev, newPassword: '', confirmPassword: '' }))
         } finally {
+            clearTimeout(timeoutId)
             console.info('[Onboarding] Password update sequence finished')
             setIsUpdatingPassword(false)
         }

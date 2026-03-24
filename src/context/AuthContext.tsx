@@ -60,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const MAX_RETRIES = 3
 
         try {
+            console.log(`[Auth] fetchUserProfile started for ${userId} (Attempt ${attempt})`)
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
@@ -69,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (error) {
                 const shouldRetry = isAbortError(error) || error.message?.toLowerCase().includes('fetch')
                 if (shouldRetry && attempt < MAX_RETRIES) {
-                    console.log(`[Auth] Profile fetch failed, retrying (${attempt + 1}/${MAX_RETRIES})...`)
+                    console.log(`[Auth] Profile fetch failed, retrying (${attempt + 1}/${MAX_RETRIES})... Error: ${error.message}`)
                     await delay(500 * (attempt + 1))
                     return fetchUserProfile(userId, email, attempt + 1)
                 }
@@ -111,9 +112,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             if (data) {
-                console.log('[Auth] Profile fetched:', (data as User).role)
+                console.log(`[Auth] Profile fetched successfully for ${userId}:`, (data as User).role)
                 return data as User
             }
+            console.warn(`[Auth] No profile data returned for ${userId}`)
             return null
         } catch (err) {
             // If the error looks like a network interruption, we capture it and retry
@@ -251,24 +253,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             if (newSession?.user) {
-                // Prevent overlapping profile fetches if one is already in flight for init or previous event.
+                // Prevent overlapping profile fetches
                 if (isFetchingProfileRef.current) {
                     console.log('[Auth] Profile fetch already in progress, skipping redundant fetch on event:', event)
                     return
                 }
 
-                isFetchingProfileRef.current = true
-                const profile = await fetchUserProfile(
-                    newSession.user.id,
-                    newSession.user.email
-                )
-                isFetchingProfileRef.current = false
-
-                if (mountedRef.current) {
-                    setUser(profile)
-                    console.log('[Auth] Auth change profile:', profile?.role ?? 'null')
-                    resolveAuthStatus()
-                }
+                // Decouple profile fetch from the auth event cycle to prevent blocking/deadlocks
+                const userId = newSession.user.id
+                const userEmail = newSession.user.email
+                
+                setTimeout(async () => {
+                    // Re-check ref inside timeout
+                    if (isFetchingProfileRef.current) return
+                    
+                    isFetchingProfileRef.current = true
+                    try {
+                        console.log(`[Auth] Async profile fetch started for event: ${event}`)
+                        const profile = await fetchUserProfile(userId, userEmail)
+                        if (mountedRef.current) {
+                            setUser(profile)
+                            console.log('[Auth] Auth change profile updated:', profile?.role ?? 'null')
+                            resolveAuthStatus()
+                        }
+                    } finally {
+                        isFetchingProfileRef.current = false
+                    }
+                }, 0)
             } else {
                 if (mountedRef.current) {
                     setUser(null)
@@ -493,9 +504,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const refreshUser = async () => {
-        if (authUser) {
-            const profile = await fetchUserProfile(authUser.id)
+        if (!authUser) return
+        
+        if (isFetchingProfileRef.current) {
+            console.log('[Auth] refreshUser: Fetch already in progress, skipping')
+            return
+        }
+
+        console.log('[Auth] Manually refreshing user profile...')
+        isFetchingProfileRef.current = true
+        try {
+            const profile = await fetchUserProfile(authUser.id, authUser.email)
             setUser(profile)
+            console.log('[Auth] Manual refresh complete')
+        } finally {
+            isFetchingProfileRef.current = false
         }
     }
 

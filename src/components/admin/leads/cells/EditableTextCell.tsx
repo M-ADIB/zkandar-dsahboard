@@ -48,15 +48,26 @@ export function EditableTextCell({
     useEffect(() => {
         if (isEditing) {
             if (multiline && textareaRef.current) {
-                textareaRef.current.focus();
+                const el = textareaRef.current;
+                el.focus();
                 // Place cursor at end
-                const len = textareaRef.current.value.length;
-                textareaRef.current.setSelectionRange(len, len);
+                const len = el.value.length;
+                el.setSelectionRange(len, len);
+
+                // Auto-expand height to fit content
+                el.style.height = 'auto';
+                el.style.height = `${el.scrollHeight}px`;
             } else if (!multiline && inputRef.current) {
                 inputRef.current.focus();
             }
         }
     }, [isEditing, multiline]);
+
+    const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setLocalValue(e.target.value);
+        e.target.style.height = 'auto';
+        e.target.style.height = `${e.target.scrollHeight}px`;
+    };
 
     const handleBlur = (e?: React.FocusEvent) => {
         // If relatedTarget is inside our cell (like moving from input to something else internally), ignore
@@ -123,11 +134,12 @@ export function EditableTextCell({
                     <textarea
                         ref={textareaRef}
                         value={localValue}
-                        rows={4}
-                        onChange={(e) => setLocalValue(e.target.value)}
+                        rows={1}
+                        onChange={handleTextareaChange}
                         onBlur={handleBlur}
                         onKeyDown={handleKeyDown}
-                        className={`w-full bg-bg-elevated border-2 border-lime rounded-md px-2 py-1 text-sm text-white outline-none resize-y min-h-[80px] shadow-[0_0_10px_rgba(182,233,65,0.2)] ${className}`}
+                        className={`w-full bg-bg-elevated border-2 border-lime rounded-md px-2 py-1 text-sm text-white outline-none resize-none overflow-hidden min-h-[40px] shadow-[0_0_10px_rgba(182,233,65,0.2)] ${className}`}
+                        style={{ height: textareaRef.current ? `${textareaRef.current.scrollHeight}px` : 'auto' }}
                     />
                 </div>
             );
@@ -162,7 +174,7 @@ export function EditableTextCell({
             className={`cursor-text px-2 py-1 min-h-[28px] flex items-center transition-colors rounded outline-none focus:ring-2 focus:ring-lime focus:ring-inset focus:bg-lime/5 hover:bg-white/5 group ${!value ? 'text-gray-500 italic' : 'text-gray-200'} ${className}`}
             title={value || undefined}
         >
-            <span className={multiline ? 'line-clamp-2' : 'truncate max-w-full'}>
+            <span className={multiline ? 'break-words whitespace-pre-wrap line-clamp-2' : 'truncate max-w-full'}>
                 {value || placeholder}
             </span>
         </div>

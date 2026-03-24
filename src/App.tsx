@@ -9,6 +9,7 @@ import { NotificationProvider } from '@/context/NotificationContext'
 import { lazy } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageTitleUpdater } from '@/hooks/usePageTitle'
+import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 
 // Public & Onboarding
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(module => ({ default: module.LoginPage })))
@@ -63,6 +64,7 @@ function App() {
                             </div>
                         }>
                             <PageTitleUpdater />
+                            <InstallPrompt />
                             <Routes>
                                 {/* Public Routes */}
                                 <Route path="/login" element={<LoginPage />} />

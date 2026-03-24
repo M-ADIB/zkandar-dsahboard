@@ -64,8 +64,8 @@ const OFFERING_OPTIONS = [
 // └──────────────┴─────────────────┴──────────────────────┴──────────────────────────────
 const STICKY_MAP: Record<string, { left: string; width: string }> = {
     select:    { left: 'left-0',       width: 'w-[44px]  min-w-[44px]  max-w-[44px]' },
-    priority:  { left: 'left-[44px]',  width: 'w-[160px] min-w-[160px] max-w-[160px]' },
-    full_name: { left: 'left-[204px]', width: 'w-[220px] min-w-[220px] max-w-[220px]' },
+    priority:  { left: 'left-[44px]',  width: 'w-[180px] min-w-[180px] max-w-[180px]' },
+    full_name: { left: 'left-[224px]', width: 'w-[220px] min-w-[220px] max-w-[220px]' },
 };
 
 // Even/odd row backgrounds — must be opaque so scrolling content disappears cleanly behind sticky cols
@@ -314,13 +314,20 @@ export function LeadsTable({
                         <EditableTextCell
                             value={toText(val)}
                             onUpdate={onUpdate}
-                            multiline={col.key === 'notes' || col.key === 'description'}
+                            multiline={
+                                col.key === 'notes' || 
+                                col.key === 'description' || 
+                                col.label.toLowerCase().includes('remark') || 
+                                col.label.toLowerCase().includes('note') ||
+                                toText(val).length > 40
+                            }
                             className={
                                 col.key === 'full_name'    ? 'font-medium' :
                                 col.key === 'company_name' ? 'text-gray-300' :
                                 col.key === 'email'        ? 'text-sm text-gray-400' :
                                 col.key === 'description'  ? 'truncate max-w-[200px]' :
-                                col.key === 'notes'        ? 'truncate max-w-[200px]' : ''
+                                col.key === 'notes'        ? 'truncate max-w-[200px]' : 
+                                col.label.toLowerCase().includes('remark') || col.label.toLowerCase().includes('note') ? 'truncate max-w-[200px]' : ''
                             }
                         />
                     );
