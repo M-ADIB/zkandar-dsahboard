@@ -45,27 +45,44 @@ export function MyProgramPage() {
             setLoading(true)
             setError(null)
 
-            // Get user's company → cohort
+            // Get user's cohort — try company path first, then cohort_memberships
             const { data: userData } = await supabase
                 .from('users').select('company_id').eq('id', effectiveUserId).single()
             const userRow = userData as { company_id: string | null } | null
-            if (!userRow?.company_id) { setError('No company assigned'); setLoading(false); return }
 
-            const { data: companyData } = await supabase
-                .from('companies').select('cohort_id').eq('id', userRow.company_id).single()
-            const companyRow = companyData as { cohort_id: string | null } | null
-            if (!companyRow?.cohort_id) { setError('No program assigned to your company'); setLoading(false); return }
+            let resolvedCohortId: string | null = null
+
+            // Path 1: company → cohort
+            if (userRow?.company_id) {
+                const { data: companyData } = await supabase
+                    .from('companies').select('cohort_id').eq('id', userRow.company_id).single()
+                const companyRow = companyData as { cohort_id: string | null } | null
+                resolvedCohortId = companyRow?.cohort_id ?? null
+            }
+
+            // Path 2: cohort_memberships (sprint workshop / direct membership)
+            if (!resolvedCohortId) {
+                const { data: memberships } = await supabase
+                    .from('cohort_memberships').select('cohort_id')
+                    .eq('user_id', effectiveUserId)
+                const memberCohortIds = ((memberships as { cohort_id: string }[] | null) ?? []).map(m => m.cohort_id)
+                if (memberCohortIds.length > 0) {
+                    resolvedCohortId = memberCohortIds[0]
+                }
+            }
+
+            if (!resolvedCohortId) { setError('No program assigned'); setLoading(false); return }
 
             // Fetch cohort
             const { data: cohortData } = await supabase
-                .from('cohorts').select('*').eq('id', companyRow.cohort_id).single()
+                .from('cohorts').select('*').eq('id', resolvedCohortId).single()
             if (!cohortData) { setError('Program not found'); setLoading(false); return }
             setCohort(cohortData as Cohort)
 
             // Fetch sessions
             const { data: sessionsData } = await supabase
                 .from('sessions').select('*')
-                .eq('cohort_id', companyRow.cohort_id)
+                .eq('cohort_id', resolvedCohortId)
                 .order('session_number', { ascending: true })
             const sess = (sessionsData as Session[]) ?? []
             setSessions(sess)

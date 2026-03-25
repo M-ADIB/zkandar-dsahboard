@@ -35,6 +35,7 @@ const userTypeOptions: { value: UserType | ''; label: string }[] = [
     { value: '', label: 'Unassigned' },
     { value: 'management', label: 'Management' },
     { value: 'team', label: 'Team' },
+    { value: 'sprint_member', label: 'Sprint Member' },
 ];
 
 export function UserModal({

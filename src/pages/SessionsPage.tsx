@@ -176,7 +176,7 @@ export function SessionsPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-white">Sessions</h1>
                     <p className="text-gray-400 text-sm mt-1">
-                        Access your masterclass sessions and materials
+                        Access your program sessions and materials
                     </p>
                 </div>
                 <div className="flex items-center gap-2">

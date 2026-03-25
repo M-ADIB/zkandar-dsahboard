@@ -18,7 +18,7 @@ interface AuthContextType {
         fullName: string,
         role?: UserRole,
         companyId?: string,
-        userType?: 'management' | 'team',
+        userType?: 'management' | 'team' | 'sprint_member',
         sprintCohortId?: string
     ) => Promise<{ error: Error | null }>
     signOut: () => Promise<void>
@@ -412,7 +412,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fullName: string,
         role: UserRole = 'participant',
         companyId?: string,
-        userType?: 'management' | 'team',
+        userType?: 'management' | 'team' | 'sprint_member',
         sprintCohortId?: string
     ) => {
         setLoading(true)

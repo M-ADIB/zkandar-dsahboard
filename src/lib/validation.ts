@@ -13,7 +13,7 @@ export const onboardingBasicInfoSchema = z.object({
 
 // Full onboarding submission schema
 export const onboardingSubmissionSchema = z.object({
-    user_type: z.enum(['management', 'team']),
+    user_type: z.enum(['management', 'team', 'sprint_member']),
     basic_info: onboardingBasicInfoSchema,
     survey_answers: z.record(z.union([
         z.string(),

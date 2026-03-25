@@ -304,7 +304,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
 
     // State
     const [step, setStep] = useState(isSprintWorkshop ? 1 : 0) // 0 = role selection, 1 = basic info, 2+ = questions
-    const [userType, setUserType] = useState<UserType | null>(isSprintWorkshop ? 'team' : null)
+    const [userType, setUserType] = useState<UserType | null>(isSprintWorkshop ? 'sprint_member' : null)
     const [showPasswordChange, setShowPasswordChange] = useState(!user?.profile_data?.password_changed)
     const [passwordData, setPasswordData] = useState({
         newPassword: '',

@@ -1,5 +1,5 @@
 export type UserRole = 'owner' | 'admin' | 'executive' | 'participant'
-export type UserType = 'management' | 'team'
+export type UserType = 'management' | 'team' | 'sprint_member'
 export type CohortStatus = 'upcoming' | 'active' | 'completed'
 export type OfferingType = 'sprint_workshop' | 'master_class'
 export type SessionStatus = 'scheduled' | 'completed'

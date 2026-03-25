@@ -145,44 +145,61 @@ export function MyPerformancePage() {
                 setUserRole(typeof answers.role === 'string' ? answers.role : null)
             }
 
-            // Get user's company → cohort → sessions → assignments → graded submissions
+            // Get user's cohort → sessions → assignments → graded submissions
+            // Try company path first, then cohort_memberships
             const { data: userData } = await supabase
                 .from('users')
                 .select('company_id')
                 .eq('id', effectiveUserId)
                 .single() as { data: { company_id: string | null } | null }
 
+            let cohortId: string | null = null
+
+            // Path 1: company → cohort
             if (userData?.company_id) {
                 const { data: companyData } = await supabase
                     .from('companies')
                     .select('cohort_id')
                     .eq('id', userData.company_id)
                     .single() as { data: { cohort_id: string | null } | null }
+                cohortId = companyData?.cohort_id ?? null
+            }
 
-                if (companyData?.cohort_id) {
-                    const { data: sessions } = await supabase
-                        .from('sessions')
+            // Path 2: cohort_memberships (sprint workshop / direct membership)
+            if (!cohortId) {
+                const { data: memberships } = await supabase
+                    .from('cohort_memberships')
+                    .select('cohort_id')
+                    .eq('user_id', effectiveUserId)
+                const memberCohortIds = ((memberships as { cohort_id: string }[] | null) ?? []).map(m => m.cohort_id)
+                if (memberCohortIds.length > 0) {
+                    cohortId = memberCohortIds[0]
+                }
+            }
+
+            if (cohortId) {
+                const { data: sessions } = await supabase
+                    .from('sessions')
+                    .select('id')
+                    .eq('cohort_id', cohortId)
+
+                if (sessions && sessions.length > 0) {
+                    const { data: assignments } = await supabase
+                        .from('assignments')
                         .select('id')
-                        .eq('cohort_id', companyData.cohort_id)
+                        .in('session_id', sessions.map((s: { id: string }) => s.id))
 
-                    if (sessions && sessions.length > 0) {
-                        const { data: assignments } = await supabase
-                            .from('assignments')
-                            .select('id')
-                            .in('session_id', sessions.map((s: { id: string }) => s.id))
+                    if (assignments && assignments.length > 0) {
+                        const { data: subs } = await supabase
+                            .from('submissions')
+                            .select('score')
+                            .eq('user_id', effectiveUserId)
+                            .in('assignment_id', assignments.map((a: { id: string }) => a.id))
+                            .not('score', 'is', null)
 
-                        if (assignments && assignments.length > 0) {
-                            const { data: subs } = await supabase
-                                .from('submissions')
-                                .select('score')
-                                .eq('user_id', effectiveUserId)
-                                .in('assignment_id', assignments.map((a: { id: string }) => a.id))
-                                .not('score', 'is', null)
-
-                            setGradedScores(
-                                ((subs as GradedSubmission[]) ?? []).map((s) => s.score)
-                            )
-                        }
+                        setGradedScores(
+                            ((subs as GradedSubmission[]) ?? []).map((s) => s.score)
+                        )
                     }
                 }
             }
