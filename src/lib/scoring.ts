@@ -1,6 +1,8 @@
 import type { SurveyAnswers } from '@/types/database'
 
-export const PENALTY_MULTIPLIER = 0.55
+// Initial score is capped at 50 — assignments are what drive improvement beyond that.
+// Final score is capped at 95 — no user is ever "100% AI ready" before completing Zkandar.
+export const PENALTY_MULTIPLIER = 0.50
 export const ASSIGNMENT_MAX_BOOST = 45
 
 export function computeInitialScore(answers: SurveyAnswers | null | undefined, userType: string | null): number {
@@ -17,7 +19,8 @@ export function computeInitialScore(answers: SurveyAnswers | null | undefined, u
 
     if (scaleValues.length === 0) return 15 // No data → very low
     const avg = scaleValues.reduce((a, b) => a + b, 0) / scaleValues.length
-    return Math.round((avg / 5) * 100 * PENALTY_MULTIPLIER)
+    // Cap at 50: (5/5) * 100 * 0.50 = 50
+    return Math.min(50, Math.round((avg / 5) * 100 * PENALTY_MULTIPLIER))
 }
 
 export function computeAssignmentBoost(scores: number[]): number {
@@ -28,5 +31,6 @@ export function computeAssignmentBoost(scores: number[]): number {
 }
 
 export function computeFinalScore(initial: number, boost: number): number {
-    return Math.min(100, initial + boost)
+    // Cap at 95 — no one is ever fully AI-ready without continuous growth
+    return Math.min(95, initial + boost)
 }

@@ -28,7 +28,7 @@ export function ParticipantDashboard() {
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [submissions, setSubmissions] = useState<Submission[]>([])
     const [recentMessages, setRecentMessages] = useState<ChatMessage[]>([])
-    const [aiScore, setAiScore] = useState<number>(0)
+    const [aiScore, setAiScore] = useState<number | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -63,11 +63,8 @@ export function ParticipantDashboard() {
             if (ignore) return
 
             const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number; onboarding_data: Record<string, unknown> | null; user_type: string | null } | null
-            
-            // We will compute the AI score live below, but store the DB value as a fallback
-            if (profileRow?.ai_readiness_score !== undefined) {
-                setAiScore(profileRow.ai_readiness_score)
-            }
+            // Note: we do NOT set aiScore from the DB value here to avoid a visible flash.
+            // The score is computed live below once all data is fetched.
             const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
 
             const cohortIdSet = new Set<string>(membershipIds)
@@ -308,11 +305,13 @@ export function ParticipantDashboard() {
                             <Sparkles className="h-5 w-5 text-lime" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold">{aiScore}%</p>
+                            <p className="text-2xl font-bold">
+                                {aiScore === null ? <span className="inline-block w-12 h-7 bg-white/10 rounded animate-pulse" /> : `${aiScore}%`}
+                            </p>
                             <p className="text-xs text-gray-500">AI Readiness Score</p>
                         </div>
                     </div>
-                    <ProgressBar current={aiScore} total={100} />
+                    <ProgressBar current={aiScore ?? 0} total={100} />
                 </div>
             </motion.div>
 
@@ -350,10 +349,10 @@ export function ParticipantDashboard() {
                                     <div key={session.id} className="relative flex gap-4">
                                         {/* Connector line - Absolute for perfect alignment */}
                                         {!isLast && (
-                                            <div className="absolute left-5 top-10 bottom-[-24px] w-px bg-border -ml-px z-0" />
+                                            <div className="absolute left-[19px] top-10 bottom-[-24px] w-px bg-border z-0" />
                                         )}
-                                        {/* Left Side: Icon */}
-                                        <div className="flex flex-col items-center shrink-0">
+                                        {/* Left Side: Icon — fixed w-10 so connector line math is exact */}
+                                        <div className="flex flex-col items-center shrink-0 w-10">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
                                                 session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
                                             }`}>
