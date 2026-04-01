@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ChevronLeft, ChevronDown, Sparkles, CheckCircle2, Users, Briefcase, Search, Eye, EyeOff } from 'lucide-react'
+import { ChevronRight, ChevronLeft, ChevronDown, CheckCircle2, Users, Briefcase, Search, Eye, EyeOff } from 'lucide-react'
+import logo from '@/assets/logo.png'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -424,7 +425,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
 
             await refreshUser()
             toast.success(`Welcome to Zkandar AI ${isSprintWorkshop ? 'Sprint Workshop' : 'Master Class'}!`)
-            navigate('/dashboard')
+            navigate('/welcome')
         } catch (error) {
             console.error('Error submitting survey:', error)
             const message = error instanceof Error ? error.message : 'Failed to submit survey.'
@@ -590,11 +591,11 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                     >
                         <div className="w-full max-w-md bg-bg-card border border-border rounded-[24px] p-8 shadow-2xl relative overflow-hidden text-white">
                             <div className="absolute top-0 right-0 p-8 opacity-5">
-                                <Sparkles className="h-24 w-24 text-lime" />
+                                <img src={logo} alt="Zkandar AI" className="h-24 w-24 object-contain filter grayscale mix-blend-screen opacity-50" />
                             </div>
                             
                             <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                                <Sparkles className="h-6 w-6 text-lime" />
+                                <img src={logo} alt="" className="h-6 w-6 object-contain" />
                                 Secure Your Account
                             </h2>
                             <p className="text-gray-400 text-sm mb-8">
@@ -685,7 +686,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                         {step === 0 && (
                             <div className="text-center">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm mb-6">
-                                    <Sparkles className="h-4 w-4" />
+                                    <img src={logo} alt="" className="h-4 w-4 object-contain" />
                                     Zkandar AI {isSprintWorkshop ? "Sprint Workshop" : "Master Class"}
                                 </div>
                                 <h1 className="hero-text text-4xl mb-4 text-white">Welcome to Zkandar AI</h1>
@@ -900,9 +901,9 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                         {/* 2+. SURVEY QUESTIONS */}
                         {step >= 2 && currentQuestion && (
                             <div className="bg-bg-card border border-border rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                                {/* Ambient Sparkle */}
+                                {/* Ambient Logo */}
                                 <div className="absolute top-0 right-0 p-8 opacity-5">
-                                    <Sparkles className="h-24 w-24 text-lime" />
+                                    <img src={logo} alt="Zkandar AI" className="h-24 w-24 object-contain filter grayscale mix-blend-screen opacity-50" />
                                 </div>
 
                                 {/* Progress */}
@@ -1083,7 +1084,6 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                             className="flex-1 py-4 gradient-lime text-black font-black uppercase tracking-widest text-sm rounded-xl hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(208,255,113,0.3)]"
                                         >
                                             {isSubmitting ? 'Completing...' : 'Complete Masterclass Hub Onboarding'}
-                                            <Sparkles className="h-5 w-5" />
                                         </button>
                                     ) : (
                                         <button

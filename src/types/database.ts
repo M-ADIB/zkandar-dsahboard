@@ -42,6 +42,7 @@ export interface User {
     company_id: string | null
     avatar_url: string | null
     onboarding_completed: boolean
+    welcome_video_watched: boolean
     ai_readiness_score: number
     profile_data: Record<string, unknown> | null
     onboarding_data: Record<string, unknown> | null
@@ -49,6 +50,15 @@ export interface User {
     nationality: string | null
     age: number | null
     position: string | null
+}
+
+export interface PlatformSetting {
+    id: string
+    key: string
+    value: string
+    label: string | null
+    category: string
+    updated_at: string
 }
 
 export interface Company {

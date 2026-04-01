@@ -249,7 +249,9 @@ Deno.serve(async (req) => {
     const { token_hash, redirect_to, email_action_type, site_url, new_email } = email_data
 
     // Build the Supabase verification URL
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? site_url.replace('/auth/v1', '')
+    // We can infer the Supabase API URL from the request origin since edge functions run on the same domain
+    const reqUrl = new URL(req.url)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? reqUrl.origin
     const actionUrl =
         `${supabaseUrl}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${encodeURIComponent(redirect_to)}`
 

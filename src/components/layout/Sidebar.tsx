@@ -24,6 +24,7 @@ import {
     LogOut,
     FileText,
     Film,
+    SlidersHorizontal,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
 import type { User as DbUser } from '@/types/database'
@@ -82,7 +83,8 @@ const adminNavSections: NavSection[] = [
         title: 'System',
         id: 'admin_system',
         items: [
-            { icon: Settings, label: 'Settings', path: '/settings', roles: ['owner', 'admin'] },
+            { icon: SlidersHorizontal, label: 'Platform Settings', path: '/admin/settings', roles: ['owner', 'admin'] },
+            { icon: Settings, label: 'My Settings', path: '/settings', roles: ['owner', 'admin'] },
         ]
     }
 ]

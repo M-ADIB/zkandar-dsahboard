@@ -27,6 +27,7 @@ const TermsOfServicePage = lazy(() => import('@/pages/TermsOfServicePage').then(
 const EPKPage = lazy(() => import('@/pages/public/EPKPage').then(module => ({ default: module.EPKPage })))
 const OnboardingSurvey = lazy(() => import('@/components/onboarding/OnboardingSurvey').then(module => ({ default: module.OnboardingSurvey })))
 const SprintWorkshopOnboarding = lazy(() => import('@/pages/onboarding/SprintWorkshopOnboarding').then(module => ({ default: module.SprintWorkshopOnboarding })))
+const WelcomePage = lazy(() => import('@/pages/WelcomePage').then(module => ({ default: module.WelcomePage })))
 
 // Dashboard Pages
 const OwnerDashboard = lazy(() => import('@/pages/OwnerDashboard').then(module => ({ default: module.OwnerDashboard })))
@@ -40,8 +41,13 @@ const UsersPage = lazy(() => import('@/pages/admin/UsersPage').then(module => ({
 const EventsPage = lazy(() => import('@/pages/admin/EventsPage').then(module => ({ default: module.EventsPage })))
 const CostsPage = lazy(() => import('@/pages/admin/CostsPage').then(module => ({ default: module.CostsPage })))
 const RecruitingPage = lazy(() => import('@/pages/admin/RecruitingPage').then(module => ({ default: module.RecruitingPage })))
+const PlatformSettingsPage = lazy(() => import('@/pages/admin/PlatformSettingsPage').then(module => ({ default: module.PlatformSettingsPage })))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
+
+const TestingCredentials = import.meta.env.DEV 
+    ? lazy(() => import('@/components/dev/TestingCredentials').then(module => ({ default: module.TestingCredentials })))
+    : () => null;
 
 // Shared internal
 const ChatPage = lazy(() => import('@/pages/ChatPage').then(module => ({ default: module.ChatPage })))
@@ -69,6 +75,7 @@ function App() {
                             <SessionExpiryWarning />
                             <CommandPalette />
                             <InstallPrompt />
+                            {import.meta.env.DEV && <TestingCredentials />}
                             <Routes>
                                 {/* Public Routes */}
                                 <Route path="/login" element={<LoginPage />} />
@@ -98,6 +105,16 @@ function App() {
                                     element={
                                         <ProtectedRoute>
                                             <SprintWorkshopOnboarding />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                {/* Welcome Video (post-onboarding gate) */}
+                                <Route
+                                    path="/welcome"
+                                    element={
+                                        <ProtectedRoute>
+                                            <WelcomePage />
                                         </ProtectedRoute>
                                     }
                                 />
@@ -192,6 +209,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <ChatPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/settings"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <PlatformSettingsPage />
                                             </ProtectedRoute>
                                         }
                                     />

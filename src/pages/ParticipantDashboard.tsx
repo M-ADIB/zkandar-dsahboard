@@ -17,7 +17,59 @@ import { ProgressBar } from '@/components/shared/ProgressBar'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel, formatRelativeTime } from '@/lib/time'
 import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
-import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswers } from '@/types/database'
+import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswers, UserType } from '@/types/database'
+
+function extractVimeoId(urlOrId: string): string {
+    const match = urlOrId.match(/vimeo\.com\/(\d+)/)
+    return match ? match[1] : urlOrId.replace(/\D/g, '')
+}
+
+/** Mini Vimeo frame shown in the hero banner — fetches URL from platform_settings */
+function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
+    const [vimeoId, setVimeoId] = useState<string | null>(null)
+    const key = userType === 'management' ? 'welcome_video_management' : 'welcome_video_team'
+
+    useEffect(() => {
+        supabase
+            .from('platform_settings')
+            .select('value')
+            .eq('key', key)
+            .single<{ value: string }>()
+            .then(({ data, error }) => {
+                if (!error && data?.value) {
+                    setVimeoId(extractVimeoId(data.value))
+                }
+            })
+    }, [key])
+
+    if (!vimeoId) return null
+
+    return (
+        <div className="hidden lg:block shrink-0 w-56 xl:w-64">
+            <div
+                className="relative rounded-xl overflow-hidden border border-white/10 shadow-xl shadow-black/50"
+                style={{ aspectRatio: '16/9' }}
+            >
+                <iframe
+                    src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&loop=1&background=1&title=0&byline=0&portrait=0`}
+                    className="absolute inset-0 w-full h-full"
+                    allow="autoplay; fullscreen"
+                    title="Platform walkthrough preview"
+                />
+                {/* Play button overlay - decorative */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/10 hover:bg-black/60 transition-colors cursor-pointer">
+                        <Play className="h-4 w-4 text-white ml-0.5" />
+                    </div>
+                </div>
+                <div className="absolute bottom-0 inset-x-0 px-3 py-2 bg-gradient-to-t from-black/80 to-transparent">
+                    <p className="text-[10px] text-white/70 font-medium">Platform Walkthrough</p>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 
 export function ParticipantDashboard() {
     const { user } = useAuth()
@@ -250,21 +302,27 @@ export function ParticipantDashboard() {
                 className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border p-8"
             >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-lime/5 rounded-full blur-3xl" />
-                <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Sparkles className="h-5 w-5 text-lime" />
-                        <span className="text-xs uppercase tracking-widest text-lime">
-                            {isSprintWorkshop ? 'Sprint Workshop' : 'Master Class Journey'}
-                        </span>
+                <div className="relative z-10 flex items-center gap-8">
+                    {/* Left: text */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Sparkles className="h-5 w-5 text-lime" />
+                            <span className="text-xs uppercase tracking-widest text-lime">
+                                {isSprintWorkshop ? 'Sprint Workshop' : 'Master Class Journey'}
+                            </span>
+                        </div>
+                        <h1 className="hero-text text-3xl md:text-4xl mb-4">
+                            Hey <span className="text-gradient">{firstName}</span>, here's your progress
+                        </h1>
+                        <p className="text-gray-400 max-w-lg">
+                            {isSprintWorkshop
+                                ? "Welcome to your sprint! Follow the sessions below and engage with your program to maximize your learning."
+                                : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
+                        </p>
                     </div>
-                    <h1 className="hero-text text-3xl md:text-4xl mb-4">
-                        Hey <span className="text-gradient">{firstName}</span>, here's your progress
-                    </h1>
-                    <p className="text-gray-400 max-w-lg">
-                        {isSprintWorkshop
-                            ? "Welcome to your sprint! Follow the sessions below and engage with your program to maximize your learning."
-                            : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
-                    </p>
+
+                    {/* Right: Welcome video mini-frame */}
+                    <WelcomeVideoMiniFrame userType={user?.user_type ?? null} />
                 </div>
             </motion.div>
 
@@ -368,10 +426,10 @@ export function ParticipantDashboard() {
 
                                         {/* Right Side: content */}
                                         <div className="flex-1 pb-6">
-                                            <div className={`flex items-center justify-between gap-4 p-3 -ml-3 rounded-xl transition-colors ${
+                                            <div className={`flex items-center justify-between gap-4 px-3 py-2.5 rounded-xl transition-colors ${
                                                 session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
                                             }`}>
-                                                <div>
+                                                <div className="min-w-0">
                                                     <p className={`font-medium ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
                                                         {session.title}
                                                     </p>

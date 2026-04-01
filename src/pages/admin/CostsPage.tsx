@@ -484,29 +484,22 @@ export function CostsPage() {
             {/* Filters Row */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 
-                {/* Time Filters */}
-                <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 w-max overflow-x-auto">
-                    {([
-                        { key: 'this_month', label: 'This Month' },
-                        { key: 'last_month', label: 'Last Month' },
-                        { key: 'past_90', label: 'Past 90 Days' },
-                        { key: 'upcoming', label: 'Upcoming' },
-                        { key: 'archived', label: 'Archived' },
-                    ] as { key: TimeFilter; label: string }[]).map(t => (
-                        <button
-                            key={t.key}
-                            onClick={() => setTimeFilter(t.key)}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition whitespace-nowrap ${
-                                timeFilter === t.key 
-                                ? t.key === 'archived'
-                                    ? 'bg-red-500/20 text-red-400 shadow-sm'
-                                    : 'bg-white/10 text-white shadow-sm' 
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
-                        >
-                            {t.label}
-                        </button>
-                    ))}
+                {/* Time Period Selector */}
+                <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <select
+                        value={timeFilter}
+                        onChange={(e) => setTimeFilter(e.target.value as TimeFilter)}
+                        className={`bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-sm font-medium outline-none cursor-pointer transition hover:border-white/20 focus:border-lime/40 ${
+                            timeFilter === 'archived' ? 'text-red-400' : 'text-white'
+                        }`}
+                    >
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="past_90">Past 90 Days</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="archived">Archived</option>
+                    </select>
                 </div>
 
                 {/* Category Pill Filters */}

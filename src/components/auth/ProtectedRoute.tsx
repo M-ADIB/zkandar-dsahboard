@@ -35,9 +35,14 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }
 
     const isOnboardingRoute = location.pathname.startsWith('/onboarding')
+    const isWelcomeRoute = location.pathname === '/welcome'
     const needsOnboarding = user.role === 'participant' && !user.onboarding_completed
+    const needsWelcomeVideo =
+        user.role === 'participant' &&
+        user.onboarding_completed &&
+        !user.welcome_video_watched
 
-    // Check if onboarding is required
+    // 1. Onboarding gate
     if (needsOnboarding && !isOnboardingRoute) {
         if (!user.company_id) {
             return <Navigate to="/onboarding/sprint-workshop" replace />
@@ -45,7 +50,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
         return <Navigate to="/onboarding" replace />
     }
 
-    // Enforce correct onboarding route if they try to switch
+    // 2. Enforce correct onboarding route if they try to switch
     if (isOnboardingRoute && needsOnboarding) {
         if (!user.company_id && location.pathname === '/onboarding') {
             return <Navigate to="/onboarding/sprint-workshop" replace />
@@ -55,8 +60,18 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
         }
     }
 
-    // Block access to onboarding routes once completed
+    // 3. Block access to onboarding routes once completed
     if (isOnboardingRoute && !needsOnboarding) {
+        return <Navigate to="/dashboard" replace />
+    }
+
+    // 4. Welcome video gate — redirect to /welcome if not yet watched
+    if (needsWelcomeVideo && !isWelcomeRoute) {
+        return <Navigate to="/welcome" replace />
+    }
+
+    // 5. Block /welcome if video already watched (prevent re-visiting)
+    if (isWelcomeRoute && !needsWelcomeVideo) {
         return <Navigate to="/dashboard" replace />
     }
 

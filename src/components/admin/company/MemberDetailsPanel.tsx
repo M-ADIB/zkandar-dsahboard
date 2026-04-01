@@ -72,7 +72,7 @@ export function MemberDetailsPanel({ member, onClose, companyId }: MemberDetails
     return (
         <Portal>
             <AnimatePresence>
-                <div className="fixed inset-0 z-[60] flex justify-end">
+                <div className="fixed inset-0 z-[71] flex justify-end">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
