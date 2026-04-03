@@ -62,7 +62,10 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
     // 3. Block access to onboarding routes once completed
     if (isOnboardingRoute && !needsOnboarding) {
-        return <Navigate to="/dashboard" replace />
+        // Allow admins and owners to visit /onboarding for testing purposes
+        if (user.role !== 'admin' && user.role !== 'owner') {
+            return <Navigate to="/dashboard" replace />
+        }
     }
 
     // 4. Welcome video gate — redirect to /welcome if not yet watched
@@ -72,7 +75,10 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
     // 5. Block /welcome if video already watched (prevent re-visiting)
     if (isWelcomeRoute && !needsWelcomeVideo) {
-        return <Navigate to="/dashboard" replace />
+        // Allow admins and owners to visit /welcome for testing purposes
+        if (user.role !== 'admin' && user.role !== 'owner') {
+            return <Navigate to="/dashboard" replace />
+        }
     }
 
     return <>{children}</>
