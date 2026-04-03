@@ -64,6 +64,17 @@ export function WelcomePage() {
         return () => window.removeEventListener('message', handleMessage)
     }, [])
 
+    function handleVideoLoad() {
+        setVideoLoaded(true)
+        if (iframeRef.current?.contentWindow) {
+            // Request the Vimeo iframe to start sending 'finish' events
+            iframeRef.current.contentWindow.postMessage(
+                JSON.stringify({ method: 'addEventListener', value: 'finish' }),
+                '*'
+            )
+        }
+    }
+
     // Mark welcome_video_watched and trigger unlock animation
     async function handleEnter() {
         if (!user) return
@@ -190,7 +201,7 @@ export function WelcomePage() {
                                     className="absolute inset-0 w-full h-full"
                                     allow="autoplay; fullscreen; picture-in-picture"
                                     allowFullScreen
-                                    onLoad={() => setVideoLoaded(true)}
+                                    onLoad={handleVideoLoad}
                                 />
                             ) : (
                                 <div className="absolute inset-0 flex items-center justify-center bg-bg-card">
@@ -209,26 +220,30 @@ export function WelcomePage() {
                             transition={{ delay: 0.6 }}
                             className="flex flex-col items-center gap-3 w-full"
                         >
-                            {canEnter ? (
-                                <button
-                                    onClick={handleEnter}
-                                    className="flex items-center gap-2 px-8 py-4 gradient-lime text-black font-bold rounded-xl text-sm hover:scale-105 transition-transform shadow-lg shadow-lime/20"
-                                >
-                                    Enter the Platform
-                                    <ArrowRight className="h-4 w-4" />
-                                </button>
-                            ) : (
-                                <p className="text-xs text-gray-600 text-center">
-                                    Watch the video to unlock access to your dashboard
+                            <button
+                                onClick={handleEnter}
+                                className={`flex items-center gap-2 px-8 py-3.5 font-bold rounded-xl text-sm transition-all ${
+                                    canEnter 
+                                        ? 'gradient-lime text-black hover:scale-105 shadow-xl shadow-lime/20' 
+                                        : 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+                                }`}
+                            >
+                                {canEnter ? 'Enter the Platform' : 'Skip & Enter Platform'}
+                                <ArrowRight className="h-4 w-4" />
+                            </button>
+
+                            {!canEnter && (
+                                <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider">
+                                    Video playing — feel free to skip when you're ready
                                 </p>
                             )}
 
                             {IS_DEV && !canEnter && (
                                 <button
                                     onClick={handleDevSkip}
-                                    className="text-xs text-gray-600 underline underline-offset-2 hover:text-gray-400 transition-colors"
+                                    className="text-xs text-lime/50 underline underline-offset-2 hover:text-lime transition-colors mt-2"
                                 >
-                                    [dev] skip video
+                                    [dev] trigger finish state
                                 </button>
                             )}
                         </motion.div>

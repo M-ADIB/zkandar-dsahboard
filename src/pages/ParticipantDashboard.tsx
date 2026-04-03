@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
     Calendar,
     FileText,
@@ -10,10 +10,12 @@ import {
     ArrowRight,
     Sparkles,
     Play,
+    X,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { ProgressBar } from '@/components/shared/ProgressBar'
+import { Portal } from '@/components/shared/Portal'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel, formatRelativeTime } from '@/lib/time'
 import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
@@ -27,6 +29,7 @@ function extractVimeoId(urlOrId: string): string {
 /** Mini Vimeo frame shown in the hero banner — fetches URL from platform_settings */
 function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
     const [vimeoId, setVimeoId] = useState<string | null>(null)
+    const [isFullscreen, setIsFullscreen] = useState(false)
     const key = userType === 'management' ? 'welcome_video_management' : 'welcome_video_team'
 
     useEffect(() => {
@@ -45,28 +48,68 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
     if (!vimeoId) return null
 
     return (
-        <div className="hidden lg:block shrink-0 w-56 xl:w-64">
-            <div
-                className="relative rounded-xl overflow-hidden border border-white/10 shadow-xl shadow-black/50"
-                style={{ aspectRatio: '16/9' }}
-            >
-                <iframe
-                    src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&loop=1&background=1&title=0&byline=0&portrait=0`}
-                    className="absolute inset-0 w-full h-full"
-                    allow="autoplay; fullscreen"
-                    title="Platform walkthrough preview"
-                />
-                {/* Play button overlay - decorative */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/10 hover:bg-black/60 transition-colors cursor-pointer">
-                        <Play className="h-4 w-4 text-white ml-0.5" />
+        <>
+            <div className="hidden lg:block shrink-0 w-56 xl:w-64">
+                <div
+                    className="relative rounded-xl overflow-hidden border border-white/10 shadow-xl shadow-black/50"
+                    style={{ aspectRatio: '16/9' }}
+                >
+                    <iframe
+                        src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&loop=1&background=1&title=0&byline=0&portrait=0`}
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        allow="autoplay; fullscreen"
+                        title="Platform walkthrough preview"
+                    />
+                    {/* Play button overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center p-2 group">
+                        <div 
+                            onClick={() => setIsFullscreen(true)}
+                            className="h-12 w-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20 hover:bg-black/60 hover:scale-110 hover:border-lime/50 transition-all cursor-pointer z-20 group-hover:shadow-[0_0_30px_rgba(208,255,113,0.2)]"
+                        >
+                            <Play className="h-5 w-5 text-white ml-1 transition-colors group-hover:text-lime" />
+                        </div>
+                    </div>
+                    <div className="absolute bottom-0 inset-x-0 px-3 py-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none">
+                        <p className="text-[10px] text-white/90 font-medium tracking-wide shadow-black drop-shadow-md">PLATFORM WALKTHROUGH</p>
                     </div>
                 </div>
-                <div className="absolute bottom-0 inset-x-0 px-3 py-2 bg-gradient-to-t from-black/80 to-transparent">
-                    <p className="text-[10px] text-white/70 font-medium">Platform Walkthrough</p>
-                </div>
             </div>
-        </div>
+
+            <AnimatePresence>
+                {isFullscreen && (
+                    <Portal>
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 bg-black/80 backdrop-blur-xl"
+                            onClick={() => setIsFullscreen(false)}
+                        >
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.85, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                                className="relative w-full max-w-6xl aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black border border-white/10 bg-black/50"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <iframe
+                                    src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=0&title=0&byline=0&portrait=0`}
+                                    className="absolute inset-0 w-full h-full"
+                                    allow="autoplay; fullscreen"
+                                />
+                                <button
+                                    onClick={() => setIsFullscreen(false)}
+                                    className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md flex items-center justify-center border border-white/20 text-white transition-colors z-50 group hover:border-red-500/50"
+                                >
+                                    <X className="h-5 w-5 group-hover:text-red-400 transition-colors" />
+                                </button>
+                            </motion.div>
+                        </motion.div>
+                    </Portal>
+                )}
+            </AnimatePresence>
+        </>
     )
 }
 
@@ -404,49 +447,54 @@ export function ParticipantDashboard() {
                             {sessionTimeline.map((session, idx) => {
                                 const isLast = idx === sessionTimeline.length - 1
                                 return (
-                                    <div key={session.id} className="relative flex gap-4">
+                                    <div key={session.id} className="relative group">
                                         {/* Connector line - Absolute for perfect alignment */}
                                         {!isLast && (
-                                            <div className="absolute left-[19px] top-10 bottom-[-24px] w-px bg-border z-0" />
+                                            <div className="absolute left-[35px] top-[56px] bottom-[-16px] w-px bg-border z-0" />
                                         )}
-                                        {/* Left Side: Icon — fixed w-10 so connector line math is exact */}
-                                        <div className="flex flex-col items-center shrink-0 w-10">
-                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
-                                            }`}>
-                                                {session.completed ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
-                                                ) : session.current ? (
-                                                    <Play className="h-5 w-5 text-black ml-0.5" />
-                                                ) : (
-                                                    <Clock className="h-5 w-5 text-gray-500" />
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Right Side: content */}
-                                        <div className="flex-1 pb-6">
-                                            <div className={`flex items-center justify-between gap-4 px-3 py-2.5 rounded-xl transition-colors ${
-                                                session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
-                                            }`}>
-                                                <div className="min-w-0">
-                                                    <p className={`font-medium ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
-                                                        {session.title}
-                                                    </p>
-                                                    <p className={`text-xs mt-0.5 ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
+                                        
+                                        <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors ${
+                                            session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
+                                        }`}>
+                                            {/* Left Side: Icon */}
+                                            <div className="flex flex-col items-center shrink-0 w-10">
+                                                <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                    session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                }`}>
+                                                    {session.completed ? (
+                                                        <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                    ) : session.current ? (
+                                                        <Play className="h-5 w-5 text-black ml-0.5" />
+                                                    ) : (
+                                                        <Clock className="h-5 w-5 text-gray-500" />
+                                                    )}
                                                 </div>
-                                                {session.current && (
-                                                    <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform">
-                                                        Watch Now
-                                                    </button>
-                                                )}
-                                                {session.completed && (
-                                                    <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 text-gray-300 hover:text-white transition-colors shrink-0">
-                                                        Rewatch
-                                                    </button>
-                                                )}
+                                            </div>
+
+                                            {/* Right Side: content */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div className="min-w-0">
+                                                        <p className={`font-medium truncate ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
+                                                            {session.title}
+                                                        </p>
+                                                        <p className={`text-xs mt-0.5 truncate ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
+                                                    </div>
+                                                    {session.current && (
+                                                        <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform">
+                                                            Watch Now
+                                                        </button>
+                                                    )}
+                                                    {session.completed && (
+                                                        <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 text-gray-300 hover:text-white transition-colors shrink-0">
+                                                            Rewatch
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
+                                        {/* Spacing between rows */}
+                                        {!isLast && <div className="h-2" />}
                                     </div>
                                 )
                             })}
