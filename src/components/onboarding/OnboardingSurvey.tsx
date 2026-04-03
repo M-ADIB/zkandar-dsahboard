@@ -1083,7 +1083,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                             disabled={isSubmitting || !canProceed()}
                                             className="flex-1 py-4 gradient-lime text-black font-black uppercase tracking-widest text-sm rounded-xl hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(208,255,113,0.3)]"
                                         >
-                                            {isSubmitting ? 'Completing...' : 'Complete Masterclass Hub Onboarding'}
+                                            {isSubmitting ? 'Completing...' : 'Complete Onboarding'}
                                         </button>
                                     ) : (
                                         <button
