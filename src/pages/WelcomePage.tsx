@@ -87,10 +87,11 @@ export function WelcomePage() {
             .update({ welcome_video_watched: true })
             .eq('id', user.id)
 
-        await refreshUser()
+        // Delay to allow the epic animation to play out
+        await new Promise((r) => setTimeout(r, 4000))
 
-        // Small delay for animation
-        await new Promise((r) => setTimeout(r, 600))
+        // Refresh global state AFTER animation so the page doesn't unmount prematurely
+        await refreshUser()
         navigate('/dashboard', { state: { unlocked: true }, replace: true })
     }
 
@@ -123,14 +124,14 @@ export function WelcomePage() {
                                 'radial-gradient(circle at center, #D0FF71 0%, #5A9F2E 30%, #000000 70%)',
                         }}
                         initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 4, opacity: [0, 1, 0] }}
-                        transition={{ duration: 0.9, ease: 'easeOut' }}
+                        animate={{ scale: [0, 4, 4], opacity: [0, 1, 0] }}
+                        transition={{ duration: 4, ease: 'easeInOut' }}
                     />
                     {/* Logo pulse */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.8] }}
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                        animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1.2, 1.2, 0.8] }}
+                        transition={{ duration: 4, ease: 'easeInOut' }}
                         className="relative z-10 text-5xl font-black text-black"
                     >
                         ZKANDAR AI
@@ -218,25 +219,32 @@ export function WelcomePage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
-                            className="flex flex-col items-center gap-3 w-full"
+                            className="flex flex-col items-center justify-center gap-3 w-full h-20 mt-4"
                         >
-                            <button
-                                onClick={handleEnter}
-                                className={`flex items-center gap-2 px-8 py-3.5 font-bold rounded-xl text-sm transition-all ${
-                                    canEnter 
-                                        ? 'gradient-lime text-black hover:scale-105 shadow-xl shadow-lime/20' 
-                                        : 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
-                                }`}
-                            >
-                                {canEnter ? 'Enter the Platform' : 'Skip & Enter Platform'}
-                                <ArrowRight className="h-4 w-4" />
-                            </button>
-
-                            {!canEnter && (
-                                <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider">
-                                    Video playing — feel free to skip when you're ready
-                                </p>
-                            )}
+                            <AnimatePresence mode="popLayout">
+                                {canEnter ? (
+                                    <motion.button
+                                        key="enter-btn"
+                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        onClick={handleEnter}
+                                        className="flex items-center gap-2 px-10 py-4 gradient-lime text-black font-bold rounded-xl text-sm hover:scale-105 transition-transform shadow-xl shadow-lime/20"
+                                    >
+                                        Enter the Platform
+                                        <ArrowRight className="h-4 w-4" />
+                                    </motion.button>
+                                ) : (
+                                    <motion.p
+                                        key="waiting-text"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="text-xs text-gray-500 uppercase tracking-widest text-center"
+                                    >
+                                        Watch the video to unlock access
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
 
                             {IS_DEV && !canEnter && (
                                 <button
