@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
     User, Bell, Lock, Loader2, Sparkles, ArrowRight, Users,
     Download, Trash2, KeyRound, AlertTriangle, Camera, UserPlus, Mail,
-    Briefcase, Globe, Calendar,
+    Briefcase, Globe, Calendar, Settings,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -14,7 +14,7 @@ import { AvatarCropModal } from '@/components/admin/settings/AvatarCropModal'
 import { Portal } from '@/components/shared/Portal'
 import { ModalForm } from '@/components/admin/shared/ModalForm'
 
-type SettingsTab = 'profile' | 'team' | 'notifications' | 'security'
+type SettingsTab = 'profile' | 'team' | 'notifications' | 'security' | 'dev'
 
 interface TabDef {
     id: SettingsTab
@@ -49,6 +49,7 @@ const settingsTabs: TabDef[] = [
     { id: 'team', label: 'Team', icon: Users, adminOnly: true },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'security', label: 'Security', icon: Lock },
+    { id: 'dev', label: 'Dev Tools', icon: Settings, adminOnly: true },
 ]
 
 const inputClass = 'w-full px-4 py-3 bg-bg-elevated border border-border rounded-xl text-sm focus:outline-none focus:border-lime/50 text-white'
@@ -135,6 +136,122 @@ function InviteAdminModal({ isOpen, onClose, onSuccess }: { isOpen: boolean; onC
                 They'll receive a branded email with temporary credentials to sign in.
             </p>
         </ModalForm>
+    )
+}
+
+// ─── Dev Tools Tab ─────────────────────
+function DevTab() {
+    const [users, setUsers] = useState<any[]>([])
+    const [selectedUser, setSelectedUser] = useState<string>('')
+    const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        async function fetchUsers() {
+            const { data } = await supabase.from('users').select('id, email, full_name, role').order('created_at', { ascending: false })
+            if (data) setUsers(data)
+        }
+        fetchUsers()
+    }, [])
+
+    const handleResetOnboarding = async () => {
+        if (!selectedUser) return
+        if (!window.confirm("Are you sure you want to reset onboarding flags and remove onboarding survey responses for this user?")) return
+        setIsLoading(true)
+        try {
+            await supabase.from('users')
+                // @ts-expect-error - type inference failing
+                .update({ 
+                    onboarding_completed: false, 
+                    welcome_video_watched: false, 
+                    ai_readiness_score: null 
+                }).eq('id', selectedUser)
+
+            // optional: delete onboarding survey responses specifically
+            await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
+
+            toast.success("Onboarding flags reset.")
+        } catch(e: any) {
+            toast.error(e.message)
+        }
+        setIsLoading(false)
+    }
+
+    const handleResetEntireAccount = async () => {
+        if (!selectedUser) return
+        if (!window.confirm("WARNING: This will delete missions, responses, and clear the profile. Are you absolutely sure?")) return
+        setIsLoading(true)
+        try {
+            await supabase.from('submissions').delete().eq('user_id', selectedUser)
+            await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
+            
+            await supabase.from('users')
+                // @ts-expect-error - type inference failing
+                .update({ 
+                    onboarding_completed: false, 
+                    welcome_video_watched: false, 
+                    ai_readiness_score: null,
+                    profile_data: null,
+                    onboarding_data: null
+                }).eq('id', selectedUser)
+            toast.success("Account wiped & reset.")
+        } catch(e: any) {
+            toast.error(e.message)
+        }
+        setIsLoading(false)
+    }
+
+    return (
+        <div className="max-w-3xl space-y-6">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-bg-card border border-border rounded-2xl p-6"
+            >
+                <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Dev Shortcuts</h3>
+                    <p className="text-sm text-gray-400 mb-6">
+                        Use these tools cautiously. Operations here bypass normal flows and directly modify database states.
+                    </p>
+                </div>
+
+                <div className="bg-bg-elevated border border-border p-6 rounded-2xl space-y-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Select User</label>
+                        <select
+                            value={selectedUser}
+                            onChange={(e) => setSelectedUser(e.target.value)}
+                            className={inputClass}
+                        >
+                            <option value="">Select a user...</option>
+                            {users.map(u => (
+                                <option key={u.id} value={u.id}>
+                                    {u.full_name} ({u.email}) - {u.role}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {selectedUser && (
+                        <div className="flex flex-col gap-4">
+                            <button
+                                onClick={handleResetOnboarding}
+                                disabled={isLoading}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-all cursor-pointer"
+                            >
+                                Reset Onboarding (Video & Survey flags)
+                            </button>
+                            <button
+                                onClick={handleResetEntireAccount}
+                                disabled={isLoading}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-medium transition-all cursor-pointer"
+                            >
+                                Reset Entire Account (Delete all progress)
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        </div>
     )
 }
 
@@ -817,6 +934,9 @@ export function SettingsPage() {
                     </div>
                 )}
             </motion.div>
+
+            {/* ── Dev Tools Tab ── */}
+            {activeTab === 'dev' && <DevTab />}
 
             {/* ── Modals ── */}
             {cropImageSrc && (
