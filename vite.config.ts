@@ -8,7 +8,12 @@ export default defineConfig({
     plugins: [
         react(),
         VitePWA({
-            registerType: 'autoUpdate',
+            registerType: 'prompt',
+            workbox: {
+                cleanupOutdatedCaches: true,
+                skipWaiting: false,
+                clientsClaim: true,
+            },
             includeAssets: ['favicon.png'],
             manifest: {
                 name: 'Zkandar AI',

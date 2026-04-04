@@ -1,3 +1,5 @@
+import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
+
 /**
  * send-auth-email — Supabase "Send Email" Auth Hook
  *
@@ -19,22 +21,20 @@ const GRAY_300 = '#D1D5DB'
 const GRAY_400 = '#9CA3AF'
 
 // ─── Signature verification ───────────────────────────────────────────────────
-async function verifyHookSignature(req: Request, rawBody: string): Promise<boolean> {
+function verifyHookSignature(req: Request, rawBody: string): boolean {
     const secret = Deno.env.get('HOOK_SECRET')
     if (!secret) return true // no secret configured — allow (development)
 
-    const sigHeader = req.headers.get('x-supabase-signature')
-    if (!sigHeader) return false
-
-    // Supabase sends "v1=<hex_hmac_sha256>" — strip the prefix if present
-    const hexSig = sigHeader.startsWith('v1=') ? sigHeader.slice(3) : sigHeader
-    const sigBytes = new Uint8Array(hexSig.match(/.{2}/g)!.map((b) => parseInt(b, 16)))
-
-    const enc = new TextEncoder()
-    const key = await crypto.subtle.importKey(
-        'raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
-    )
-    return await crypto.subtle.verify('HMAC', key, sigBytes, enc.encode(rawBody))
+    try {
+        // Init the Webhook with base64 decoded secret (stripped of standard prefix if present)
+        const secretKey = secret.startsWith('v1,whsec_') ? secret.replace('v1,whsec_', '') : secret
+        const wh = new Webhook(secretKey)
+        const headers = Object.fromEntries(req.headers.entries())
+        wh.verify(rawBody, headers)
+        return true
+    } catch (_e) {
+        return false
+    }
 }
 
 // ─── Email templates ──────────────────────────────────────────────────────────
@@ -210,22 +210,22 @@ function buildEmailChangeEmail(actionUrl: string, newEmail: string): { subject: 
 Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response(null, {
-            headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type, x-supabase-signature' },
+            headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type, x-supabase-signature', 'Content-Type': 'application/json' },
         })
     }
 
     const rawBody = await req.text()
 
     // Verify hook signature
-    const valid = await verifyHookSignature(req, rawBody)
+    const valid = verifyHookSignature(req, rawBody)
     if (!valid) {
-        return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401 })
+        return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401, headers: { 'Content-Type': 'application/json' } })
     }
 
     const resendApiKey = Deno.env.get('RESEND_API_KEY')
     if (!resendApiKey) {
         console.error('RESEND_API_KEY is not set')
-        return new Response(JSON.stringify({ error: 'Email service not configured' }), { status: 500 })
+        return new Response(JSON.stringify({ error: 'Email service not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
     }
 
     let payload: {
@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
     try {
         payload = JSON.parse(rawBody)
     } catch {
-        return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), { status: 400 })
+        return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
     }
 
     const { user, email_data } = payload
@@ -280,7 +280,7 @@ Deno.serve(async (req) => {
             break
         default:
             console.warn('Unknown email_action_type:', email_action_type)
-            return new Response(JSON.stringify({ error: `Unsupported action type: ${email_action_type}` }), { status: 400 })
+            return new Response(JSON.stringify({ error: `Unsupported action type: ${email_action_type}` }), { status: 400, headers: { 'Content-Type': 'application/json' } })
     }
 
     const res = await fetch('https://api.resend.com/emails', {
@@ -300,9 +300,9 @@ Deno.serve(async (req) => {
     if (!res.ok) {
         const errText = await res.text()
         console.error('Resend error:', res.status, errText)
-        return new Response(JSON.stringify({ error: `Resend error: ${errText}` }), { status: 500 })
+        return new Response(JSON.stringify({ error: `Resend error: ${errText}` }), { status: 500, headers: { 'Content-Type': 'application/json' } })
     }
 
     console.log(`Auth email sent: type=${email_action_type}, to=${user.email}`)
-    return new Response(JSON.stringify({ success: true }), { status: 200 })
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } })
 })

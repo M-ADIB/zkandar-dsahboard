@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { Toaster as SonnerToaster } from 'sonner'
 import App from './App'
 import './index.css'
 import 'virtual:pwa-register'
@@ -46,6 +47,7 @@ createRoot(document.getElementById('root')!).render(
                         },
                     }}
                 />
+                <SonnerToaster theme="dark" position="bottom-right" />
             </BrowserRouter>
             <ReactQueryDevtools initialIsOpen={false} position="bottom" />
         </QueryClientProvider>
