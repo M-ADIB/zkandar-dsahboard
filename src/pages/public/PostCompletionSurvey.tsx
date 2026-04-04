@@ -499,7 +499,7 @@ export function PostCompletionSurvey() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                        className="hero-text text-3xl mb-4"
+                        className="hero-text text-2xl mb-4"
                     >
                         Thank you!
                     </motion.h1>
@@ -541,7 +541,7 @@ export function PostCompletionSurvey() {
                             <Sparkles className="h-4 w-4" />
                             Zkandar AI
                         </div>
-                        <h1 className="hero-text text-4xl mb-4">Post-Masterclass Impact Survey</h1>
+                        <h1 className="hero-text text-3xl mb-4">Post-Masterclass Impact Survey</h1>
                         <p className="text-gray-400 text-lg">
                             Help us understand how the masterclass impacted your skills, confidence, and workflow.
                         </p>
