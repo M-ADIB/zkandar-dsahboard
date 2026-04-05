@@ -21,7 +21,7 @@ interface ChatInputProps {
 }
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'avif']
-const MAX_SIZE_MB = 10
+const MAX_SIZE_MB = 250
 
 function isImageFile(file: File): boolean {
     if (file.type.startsWith('image/')) return true

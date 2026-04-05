@@ -296,7 +296,7 @@ export function SubmitAssignmentModal({
                                             onChange={(e) => {
                                                 const picked = e.target.files?.[0] ?? null
                                                 if (!picked) return
-                                                const MAX_MB = 50
+                                                const MAX_MB = 500
                                                 if (picked.size > MAX_MB * 1024 * 1024) {
                                                     setError(`File must be under ${MAX_MB} MB`)
                                                     e.target.value = ''
