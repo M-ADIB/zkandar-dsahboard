@@ -44,6 +44,7 @@ const EventsPage = lazy(() => import('@/pages/admin/EventsPage').then(module => 
 const CostsPage = lazy(() => import('@/pages/admin/CostsPage').then(module => ({ default: module.CostsPage })))
 const RecruitingPage = lazy(() => import('@/pages/admin/RecruitingPage').then(module => ({ default: module.RecruitingPage })))
 const PlatformSettingsPage = lazy(() => import('@/pages/admin/PlatformSettingsPage').then(module => ({ default: module.PlatformSettingsPage })))
+const EmailHubPage = lazy(() => import('@/pages/admin/EmailHubPage').then(module => ({ default: module.EmailHubPage })))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
 
@@ -229,6 +230,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <AnalyticsDashboard />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/email"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <EmailHubPage />
                                             </ProtectedRoute>
                                         }
                                     />

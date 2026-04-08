@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     Plus, Pencil, Trash2, X, Check,
@@ -92,6 +93,7 @@ function CredentialDisplay({ email, password, notes }: { email?: string | null, 
 
 export function CostsPage() {
     const supabase = useSupabase()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [costs, setCosts] = useState<Cost[]>([])
     const [categories, setCategories] = useState<CostCategory[]>([])
     const [loading, setLoading] = useState(true)
@@ -129,6 +131,16 @@ export function CostsPage() {
         setCategories((catsRes.data as CostCategory[]) ?? [])
         setLoading(false)
     }
+
+    // Auto-open modal from FAB quick action
+    useEffect(() => {
+        if (searchParams.get('action') === 'add') {
+            setEditingCost(null)
+            setForm(emptyCost)
+            setModalOpen(true)
+            setSearchParams({}, { replace: true })
+        }
+    }, [searchParams, setSearchParams])
 
     useEffect(() => { fetchData() }, [])
 

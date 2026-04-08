@@ -25,6 +25,7 @@ import {
     FileText,
     Film,
     SlidersHorizontal,
+    Mail,
 } from 'lucide-react'
 import type { UserRole } from '@/types/database'
 import type { User as DbUser } from '@/types/database'
@@ -76,6 +77,7 @@ const adminNavSections: NavSection[] = [
             { icon: GraduationCap, label: 'Programs', path: '/admin/programs', roles: ['owner', 'admin'] },
             { icon: Mic, label: 'Events', path: '/admin/events', roles: ['owner', 'admin'] },
             { icon: DollarSign, label: 'Costs', path: '/admin/costs', roles: ['owner', 'admin'] },
+            { icon: Mail, label: 'Email', path: '/admin/email', roles: ['owner', 'admin'] },
             { icon: Briefcase, label: 'Recruiting', path: '/admin/recruiting', roles: ['owner', 'admin'] },
         ]
     },

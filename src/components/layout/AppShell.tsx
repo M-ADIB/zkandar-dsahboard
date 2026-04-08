@@ -6,6 +6,7 @@ import { useViewMode } from '@/context/ViewModeContext'
 import { PageTransition } from './PageTransition'
 import { AnimatePresence } from 'framer-motion'
 import { Breadcrumbs } from '@/components/shared/Breadcrumb'
+import { QuickActionsFAB } from '@/components/shared/QuickActionsFAB'
 
 export function AppShell() {
     const { user } = useAuth()
@@ -48,6 +49,9 @@ export function AppShell() {
                     </AnimatePresence>
                 </main>
             </div>
+
+            {/* Quick Actions FAB */}
+            <QuickActionsFAB />
         </div>
     )
 }

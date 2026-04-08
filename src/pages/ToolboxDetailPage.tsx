@@ -81,13 +81,19 @@ export function ToolboxDetailPage() {
     const imp = importanceConfig[item.importance]
     const sub = subscriptionConfig[item.subscription_type] ?? subscriptionConfig.paid
     const tt = toolTypeConfig[item.tool_type] ?? { label: item.tool_type, color: 'text-gray-400' }
-    const embedUrl = item.vimeo_url ? getVimeoEmbedUrl(item.vimeo_url) : null
+    
+    // Fallback logic for demonstration purposes until media is fully populated
+    const mediaItems = item.media && item.media.length > 0 ? item.media : [
+        ...(item.vimeo_url ? [{ id: 'legacy-video', type: 'video' as const, url: item.vimeo_url, title: 'Tutorial Video' }] : []),
+        { id: '1', type: 'image' as const, url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop', title: 'Interface Overview' },
+        { id: '2', type: 'image' as const, url: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop', title: 'Example Output' }
+    ].slice(0, 3)
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto space-y-6"
+            className="max-w-2xl mx-auto space-y-6 pb-20"
         >
             {/* Back link */}
             <Link
@@ -131,22 +137,6 @@ export function ToolboxDetailPage() {
                     <p className="text-gray-300 leading-relaxed">{item.description}</p>
                 )}
 
-                {/* Vimeo embed */}
-                {embedUrl && (
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Video Tutorial</p>
-                        <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
-                            <iframe
-                                src={embedUrl}
-                                className="absolute inset-0 w-full h-full"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                                title={`${item.title} tutorial`}
-                            />
-                        </div>
-                    </div>
-                )}
-
                 {/* CTA */}
                 <a
                     href={item.url}
@@ -157,6 +147,34 @@ export function ToolboxDetailPage() {
                     Open Tool <ExternalLink className="h-4 w-4" />
                 </a>
             </div>
+
+            {/* Dynamic Media Section */}
+            {mediaItems.length > 0 && (
+                <div className="space-y-6">
+                    {mediaItems.map((media, index) => (
+                        <div key={media.id || index} className="space-y-3">
+                            <p className="text-sm font-medium text-white">{media.title || 'Media Item'}</p>
+                            <div className="relative w-full rounded-2xl overflow-hidden border border-border bg-black" style={{ aspectRatio: '16/9' }}>
+                                {media.type === 'video' ? (
+                                    <iframe
+                                        src={getVimeoEmbedUrl(media.url) || media.url}
+                                        className="absolute inset-0 w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title={media.title || 'Tutorial Video'}
+                                    />
+                                ) : (
+                                    <img
+                                        src={media.url}
+                                        alt={media.title || 'Screenshot'}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </motion.div>
     )
 }

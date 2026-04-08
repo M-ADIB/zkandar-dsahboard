@@ -525,4 +525,17 @@ Every admin/participant page MUST use this exact pattern:
 
 ---
 
+## 🤖 AI Agent Operating Instructions & Context
+
+To prevent context-loss or executing commands on the wrong infrastructure, all AI coding assistants MUST refer to this section for immutable application constraints that persist across chat sessions.
+
+### Critical Environment Variables (DO NOT GUESS)
+- **Active Supabase Project ID:** `gzzeywmbehzbassweudb` (Always use this exact ID for the `mcp_supabase_server` tools. NEVER guess or use alternate IDs from cached history).
+- **App Environment:** Local Vite React dev server running `npm run dev`.
+
+### MCP Constraints
+- Before making changes via the Supabase MCP, ALWAYS pass the explicit `project_id` above. Do not fallback to default.
+
+---
+
 **End of Constitution. All code must comply with this document.**

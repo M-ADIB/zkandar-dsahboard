@@ -17,12 +17,20 @@ export interface SurveyAnswers {
 }
 export type ToolboxSubscriptionType = 'free' | 'freemium' | 'paid' | 'enterprise'
 
+export interface ToolboxMedia {
+    id: string
+    type: 'video' | 'image'
+    url: string
+    title?: string
+}
+
 export interface ToolboxItem {
     id: string
     title: string
     url: string
     vimeo_url: string | null
     description: string | null
+    media?: ToolboxMedia[] | null
     importance: ToolboxImportance
     category: string
     tool_type: ToolboxToolType
@@ -353,6 +361,118 @@ export interface JobApplication {
     created_at: string
 }
 
+// ── Email Block types ─────────────────────────────────────────────────────────
+export type EmailBlockType = 'heading' | 'paragraph' | 'bullet_list' | 'image' | 'divider' | 'spacer' | 'button'
+
+export interface EmailBlockBase {
+    id: string
+    type: EmailBlockType
+}
+
+export interface EmailHeadingBlock extends EmailBlockBase {
+    type: 'heading'
+    text: string
+}
+
+export interface EmailParagraphBlock extends EmailBlockBase {
+    type: 'paragraph'
+    text: string // may contain <strong>, <em>, <a> tags
+}
+
+export interface EmailBulletListBlock extends EmailBlockBase {
+    type: 'bullet_list'
+    items: string[]
+}
+
+export interface EmailImageBlock extends EmailBlockBase {
+    type: 'image'
+    url: string
+    alt?: string
+}
+
+export interface EmailDividerBlock extends EmailBlockBase {
+    type: 'divider'
+}
+
+export interface EmailSpacerBlock extends EmailBlockBase {
+    type: 'spacer'
+    height: number // px
+}
+
+export interface EmailButtonBlock extends EmailBlockBase {
+    type: 'button'
+    label: string
+    url: string
+}
+
+export type EmailBlock =
+    | EmailHeadingBlock
+    | EmailParagraphBlock
+    | EmailBulletListBlock
+    | EmailImageBlock
+    | EmailDividerBlock
+    | EmailSpacerBlock
+    | EmailButtonBlock
+
+// ── Email Feature interfaces ──────────────────────────────────────────────────
+export interface EmailTemplate {
+    id: string
+    name: string
+    subject: string
+    headline: string | null
+    body: string
+    blocks: EmailBlock[]
+    cta_text: string | null
+    cta_url: string | null
+    created_by: string | null
+    created_at: string
+    updated_at: string
+}
+
+export type EmailCampaignStatus = 'sent' | 'scheduled' | 'cancelled'
+
+export interface EmailCampaign {
+    id: string
+    subject: string
+    headline: string | null
+    body: string
+    html_preview: string | null
+    audience: string
+    recipient_count: number
+    sent_at: string | null
+    scheduled_for: string | null
+    status: EmailCampaignStatus
+    created_by: string | null
+    created_at: string
+}
+
+export type EmailRecipientStatus = 'queued' | 'sent' | 'failed' | 'skipped'
+
+export interface EmailCampaignRecipient {
+    id: string
+    campaign_id: string
+    email: string
+    name: string | null
+    status: EmailRecipientStatus
+    created_at: string
+}
+
+export type EmailQueueStatus = 'pending' | 'processing' | 'sent' | 'failed' | 'skipped'
+
+export interface EmailQueueItem {
+    id: string
+    campaign_id: string | null
+    recipient_email: string
+    recipient_name: string | null
+    subject: string
+    html_body: string
+    status: EmailQueueStatus
+    attempts: number
+    send_after: string | null
+    created_at: string
+    updated_at: string
+}
+
 // Database type for Supabase client
 export interface Database {
     public: {
@@ -482,6 +602,26 @@ export interface Database {
                 Row: EventRequest
                 Insert: Omit<EventRequest, 'id' | 'created_at'>
                 Update: Partial<Omit<EventRequest, 'id' | 'created_at'>>
+            }
+            email_templates: {
+                Row: EmailTemplate
+                Insert: Omit<EmailTemplate, 'id' | 'created_at' | 'updated_at'>
+                Update: Partial<Omit<EmailTemplate, 'id' | 'created_at'>>
+            }
+            email_campaigns: {
+                Row: EmailCampaign
+                Insert: Omit<EmailCampaign, 'id' | 'created_at'>
+                Update: Partial<Omit<EmailCampaign, 'id' | 'created_at'>>
+            }
+            email_campaign_recipients: {
+                Row: EmailCampaignRecipient
+                Insert: Omit<EmailCampaignRecipient, 'id' | 'created_at'>
+                Update: Partial<Omit<EmailCampaignRecipient, 'id'>>
+            }
+            email_queue: {
+                Row: EmailQueueItem
+                Insert: Omit<EmailQueueItem, 'id' | 'created_at' | 'updated_at'>
+                Update: Partial<Omit<EmailQueueItem, 'id' | 'created_at'>>
             }
         }
         Views: {
