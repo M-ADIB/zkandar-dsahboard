@@ -69,6 +69,11 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [userSearch, setUserSearch] = useState('');
     const [session2Date, setSession2Date] = useState('');
+    const [sprintSessionCount, setSprintSessionCount] = useState(3);
+    const [sprintTemplates, setSprintTemplates] = useState<Array<{
+        session_number: number; title: string; description: string;
+        submission_format: string; due_days_after_session: number;
+    }>>([]);
 
     // Inline invite state
     const [showInviteForm, setShowInviteForm] = useState(false);
@@ -82,12 +87,13 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
     const [error, setError] = useState<string | null>(null);
 
     // Runs exactly once per mount (parent re-mounts this component on each modal
-    // open via key). Fetches companies and users and pre-selects assigned ones.
+    // open via key). Fetches companies, users, and sprint settings.
     useEffect(() => {
         const loadData = async () => {
-            const [companiesRes, usersRes] = await Promise.all([
+            const [companiesRes, usersRes, sprintSettingsRes] = await Promise.all([
                 supabase.from('companies').select('id, name, cohort_id').order('name'),
                 supabase.from('users').select('id, full_name, email').order('full_name'),
+                supabase.from('platform_settings').select('key, value').in('key', ['sprint_session_count', 'sprint_assignment_templates']),
             ]);
 
             const companiesList = (companiesRes.data as Company[]) ?? [];
@@ -95,6 +101,14 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
             setCompanies(companiesList);
             setAllUsers(usersList);
+
+            // Load sprint settings
+            const sprintMap: Record<string, string> = {};
+            ;(sprintSettingsRes.data as { key: string; value: string }[] ?? []).forEach((s) => { sprintMap[s.key] = s.value; });
+            if (sprintMap.sprint_session_count) setSprintSessionCount(parseInt(sprintMap.sprint_session_count) || 3);
+            if (sprintMap.sprint_assignment_templates) {
+                try { setSprintTemplates(JSON.parse(sprintMap.sprint_assignment_templates)); } catch { /* ignore */ }
+            }
 
             if (program) {
                 // Pre-select company for master_class
@@ -174,11 +188,18 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         fmtDate(new Date(parseDate(dateStr).getTime() + n * 86400000));
 
     /**
-     * Auto-create 3 sessions for a new Sprint Workshop.
-     * Dates are explicit: start → session2 → end.
+     * Auto-create sessions for a new Sprint Workshop.
+     * Dates are explicit: for 2 sessions [start, end]; for 3 [start, session2, end].
+     * Returns the created session rows (id, session_number, scheduled_date) or null on error.
      */
-    const createSprintSessions = async (cohortId: string, startDate: string, s2Date: string, endDate: string) => {
-        const sessions = [startDate, s2Date, endDate].map((dateStr, i) => ({
+    const createSprintSessions = async (
+        cohortId: string,
+        startDate: string,
+        s2Date: string,
+        endDate: string,
+    ): Promise<{ id: string; session_number: number; scheduled_date: string }[] | null> => {
+        const dateDates = sprintSessionCount === 2 ? [startDate, endDate] : [startDate, s2Date, endDate];
+        const sessionRows = dateDates.map((dateStr, i) => ({
             cohort_id: cohortId,
             session_number: i + 1,
             title: `Session ${i + 1}`,
@@ -189,10 +210,36 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         }));
 
         // @ts-expect-error - Supabase insert type inference
-        const { error: sessionsError } = await supabase.from('sessions').insert(sessions);
+        const { data, error: sessionsError } = await supabase.from('sessions').insert(sessionRows).select('id, session_number, scheduled_date');
         if (sessionsError) {
             console.error('Auto-create sessions failed:', sessionsError.message);
+            return null;
         }
+        return data as { id: string; session_number: number; scheduled_date: string }[];
+    };
+
+    /**
+     * Auto-create assignments for a new Sprint Workshop from platform setting templates.
+     */
+    const createSprintAssignments = async (
+        createdSessions: { id: string; session_number: number; scheduled_date: string }[],
+    ) => {
+        if (!sprintTemplates.length) return;
+        const assignments = sprintTemplates.flatMap((t) => {
+            const session = createdSessions.find((s) => s.session_number === t.session_number);
+            if (!session) return [];
+            return [{
+                session_id: session.id,
+                title: t.title,
+                description: t.description,
+                due_date: addDays(session.scheduled_date, t.due_days_after_session),
+                submission_format: t.submission_format,
+            }];
+        });
+        if (assignments.length === 0) return;
+        // @ts-expect-error - Supabase insert type inference
+        const { error } = await supabase.from('assignments').insert(assignments);
+        if (error) console.error('Auto-create assignments failed:', error.message);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -214,14 +261,19 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         }
 
         if (isSprintWorkshop) {
-            const start = parseDate(formData.start_date);
-            const end = parseDate(formData.end_date);
-            if (end.getTime() < start.getTime() + 2 * 86400000) {
-                setError('End date must be at least 2 days after the start date so Session 2 can fit in between.');
-                return;
-            }
-            if (!program && !session2Date) {
-                setError('Please select a date for Session 2.');
+            if (sprintSessionCount >= 3) {
+                const start = parseDate(formData.start_date);
+                const end = parseDate(formData.end_date);
+                if (end.getTime() < start.getTime() + 2 * 86400000) {
+                    setError('End date must be at least 2 days after the start date so Session 2 can fit in between.');
+                    return;
+                }
+                if (!program && !session2Date) {
+                    setError('Please select a date for Session 2.');
+                    return;
+                }
+            } else if (parseDate(formData.start_date) >= parseDate(formData.end_date)) {
+                setError('End date must be after the start date.');
                 return;
             }
         } else if (formData.start_date > formData.end_date) {
@@ -302,9 +354,12 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 return;
             }
         } else {
-            // Sprint Workshop: auto-create 3 sessions on new program creation
+            // Sprint Workshop: auto-create sessions + assignments on new program creation
             if (isNew && formData.start_date) {
-                await createSprintSessions(cohortId, formData.start_date, session2Date, formData.end_date);
+                const createdSessions = await createSprintSessions(cohortId, formData.start_date, session2Date, formData.end_date);
+                if (createdSessions) {
+                    await createSprintAssignments(createdSessions);
+                }
             }
 
             // Save members to cohort_memberships.
@@ -360,11 +415,12 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
     const isSprintWorkshop = formData.offering_type === 'sprint_workshop';
 
-    // End date is valid for sprint when it's ≥ start + 2 days
+    // For 3-session sprints: end must be ≥ start + 2 days; for 2-session: end > start
     const isEndDateValid = useMemo(() => {
         if (!formData.start_date || !formData.end_date) return false;
-        return parseDate(formData.end_date).getTime() >= parseDate(formData.start_date).getTime() + 2 * 86400000;
-    }, [formData.start_date, formData.end_date]);
+        const gap = sprintSessionCount >= 3 ? 2 : 1;
+        return parseDate(formData.end_date).getTime() >= parseDate(formData.start_date).getTime() + gap * 86400000;
+    }, [formData.start_date, formData.end_date, sprintSessionCount]);
 
     // Bounds for the Session 2 picker
     const session2Min = formData.start_date ? addDays(formData.start_date, 1) : undefined;
@@ -378,8 +434,11 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         }
     }, [formData.start_date, formData.end_date]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Min for end date: start + 2 days
-    const endDateMin = formData.start_date ? addDays(formData.start_date, 2) : undefined;
+    // Min for end date depends on session count
+    const endDateMin = formData.start_date ? addDays(formData.start_date, sprintSessionCount >= 3 ? 2 : 1) : undefined;
+
+    // Show Session 2 picker only when count >= 3 and on new sprint programs
+    const showSession2Picker = isSprintWorkshop && !program && sprintSessionCount >= 3;
 
     return (
         <ModalForm
@@ -597,18 +656,22 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     {/* Sprint Workshop — live session map */}
                     {!program && (
                         <div className="mt-3 rounded-xl border border-white/5 bg-white/[0.03] p-3 space-y-1.5">
-                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Auto-created Sessions</p>
+                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                                Auto-created Sessions ({sprintSessionCount})
+                            </p>
                             <div className="text-[11px] text-gray-500 space-y-1">
-                                {[
-                                    { label: 'Session 1', value: formData.start_date || '—', highlight: false },
-                                    { label: 'Session 2', value: session2Date || 'Pick a date below', highlight: !!session2Date },
-                                    { label: 'Session 3', value: formData.end_date || '—', highlight: false },
-                                ].map(({ label, value, highlight }) => (
-                                    <div key={label} className="flex items-center justify-between">
-                                        <span>{label}</span>
-                                        <span className={highlight ? 'text-lime/80' : 'text-white/70'}>{value}</span>
-                                    </div>
-                                ))}
+                                {sprintSessionCount === 2 ? (
+                                    <>
+                                        <div className="flex items-center justify-between"><span>Session 1</span><span className="text-white/70">{formData.start_date || '—'}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 2</span><span className="text-white/70">{formData.end_date || '—'}</span></div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex items-center justify-between"><span>Session 1</span><span className="text-white/70">{formData.start_date || '—'}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 2</span><span className={session2Date ? 'text-lime/80' : 'text-white/70'}>{session2Date || 'Pick a date below'}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 3</span><span className="text-white/70">{formData.end_date || '—'}</span></div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     )}
@@ -637,7 +700,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     showTime
                 />
                 <DateTimePicker
-                    label={isSprintWorkshop ? 'End Date (Session 3)' : 'End Date'}
+                    label={isSprintWorkshop ? `End Date (Session ${sprintSessionCount})` : 'End Date'}
                     value={formData.end_date}
                     onChange={(val) => setFormData((prev) => ({ ...prev, end_date: val }))}
                     required
@@ -646,8 +709,8 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 />
             </div>
 
-            {/* Session 2 date picker — sprint only, shown once end date is valid */}
-            {isSprintWorkshop && !program && (
+            {/* Session 2 date picker — 3-session sprints only */}
+            {showSession2Picker && (
                 <div>
                     {!isEndDateValid && formData.start_date && formData.end_date && (
                         <p className="mb-2 text-xs text-yellow-400/80">

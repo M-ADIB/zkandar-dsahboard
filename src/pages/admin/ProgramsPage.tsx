@@ -489,8 +489,7 @@ function AssignmentsTab() {
                     )}
                     <button
                         onClick={() => { setSelectedAssignment(null); setIsModalOpen(true); }}
-                        disabled={sessions.length === 0}
-                        className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl font-medium hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-4 py-2 gradient-lime text-black rounded-xl font-medium hover:opacity-90 transition"
                     >
                         <Plus className="h-4 w-4" />
                         Add Assignment
