@@ -18,6 +18,11 @@ import {
     Filter,
     Loader2,
     Inbox,
+    Lightbulb,
+    ChevronUp,
+    ChevronDown as ChevronDownIcon,
+    SortAsc,
+    FileText,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -39,16 +44,20 @@ function timeAgo(ts: string): string {
     return 'just now'
 }
 
-function RelevanceBadge({ score }: { score: number | null }) {
-    if (!score) return null
-    const color = score >= 80
-        ? 'bg-lime/10 text-lime border-lime/20'
+function ScoreBadge({ score }: { score: number | null }) {
+    if (score === null || score === undefined) {
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-white/5 text-gray-600 border border-white/[0.06]">—</span>
+    }
+    const { bg, text, border } = score >= 80
+        ? { bg: 'bg-lime/10',         text: 'text-lime',       border: 'border-lime/20' }
         : score >= 60
-        ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-        : 'bg-white/5 text-gray-400 border-white/10'
+        ? { bg: 'bg-amber-500/10',    text: 'text-amber-400',  border: 'border-amber-500/20' }
+        : score >= 45
+        ? { bg: 'bg-orange-500/10',   text: 'text-orange-400', border: 'border-orange-500/20' }
+        : { bg: 'bg-white/[0.04]',    text: 'text-gray-500',   border: 'border-white/[0.06]' }
     return (
-        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold border ${color}`}>
-            <Zap className="h-3 w-3" />{score}
+        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold border ${bg} ${text} ${border}`}>
+            <Zap className="h-2.5 w-2.5" />{score}
         </span>
     )
 }
@@ -64,6 +73,9 @@ const SOURCE_TYPE_LABELS: Record<SourceType, string> = {
     blog:          'Blog',
     search_query:  'Search',
 }
+
+type SortField = 'relevance_score' | 'created_at' | 'published_at'
+type SortDir   = 'asc' | 'desc'
 
 // ─── Deep Dive Panel ─────────────────────────────────────────────────────────
 
@@ -91,7 +103,7 @@ function DeepDivePanel({ item, onClose, onUpdate }: DeepDivePanelProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="fixed inset-y-0 right-0 w-full sm:w-[520px] bg-bg-elevated border-l border-white/[0.08] z-50 flex flex-col shadow-2xl"
+            className="fixed inset-y-0 right-0 w-full sm:w-[560px] bg-bg-elevated border-l border-white/[0.08] z-50 flex flex-col shadow-2xl"
         >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.08]">
@@ -104,6 +116,7 @@ function DeepDivePanel({ item, onClose, onUpdate }: DeepDivePanelProps) {
                         </>
                     )}
                     <span className="text-xs text-gray-500">{timeAgo(item.created_at)}</span>
+                    <ScoreBadge score={item.relevance_score} />
                 </div>
                 <button
                     onClick={onClose}
@@ -115,12 +128,9 @@ function DeepDivePanel({ item, onClose, onUpdate }: DeepDivePanelProps) {
 
             {/* Scrollable body */}
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
-                {/* Title + score */}
+                {/* Title */}
                 <div>
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                        <h2 className="text-lg font-bold text-white leading-tight">{item.title}</h2>
-                        <RelevanceBadge score={item.relevance_score} />
-                    </div>
+                    <h2 className="text-lg font-bold text-white leading-tight mb-2">{item.title}</h2>
                     {item.published_at && (
                         <p className="text-xs text-gray-500">
                             Published {new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -129,17 +139,27 @@ function DeepDivePanel({ item, onClose, onUpdate }: DeepDivePanelProps) {
                 </div>
 
                 {/* Summary */}
-                {item.summary && (
+                {item.summary ? (
                     <div className="p-4 bg-bg-primary rounded-xl border border-white/[0.06]">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">AI Summary</p>
+                        <div className="flex items-center gap-1.5 mb-2">
+                            <FileText className="h-3.5 w-3.5 text-gray-500" />
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Summary</p>
+                        </div>
                         <p className="text-sm text-gray-300 leading-relaxed">{item.summary}</p>
+                    </div>
+                ) : (
+                    <div className="p-4 bg-bg-primary rounded-xl border border-white/[0.06] border-dashed">
+                        <p className="text-xs text-gray-600 italic">No AI summary available. Re-sync to generate.</p>
                     </div>
                 )}
 
                 {/* Deep Dive */}
                 {item.deep_dive && (
                     <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Deep Dive</p>
+                        <div className="flex items-center gap-1.5 mb-2">
+                            <Zap className="h-3.5 w-3.5 text-amber-400" />
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Strategic Context</p>
+                        </div>
                         <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{item.deep_dive}</p>
                     </div>
                 )}
@@ -147,15 +167,28 @@ function DeepDivePanel({ item, onClose, onUpdate }: DeepDivePanelProps) {
                 {/* Action Items */}
                 {item.action_items && item.action_items.length > 0 && (
                     <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Action Items</p>
-                        <ul className="space-y-2">
+                        <div className="flex items-center gap-1.5 mb-3">
+                            <Lightbulb className="h-3.5 w-3.5 text-lime" />
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Zkandar AI Actions ({item.action_items.length})
+                            </p>
+                        </div>
+                        <ul className="space-y-2.5">
                             {item.action_items.map((a, i) => (
-                                <li key={i} className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-lime flex-shrink-0" />
-                                    <span className="text-sm text-gray-300">{a}</span>
+                                <li key={i} className="flex items-start gap-2.5 p-3 bg-lime/[0.04] border border-lime/[0.1] rounded-xl">
+                                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-lime flex-shrink-0" />
+                                    <span className="text-sm text-gray-200 leading-snug">{a}</span>
                                 </li>
                             ))}
                         </ul>
+                    </div>
+                )}
+
+                {!item.deep_dive && (!item.action_items || item.action_items.length === 0) && (
+                    <div className="flex flex-col items-center justify-center py-6 text-center border border-dashed border-white/[0.06] rounded-xl">
+                        <Lightbulb className="h-8 w-8 text-gray-700 mb-2" />
+                        <p className="text-xs text-gray-600">AI insights not yet generated.</p>
+                        <p className="text-xs text-gray-700 mt-0.5">Run Sync to enrich this item.</p>
                     </div>
                 )}
             </div>
@@ -197,15 +230,15 @@ function DeepDivePanel({ item, onClose, onUpdate }: DeepDivePanelProps) {
     )
 }
 
-// ─── Item Card ────────────────────────────────────────────────────────────────
+// ─── Table Row ────────────────────────────────────────────────────────────────
 
-interface ItemCardProps {
+interface TableRowProps {
     item: ContentItem
     onClick: () => void
     onToggle: (field: 'is_pinned' | 'is_read' | 'is_archived', val: boolean) => void
 }
 
-function ItemCard({ item, onClick, onToggle }: ItemCardProps) {
+function FeedTableRow({ item, onClick, onToggle }: TableRowProps) {
     async function handleToggle(e: React.MouseEvent, field: 'is_pinned' | 'is_read' | 'is_archived') {
         e.stopPropagation()
         const newVal = !item[field]
@@ -217,68 +250,103 @@ function ItemCard({ item, onClick, onToggle }: ItemCardProps) {
         onToggle(field, newVal)
     }
 
+    const actionCount = item.action_items?.length ?? 0
+    const hasDeepDive = Boolean(item.deep_dive)
+
     return (
-        <motion.div
+        <motion.tr
             layout
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96 }}
+            exit={{ opacity: 0 }}
             onClick={onClick}
-            className={`group relative p-4 rounded-2xl border cursor-pointer transition-all hover:border-white/20 hover:bg-white/[0.02] ${
-                item.is_read
-                    ? 'bg-bg-primary border-white/[0.05]'
-                    : 'bg-bg-elevated border-white/[0.08]'
-            } ${item.is_pinned ? 'ring-1 ring-lime/20' : ''}`}
+            className={`group border-b border-white/[0.04] cursor-pointer transition-colors hover:bg-white/[0.025] last:border-0 ${
+                item.is_pinned ? 'bg-lime/[0.03]' : item.is_read ? '' : 'bg-white/[0.015]'
+            }`}
         >
-            {/* Source + time row */}
-            <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center gap-1.5">
-                    {item.content_sources && (
-                        <>
-                            <SourceIcon type={item.content_sources.type} />
-                            <span className="text-xs text-gray-500">
-                                {SOURCE_TYPE_LABELS[item.content_sources.type]} · {item.content_sources.name}
-                            </span>
-                        </>
-                    )}
+            {/* Score */}
+            <td className="py-3 pl-4 pr-3 w-16 align-middle">
+                <div className="flex items-center gap-1">
+                    {item.is_pinned && <Pin className="h-3 w-3 text-lime flex-shrink-0" />}
+                    <ScoreBadge score={item.relevance_score} />
                 </div>
+            </td>
+
+            {/* Title + Description */}
+            <td className="py-3 pr-4 align-middle">
+                <p className={`text-sm font-semibold leading-snug line-clamp-1 mb-0.5 ${item.is_read ? 'text-gray-400' : 'text-white'}`}>
+                    {item.title}
+                </p>
+                {item.summary ? (
+                    <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{item.summary}</p>
+                ) : (
+                    <p className="text-xs text-gray-700 italic">No summary — re-sync to generate</p>
+                )}
+            </td>
+
+            {/* Source */}
+            <td className="py-3 pr-4 w-36 align-middle">
+                {item.content_sources ? (
+                    <div className="flex items-center gap-1.5">
+                        <SourceIcon type={item.content_sources.type} />
+                        <div>
+                            <p className="text-xs text-gray-300 font-medium leading-tight truncate max-w-[100px]">{item.content_sources.name}</p>
+                            <p className="text-[10px] text-gray-600">{SOURCE_TYPE_LABELS[item.content_sources.type]}</p>
+                        </div>
+                    </div>
+                ) : (
+                    <span className="text-xs text-gray-700">—</span>
+                )}
+            </td>
+
+            {/* AI Insights */}
+            <td className="py-3 pr-4 w-28 align-middle">
+                {(actionCount > 0 || hasDeepDive) ? (
+                    <div className="flex flex-col gap-1">
+                        {actionCount > 0 && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-lime/[0.08] text-lime border border-lime/[0.15] w-fit">
+                                <Lightbulb className="h-2.5 w-2.5" />
+                                {actionCount} action{actionCount !== 1 ? 's' : ''}
+                            </span>
+                        )}
+                        {hasDeepDive && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/[0.08] text-amber-400 border border-amber-500/[0.15] w-fit">
+                                <Zap className="h-2.5 w-2.5" />
+                                Deep dive
+                            </span>
+                        )}
+                    </div>
+                ) : (
+                    <span className="text-[10px] text-gray-700 italic">Not enriched</span>
+                )}
+            </td>
+
+            {/* Time */}
+            <td className="py-3 pr-3 w-24 align-middle">
                 <span className="text-xs text-gray-600">{timeAgo(item.created_at)}</span>
-            </div>
+            </td>
 
-            {/* Title */}
-            <h3 className={`text-sm font-semibold leading-snug mb-1.5 line-clamp-2 ${item.is_read ? 'text-gray-400' : 'text-white'}`}>
-                {item.title}
-            </h3>
-
-            {/* Summary */}
-            {item.summary && (
-                <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">{item.summary}</p>
-            )}
-
-            {/* Footer: badge + actions */}
-            <div className="flex items-center justify-between">
-                <RelevanceBadge score={item.relevance_score} />
-
+            {/* Actions (hover) */}
+            <td className="py-3 pr-4 w-28 align-middle">
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {item.is_pinned && <Pin className="h-3.5 w-3.5 text-lime" />}
                     <button
                         onClick={(e) => handleToggle(e, 'is_pinned')}
                         title={item.is_pinned ? 'Unpin' : 'Pin'}
-                        className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
                     >
                         {item.is_pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
                     </button>
                     <button
                         onClick={(e) => handleToggle(e, 'is_read')}
                         title={item.is_read ? 'Mark unread' : 'Mark read'}
-                        className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
                     >
                         {item.is_read ? <CheckCheck className="h-3.5 w-3.5" /> : <Circle className="h-3.5 w-3.5" />}
                     </button>
                     <button
                         onClick={(e) => handleToggle(e, 'is_archived')}
                         title={item.is_archived ? 'Unarchive' : 'Archive'}
-                        className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
                     >
                         {item.is_archived ? <ArchiveRestore className="h-3.5 w-3.5" /> : <Archive className="h-3.5 w-3.5" />}
                     </button>
@@ -287,13 +355,49 @@ function ItemCard({ item, onClick, onToggle }: ItemCardProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
                     >
                         <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                 </div>
+            </td>
+        </motion.tr>
+    )
+}
+
+// ─── Sort Header Cell ─────────────────────────────────────────────────────────
+
+function SortTh({
+    label,
+    field,
+    current,
+    dir,
+    onSort,
+    className = '',
+}: {
+    label: string
+    field: SortField
+    current: SortField
+    dir: SortDir
+    onSort: (f: SortField) => void
+    className?: string
+}) {
+    const active = current === field
+    return (
+        <th
+            className={`px-4 py-2.5 text-left cursor-pointer select-none group ${className}`}
+            onClick={() => onSort(field)}
+        >
+            <div className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                active ? 'text-lime' : 'text-gray-600 group-hover:text-gray-400'
+            }`}>
+                {label}
+                {active
+                    ? dir === 'desc' ? <ChevronDownIcon className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />
+                    : <SortAsc className="h-3 w-3 opacity-0 group-hover:opacity-50" />
+                }
             </div>
-        </motion.div>
+        </th>
     )
 }
 
@@ -311,19 +415,20 @@ export function FeedTab({ onSync, syncing }: FeedTabProps) {
     const [typeFilter, setTypeFilter]     = useState<string>('all')
     const [viewMode, setViewMode]         = useState<'active' | 'archived'>('active')
     const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null)
+    const [sortField, setSortField]       = useState<SortField>('relevance_score')
+    const [sortDir, setSortDir]           = useState<SortDir>('desc')
 
     const fetchItems = useCallback(async () => {
         setLoading(true)
-        const query = db
+        const { data, error } = await db
             .from('content_items')
             .select('*, content_sources(name, type)')
             .eq('is_archived', viewMode === 'archived')
             .order('is_pinned', { ascending: false })
             .order('relevance_score', { ascending: false })
             .order('created_at', { ascending: false })
-            .limit(100)
+            .limit(200)
 
-        const { data, error } = await query
         if (error) { toast.error('Failed to load content'); setLoading(false); return }
         setItems((data ?? []) as ContentItem[])
         setLoading(false)
@@ -336,33 +441,74 @@ export function FeedTab({ onSync, syncing }: FeedTabProps) {
         if (selectedItem?.id === id) setSelectedItem((prev) => prev ? { ...prev, ...patch } : null)
     }
 
-    // Filter items client-side
+    // Client-side filter
     const filtered = items.filter((item) => {
-        const matchSearch = !searchQuery || item.title.toLowerCase().includes(searchQuery.toLowerCase()) || (item.summary ?? '').toLowerCase().includes(searchQuery.toLowerCase())
-        const matchType   = typeFilter === 'all' || item.content_sources?.type === typeFilter
+        const q = searchQuery.toLowerCase()
+        const matchSearch = !q
+            || item.title.toLowerCase().includes(q)
+            || (item.summary ?? '').toLowerCase().includes(q)
+            || (item.deep_dive ?? '').toLowerCase().includes(q)
+        const matchType = typeFilter === 'all' || item.content_sources?.type === typeFilter
         return matchSearch && matchType
     })
+
+    // Client-side sort
+    const sorted = [...filtered].sort((a, b) => {
+        let av: number | string = 0
+        let bv: number | string = 0
+        if (sortField === 'relevance_score') {
+            // Pinned always first
+            if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1
+            av = a.relevance_score ?? 0
+            bv = b.relevance_score ?? 0
+        } else if (sortField === 'created_at') {
+            av = new Date(a.created_at).getTime()
+            bv = new Date(b.created_at).getTime()
+        } else if (sortField === 'published_at') {
+            av = a.published_at ? new Date(a.published_at).getTime() : 0
+            bv = b.published_at ? new Date(b.published_at).getTime() : 0
+        }
+        if (typeof av === 'number' && typeof bv === 'number') {
+            return sortDir === 'desc' ? bv - av : av - bv
+        }
+        return 0
+    })
+
+    function handleSort(field: SortField) {
+        if (field === sortField) {
+            setSortDir((d) => d === 'desc' ? 'asc' : 'desc')
+        } else {
+            setSortField(field)
+            setSortDir('desc')
+        }
+    }
 
     async function handleSync() {
         await onSync()
         fetchItems()
     }
 
+    // Computed stats
+    const enrichedCount  = sorted.filter((i) => i.summary).length
+    const pinnedCount    = sorted.filter((i) => i.is_pinned).length
+    const unreadCount    = sorted.filter((i) => !i.is_read).length
+
     return (
         <div className="flex h-full">
             {/* Main content */}
             <div className="flex-1 flex flex-col min-w-0">
+
                 {/* Toolbar */}
                 <div className="flex flex-wrap items-center gap-3 px-6 py-4 border-b border-white/[0.06]">
                     {/* Search */}
-                    <div className="relative flex-1 min-w-[180px] max-w-sm">
+                    <div className="relative flex-1 min-w-[200px] max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-500 pointer-events-none" />
                         <input
                             type="text"
-                            placeholder="Search items…"
+                            placeholder="Search title, summary, deep dive…"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 bg-bg-elevated border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/30 transition-colors"
+                            className="w-full pl-9 pr-8 py-2 bg-bg-elevated border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/30 transition-colors"
                         />
                         {searchQuery && (
                             <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2">
@@ -385,7 +531,7 @@ export function FeedTab({ onSync, syncing }: FeedTabProps) {
                         ))}
                     </div>
 
-                    {/* Active / Archived toggle */}
+                    {/* Active / Archived */}
                     <div className="flex items-center gap-1 bg-bg-elevated border border-white/[0.08] rounded-xl p-1">
                         {(['active', 'archived'] as const).map((v) => (
                             <button
@@ -409,36 +555,63 @@ export function FeedTab({ onSync, syncing }: FeedTabProps) {
                     </button>
                 </div>
 
-                {/* Count */}
-                <div className="px-6 py-2 border-b border-white/[0.04]">
-                    <span className="text-xs text-gray-500">{filtered.length} item{filtered.length !== 1 ? 's' : ''}</span>
+                {/* Stats bar */}
+                <div className="flex items-center gap-4 px-6 py-2 border-b border-white/[0.04]">
+                    <span className="text-xs text-gray-500">{sorted.length} item{sorted.length !== 1 ? 's' : ''}</span>
+                    {unreadCount > 0 && (
+                        <span className="text-xs text-white/60">
+                            <span className="font-semibold text-white">{unreadCount}</span> unread
+                        </span>
+                    )}
+                    {pinnedCount > 0 && (
+                        <span className="text-xs text-lime/70">
+                            <span className="font-semibold text-lime">{pinnedCount}</span> pinned
+                        </span>
+                    )}
+                    {enrichedCount < sorted.length && sorted.length > 0 && (
+                        <span className="text-xs text-amber-400/60">
+                            <span className="font-semibold text-amber-400">{sorted.length - enrichedCount}</span> not yet enriched
+                        </span>
+                    )}
                 </div>
 
-                {/* Grid */}
-                <div className="flex-1 overflow-y-auto p-6">
+                {/* Table */}
+                <div className="flex-1 overflow-auto">
                     {loading ? (
                         <div className="flex items-center justify-center py-20">
                             <Loader2 className="h-6 w-6 animate-spin text-lime" />
                         </div>
-                    ) : filtered.length === 0 ? (
+                    ) : sorted.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
                             <Inbox className="h-10 w-10 text-gray-700 mb-3" />
                             <p className="text-sm text-gray-500">No content yet.</p>
                             <p className="text-xs text-gray-600 mt-1">Add sources and hit Sync Now to start ingesting.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-                            <AnimatePresence mode="popLayout">
-                                {filtered.map((item) => (
-                                    <ItemCard
-                                        key={item.id}
-                                        item={item}
-                                        onClick={() => setSelectedItem(item)}
-                                        onToggle={(field, val) => updateItem(item.id, { [field]: val })}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
+                        <table className="w-full border-collapse min-w-[640px]">
+                            <thead>
+                                <tr className="border-b border-white/[0.06] bg-bg-primary/50 sticky top-0 z-10">
+                                    <SortTh label="Score"     field="relevance_score" current={sortField} dir={sortDir} onSort={handleSort} className="pl-4 w-16" />
+                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Title &amp; Summary</th>
+                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-36">Source</th>
+                                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-28">AI Insights</th>
+                                    <SortTh label="Added"     field="created_at"      current={sortField} dir={sortDir} onSort={handleSort} className="w-24" />
+                                    <th className="px-4 py-2.5 w-28" />
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <AnimatePresence mode="popLayout">
+                                    {sorted.map((item) => (
+                                        <FeedTableRow
+                                            key={item.id}
+                                            item={item}
+                                            onClick={() => setSelectedItem(item)}
+                                            onToggle={(field, val) => updateItem(item.id, { [field]: val })}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </tbody>
+                        </table>
                     )}
                 </div>
             </div>
