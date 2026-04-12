@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import type { ToolboxItem } from '@/types/database'
 import { setDynamicPageTitle } from '@/hooks/usePageTitle'
 
@@ -33,8 +35,20 @@ const toolTypeConfig: Record<string, { label: string; color: string }> = {
     other: { label: 'Other', color: 'text-gray-400' },
 }
 
+function resolveTypes(item: ToolboxItem): { label: string; color: string }[] {
+    const raw = Array.isArray(item.tool_types) && item.tool_types.length > 0
+        ? item.tool_types : [item.tool_type]
+    return raw.map(t => toolTypeConfig[t] ?? { label: t, color: 'text-gray-400' })
+}
+
 export function ToolboxDetailPage() {
     const { id } = useParams<{ id: string }>()
+    const { user } = useAuth()
+    const { isPreviewing, canPreview, previewUser } = useViewMode()
+    const effectiveUserType = (canPreview && isPreviewing && previewUser)
+        ? previewUser.user_type
+        : user?.user_type ?? null
+
     const [item, setItem] = useState<ToolboxItem | null>(null)
     const [loading, setLoading] = useState(true)
     const [notFound, setNotFound] = useState(false)
@@ -46,18 +60,26 @@ export function ToolboxDetailPage() {
                 .from('toolbox_items')
                 .select('*')
                 .eq('id', id)
-                .eq('is_active', true)
                 .single()
             if (!data) {
                 setNotFound(true)
             } else {
-                setItem(data as ToolboxItem)
-                setDynamicPageTitle((data as ToolboxItem).title)
+                const fetched = data as ToolboxItem
+                const vt = Array.isArray(fetched.visible_to) ? fetched.visible_to : []
+                const visible = vt.length > 0
+                    ? (effectiveUserType ? vt.includes(effectiveUserType) : false)
+                    : fetched.is_active
+                if (!visible) {
+                    setNotFound(true)
+                } else {
+                    setItem(fetched)
+                    setDynamicPageTitle(fetched.title)
+                }
             }
             setLoading(false)
         }
         fetch()
-    }, [id])
+    }, [id, effectiveUserType])
 
     if (loading) {
         return (
@@ -80,8 +102,8 @@ export function ToolboxDetailPage() {
 
     const imp = importanceConfig[item.importance]
     const sub = subscriptionConfig[item.subscription_type] ?? subscriptionConfig.paid
-    const tt = toolTypeConfig[item.tool_type] ?? { label: item.tool_type, color: 'text-gray-400' }
-    
+    const resolvedTypes = resolveTypes(item)
+
     // Fallback logic for demonstration purposes until media is fully populated
     const mediaItems = item.media && item.media.length > 0 ? item.media : [
         ...(item.vimeo_url ? [{ id: 'legacy-video', type: 'video' as const, url: item.vimeo_url, title: 'Tutorial Video' }] : []),
@@ -108,8 +130,15 @@ export function ToolboxDetailPage() {
 
                 {/* Header */}
                 <div className="flex items-start gap-4">
-                    <div className="h-14 w-14 rounded-xl gradient-lime flex items-center justify-center shrink-0">
-                        <span className="text-black font-bold text-lg">{item.title.charAt(0)}</span>
+                    <div className="h-14 w-14 rounded-xl bg-bg-elevated border border-border flex items-center justify-center overflow-hidden shrink-0">
+                        {item.logo_url ? (
+                            <img src={item.logo_url} alt="" className="h-full w-full object-contain p-1"
+                                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                        ) : (
+                            <div className="h-full w-full gradient-lime flex items-center justify-center rounded-xl">
+                                <span className="text-black font-bold text-lg">{item.title.charAt(0)}</span>
+                            </div>
+                        )}
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -122,12 +151,11 @@ export function ToolboxDetailPage() {
                         </div>
                         <h1 className="text-xl font-bold text-white">{item.title}</h1>
                         <div className="flex flex-wrap gap-2 mt-1.5">
-                            <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-lg">
-                                {item.category}
-                            </span>
-                            <span className={`text-xs px-2 py-0.5 rounded-lg bg-white/5 ${tt.color}`}>
-                                {tt.label}
-                            </span>
+                            {resolvedTypes.map((t, i) => (
+                                <span key={i} className={`text-xs px-2 py-0.5 rounded-lg bg-white/5 ${t.color}`}>
+                                    {t.label}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>

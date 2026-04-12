@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ExternalLink, Plus, Trash2, Image as ImageIcon, Video } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import { Portal } from '@/components/shared/Portal'
-import type { ToolboxItem, ToolboxImportance, ToolboxToolType, ToolboxSubscriptionType, ToolboxMedia } from '@/types/database'
+import type { ToolboxItem, ToolboxImportance, ToolboxSubscriptionType, ToolboxMedia } from '@/types/database'
 
 interface ToolboxItemModalProps {
     isOpen: boolean
@@ -18,13 +18,19 @@ const IMPORTANCE_OPTIONS: { value: ToolboxImportance; label: string }[] = [
     { value: 'optional', label: '⚪ Optional' },
 ]
 
-const TOOL_TYPE_OPTIONS: { value: ToolboxToolType; label: string }[] = [
+const TOOL_TYPE_OPTIONS: { value: string; label: string }[] = [
     { value: 'image_generation', label: 'Image Generation' },
     { value: 'video_generation', label: 'Video Generation' },
     { value: 'text_generation', label: 'Text Generation' },
     { value: 'automation', label: 'Automation' },
     { value: 'analytics', label: 'Analytics' },
     { value: 'other', label: 'Other' },
+]
+
+const VISIBLE_TO_OPTIONS: { value: string; label: string }[] = [
+    { value: 'management', label: 'Management' },
+    { value: 'team', label: 'Team' },
+    { value: 'sprint_member', label: 'Sprint Workshop' },
 ]
 
 const SUBSCRIPTION_OPTIONS: { value: ToolboxSubscriptionType; label: string }[] = [
@@ -37,14 +43,14 @@ const SUBSCRIPTION_OPTIONS: { value: ToolboxSubscriptionType; label: string }[] 
 const defaultForm = {
     title: '',
     url: '',
+    logo_url: '',
     vimeo_url: '',
     description: '',
     importance: 'recommended' as ToolboxImportance,
-    category: '',
-    tool_type: 'other' as ToolboxToolType,
+    tool_types: [] as string[],
+    visible_to: ['management', 'team', 'sprint_member'] as string[],
     subscription_type: 'paid' as ToolboxSubscriptionType,
     media: [] as ToolboxMedia[],
-    is_active: true,
 }
 
 const inputClass = 'w-full px-3 py-2 bg-bg-elevated border border-border rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-lime/50 transition'
@@ -61,14 +67,18 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
             setForm({
                 title: item.title,
                 url: item.url,
+                logo_url: item.logo_url ?? '',
                 vimeo_url: item.vimeo_url ?? '',
                 description: item.description ?? '',
                 importance: item.importance,
-                category: item.category,
-                tool_type: item.tool_type,
+                tool_types: Array.isArray(item.tool_types) && item.tool_types.length > 0
+                    ? item.tool_types
+                    : [item.tool_type],
+                visible_to: Array.isArray(item.visible_to)
+                    ? item.visible_to
+                    : (item.is_active ? ['management', 'team', 'sprint_member'] : []),
                 subscription_type: item.subscription_type ?? 'paid',
                 media: item.media ?? [],
-                is_active: item.is_active,
             })
         } else {
             setForm(defaultForm)
@@ -76,28 +86,53 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
         setError(null)
     }, [item, isOpen])
 
+    const toggleToolType = (value: string) => {
+        setForm(f => ({
+            ...f,
+            tool_types: f.tool_types.includes(value)
+                ? f.tool_types.filter(t => t !== value)
+                : [...f.tool_types, value],
+        }))
+    }
+
+    const toggleVisibleTo = (value: string) => {
+        setForm(f => ({
+            ...f,
+            visible_to: f.visible_to.includes(value)
+                ? f.visible_to.filter(v => v !== value)
+                : [...f.visible_to, value],
+        }))
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!form.title.trim() || !form.url.trim()) {
             setError('Title and URL are required.')
             return
         }
-        
-        // Validate media arrays
         for (const m of form.media) {
             if (!m.url.trim()) {
                 setError('All media items must have a valid URL.')
                 return
             }
         }
-        
+
         setLoading(true)
         setError(null)
 
         const payload = {
-            ...form,
+            title: form.title.trim(),
+            url: form.url.trim(),
+            logo_url: form.logo_url.trim() || null,
             vimeo_url: form.vimeo_url.trim() || null,
             description: form.description.trim() || null,
+            importance: form.importance,
+            tool_types: form.tool_types,
+            // keep legacy field in sync with first selected type
+            tool_type: form.tool_types[0] ?? 'other',
+            visible_to: form.visible_to,
+            is_active: form.visible_to.length > 0,
+            subscription_type: form.subscription_type,
             media: form.media.length > 0 ? form.media : null,
             updated_at: new Date().toISOString(),
         }
@@ -171,10 +206,37 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                 )}
 
                                 <div className="space-y-4">
+                                    {/* Logo + Title row */}
+                                    <div className="flex items-start gap-3">
+                                        {/* Logo preview */}
+                                        <div className="shrink-0">
+                                            <label className={labelClass}>Logo</label>
+                                            <div className="h-10 w-10 rounded-xl bg-bg-elevated border border-border flex items-center justify-center overflow-hidden">
+                                                {form.logo_url ? (
+                                                    <img
+                                                        src={form.logo_url}
+                                                        alt=""
+                                                        className="h-full w-full object-contain"
+                                                        onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                                                    />
+                                                ) : (
+                                                    <span className="text-black font-bold text-sm gradient-lime rounded-lg h-full w-full flex items-center justify-center">
+                                                        {form.title ? form.title.charAt(0).toUpperCase() : '?'}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <label className={labelClass}>Title *</label>
+                                            <input type="text" required className={inputClass} placeholder="e.g. Midjourney"
+                                                value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                                        </div>
+                                    </div>
+
                                     <div>
-                                        <label className={labelClass}>Title *</label>
-                                        <input type="text" required className={inputClass} placeholder="e.g. Midjourney"
-                                            value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                                        <label className={labelClass}>Logo URL <span className="text-gray-500 font-normal">(favicon or square icon)</span></label>
+                                        <input type="url" className={inputClass} placeholder="https://example.com/logo.png"
+                                            value={form.logo_url} onChange={e => setForm({ ...form, logo_url: e.target.value })} />
                                     </div>
 
                                     <div>
@@ -194,7 +256,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                         <textarea rows={3} className={inputClass + ' resize-none'} placeholder="What does this tool do?"
                                             value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
                                     </div>
-                                    
+
                                     <div>
                                         <label className={labelClass}>Vimeo Tutorial URL <span className="text-gray-500 font-normal">(Legacy / Option A)</span></label>
                                         <input type="url" className={inputClass} placeholder="https://vimeo.com/..."
@@ -218,31 +280,55 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className={labelClass}>Category</label>
-                                            <input type="text" className={inputClass} placeholder="e.g. Image Generation"
-                                                value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className={labelClass}>Tool Type</label>
-                                            <select className={inputClass} value={form.tool_type}
-                                                onChange={e => setForm({ ...form, tool_type: e.target.value as ToolboxToolType })}>
-                                                {TOOL_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                                            </select>
+                                    {/* Tool Types — multi-select chips */}
+                                    <div>
+                                        <label className={labelClass}>Tool Type <span className="text-gray-500 font-normal">(select all that apply)</span></label>
+                                        <div className="flex flex-wrap gap-2 mt-1">
+                                            {TOOL_TYPE_OPTIONS.map(opt => {
+                                                const active = form.tool_types.includes(opt.value)
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => toggleToolType(opt.value)}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                                                            active
+                                                                ? 'bg-lime/15 text-lime border-lime/40'
+                                                                : 'bg-white/5 text-gray-400 border-border hover:border-gray-500 hover:text-gray-300'
+                                                        }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                )
+                                            })}
                                         </div>
                                     </div>
 
-                                    <div className="pt-2">
-                                        <label className="flex items-center gap-3 cursor-pointer select-none">
-                                            <div
-                                                onClick={() => setForm(f => ({ ...f, is_active: !f.is_active }))}
-                                                className={`relative h-6 w-11 rounded-full border transition ${form.is_active ? 'bg-lime/20 border-lime/40' : 'bg-white/5 border-border'}`}
-                                            >
-                                                <span className={`absolute top-0.5 h-5 w-5 rounded-full transition-transform ${form.is_active ? 'translate-x-5 bg-lime' : 'translate-x-0.5 bg-gray-500'}`} />
-                                            </div>
-                                            <span className="text-sm text-gray-300">Active - Visible to participants</span>
-                                        </label>
+                                    {/* Visible To — multi-select chips */}
+                                    <div>
+                                        <label className={labelClass}>Visible To <span className="text-gray-500 font-normal">(who can see this tool)</span></label>
+                                        <div className="flex flex-wrap gap-2 mt-1">
+                                            {VISIBLE_TO_OPTIONS.map(opt => {
+                                                const active = form.visible_to.includes(opt.value)
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => toggleVisibleTo(opt.value)}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                                                            active
+                                                                ? 'bg-blue-500/15 text-blue-300 border-blue-500/40'
+                                                                : 'bg-white/5 text-gray-400 border-border hover:border-gray-500 hover:text-gray-300'
+                                                        }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                        {form.visible_to.length === 0 && (
+                                            <p className="mt-1.5 text-xs text-yellow-400">No audience selected — tool will be hidden from all users.</p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -258,8 +344,8 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                     <div className="space-y-4">
                                         {form.media.map((m, index) => (
                                             <div key={m.id} className="p-3 bg-white/5 border border-border rounded-xl space-y-3 relative group">
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     onClick={() => removeMedia(m.id)}
                                                     className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-400 hover:bg-black/40 rounded-lg transition"
                                                 >
@@ -271,16 +357,16 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                                     {m.type === 'video' ? 'Video Player' : 'Image Asset'} #{index + 1}
                                                 </div>
 
-                                                <input 
-                                                    type="text" 
+                                                <input
+                                                    type="text"
                                                     placeholder={m.type === 'video' ? "https://vimeo.com/..." : "https://... (Image URL)"}
                                                     className={inputClass}
                                                     value={m.url}
                                                     onChange={(e) => updateMedia(m.id, { url: e.target.value })}
                                                     required
                                                 />
-                                                <input 
-                                                    type="text" 
+                                                <input
+                                                    type="text"
                                                     placeholder="Optional Title (e.g. Navigation Overview)"
                                                     className={inputClass}
                                                     value={m.title || ''}
@@ -291,15 +377,15 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
 
                                         {form.media.length < 3 && (
                                             <div className="flex gap-2">
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     onClick={() => addMedia('image')}
                                                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-border text-gray-400 hover:text-white hover:border-gray-500 hover:bg-white/5 transition text-sm font-medium"
                                                 >
                                                     <Plus className="w-4 h-4" /> Add Image
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     onClick={() => addMedia('video')}
                                                     className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-border text-gray-400 hover:text-white hover:border-gray-500 hover:bg-white/5 transition text-sm font-medium"
                                                 >
@@ -311,7 +397,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                 </div>
                             </form>
                         </div>
-                        
+
                         <div className="p-6 border-t border-border shrink-0 bg-bg-card">
                             <div className="flex gap-3">
                                 <button type="button" onClick={onClose}

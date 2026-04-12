@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { Reorder, useDragControls } from 'framer-motion'
 import {
-    Plus, Pencil, Trash2, ExternalLink, ToggleLeft, ToggleRight, Wrench
+    Plus, Pencil, Trash2, ExternalLink, Wrench, GripVertical
 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ModalForm } from '@/components/admin/shared/ModalForm'
@@ -14,7 +14,7 @@ const importanceBadge = {
     optional: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
 }
 
-const toolTypeBadge = {
+const toolTypeBadge: Record<string, string> = {
     image_generation: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
     video_generation: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
     text_generation: 'bg-lime/10 text-lime border-lime/30',
@@ -32,6 +32,137 @@ const toolTypeLabel: Record<string, string> = {
     other: 'Other',
 }
 
+const visibleToLabel: Record<string, string> = {
+    management: 'Mgmt',
+    team: 'Team',
+    sprint_member: 'Sprint',
+}
+
+const visibleToBadge: Record<string, string> = {
+    management: 'bg-gray-500/10 text-gray-300 border-gray-500/30',
+    team: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+    sprint_member: 'bg-lime/10 text-lime border-lime/30',
+}
+
+// Individual drag-handle row
+function DraggableRow({
+    item,
+    isSelected,
+    onSelect,
+    onEdit,
+    onDelete,
+}: {
+    item: ToolboxItem
+    isSelected: boolean
+    onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onEdit: () => void
+    onDelete: () => void
+}) {
+    const controls = useDragControls()
+    const types = Array.isArray(item.tool_types) && item.tool_types.length > 0
+        ? item.tool_types
+        : [item.tool_type]
+    const visibility = Array.isArray(item.visible_to) ? item.visible_to : []
+    const isHidden = visibility.length === 0
+
+    return (
+        <Reorder.Item
+            value={item}
+            dragListener={false}
+            dragControls={controls}
+            className={`flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0 hover:bg-white/[0.02] transition ${isHidden ? 'opacity-50' : ''} ${isSelected ? 'bg-lime/5' : ''}`}
+        >
+            {/* Drag handle */}
+            <div
+                onPointerDown={(e) => controls.start(e)}
+                className="shrink-0 cursor-grab active:cursor-grabbing p-1 text-gray-600 hover:text-gray-400 transition touch-none"
+            >
+                <GripVertical className="h-4 w-4" />
+            </div>
+
+            {/* Checkbox */}
+            <div className="shrink-0" onClick={e => e.stopPropagation()}>
+                <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={onSelect}
+                    className="h-4 w-4 rounded border-border bg-bg-elevated accent-lime cursor-pointer"
+                />
+            </div>
+
+            {/* Logo */}
+            <div className="shrink-0 h-8 w-8 rounded-lg bg-bg-elevated border border-border flex items-center justify-center overflow-hidden">
+                {item.logo_url ? (
+                    <img
+                        src={item.logo_url}
+                        alt=""
+                        className="h-full w-full object-contain"
+                        onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    />
+                ) : (
+                    <span className="text-xs font-bold text-gray-400">{item.title.charAt(0)}</span>
+                )}
+            </div>
+
+            {/* Title + description */}
+            <div className="flex-1 min-w-0">
+                <p className="font-medium text-white text-sm truncate">{item.title}</p>
+                {item.description && (
+                    <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xs">{item.description}</p>
+                )}
+            </div>
+
+            {/* Tool types */}
+            <div className="hidden md:flex items-center gap-1 shrink-0">
+                {types.slice(0, 2).map(t => (
+                    <span key={t} className={`px-1.5 py-0.5 text-[11px] rounded border ${toolTypeBadge[t] ?? toolTypeBadge.other}`}>
+                        {toolTypeLabel[t] ?? t}
+                    </span>
+                ))}
+                {types.length > 2 && (
+                    <span className="text-xs text-gray-500">+{types.length - 2}</span>
+                )}
+            </div>
+
+            {/* Visible to */}
+            <div className="hidden lg:flex items-center gap-1 shrink-0">
+                {visibility.length === 0 ? (
+                    <span className="px-1.5 py-0.5 text-[11px] rounded border bg-red-500/10 text-red-400 border-red-500/30">Hidden</span>
+                ) : (
+                    visibility.map(v => (
+                        <span key={v} className={`px-1.5 py-0.5 text-[11px] rounded border ${visibleToBadge[v] ?? 'bg-gray-500/10 text-gray-400 border-gray-500/30'}`}>
+                            {visibleToLabel[v] ?? v}
+                        </span>
+                    ))
+                )}
+            </div>
+
+            {/* Importance */}
+            <div className="shrink-0">
+                <span className={`px-1.5 py-0.5 text-[11px] rounded border capitalize ${importanceBadge[item.importance]}`}>
+                    {item.importance}
+                </span>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-0.5 shrink-0">
+                <a href={item.url} target="_blank" rel="noopener noreferrer"
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-gray-200 transition">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+                <button onClick={onEdit}
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition">
+                    <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={onDelete}
+                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-300 transition">
+                    <Trash2 className="h-3.5 w-3.5" />
+                </button>
+            </div>
+        </Reorder.Item>
+    )
+}
+
 export function AdminToolboxTab() {
     const supabase = useSupabase()
     const [items, setItems] = useState<ToolboxItem[]>([])
@@ -41,6 +172,7 @@ export function AdminToolboxTab() {
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
     const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+    const reorderSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const fetchItems = async () => {
         setLoading(true)
@@ -54,12 +186,18 @@ export function AdminToolboxTab() {
 
     useEffect(() => { fetchItems() }, [])
 
-    const handleToggleActive = async (item: ToolboxItem) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase.from('toolbox_items') as any)
-            .update({ is_active: !item.is_active, updated_at: new Date().toISOString() })
-            .eq('id', item.id)
-        setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_active: !i.is_active } : i))
+    // Called by Reorder.Group when user drags items
+    const handleReorder = (newItems: ToolboxItem[]) => {
+        setItems(newItems)
+        // Debounce DB save
+        if (reorderSaveTimer.current) clearTimeout(reorderSaveTimer.current)
+        reorderSaveTimer.current = setTimeout(async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const tbl = supabase.from('toolbox_items') as any
+            for (let i = 0; i < newItems.length; i++) {
+                await tbl.update({ order_index: i, updated_at: new Date().toISOString() }).eq('id', newItems[i].id)
+            }
+        }, 600)
     }
 
     const handleDelete = async (item: ToolboxItem) => {
@@ -89,12 +227,9 @@ export function AdminToolboxTab() {
         setSelectedIds(e.target.checked ? items.map((i) => i.id) : [])
     }
 
-    const handleSelectRow = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-        e.stopPropagation()
-        setSelectedIds(prev =>
-            e.target.checked ? [...prev, id] : prev.filter(sid => sid !== id)
-        )
-    }
+    const visibleCount = items.filter(i =>
+        Array.isArray(i.visible_to) ? i.visible_to.length > 0 : i.is_active
+    ).length
 
     return (
         <div className="space-y-4">
@@ -105,7 +240,7 @@ export function AdminToolboxTab() {
                         Toolbox Resources
                     </h3>
                     <p className="text-xs text-gray-500 mt-0.5">
-                        {items.length} tool{items.length !== 1 ? 's' : ''} · {items.filter(i => i.is_active).length} active
+                        {items.length} tool{items.length !== 1 ? 's' : ''} · {visibleCount} visible to members
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -148,92 +283,49 @@ export function AdminToolboxTab() {
                 </div>
             ) : (
                 <div className="rounded-2xl border border-border overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="bg-bg-elevated border-b border-border text-xs text-gray-500 uppercase tracking-wider">
-                                <th className="px-4 py-3 w-10">
-                                    <input
-                                        type="checkbox"
-                                        checked={allSelected}
-                                        ref={(el) => { if (el) el.indeterminate = someSelected }}
-                                        onChange={handleSelectAll}
-                                        className="h-4 w-4 rounded border-border bg-bg-elevated accent-lime cursor-pointer"
-                                    />
-                                </th>
-                                <th className="text-left px-5 py-3">Tool</th>
-                                <th className="text-left px-5 py-3">Category</th>
-                                <th className="text-left px-5 py-3">Type</th>
-                                <th className="text-left px-5 py-3">Importance</th>
-                                <th className="text-center px-5 py-3">Active</th>
-                                <th className="text-right px-5 py-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                            {items.map((item, i) => {
-                                const isSelected = selectedIds.includes(item.id)
-                                return (
-                                    <motion.tr
-                                        key={item.id}
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: i * 0.04 }}
-                                        className={`hover:bg-white/[0.02] transition ${!item.is_active ? 'opacity-50' : ''} ${isSelected ? 'bg-lime/5' : ''}`}
-                                    >
-                                        <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-                                            <input
-                                                type="checkbox"
-                                                checked={isSelected}
-                                                onChange={(e) => handleSelectRow(e, item.id)}
-                                                className="h-4 w-4 rounded border-border bg-bg-elevated accent-lime cursor-pointer"
-                                            />
-                                        </td>
-                                        <td className="px-5 py-3.5">
-                                            <div>
-                                                <p className="font-medium text-white">{item.title}</p>
-                                                {item.description && (
-                                                    <p className="text-xs text-gray-500 mt-0.5 max-w-xs truncate">{item.description}</p>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-5 py-3.5 text-gray-400">{item.category}</td>
-                                        <td className="px-5 py-3.5">
-                                            <span className={`px-2 py-0.5 text-xs rounded-lg border ${toolTypeBadge[item.tool_type]}`}>
-                                                {toolTypeLabel[item.tool_type]}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-3.5">
-                                            <span className={`px-2 py-0.5 text-xs rounded-lg border capitalize ${importanceBadge[item.importance]}`}>
-                                                {item.importance}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-3.5 text-center">
-                                            <button onClick={() => handleToggleActive(item)} className="mx-auto block">
-                                                {item.is_active
-                                                    ? <ToggleRight className="h-5 w-5 text-lime" />
-                                                    : <ToggleLeft className="h-5 w-5 text-gray-500" />}
-                                            </button>
-                                        </td>
-                                        <td className="px-5 py-3.5">
-                                            <div className="flex items-center justify-end gap-1">
-                                                <a href={item.url} target="_blank" rel="noopener noreferrer"
-                                                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-gray-200 transition">
-                                                    <ExternalLink className="h-4 w-4" />
-                                                </a>
-                                                <button onClick={() => { setSelectedItem(item); setIsModalOpen(true) }}
-                                                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition">
-                                                    <Pencil className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => handleDelete(item)}
-                                                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-300 transition">
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
+                    {/* Header */}
+                    <div className="flex items-center gap-3 px-4 py-3 bg-bg-elevated border-b border-border text-xs text-gray-500 uppercase tracking-wider">
+                        <div className="w-4 shrink-0" /> {/* grip placeholder */}
+                        <div className="shrink-0">
+                            <input
+                                type="checkbox"
+                                checked={allSelected}
+                                ref={(el) => { if (el) el.indeterminate = someSelected }}
+                                onChange={handleSelectAll}
+                                className="h-4 w-4 rounded border-border bg-bg-elevated accent-lime cursor-pointer"
+                            />
+                        </div>
+                        <div className="w-8 shrink-0" /> {/* logo placeholder */}
+                        <div className="flex-1">Tool</div>
+                        <div className="hidden md:block w-28 shrink-0">Types</div>
+                        <div className="hidden lg:block w-32 shrink-0">Visible To</div>
+                        <div className="w-20 shrink-0">Level</div>
+                        <div className="w-20 shrink-0 text-right">Actions</div>
+                    </div>
+
+                    <Reorder.Group
+                        axis="y"
+                        values={items}
+                        onReorder={handleReorder}
+                        className="divide-y divide-border"
+                        as="div"
+                    >
+                        {items.map((item) => (
+                            <DraggableRow
+                                key={item.id}
+                                item={item}
+                                isSelected={selectedIds.includes(item.id)}
+                                onSelect={(e) => {
+                                    e.stopPropagation()
+                                    setSelectedIds(prev =>
+                                        e.target.checked ? [...prev, item.id] : prev.filter(id => id !== item.id)
+                                    )
+                                }}
+                                onEdit={() => { setSelectedItem(item); setIsModalOpen(true) }}
+                                onDelete={() => handleDelete(item)}
+                            />
+                        ))}
+                    </Reorder.Group>
                 </div>
             )}
 

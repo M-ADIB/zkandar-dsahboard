@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Wrench, Search, Filter, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import type { ToolboxItem } from '@/types/database'
 
 const importanceConfig = {
@@ -21,12 +23,17 @@ const toolTypeConfig: Record<string, { label: string; color: string }> = {
 }
 
 export function ToolboxPage() {
+    const { user } = useAuth()
+    const { isPreviewing, canPreview, previewUser } = useViewMode()
+    const effectiveUserType = (canPreview && isPreviewing && previewUser)
+        ? previewUser.user_type
+        : user?.user_type ?? null
+
     const [items, setItems] = useState<ToolboxItem[]>([])
     const [loading, setLoading] = useState(true)
     const [searchParams, setSearchParams] = useSearchParams()
 
     const search = searchParams.get('q') || ''
-    const filterCategory = searchParams.get('category') || 'all'
     const filterType = searchParams.get('type') || 'all'
     const filterImportance = searchParams.get('importance') || 'all'
 
@@ -43,40 +50,54 @@ export function ToolboxPage() {
 
     useEffect(() => {
         const fetch = async () => {
+            // Fetch all items ordered by admin-defined order; filter visible_to client-side
             const { data } = await supabase
                 .from('toolbox_items')
                 .select('*')
-                .eq('is_active', true)
                 .order('order_index', { ascending: true })
-            setItems((data as ToolboxItem[]) ?? [])
+
+            const all = (data as ToolboxItem[]) ?? []
+
+            // Filter to items visible for this user's type
+            const visible = effectiveUserType
+                ? all.filter(item => {
+                    const vt = Array.isArray(item.visible_to) ? item.visible_to : []
+                    if (vt.length === 0) {
+                        // Fall back to legacy is_active for items not yet migrated
+                        return item.is_active
+                    }
+                    return vt.includes(effectiveUserType)
+                })
+                : all.filter(item => item.is_active)
+
+            setItems(visible)
             setLoading(false)
         }
         fetch()
-    }, [])
+    }, [effectiveUserType])
 
-    const categories = useMemo(() =>
-        ['all', ...Array.from(new Set(items.map(i => i.category))).sort()]
-        , [items])
-
-    const toolTypes = useMemo(() =>
-        ['all', ...Array.from(new Set(items.map(i => i.tool_type))).sort()]
-        , [items])
+    const toolTypes = useMemo(() => {
+        const allTypes = items.flatMap(i =>
+            Array.isArray(i.tool_types) && i.tool_types.length > 0 ? i.tool_types : [i.tool_type]
+        )
+        return ['all', ...Array.from(new Set(allTypes)).sort()]
+    }, [items])
 
     const filtered = useMemo(() => {
         return items.filter(item => {
             const matchSearch = !search || item.title.toLowerCase().includes(search.toLowerCase()) ||
                 (item.description ?? '').toLowerCase().includes(search.toLowerCase())
-            const matchCat = filterCategory === 'all' || item.category === filterCategory
-            const matchType = filterType === 'all' || item.tool_type === filterType
+            const itemTypes = Array.isArray(item.tool_types) && item.tool_types.length > 0
+                ? item.tool_types : [item.tool_type]
+            const matchType = filterType === 'all' || itemTypes.includes(filterType)
             const matchImp = filterImportance === 'all' || item.importance === filterImportance
-            return matchSearch && matchCat && matchType && matchImp
+            return matchSearch && matchType && matchImp
         })
-    }, [items, search, filterCategory, filterType, filterImportance])
+    }, [items, search, filterType, filterImportance])
 
-    // Sort: essential first, then recommended, then optional
+    // Respect admin-defined order_index, fall back to importance sort
     const sorted = useMemo(() => {
-        const order = { essential: 0, recommended: 1, optional: 2 }
-        return [...filtered].sort((a, b) => order[a.importance] - order[b.importance])
+        return [...filtered]
     }, [filtered])
 
     const selectClass = 'px-3 py-1.5 bg-bg-elevated border border-border rounded-xl text-sm text-gray-300 focus:outline-none focus:border-lime/40 transition'
@@ -108,9 +129,6 @@ export function ToolboxPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-gray-500" />
-                    <select className={selectClass} value={filterCategory} onChange={e => updateFilter('category', e.target.value)}>
-                        {categories.map(c => <option key={c} value={c}>{c === 'all' ? 'All Categories' : c}</option>)}
-                    </select>
                     <select className={selectClass} value={filterType} onChange={e => updateFilter('type', e.target.value)}>
                         {toolTypes.map(t => (
                             <option key={t} value={t}>
@@ -148,7 +166,8 @@ export function ToolboxPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {sorted.map((item, i) => {
                         const imp = importanceConfig[item.importance]
-                        const tt = toolTypeConfig[item.tool_type] ?? { label: item.tool_type, color: 'text-gray-400' }
+                        const types = Array.isArray(item.tool_types) && item.tool_types.length > 0
+                            ? item.tool_types : [item.tool_type]
                         return (
                             <motion.div
                                 key={item.id}
@@ -159,9 +178,24 @@ export function ToolboxPage() {
                             >
                                 {/* Header row */}
                                 <div className="flex items-start justify-between gap-2">
-                                    {/* Avatar initial */}
-                                    <div className="h-10 w-10 rounded-xl gradient-lime flex items-center justify-center shrink-0">
-                                        <span className="text-black font-bold text-sm">{item.title.charAt(0)}</span>
+                                    {/* Logo */}
+                                    <div className="h-10 w-10 rounded-xl bg-bg-elevated border border-border flex items-center justify-center overflow-hidden shrink-0">
+                                        {item.logo_url ? (
+                                            <img
+                                                src={item.logo_url}
+                                                alt=""
+                                                className="h-full w-full object-contain p-1"
+                                                onError={e => {
+                                                    const el = e.target as HTMLImageElement
+                                                    el.style.display = 'none'
+                                                    el.parentElement!.innerHTML = `<span class="text-black font-bold text-sm gradient-lime rounded-xl h-full w-full flex items-center justify-center">${item.title.charAt(0)}</span>`
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="h-full w-full gradient-lime flex items-center justify-center rounded-xl">
+                                                <span className="text-black font-bold text-sm">{item.title.charAt(0)}</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <span className={`px-2 py-0.5 text-[11px] rounded-lg border font-medium ${imp.bg} ${imp.color}`}>
                                         {imp.label}
@@ -178,14 +212,13 @@ export function ToolboxPage() {
                                     )}
                                 </div>
 
-                                {/* Categories */}
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-lg">
-                                        {item.category}
-                                    </span>
-                                    <span className={`text-xs px-2 py-0.5 rounded-lg bg-white/5 ${tt.color}`}>
-                                        {tt.label}
-                                    </span>
+                                {/* Type chips */}
+                                <div className="flex flex-wrap gap-1.5">
+                                    {types.slice(0, 3).map(t => (
+                                        <span key={t} className={`text-xs px-2 py-0.5 rounded-lg bg-white/5 ${toolTypeConfig[t]?.color ?? 'text-gray-400'}`}>
+                                            {toolTypeConfig[t]?.label ?? t}
+                                        </span>
+                                    ))}
                                 </div>
 
                                 {/* CTA */}

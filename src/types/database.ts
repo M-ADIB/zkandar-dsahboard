@@ -28,12 +28,15 @@ export interface ToolboxItem {
     id: string
     title: string
     url: string
+    logo_url: string | null
     vimeo_url: string | null
     description: string | null
     media?: ToolboxMedia[] | null
     importance: ToolboxImportance
     category: string
     tool_type: ToolboxToolType
+    tool_types: string[]
+    visible_to: string[]
     subscription_type: ToolboxSubscriptionType
     order_index: number
     is_active: boolean
