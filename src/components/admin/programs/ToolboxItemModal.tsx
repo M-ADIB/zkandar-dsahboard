@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ExternalLink, Plus, Trash2, Image as ImageIcon, Video } from 'lucide-react'
+import { X, ExternalLink, Plus, Trash2, Image as ImageIcon, Video, Upload, Loader2 } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import { Portal } from '@/components/shared/Portal'
+import toast from 'react-hot-toast'
 import type { ToolboxItem, ToolboxImportance, ToolboxSubscriptionType, ToolboxMedia } from '@/types/database'
+
+const MAX_LOGO_SIZE = 5 * 1024 * 1024 // 5 MB
 
 interface ToolboxItemModalProps {
     isOpen: boolean
@@ -60,7 +63,36 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
     const supabase = useSupabase()
     const [form, setForm] = useState(defaultForm)
     const [loading, setLoading] = useState(false)
+    const [logoUploading, setLogoUploading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    async function handleLogoUpload(file: File) {
+        if (file.size > MAX_LOGO_SIZE) {
+            toast.error('Image must be under 5 MB')
+            return
+        }
+        if (!file.type.startsWith('image/')) {
+            toast.error('Only image files are allowed')
+            return
+        }
+        setLogoUploading(true)
+        const ext = file.name.split('.').pop() ?? 'png'
+        const path = `${crypto.randomUUID()}.${ext}`
+        const { error: uploadErr } = await supabase.storage
+            .from('toolbox-logos')
+            .upload(path, file, { upsert: false, contentType: file.type })
+        if (uploadErr) {
+            toast.error(`Upload failed: ${uploadErr.message}`)
+            setLogoUploading(false)
+            return
+        }
+        const { data: { publicUrl } } = supabase.storage
+            .from('toolbox-logos')
+            .getPublicUrl(path)
+        setForm(f => ({ ...f, logo_url: publicUrl }))
+        setLogoUploading(false)
+    }
 
     useEffect(() => {
         if (item) {
@@ -208,35 +240,62 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                 <div className="space-y-4">
                                     {/* Logo + Title row */}
                                     <div className="flex items-start gap-3">
-                                        {/* Logo preview */}
+                                        {/* Logo upload */}
                                         <div className="shrink-0">
                                             <label className={labelClass}>Logo</label>
-                                            <div className="h-10 w-10 rounded-xl bg-bg-elevated border border-border flex items-center justify-center overflow-hidden">
-                                                {form.logo_url ? (
-                                                    <img
-                                                        src={form.logo_url}
-                                                        alt=""
-                                                        className="h-full w-full object-contain"
-                                                        onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                                                    />
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                disabled={logoUploading}
+                                                className="relative h-14 w-14 rounded-xl bg-bg-elevated border border-border flex items-center justify-center overflow-hidden hover:border-lime/40 transition group"
+                                            >
+                                                {logoUploading ? (
+                                                    <Loader2 className="h-5 w-5 text-lime animate-spin" />
+                                                ) : form.logo_url ? (
+                                                    <>
+                                                        <img
+                                                            src={form.logo_url}
+                                                            alt=""
+                                                            className="h-full w-full object-contain p-1"
+                                                            onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                                            <Upload className="h-4 w-4 text-white" />
+                                                        </div>
+                                                    </>
                                                 ) : (
-                                                    <span className="text-black font-bold text-sm gradient-lime rounded-lg h-full w-full flex items-center justify-center">
-                                                        {form.title ? form.title.charAt(0).toUpperCase() : '?'}
-                                                    </span>
+                                                    <div className="flex flex-col items-center gap-1 text-gray-500 group-hover:text-gray-300 transition">
+                                                        <Upload className="h-4 w-4" />
+                                                        <span className="text-[10px]">Upload</span>
+                                                    </div>
                                                 )}
-                                            </div>
+                                            </button>
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={e => {
+                                                    const file = e.target.files?.[0]
+                                                    if (file) handleLogoUpload(file)
+                                                    e.target.value = ''
+                                                }}
+                                            />
                                         </div>
                                         <div className="flex-1">
                                             <label className={labelClass}>Title *</label>
                                             <input type="text" required className={inputClass} placeholder="e.g. Midjourney"
                                                 value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                                            {form.logo_url && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setForm(f => ({ ...f, logo_url: '' }))}
+                                                    className="mt-1.5 text-xs text-gray-500 hover:text-red-400 transition"
+                                                >
+                                                    Remove logo
+                                                </button>
+                                            )}
                                         </div>
-                                    </div>
-
-                                    <div>
-                                        <label className={labelClass}>Logo URL <span className="text-gray-500 font-normal">(favicon or square icon)</span></label>
-                                        <input type="url" className={inputClass} placeholder="https://example.com/logo.png"
-                                            value={form.logo_url} onChange={e => setForm({ ...form, logo_url: e.target.value })} />
                                     </div>
 
                                     <div>
