@@ -32,6 +32,7 @@ import {
     XCircle,
     Copy,
     Loader2,
+    Rss,
 } from 'lucide-react'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -70,7 +71,9 @@ const AUDIENCE_OPTIONS: { key: AudienceKey; label: string; description: string }
     { key: 'custom', label: 'Custom Emails', description: 'Paste email addresses' },
 ]
 
-type TabKey = 'compose' | 'templates' | 'history' | 'scheduled'
+import { NewsletterTab } from '@/components/admin/content/NewsletterTab'
+
+type TabKey = 'compose' | 'templates' | 'history' | 'scheduled' | 'newsletter'
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export function EmailHubPage() {
@@ -423,10 +426,11 @@ export function EmailHubPage() {
 
     // ── Tab configs ───────────────────────────────────────────────────────────
     const tabs: { key: TabKey; label: string; icon: React.ElementType }[] = [
-        { key: 'compose', label: 'Compose', icon: Send },
-        { key: 'templates', label: 'Templates', icon: FileText },
-        { key: 'history', label: 'History', icon: History },
-        { key: 'scheduled', label: 'Scheduled', icon: Clock },
+        { key: 'compose',    label: 'Compose',    icon: Send     },
+        { key: 'templates',  label: 'Templates',  icon: FileText },
+        { key: 'history',    label: 'History',    icon: History  },
+        { key: 'scheduled',  label: 'Scheduled',  icon: Clock    },
+        { key: 'newsletter', label: 'Newsletter', icon: Rss      },
     ]
 
     const scheduledCampaigns = campaigns.filter(c => c.status === 'scheduled')
@@ -517,6 +521,10 @@ export function EmailHubPage() {
 
             {activeTab === 'scheduled' && (
                 <ScheduledTab campaigns={scheduledCampaigns} loading={loadingCampaigns} onCancel={cancelScheduled} />
+            )}
+
+            {activeTab === 'newsletter' && (
+                <NewsletterTab />
             )}
 
             {/* Schedule Modal */}

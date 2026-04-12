@@ -585,7 +585,7 @@ export function ParticipantDashboard() {
                         <div className="space-y-0">
                             {isSprintMember ? (
                                 // ── Sprint: interleaved sessions + assignments ────────────
-                                sprintTimeline.map((item, idx) => {
+                                sprintTimeline.map((item) => {
                                     // Sprint always has booking milestone after, so always draw connector
                                     return (
                                         <div key={item.type + item.id} className="relative group">
