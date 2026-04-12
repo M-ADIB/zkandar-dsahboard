@@ -68,6 +68,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
     const [allUsers, setAllUsers] = useState<Pick<User, 'id' | 'full_name' | 'email'>[]>([]);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [userSearch, setUserSearch] = useState('');
+    const [session2Date, setSession2Date] = useState('');
 
     // Inline invite state
     const [showInviteForm, setShowInviteForm] = useState(false);
@@ -158,29 +159,31 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         setPendingInvites((prev) => prev.filter((inv) => inv.email !== email));
     };
 
-    /** Format a Date as YYYY-MM-DD local string */
-    const formatLocalDate = (d: Date) =>
+    /** Format a Date object as YYYY-MM-DD */
+    const fmtDate = (d: Date) =>
         `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    /** Parse a YYYY-MM-DD (or YYYY-MM-DDTHH:mm) string as a local date */
+    const parseDate = (s: string) => {
+        const [y, m, d] = s.split('T')[0].split('-').map(Number);
+        return new Date(y, m - 1, d);
+    };
+
+    /** Add N days to a YYYY-MM-DD string, return YYYY-MM-DD */
+    const addDays = (dateStr: string, n: number) =>
+        fmtDate(new Date(parseDate(dateStr).getTime() + n * 86400000));
 
     /**
      * Auto-create 3 sessions for a new Sprint Workshop.
-     * Session dates: start_date → midpoint → end_date.
+     * Dates are explicit: start → session2 → end.
      */
-    const createSprintSessions = async (cohortId: string, startDate: string, endDate: string) => {
-        const [sy, sm, sd] = startDate.split('-').map(Number);
-        const [ey, em, ed] = endDate.split('-').map(Number);
-        const start = new Date(sy, sm - 1, sd);
-        const end = new Date(ey, em - 1, ed);
-        const totalMs = end.getTime() - start.getTime();
-        const mid = new Date(start.getTime() + Math.round(totalMs / 2));
-
-        const dates = [start, mid, end];
-        const sessions = dates.map((d, i) => ({
+    const createSprintSessions = async (cohortId: string, startDate: string, s2Date: string, endDate: string) => {
+        const sessions = [startDate, s2Date, endDate].map((dateStr, i) => ({
             cohort_id: cohortId,
             session_number: i + 1,
             title: `Session ${i + 1}`,
-            session_date: formatLocalDate(d),
-            scheduled_date: formatLocalDate(d),
+            session_date: dateStr.split('T')[0],
+            scheduled_date: dateStr.split('T')[0],
             status: 'scheduled',
             materials: [],
         }));
@@ -210,7 +213,18 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             return;
         }
 
-        if (formData.start_date > formData.end_date) {
+        if (isSprintWorkshop) {
+            const start = parseDate(formData.start_date);
+            const end = parseDate(formData.end_date);
+            if (end.getTime() < start.getTime() + 2 * 86400000) {
+                setError('End date must be at least 2 days after the start date so Session 2 can fit in between.');
+                return;
+            }
+            if (!program && !session2Date) {
+                setError('Please select a date for Session 2.');
+                return;
+            }
+        } else if (formData.start_date > formData.end_date) {
             setError('End date must be after the start date.');
             return;
         }
@@ -290,7 +304,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         } else {
             // Sprint Workshop: auto-create 3 sessions on new program creation
             if (isNew && formData.start_date) {
-                await createSprintSessions(cohortId, formData.start_date, formData.end_date);
+                await createSprintSessions(cohortId, formData.start_date, session2Date, formData.end_date);
             }
 
             // Save members to cohort_memberships.
@@ -346,16 +360,26 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
     const isSprintWorkshop = formData.offering_type === 'sprint_workshop';
 
-    const computedSession2Date = useMemo(() => {
-        if (!isSprintWorkshop || !formData.start_date || !formData.end_date) return null;
-        if (formData.start_date >= formData.end_date) return null;
-        const [sy, sm, sd] = formData.start_date.split('-').map(Number);
-        const [ey, em, ed] = formData.end_date.split('-').map(Number);
-        const start = new Date(sy, sm - 1, sd);
-        const end = new Date(ey, em - 1, ed);
-        const mid = new Date(start.getTime() + Math.round((end.getTime() - start.getTime()) / 2));
-        return `${mid.getFullYear()}-${String(mid.getMonth() + 1).padStart(2, '0')}-${String(mid.getDate()).padStart(2, '0')}`;
-    }, [isSprintWorkshop, formData.start_date, formData.end_date]);
+    // End date is valid for sprint when it's ≥ start + 2 days
+    const isEndDateValid = useMemo(() => {
+        if (!formData.start_date || !formData.end_date) return false;
+        return parseDate(formData.end_date).getTime() >= parseDate(formData.start_date).getTime() + 2 * 86400000;
+    }, [formData.start_date, formData.end_date]);
+
+    // Bounds for the Session 2 picker
+    const session2Min = formData.start_date ? addDays(formData.start_date, 1) : undefined;
+    const session2Max = formData.end_date ? addDays(formData.end_date, -1) : undefined;
+
+    // Clear session2Date if it falls outside the valid window when dates change
+    useEffect(() => {
+        if (!session2Date) return;
+        if (!session2Min || !session2Max || session2Date < session2Min || session2Date > session2Max) {
+            setSession2Date('');
+        }
+    }, [formData.start_date, formData.end_date]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Min for end date: start + 2 days
+    const endDateMin = formData.start_date ? addDays(formData.start_date, 2) : undefined;
 
     return (
         <ModalForm
@@ -577,7 +601,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                             <div className="text-[11px] text-gray-500 space-y-1">
                                 {[
                                     { label: 'Session 1', value: formData.start_date || '—', highlight: false },
-                                    { label: 'Session 2', value: computedSession2Date ?? 'Set both dates to preview', highlight: !!computedSession2Date },
+                                    { label: 'Session 2', value: session2Date || 'Pick a date below', highlight: !!session2Date },
                                     { label: 'Session 3', value: formData.end_date || '—', highlight: false },
                                 ].map(({ label, value, highlight }) => (
                                     <div key={label} className="flex items-center justify-between">
@@ -618,8 +642,31 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                     onChange={(val) => setFormData((prev) => ({ ...prev, end_date: val }))}
                     required
                     showTime
+                    min={isSprintWorkshop ? endDateMin : undefined}
                 />
             </div>
+
+            {/* Session 2 date picker — sprint only, shown once end date is valid */}
+            {isSprintWorkshop && !program && (
+                <div>
+                    {!isEndDateValid && formData.start_date && formData.end_date && (
+                        <p className="mb-2 text-xs text-yellow-400/80">
+                            End date must be at least 2 days after the start date to fit Session 2.
+                        </p>
+                    )}
+                    <DateTimePicker
+                        label="Session 2 Date"
+                        value={session2Date}
+                        onChange={setSession2Date}
+                        required
+                        min={session2Min}
+                        max={session2Max}
+                    />
+                    {!isEndDateValid && (
+                        <p className="mt-1.5 text-[11px] text-gray-600">Set valid start & end dates first to unlock this picker.</p>
+                    )}
+                </div>
+            )}
 
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Miro Board URL</label>

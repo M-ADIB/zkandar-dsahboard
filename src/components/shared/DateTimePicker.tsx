@@ -8,12 +8,14 @@ interface DateTimePickerProps {
     required?: boolean;
     showTime?: boolean;
     className?: string;
+    min?: string;            // "YYYY-MM-DD" — days before this are disabled
+    max?: string;            // "YYYY-MM-DD" — days after this are disabled
 }
 
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-export function DateTimePicker({ label, value, onChange, required, showTime = false, className = '' }: DateTimePickerProps) {
+export function DateTimePicker({ label, value, onChange, required, showTime = false, className = '', min, max }: DateTimePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -144,14 +146,18 @@ export function DateTimePicker({ label, value, onChange, required, showTime = fa
                             const dayStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                             const isSelected = dayStr === dateStr;
                             const isToday = dayStr === todayStr;
+                            const isDisabled = (min != null && dayStr < min) || (max != null && dayStr > max);
 
                             return (
                                 <button
                                     key={dayStr}
                                     type="button"
-                                    onClick={() => handleDayClick(day)}
+                                    onClick={() => !isDisabled && handleDayClick(day)}
+                                    disabled={isDisabled}
                                     className={`h-8 w-8 mx-auto flex items-center justify-center rounded-lg text-xs font-medium transition-all ${
-                                        isSelected
+                                        isDisabled
+                                            ? 'text-gray-700 cursor-not-allowed'
+                                            : isSelected
                                             ? 'bg-lime text-black font-bold shadow-[0_0_12px_rgba(208,255,113,0.3)]'
                                             : isToday
                                             ? 'bg-white/10 text-lime font-semibold'
