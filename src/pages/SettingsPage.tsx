@@ -144,6 +144,7 @@ function DevTab() {
     const [users, setUsers] = useState<any[]>([])
     const [selectedUser, setSelectedUser] = useState<string>('')
     const [isLoading, setIsLoading] = useState(false)
+    const [pendingAction, setPendingAction] = useState<'onboarding' | 'entire' | null>(null)
 
     useEffect(() => {
         async function fetchUsers() {
@@ -155,50 +156,63 @@ function DevTab() {
 
     const handleResetOnboarding = async () => {
         if (!selectedUser) return
-        if (!window.confirm("Are you sure you want to reset onboarding flags and remove onboarding survey responses for this user?")) return
         setIsLoading(true)
-        try {
-            await supabase.from('users')
-                // @ts-expect-error - type inference failing
-                .update({ 
-                    onboarding_completed: false, 
-                    welcome_video_watched: false, 
-                    ai_readiness_score: null 
-                }).eq('id', selectedUser)
+        setPendingAction(null)
 
-            // optional: delete onboarding survey responses specifically
-            await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
+        const { error: updateError } = await supabase.from('users')
+            // @ts-expect-error - type inference failing for new columns
+            .update({
+                onboarding_completed: false,
+                welcome_video_watched: false,
+                ai_readiness_score: null,
+                onboarding_data: null,
+            })
+            .eq('id', selectedUser)
 
-            toast.success("Onboarding flags reset.")
-        } catch(e: any) {
-            toast.error(e.message)
+        if (updateError) {
+            toast.error(`Failed to reset flags: ${updateError.message}`)
+            setIsLoading(false)
+            return
         }
+
+        await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
+
+        toast.success('Onboarding flags reset — user will go through the full flow on next login.')
         setIsLoading(false)
     }
 
     const handleResetEntireAccount = async () => {
         if (!selectedUser) return
-        if (!window.confirm("WARNING: This will delete missions, responses, and clear the profile. Are you absolutely sure?")) return
         setIsLoading(true)
-        try {
-            await supabase.from('submissions').delete().eq('user_id', selectedUser)
-            await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
-            
-            await supabase.from('users')
-                // @ts-expect-error - type inference failing
-                .update({ 
-                    onboarding_completed: false, 
-                    welcome_video_watched: false, 
-                    ai_readiness_score: null,
-                    profile_data: null,
-                    onboarding_data: null
-                }).eq('id', selectedUser)
-            toast.success("Account wiped & reset.")
-        } catch(e: any) {
-            toast.error(e.message)
+        setPendingAction(null)
+
+        const { error: subError } = await supabase.from('submissions').delete().eq('user_id', selectedUser)
+        if (subError) toast.error(`Submissions delete: ${subError.message}`)
+
+        await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
+
+        const { error: updateError } = await supabase.from('users')
+            // @ts-expect-error - type inference failing for new columns
+            .update({
+                onboarding_completed: false,
+                welcome_video_watched: false,
+                ai_readiness_score: null,
+                profile_data: null,
+                onboarding_data: null,
+            })
+            .eq('id', selectedUser)
+
+        if (updateError) {
+            toast.error(`Failed to reset account: ${updateError.message}`)
+            setIsLoading(false)
+            return
         }
+
+        toast.success('Account wiped & reset — all progress cleared.')
         setIsLoading(false)
     }
+
+    const selectedUserLabel = users.find(u => u.id === selectedUser)
 
     return (
         <div className="max-w-3xl space-y-6">
@@ -219,13 +233,13 @@ function DevTab() {
                         <label className="block text-sm font-medium text-gray-300 mb-2">Select User</label>
                         <select
                             value={selectedUser}
-                            onChange={(e) => setSelectedUser(e.target.value)}
+                            onChange={(e) => { setSelectedUser(e.target.value); setPendingAction(null) }}
                             className={inputClass}
                         >
                             <option value="">Select a user...</option>
                             {users.map(u => (
                                 <option key={u.id} value={u.id}>
-                                    {u.full_name} ({u.email}) - {u.role}
+                                    {u.full_name} ({u.email}) — {u.role}
                                 </option>
                             ))}
                         </select>
@@ -233,20 +247,75 @@ function DevTab() {
 
                     {selectedUser && (
                         <div className="flex flex-col gap-4">
-                            <button
-                                onClick={handleResetOnboarding}
-                                disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-all cursor-pointer"
-                            >
-                                Reset Onboarding (Video & Survey flags)
-                            </button>
-                            <button
-                                onClick={handleResetEntireAccount}
-                                disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-medium transition-all cursor-pointer"
-                            >
-                                Reset Entire Account (Delete all progress)
-                            </button>
+                            {/* Reset Onboarding */}
+                            {pendingAction === 'onboarding' ? (
+                                <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                                    <p className="text-sm text-white">
+                                        Reset onboarding for <span className="font-semibold text-lime">{selectedUserLabel?.email}</span>?
+                                        <br /><span className="text-gray-400 text-xs">Clears survey flags, video watch state, AI score, and onboarding data.</span>
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={handleResetOnboarding}
+                                            disabled={isLoading}
+                                            className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg text-xs font-bold hover:bg-lime transition-colors disabled:opacity-50"
+                                        >
+                                            {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                                            Confirm Reset
+                                        </button>
+                                        <button
+                                            onClick={() => setPendingAction(null)}
+                                            disabled={isLoading}
+                                            className="px-4 py-2 text-gray-400 text-xs hover:text-white transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setPendingAction('onboarding')}
+                                    disabled={isLoading}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    Reset Onboarding (Video &amp; Survey flags)
+                                </button>
+                            )}
+
+                            {/* Reset Entire Account */}
+                            {pendingAction === 'entire' ? (
+                                <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 space-y-3">
+                                    <p className="text-sm text-white">
+                                        Wipe entire account for <span className="font-semibold text-red-400">{selectedUserLabel?.email}</span>?
+                                        <br /><span className="text-gray-400 text-xs">Deletes all submissions, responses, and clears profile data. Irreversible.</span>
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={handleResetEntireAccount}
+                                            disabled={isLoading}
+                                            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-400 transition-colors disabled:opacity-50"
+                                        >
+                                            {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                                            Yes, Wipe Account
+                                        </button>
+                                        <button
+                                            onClick={() => setPendingAction(null)}
+                                            disabled={isLoading}
+                                            className="px-4 py-2 text-gray-400 text-xs hover:text-white transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setPendingAction('entire')}
+                                    disabled={isLoading}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-medium transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    Reset Entire Account (Delete all progress)
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>

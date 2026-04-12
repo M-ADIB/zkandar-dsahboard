@@ -165,39 +165,6 @@ export function useChatChannels() {
                         }],
                     })
                 }
-            } else {
-                const { data: memberships } = await supabase
-                    .from('cohort_memberships')
-                    .select('cohort_id')
-                    .eq('user_id', user.id)
-
-                const memberCohortIds = (memberships ?? []).map((m: any) => m.cohort_id)
-
-                if (memberCohortIds.length > 0) {
-                    const { data } = await (supabase
-                        .from('cohorts')
-                        .select('id, name')
-                        .eq('offering_type', 'sprint_workshop')
-                        .in('status', ['upcoming', 'active'])
-                        .in('id', memberCohortIds) as any)
-
-                    const sprints = (data ?? []) as CohortRow[]
-
-                    for (const sp of sprints) {
-                        result.push({
-                            parentId: sp.id,
-                            parentName: sp.name,
-                            offeringType: 'sprint_workshop',
-                            channels: [{
-                                id: `sprint:${sp.id}`,
-                                name: 'Sprint Chat',
-                                type: 'sprint',
-                                cohortId: sp.id,
-                                parentName: sp.name,
-                            }],
-                        })
-                    }
-                }
             }
 
             if (!cancelled) {

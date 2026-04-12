@@ -409,7 +409,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                     company_id: basicInfo.company_id || null,
                     user_type: userType,
                     onboarding_completed: true,
-                    ai_readiness_score: Math.round(avgScore),
+                    ai_readiness_score: isSprintWorkshop ? null : Math.round(avgScore),
                     onboarding_data: {
                         basic_info: validation.data,
                         survey_answers: answers,

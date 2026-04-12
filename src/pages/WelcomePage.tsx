@@ -46,6 +46,13 @@ export function WelcomePage() {
 
     // Listen for Vimeo postMessage to detect video end
     useEffect(() => {
+        function registerFinish() {
+            iframeRef.current?.contentWindow?.postMessage(
+                JSON.stringify({ method: 'addEventListener', value: 'finish' }),
+                '*'
+            )
+        }
+
         function handleMessage(event: MessageEvent) {
             if (!event.origin.includes('vimeo.com')) return
             try {
@@ -53,6 +60,10 @@ export function WelcomePage() {
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
                         : event.data
+                // Re-register for finish once the player signals it's ready
+                if (data?.event === 'ready') {
+                    registerFinish()
+                }
                 if (data?.event === 'finish') {
                     setCanEnter(true)
                 }
@@ -66,13 +77,12 @@ export function WelcomePage() {
 
     function handleVideoLoad() {
         setVideoLoaded(true)
-        if (iframeRef.current?.contentWindow) {
-            // Request the Vimeo iframe to start sending 'finish' events
-            iframeRef.current.contentWindow.postMessage(
-                JSON.stringify({ method: 'addEventListener', value: 'finish' }),
-                '*'
-            )
-        }
+        // Send immediately on iframe load (belt-and-suspenders — player may not be
+        // ready yet, but the 'ready' handler above will re-send if needed)
+        iframeRef.current?.contentWindow?.postMessage(
+            JSON.stringify({ method: 'addEventListener', value: 'finish' }),
+            '*'
+        )
     }
 
     // Mark welcome_video_watched and trigger unlock animation
@@ -101,7 +111,7 @@ export function WelcomePage() {
     }
 
     const vimeoSrc = videoUrl
-        ? `https://player.vimeo.com/video/${extractVimeoId(videoUrl)}?autoplay=1&api=1&background=0&title=0&byline=0&portrait=0`
+        ? `https://player.vimeo.com/video/${extractVimeoId(videoUrl)}?autoplay=1&api=1&background=0&loop=0&title=0&byline=0&portrait=0`
         : null
 
     return (
@@ -219,37 +229,30 @@ export function WelcomePage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
-                            className="flex flex-col items-center justify-center gap-3 w-full h-20 mt-4"
+                            className="flex flex-col items-center gap-3 w-full"
                         >
-                            <AnimatePresence mode="popLayout">
-                                {canEnter ? (
-                                    <motion.button
-                                        key="enter-btn"
-                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        onClick={handleEnter}
-                                        className="flex items-center gap-2 px-10 py-4 gradient-lime text-black font-bold rounded-xl text-sm hover:scale-105 transition-transform shadow-xl shadow-lime/20"
-                                    >
-                                        Enter the Platform
-                                        <ArrowRight className="h-4 w-4" />
-                                    </motion.button>
-                                ) : (
-                                    <motion.p
-                                        key="waiting-text"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0, scale: 0.95 }}
-                                        className="text-xs text-gray-500 uppercase tracking-widest text-center"
-                                    >
-                                        Watch the video to unlock access
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
+                            <button
+                                onClick={handleEnter}
+                                className={`flex items-center gap-2 px-8 py-3.5 font-bold rounded-xl text-sm transition-all ${
+                                    canEnter
+                                        ? 'gradient-lime text-black hover:scale-105 shadow-xl shadow-lime/20'
+                                        : 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+                                }`}
+                            >
+                                {canEnter ? 'Enter the Platform' : 'Skip & Enter Platform'}
+                                <ArrowRight className="h-4 w-4" />
+                            </button>
+
+                            {!canEnter && (
+                                <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider">
+                                    Video playing — feel free to skip when you're ready
+                                </p>
+                            )}
 
                             {IS_DEV && !canEnter && (
                                 <button
                                     onClick={handleDevSkip}
-                                    className="text-xs text-lime/50 underline underline-offset-2 hover:text-lime transition-colors mt-2"
+                                    className="text-xs text-lime/50 underline underline-offset-2 hover:text-lime transition-colors mt-1"
                                 >
                                     [dev] trigger finish state
                                 </button>

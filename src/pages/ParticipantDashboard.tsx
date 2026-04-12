@@ -116,7 +116,11 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
 
 export function ParticipantDashboard() {
     const { user } = useAuth()
-    const { effectiveUserId } = useViewMode()
+    const { effectiveUserId, isPreviewing, canPreview, previewUser } = useViewMode()
+    const effectiveUserType = (canPreview && isPreviewing && previewUser)
+        ? previewUser.user_type
+        : user?.user_type ?? null
+    const isSprintMember = effectiveUserType === 'sprint_member'
 
     const [cohorts, setCohorts] = useState<Cohort[]>([])
     const [sessions, setSessions] = useState<Session[]>([])
@@ -374,7 +378,7 @@ export function ParticipantDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                className={`grid grid-cols-1 gap-4 ${isSprintMember ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
             >
                 <div className="bg-bg-card border border-border rounded-2xl p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -400,20 +404,22 @@ export function ParticipantDashboard() {
                     </div>
                     <ProgressBar current={assignmentSummary.completed} total={assignmentSummary.total || 1} />
                 </div>
-                <div className="bg-bg-card border border-border rounded-2xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
-                            <Sparkles className="h-5 w-5 text-lime" />
+                {!isSprintMember && (
+                    <div className="bg-bg-card border border-border rounded-2xl p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
+                                <Sparkles className="h-5 w-5 text-lime" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold">
+                                    {aiScore === null ? <span className="inline-block w-12 h-7 bg-white/10 rounded animate-pulse" /> : `${aiScore}%`}
+                                </p>
+                                <p className="text-xs text-gray-500">AI Readiness Score</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-2xl font-bold">
-                                {aiScore === null ? <span className="inline-block w-12 h-7 bg-white/10 rounded animate-pulse" /> : `${aiScore}%`}
-                            </p>
-                            <p className="text-xs text-gray-500">AI Readiness Score</p>
-                        </div>
+                        <ProgressBar current={aiScore ?? 0} total={100} />
                     </div>
-                    <ProgressBar current={aiScore ?? 0} total={100} />
-                </div>
+                )}
             </motion.div>
 
             {/* Content Grid */}
@@ -423,7 +429,7 @@ export function ParticipantDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="lg:col-span-2 bg-bg-card border border-border rounded-2xl p-6"
+                    className={`${isSprintMember ? 'lg:col-span-3' : 'lg:col-span-2'} bg-bg-card border border-border rounded-2xl p-6`}
                 >
                     <h2 className="font-heading text-lg font-bold mb-6">Session Timeline</h2>
                     {loading ? (
@@ -502,8 +508,8 @@ export function ParticipantDashboard() {
                     )}
                 </motion.div>
 
-                {/* Right Column */}
-                <div className="space-y-6">
+                {/* Right Column — hidden for sprint members */}
+                {!isSprintMember && <div className="space-y-6">
                     {/* Upcoming Assignments */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -590,7 +596,7 @@ export function ParticipantDashboard() {
                             Open Chat <ArrowRight className="h-3 w-3" />
                         </Link>
                     </motion.div>
-                </div>
+                </div>}
             </div>
         </div>
     )

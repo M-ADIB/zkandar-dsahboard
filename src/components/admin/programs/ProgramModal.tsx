@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
 import { DateTimePicker } from '@/components/shared/DateTimePicker';
@@ -158,28 +158,32 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         setPendingInvites((prev) => prev.filter((inv) => inv.email !== email));
     };
 
+    /** Format a Date as YYYY-MM-DD local string */
+    const formatLocalDate = (d: Date) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
     /**
      * Auto-create 3 sessions for a new Sprint Workshop.
-     * Session dates start at start_date, incrementing by 1 day each.
+     * Session dates: start_date → midpoint → end_date.
      */
-    const createSprintSessions = async (cohortId: string, startDate: string) => {
-        // Parse as local date (YYYY-MM-DD) to avoid UTC offset issues
-        const [year, month, day] = startDate.split('-').map(Number);
+    const createSprintSessions = async (cohortId: string, startDate: string, endDate: string) => {
+        const [sy, sm, sd] = startDate.split('-').map(Number);
+        const [ey, em, ed] = endDate.split('-').map(Number);
+        const start = new Date(sy, sm - 1, sd);
+        const end = new Date(ey, em - 1, ed);
+        const totalMs = end.getTime() - start.getTime();
+        const mid = new Date(start.getTime() + Math.round(totalMs / 2));
 
-        const sessions = [0, 1, 2].map((offset) => {
-            const d = new Date(year, month - 1, day + offset);
-            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            return {
-                cohort_id: cohortId,
-                session_number: offset + 1,
-                title: `Session ${offset + 1}`,
-                // sessions table uses both session_date (NOT NULL) and scheduled_date
-                session_date: dateStr,
-                scheduled_date: dateStr,
-                status: 'scheduled',
-                materials: [],
-            };
-        });
+        const dates = [start, mid, end];
+        const sessions = dates.map((d, i) => ({
+            cohort_id: cohortId,
+            session_number: i + 1,
+            title: `Session ${i + 1}`,
+            session_date: formatLocalDate(d),
+            scheduled_date: formatLocalDate(d),
+            status: 'scheduled',
+            materials: [],
+        }));
 
         // @ts-expect-error - Supabase insert type inference
         const { error: sessionsError } = await supabase.from('sessions').insert(sessions);
@@ -286,7 +290,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
         } else {
             // Sprint Workshop: auto-create 3 sessions on new program creation
             if (isNew && formData.start_date) {
-                await createSprintSessions(cohortId, formData.start_date);
+                await createSprintSessions(cohortId, formData.start_date, formData.end_date);
             }
 
             // Save members to cohort_memberships.
@@ -341,6 +345,17 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
     };
 
     const isSprintWorkshop = formData.offering_type === 'sprint_workshop';
+
+    const computedSession2Date = useMemo(() => {
+        if (!isSprintWorkshop || !formData.start_date || !formData.end_date) return null;
+        if (formData.start_date >= formData.end_date) return null;
+        const [sy, sm, sd] = formData.start_date.split('-').map(Number);
+        const [ey, em, ed] = formData.end_date.split('-').map(Number);
+        const start = new Date(sy, sm - 1, sd);
+        const end = new Date(ey, em - 1, ed);
+        const mid = new Date(start.getTime() + Math.round((end.getTime() - start.getTime()) / 2));
+        return `${mid.getFullYear()}-${String(mid.getMonth() + 1).padStart(2, '0')}-${String(mid.getDate()).padStart(2, '0')}`;
+    }, [isSprintWorkshop, formData.start_date, formData.end_date]);
 
     return (
         <ModalForm
@@ -555,11 +570,23 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         </div>
                     )}
 
-                    {/* Sprint Workshop session info note */}
-                    {!program && formData.start_date && (
-                        <p className="mt-2 text-[11px] text-gray-500 italic">
-                            3 sessions will be auto-created starting {formData.start_date}.
-                        </p>
+                    {/* Sprint Workshop — live session map */}
+                    {!program && (
+                        <div className="mt-3 rounded-xl border border-white/5 bg-white/[0.03] p-3 space-y-1.5">
+                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Auto-created Sessions</p>
+                            <div className="text-[11px] text-gray-500 space-y-1">
+                                {[
+                                    { label: 'Session 1', value: formData.start_date || '—', highlight: false },
+                                    { label: 'Session 2', value: computedSession2Date ?? 'Set both dates to preview', highlight: !!computedSession2Date },
+                                    { label: 'Session 3', value: formData.end_date || '—', highlight: false },
+                                ].map(({ label, value, highlight }) => (
+                                    <div key={label} className="flex items-center justify-between">
+                                        <span>{label}</span>
+                                        <span className={highlight ? 'text-lime/80' : 'text-white/70'}>{value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     )}
                 </div>
             )}
@@ -579,14 +606,14 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <DateTimePicker
-                    label="Start Date"
+                    label={isSprintWorkshop ? 'Start Date (Session 1)' : 'Start Date'}
                     value={formData.start_date}
                     onChange={(val) => setFormData((prev) => ({ ...prev, start_date: val }))}
                     required
                     showTime
                 />
                 <DateTimePicker
-                    label="End Date"
+                    label={isSprintWorkshop ? 'End Date (Session 3)' : 'End Date'}
                     value={formData.end_date}
                     onChange={(val) => setFormData((prev) => ({ ...prev, end_date: val }))}
                     required

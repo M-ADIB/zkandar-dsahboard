@@ -27,7 +27,7 @@ import {
     SlidersHorizontal,
     Mail,
 } from 'lucide-react'
-import type { UserRole } from '@/types/database'
+import type { UserRole, UserType } from '@/types/database'
 import type { User as DbUser } from '@/types/database'
 import { useViewMode } from '@/context/ViewModeContext'
 import { useNotifications } from '@/context/NotificationContext'
@@ -36,6 +36,7 @@ import { useAuth } from '@/context/AuthContext'
 
 interface SidebarProps {
     userRole: UserRole
+    userType?: UserType | null
 }
 
 interface NavItem {
@@ -43,6 +44,7 @@ interface NavItem {
     label: string
     path: string
     roles: UserRole[]
+    hiddenForUserTypes?: UserType[]
 }
 
 interface NavSection {
@@ -97,10 +99,10 @@ const memberNavSections: NavSection[] = [
         id: 'member_learning',
         items: [
             { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['owner', 'admin', 'executive', 'participant'] },
-            { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
             { icon: FileText, label: 'Assignments', path: '/assignments', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: Film, label: 'Recordings', path: '/recordings', roles: ['owner', 'admin', 'executive', 'participant'] },
-            { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
             { icon: Wrench, label: 'Toolbox', path: '/toolbox', roles: ['owner', 'admin', 'executive', 'participant'] },
         ]
     },
@@ -108,7 +110,7 @@ const memberNavSections: NavSection[] = [
         title: 'Connect',
         id: 'member_connect',
         items: [
-            { icon: MessageSquare, label: 'Chat', path: '/chat', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: MessageSquare, label: 'Chat', path: '/chat', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
         ]
     },
     {
@@ -120,7 +122,7 @@ const memberNavSections: NavSection[] = [
     }
 ]
 
-export function Sidebar({ userRole }: SidebarProps) {
+export function Sidebar({ userRole, userType }: SidebarProps) {
     const { user, signOut } = useAuth()
     const [isOpen, setIsOpen] = useState(false)
     const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -137,7 +139,10 @@ export function Sidebar({ userRole }: SidebarProps) {
     const activeSections = canPreview && !isPreviewing ? adminNavSections : memberNavSections
     const filteredSections = activeSections.map(section => ({
         ...section,
-        items: section.items.filter(item => item.roles.includes(userRole))
+        items: section.items.filter(item =>
+            item.roles.includes(userRole) &&
+            !(userType && item.hiddenForUserTypes?.includes(userType))
+        )
     })).filter(section => section.items.length > 0)
 
     const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
@@ -295,7 +300,9 @@ export function Sidebar({ userRole }: SidebarProps) {
                                                             className={`h-4 w-4 relative z-10 ${isActive ? 'text-lime' : ''
                                                                 }`}
                                                         />
-                                                        <span className="relative z-10 font-medium text-sm flex-1">{item.label}</span>
+                                                        <span className="relative z-10 font-medium text-sm flex-1">
+                                                            {item.path === '/dashboard' && userType === 'sprint_member' ? 'My Program' : item.label}
+                                                        </span>
                                                         {item.label === 'Chat' && unreadCount > 0 && (
                                                             <span className="relative z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
                                                                 {unreadCount > 99 ? '99+' : unreadCount}

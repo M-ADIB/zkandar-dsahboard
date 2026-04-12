@@ -13,10 +13,14 @@ export function AppShell() {
     const { isPreviewing, canPreview, previewUser, setPreviewUser } = useViewMode()
     const showPreviewBanner = canPreview && isPreviewing
 
+    const effectiveUserType = (canPreview && isPreviewing && previewUser)
+        ? previewUser.user_type
+        : user?.user_type ?? null
+
     return (
         <div className="flex min-h-screen bg-bg-primary">
             {/* Sidebar */}
-            <Sidebar userRole={user?.role ?? 'participant'} />
+            <Sidebar userRole={user?.role ?? 'participant'} userType={effectiveUserType} />
 
             {/* Main Content */}
             <div className="flex-1 min-w-0 flex flex-col lg:ml-64">
