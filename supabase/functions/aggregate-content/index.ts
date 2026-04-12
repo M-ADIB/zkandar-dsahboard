@@ -215,8 +215,8 @@ For each news item provided, output a JSON array where each element has:
 
 Return ONLY the JSON array. No markdown fences, no commentary, no extra text.`;
 
-async function summariseWithGemini(pieces: RawContentPiece[]): Promise<AiItem[]> {
-    if (!GEMINI_KEY || pieces.length === 0) return [];
+async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiItem[]> {
+    if (!OPENROUTER_KEY || pieces.length === 0) return [];
 
     const userContent = pieces
         .map((p, i) =>
@@ -224,28 +224,33 @@ async function summariseWithGemini(pieces: RawContentPiece[]): Promise<AiItem[]>
         )
         .join("\n\n---\n\n");
 
-    const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-                contents: [{ role: "user", parts: [{ text: userContent }] }],
-                generationConfig: { responseMimeType: "application/json" },
-            }),
-            signal: AbortSignal.timeout(30_000),
-        }
-    );
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${OPENROUTER_KEY}`,
+            "HTTP-Referer": "https://app.zkandar.com",
+            "X-Title": "Zkandar Content Aggregator",
+        },
+        body: JSON.stringify({
+            model: OPENROUTER_MODEL,
+            messages: [
+                { role: "system", content: SYSTEM_PROMPT },
+                { role: "user",   content: userContent },
+            ],
+            response_format: { type: "json_object" },
+        }),
+        signal: AbortSignal.timeout(30_000),
+    });
 
     if (!res.ok) {
         const errText = await res.text();
-        console.error("Gemini API error:", res.status, errText.slice(0, 300));
+        console.error("OpenRouter API error:", res.status, errText.slice(0, 300));
         return [];
     }
 
     const data = await res.json();
-    const rawText: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]";
+    const rawText: string = data?.choices?.[0]?.message?.content ?? "[]";
 
     // Strip any accidental markdown fences
     const cleaned = rawText
@@ -253,13 +258,24 @@ async function summariseWithGemini(pieces: RawContentPiece[]): Promise<AiItem[]>
         .replace(/\s*```$/, "")
         .trim();
 
+    // response_format:json_object wraps arrays in an object — unwrap if needed
+    let parsed: unknown;
     try {
-        const parsed = JSON.parse(cleaned);
-        return Array.isArray(parsed) ? parsed : [];
+        parsed = JSON.parse(cleaned);
     } catch (e) {
-        console.error("Failed to parse Gemini response as JSON:", e, cleaned.slice(0, 200));
+        console.error("Failed to parse OpenRouter response as JSON:", e, cleaned.slice(0, 200));
         return [];
     }
+
+    if (Array.isArray(parsed)) return parsed as AiItem[];
+    // Some models wrap in { items: [...] } or similar
+    if (parsed && typeof parsed === "object") {
+        const vals = Object.values(parsed as Record<string, unknown>);
+        for (const v of vals) {
+            if (Array.isArray(v)) return v as AiItem[];
+        }
+    }
+    return [];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -346,7 +362,7 @@ Deno.serve(async (req: Request) => {
                 const BATCH = 10;
                 for (let i = 0; i < newPieces.length; i += BATCH) {
                     const batch   = newPieces.slice(i, i + BATCH);
-                    const aiItems = await summariseWithGemini(batch);
+                    const aiItems = await summariseWithOpenRouter(batch);
 
                     const rowsToInsert = (aiItems.length > 0 ? aiItems : batch).map((item) => ({
                         source_id:       source.id,
