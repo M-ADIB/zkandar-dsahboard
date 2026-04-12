@@ -40,6 +40,8 @@ const CompaniesPage = lazy(() => import('@/pages/admin/CompaniesPage').then(modu
 const CompanyWorkspacePage = lazy(() => import('@/pages/admin/CompanyWorkspacePage').then(module => ({ default: module.CompanyWorkspacePage })))
 const LeadsPage = lazy(() => import('@/pages/admin/LeadsPage').then(module => ({ default: module.LeadsPage })))
 const ProgramsPage = lazy(() => import('@/pages/admin/ProgramsPage').then(module => ({ default: module.ProgramsPage })))
+const ProgramDetailPage = lazy(() => import('@/pages/admin/ProgramDetailPage').then(module => ({ default: module.ProgramDetailPage })))
+const AdminToolboxPage = lazy(() => import('@/pages/admin/AdminToolboxPage').then(module => ({ default: module.AdminToolboxPage })))
 const UsersPage = lazy(() => import('@/pages/admin/UsersPage').then(module => ({ default: module.UsersPage })))
 const EventsPage = lazy(() => import('@/pages/admin/EventsPage').then(module => ({ default: module.EventsPage })))
 const CostsPage = lazy(() => import('@/pages/admin/CostsPage').then(module => ({ default: module.CostsPage })))
@@ -176,6 +178,22 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <ProgramsPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/programs/:id"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <ProgramDetailPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/toolbox"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <AdminToolboxPage />
                                             </ProtectedRoute>
                                         }
                                     />
