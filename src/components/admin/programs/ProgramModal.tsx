@@ -177,6 +177,15 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
     const fmtDate = (d: Date) =>
         `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+    /** Human-readable display of a YYYY-MM-DD or YYYY-MM-DDTHH:mm value */
+    const fmtDisplay = (s: string) => {
+        if (!s) return '—';
+        const [datePart, timePart] = s.split('T');
+        const [y, m, d] = datePart.split('-').map(Number);
+        const label = new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return timePart ? `${label} ${timePart.substring(0, 5)}` : label;
+    };
+
     /** Parse a YYYY-MM-DD (or YYYY-MM-DDTHH:mm) string as a local date */
     const parseDate = (s: string) => {
         const [y, m, d] = s.split('T')[0].split('-').map(Number);
@@ -204,7 +213,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             session_number: i + 1,
             title: `Session ${i + 1}`,
             session_date: dateStr.split('T')[0],
-            scheduled_date: dateStr.split('T')[0],
+            scheduled_date: dateStr,
             status: 'scheduled',
             materials: [],
         }));
@@ -662,14 +671,14 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                             <div className="text-[11px] text-gray-500 space-y-1">
                                 {sprintSessionCount === 2 ? (
                                     <>
-                                        <div className="flex items-center justify-between"><span>Session 1</span><span className="text-white/70">{formData.start_date || '—'}</span></div>
-                                        <div className="flex items-center justify-between"><span>Session 2</span><span className="text-white/70">{formData.end_date || '—'}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 1</span><span className="text-white/70">{fmtDisplay(formData.start_date)}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 2</span><span className="text-white/70">{fmtDisplay(formData.end_date)}</span></div>
                                     </>
                                 ) : (
                                     <>
-                                        <div className="flex items-center justify-between"><span>Session 1</span><span className="text-white/70">{formData.start_date || '—'}</span></div>
-                                        <div className="flex items-center justify-between"><span>Session 2</span><span className={session2Date ? 'text-lime/80' : 'text-white/70'}>{session2Date || 'Pick a date below'}</span></div>
-                                        <div className="flex items-center justify-between"><span>Session 3</span><span className="text-white/70">{formData.end_date || '—'}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 1</span><span className="text-white/70">{fmtDisplay(formData.start_date)}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 2</span><span className={session2Date ? 'text-lime/80' : 'text-white/70'}>{session2Date ? fmtDisplay(session2Date) : 'Pick a date below'}</span></div>
+                                        <div className="flex items-center justify-between"><span>Session 3</span><span className="text-white/70">{fmtDisplay(formData.end_date)}</span></div>
                                     </>
                                 )}
                             </div>
@@ -722,6 +731,7 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                         value={session2Date}
                         onChange={setSession2Date}
                         required
+                        showTime
                         min={session2Min}
                         max={session2Max}
                     />

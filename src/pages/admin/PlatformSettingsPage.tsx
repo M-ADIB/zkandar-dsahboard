@@ -8,6 +8,7 @@ import {
     GraduationCap,
     Plus,
     Trash2,
+    Link2,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { PlatformSetting, SubmissionFormat } from '@/types/database'
@@ -163,11 +164,14 @@ const DEFAULT_TEMPLATE: AssignmentTemplate = {
 function SprintWorkshopTab() {
     const [sessionCount, setSessionCount] = useState(3)
     const [templates, setTemplates] = useState<AssignmentTemplate[]>([])
+    const [calendlyUrl, setCalendlyUrl] = useState('')
     const [loading, setLoading] = useState(true)
     const [savingCount, setSavingCount] = useState(false)
     const [savingTemplates, setSavingTemplates] = useState(false)
+    const [savingCalendly, setSavingCalendly] = useState(false)
     const [savedCount, setSavedCount] = useState(false)
     const [savedTemplates, setSavedTemplates] = useState(false)
+    const [savedCalendly, setSavedCalendly] = useState(false)
 
     useEffect(() => {
         async function fetchSettings() {
@@ -175,7 +179,7 @@ function SprintWorkshopTab() {
             const { data } = await supabase
                 .from('platform_settings')
                 .select('key, value')
-                .in('key', ['sprint_session_count', 'sprint_assignment_templates'])
+                .in('key', ['sprint_session_count', 'sprint_assignment_templates', 'sprint_booking_calendly_url'])
                 .returns<PlatformSetting[]>()
             const map: Record<string, string> = {}
             ;(data ?? []).forEach((s) => { map[s.key] = s.value })
@@ -183,6 +187,7 @@ function SprintWorkshopTab() {
             if (map.sprint_assignment_templates) {
                 try { setTemplates(JSON.parse(map.sprint_assignment_templates)) } catch { /* ignore */ }
             }
+            if (map.sprint_booking_calendly_url !== undefined) setCalendlyUrl(map.sprint_booking_calendly_url)
             setLoading(false)
         }
         fetchSettings()
@@ -196,6 +201,16 @@ function SprintWorkshopTab() {
             .upsert({ key: 'sprint_session_count', value: String(sessionCount), updated_at: new Date().toISOString() } as any, { onConflict: 'key' })
         setSavingCount(false)
         if (error) { toast.error(error.message) } else { setSavedCount(true); toast.success('Session count saved'); setTimeout(() => setSavedCount(false), 2000) }
+    }
+
+    async function saveCalendlyUrl() {
+        setSavingCalendly(true)
+        const { error } = await supabase
+            .from('platform_settings')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .upsert({ key: 'sprint_booking_calendly_url', value: calendlyUrl, updated_at: new Date().toISOString() } as any, { onConflict: 'key' })
+        setSavingCalendly(false)
+        if (error) { toast.error(error.message) } else { setSavedCalendly(true); toast.success('Calendly URL saved'); setTimeout(() => setSavedCalendly(false), 2000) }
     }
 
     async function saveTemplates() {
@@ -378,6 +393,50 @@ function SprintWorkshopTab() {
                         {savingTemplates ? <Loader2 className="h-4 w-4 animate-spin" /> : savedTemplates ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
                         {savedTemplates ? 'Saved!' : 'Save Templates'}
                     </button>
+                </div>
+            </div>
+
+            {/* Booking Call */}
+            <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
+                    <div className="h-9 w-9 rounded-lg bg-lime/10 flex items-center justify-center">
+                        <Link2 className="h-4 w-4 text-lime" />
+                    </div>
+                    <div>
+                        <h2 className="font-heading text-base font-bold">Booking Call</h2>
+                        <p className="text-xs text-gray-500">Calendly link shown to sprint members after completing all sessions</p>
+                    </div>
+                </div>
+                <div className="p-6">
+                    <label className={labelClass}>Calendly URL</label>
+                    <div className="flex gap-3">
+                        <input
+                            type="url"
+                            value={calendlyUrl}
+                            onChange={(e) => setCalendlyUrl(e.target.value)}
+                            placeholder="https://calendly.com/khaled/30min"
+                            className={inputClass}
+                        />
+                        <button
+                            onClick={saveCalendlyUrl}
+                            disabled={savingCalendly}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-lime/10 hover:bg-lime/20 text-lime text-sm font-medium rounded-xl border border-lime/20 transition-colors disabled:opacity-50 shrink-0"
+                        >
+                            {savingCalendly ? <Loader2 className="h-4 w-4 animate-spin" /> : savedCalendly ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+                            {savedCalendly ? 'Saved' : 'Save'}
+                        </button>
+                    </div>
+                    {calendlyUrl && (
+                        <div className="mt-3 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                            <a href={calendlyUrl} target="_blank" rel="noreferrer" className="text-xs text-lime/70 hover:text-lime underline underline-offset-2 truncate max-w-xs">
+                                {calendlyUrl}
+                            </a>
+                        </div>
+                    )}
+                    <p className="mt-2 text-xs text-gray-500">
+                        Members see this link only after completing all sessions. Opens as an embedded booking dialog on their dashboard.
+                    </p>
                 </div>
             </div>
         </div>

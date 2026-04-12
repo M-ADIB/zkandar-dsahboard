@@ -11,6 +11,8 @@ import {
     Sparkles,
     Play,
     X,
+    Lock,
+    CalendarCheck,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -130,6 +132,9 @@ export function ParticipantDashboard() {
     const [aiScore, setAiScore] = useState<number | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [bookingCompleted, setBookingCompleted] = useState(false)
+    const [calendlyUrl, setCalendlyUrl] = useState<string | null>(null)
+    const [showBookingDialog, setShowBookingDialog] = useState(false)
 
     const firstName = user?.full_name?.split(' ')[0] || 'there'
 
@@ -147,23 +152,30 @@ export function ParticipantDashboard() {
 
             // ── 1. Get all cohort IDs accessible to this user ──────────────────
             // Via their company's cohort_id
-            const [profileRes, membershipRes] = await Promise.all([
+            const [profileRes, membershipRes, calendlyRes] = await Promise.all([
                 supabase
                     .from('users')
-                    .select('company_id, ai_readiness_score, onboarding_data, user_type')
+                    .select('company_id, ai_readiness_score, onboarding_data, user_type, sprint_booking_completed')
                     .eq('id', effectiveUserId)
                     .single(),
                 supabase
                     .from('cohort_memberships')
                     .select('cohort_id')
                     .eq('user_id', effectiveUserId),
+                supabase
+                    .from('platform_settings')
+                    .select('value')
+                    .eq('key', 'sprint_booking_calendly_url')
+                    .maybeSingle(),
             ])
 
             if (ignore) return
 
-            const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number; onboarding_data: Record<string, unknown> | null; user_type: string | null } | null
+            const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number; onboarding_data: Record<string, unknown> | null; user_type: string | null; sprint_booking_completed: boolean | null } | null
             // Note: we do NOT set aiScore from the DB value here to avoid a visible flash.
             // The score is computed live below once all data is fetched.
+            setBookingCompleted(profileRow?.sprint_booking_completed ?? false)
+            setCalendlyUrl((calendlyRes.data as { value: string } | null)?.value ?? null)
             const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
 
             const cohortIdSet = new Set<string>(membershipIds)
@@ -286,7 +298,6 @@ export function ParticipantDashboard() {
         return sessions
             .slice()
             .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
-            .slice(0, 5)
             .map((session) => {
                 const scheduledAt = new Date(session.scheduled_date).getTime()
                 const completed = session.status === 'completed' || scheduledAt < now
@@ -301,6 +312,11 @@ export function ParticipantDashboard() {
                 }
             })
     }, [sessions])
+
+    const allSessionsCompleted = useMemo(() =>
+        sessionTimeline.length > 0 && sessionTimeline.every(s => s.completed),
+        [sessionTimeline]
+    )
 
     const totalSessions = sessions.length
     const completedSessions = useMemo(() => {
@@ -339,6 +355,19 @@ export function ParticipantDashboard() {
 
     const primaryCohort = cohorts[0]
     const isSprintWorkshop = primaryCohort?.offering_type === 'sprint_workshop'
+
+    const handleHaveBooked = async () => {
+        if (!effectiveUserId) return
+        const { error: bookErr } = await supabase
+            .from('users')
+            // @ts-expect-error - column added in migration, types not regenerated
+            .update({ sprint_booking_completed: true })
+            .eq('id', effectiveUserId)
+        if (!bookErr) {
+            setBookingCompleted(true)
+            setShowBookingDialog(false)
+        }
+    }
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -451,7 +480,7 @@ export function ParticipantDashboard() {
                     ) : (
                         <div className="space-y-0">
                             {sessionTimeline.map((session, idx) => {
-                                const isLast = idx === sessionTimeline.length - 1
+                                const isLast = !isSprintMember && idx === sessionTimeline.length - 1
                                 return (
                                     <div key={session.id} className="relative group">
                                         {/* Connector line - Absolute for perfect alignment */}
@@ -504,6 +533,53 @@ export function ParticipantDashboard() {
                                     </div>
                                 )
                             })}
+
+                            {/* Booking milestone — sprint members only */}
+                            {isSprintMember && (
+                                <div className="relative group">
+                                    <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors ${
+                                        bookingCompleted
+                                            ? 'hover:bg-white/5 border border-transparent'
+                                            : allSessionsCompleted
+                                            ? 'bg-lime/5 border border-lime/20'
+                                            : 'opacity-40 border border-transparent'
+                                    }`}>
+                                        <div className="flex flex-col items-center shrink-0 w-10">
+                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                bookingCompleted ? 'bg-lime/10' : allSessionsCompleted ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                            }`}>
+                                                {bookingCompleted ? (
+                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                ) : allSessionsCompleted ? (
+                                                    <CalendarCheck className="h-5 w-5 text-black" />
+                                                ) : (
+                                                    <Lock className="h-5 w-5 text-gray-500" />
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between gap-4">
+                                                <div className="min-w-0">
+                                                    <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : allSessionsCompleted ? 'text-lime' : 'text-gray-600'}`}>
+                                                        Book a one-on-one call with Khaled
+                                                    </p>
+                                                    <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : allSessionsCompleted ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {bookingCompleted ? 'Booked!' : allSessionsCompleted ? 'Ready to schedule your call' : 'Unlocks after completing all sessions'}
+                                                    </p>
+                                                </div>
+                                                {allSessionsCompleted && !bookingCompleted && (
+                                                    <button
+                                                        onClick={() => setShowBookingDialog(true)}
+                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                    >
+                                                        Book Now
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </motion.div>
@@ -598,6 +674,79 @@ export function ParticipantDashboard() {
                     </motion.div>
                 </div>}
             </div>
+
+            {/* Booking Dialog */}
+            <AnimatePresence>
+                {showBookingDialog && (
+                    <Portal>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-xl"
+                            onClick={() => setShowBookingDialog(false)}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                                className="relative w-full max-w-2xl bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl shadow-black overflow-hidden flex flex-col"
+                                style={{ maxHeight: '90vh' }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {/* Header */}
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] shrink-0">
+                                    <div>
+                                        <h2 className="font-heading text-lg font-bold text-white">Book Your One-on-One Call</h2>
+                                        <p className="text-xs text-gray-500">Schedule your call with Khaled</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowBookingDialog(false)}
+                                        className="h-8 w-8 rounded-lg hover:bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
+
+                                {/* Calendly embed */}
+                                <div className="flex-1 min-h-0" style={{ height: '560px' }}>
+                                    {calendlyUrl ? (
+                                        <iframe
+                                            src={calendlyUrl}
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 'none' }}
+                                            title="Book a call with Khaled"
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full text-gray-500 text-sm px-8 text-center">
+                                            Booking link not yet configured. Please contact your program admin.
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/[0.06] shrink-0">
+                                    <button
+                                        onClick={() => setShowBookingDialog(false)}
+                                        className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        I'll book later
+                                    </button>
+                                    <button
+                                        onClick={handleHaveBooked}
+                                        className="flex items-center gap-2 px-5 py-2.5 gradient-lime text-black text-sm font-bold rounded-xl hover:opacity-90 transition"
+                                    >
+                                        <CalendarCheck className="h-4 w-4" />
+                                        I have booked
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    </Portal>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
