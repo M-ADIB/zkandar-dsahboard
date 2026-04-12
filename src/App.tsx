@@ -46,6 +46,7 @@ const CostsPage = lazy(() => import('@/pages/admin/CostsPage').then(module => ({
 const RecruitingPage = lazy(() => import('@/pages/admin/RecruitingPage').then(module => ({ default: module.RecruitingPage })))
 const PlatformSettingsPage = lazy(() => import('@/pages/admin/PlatformSettingsPage').then(module => ({ default: module.PlatformSettingsPage })))
 const EmailHubPage = lazy(() => import('@/pages/admin/EmailHubPage').then(module => ({ default: module.EmailHubPage })))
+const ContentAggregatorPage = lazy(() => import('@/pages/admin/ContentAggregatorPage').then(module => ({ default: module.ContentAggregatorPage })))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then(module => ({ default: module.NotFoundPage })))
 
@@ -240,6 +241,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <EmailHubPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/content"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <ContentAggregatorPage />
                                             </ProtectedRoute>
                                         }
                                     />
