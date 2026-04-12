@@ -61,11 +61,11 @@ export function QuickActionsFAB() {
     }, [isOpen])
 
     return (
-        <div ref={containerRef} className="fixed bottom-6 right-6 z-[80] flex flex-col-reverse items-end gap-3">
+        <div ref={containerRef} className="fixed bottom-6 right-6 z-[80] flex flex-col-reverse items-end gap-3 pointer-events-none">
             {/* Main toggle button */}
             <button
                 onClick={() => setIsOpen(prev => !prev)}
-                className={`group relative h-14 w-14 rounded-full shadow-2xl transition-all duration-300 ease-out flex items-center justify-center ${
+                className={`pointer-events-auto group relative h-14 w-14 rounded-full shadow-2xl transition-all duration-300 ease-out flex items-center justify-center ${
                     isOpen
                         ? 'bg-white/10 border border-white/20 backdrop-blur-xl rotate-45 scale-95'
                         : 'gradient-lime hover:scale-110 hover:shadow-[0_0_30px_rgba(208,255,113,0.3)]'

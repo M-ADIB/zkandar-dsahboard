@@ -338,4 +338,4 @@
 
 ---
 
-**These wireframes provide the visual foundation. Use them as reference when building components in Lovable.**
+**These wireframes provide the visual foundation. Use them as reference when building components in app.**
