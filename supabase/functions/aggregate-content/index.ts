@@ -18,18 +18,15 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
  *   OPENROUTER_API_KEY          — from openrouter.ai → Keys
  *
  * Apify Actors used (all free-tier friendly):
- *   blog / generic URL  → apify/website-content-crawler  (run with maxCrawlDepth=0, maxCrawlPages=N)
- *   video_channel       → streamers/youtube-channel-video-scraper
- *   search_query        → apify/google-search-scraper
+ *   blog / generic URL  → apify~website-content-crawler
+ *   video_channel       → streamers~youtube-channel-video-scraper
+ *   search_query        → apify~google-search-scraper
  */
 
 const SUPABASE_URL  = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const APIFY_TOKEN      = Deno.env.get("APIFY_API_TOKEN") ?? "";
 const OPENROUTER_KEY   = Deno.env.get("OPENROUTER_API_KEY") ?? "";
-
-// Any model available on openrouter.ai works. Default: gemini-2.0-flash (cheap + fast).
-// Override by setting the OPENROUTER_MODEL secret.
 const OPENROUTER_MODEL = Deno.env.get("OPENROUTER_MODEL") ?? "google/gemini-2.0-flash-001";
 
 function getCorsHeaders(req: Request): Record<string, string> {
@@ -42,6 +39,23 @@ function getCorsHeaders(req: Request): Record<string, string> {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     };
+}
+
+// Verify the caller is an authenticated admin/owner
+async function verifyAdmin(req: Request): Promise<boolean> {
+    const authHeader = req.headers.get("authorization") ?? "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    if (!token) return false;
+    const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data: { user }, error } = await client.auth.getUser(token);
+    if (error || !user) return false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (client as any)
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+    return data?.role === "owner" || data?.role === "admin";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,23 +92,21 @@ interface AiItem {
 // Apify helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Run an Apify actor synchronously and return the dataset items.
- * Uses the /run-sync-get-dataset-items endpoint (max 5-minute timeout).
- */
 async function runApifyActor(actorId: string, input: Record<string, unknown>): Promise<unknown[]> {
     if (!APIFY_TOKEN) {
         console.warn("APIFY_API_TOKEN not set — skipping Apify actor run");
         return [];
     }
 
-    const url = `https://api.apify.com/v2/acts/${actorId}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&timeout=120&memory=256`;
+    // Apify URL paths require ~ as separator (username~actor-name), not /
+    const safeActorId = actorId.replace("/", "~");
+    const url = `https://api.apify.com/v2/acts/${safeActorId}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&timeout=120&memory=256`;
 
     const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
-        signal: AbortSignal.timeout(130_000), // slightly above actor timeout
+        signal: AbortSignal.timeout(130_000),
     });
 
     if (!res.ok) {
@@ -106,24 +118,14 @@ async function runApifyActor(actorId: string, input: Record<string, unknown>): P
     return Array.isArray(data) ? data : [];
 }
 
-// ── Blog / generic URL scraping ───────────────────────────────────────────────
 async function fetchBlogContent(source: ContentSource): Promise<RawContentPiece[]> {
     if (!source.url) return [];
-
-    // apify/website-content-crawler: crawls starting URLs, returns page text
     const items = await runApifyActor("apify/website-content-crawler", {
         startUrls: [{ url: source.url }],
         maxCrawlDepth: 1,
         maxCrawlPages: source.max_results,
-        crawlerType: "cheerio",      // fast lightweight scraper
-    }) as {
-        url?: string;
-        title?: string;
-        text?: string;
-        markdown?: string;
-        metadata?: { datePublished?: string };
-    }[];
-
+        crawlerType: "cheerio",
+    }) as { url?: string; title?: string; text?: string; markdown?: string; metadata?: { datePublished?: string } }[];
     return items
         .filter((it) => it.url && it.title)
         .slice(0, source.max_results)
@@ -133,26 +135,17 @@ async function fetchBlogContent(source: ContentSource): Promise<RawContentPiece[
             published_at: it.metadata?.datePublished
                 ? (() => { try { return new Date(it.metadata!.datePublished!).toISOString(); } catch { return null; } })()
                 : null,
-            raw_text:     `${it.title}\n\n${(it.markdown ?? it.text ?? "").slice(0, 800)}`,
+            raw_text: `${it.title}\n\n${(it.markdown ?? it.text ?? "").slice(0, 800)}`,
         }));
 }
 
-// ── YouTube Channel ───────────────────────────────────────────────────────────
 async function fetchVideoChannel(source: ContentSource): Promise<RawContentPiece[]> {
     if (!source.url) return [];
-
-    // streamers/youtube-channel-video-scraper
     const items = await runApifyActor("streamers/youtube-channel-video-scraper", {
         startUrl: source.url,
         maxVideos: source.max_results,
         sortVideosBy: "newest",
-    }) as {
-        url?: string;
-        title?: string;
-        description?: string;
-        date?: string;
-    }[];
-
+    }) as { url?: string; title?: string; description?: string; date?: string }[];
     return items
         .filter((it) => it.url && it.title)
         .slice(0, source.max_results)
@@ -162,30 +155,18 @@ async function fetchVideoChannel(source: ContentSource): Promise<RawContentPiece
             published_at: it.date
                 ? (() => { try { return new Date(it.date!).toISOString(); } catch { return null; } })()
                 : null,
-            raw_text:     `${it.title}\n\n${(it.description ?? "").slice(0, 600)}`,
+            raw_text: `${it.title}\n\n${(it.description ?? "").slice(0, 600)}`,
         }));
 }
 
-// ── Search Query ──────────────────────────────────────────────────────────────
 async function fetchSearchQuery(source: ContentSource): Promise<RawContentPiece[]> {
     if (!source.query) return [];
-
-    // apify/google-search-scraper
     const items = await runApifyActor("apify/google-search-scraper", {
         queries: source.query,
         maxPagesPerQuery: 1,
         resultsPerPage: source.max_results,
-    }) as {
-        organicResults?: {
-            title?: string;
-            url?: string;
-            description?: string;
-            date?: string;
-        }[];
-    }[];
-
+    }) as { organicResults?: { title?: string; url?: string; description?: string; date?: string }[] }[];
     const results = items.flatMap((page) => page.organicResults ?? []);
-
     return results
         .filter((r) => r.url && r.title)
         .slice(0, source.max_results)
@@ -195,12 +176,12 @@ async function fetchSearchQuery(source: ContentSource): Promise<RawContentPiece[
             published_at: r.date
                 ? (() => { try { return new Date(r.date!).toISOString(); } catch { return null; } })()
                 : null,
-            raw_text:     `${r.title}\n\n${(r.description ?? "").slice(0, 600)}`,
+            raw_text: `${r.title}\n\n${(r.description ?? "").slice(0, 600)}`,
         }));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Gemini summarisation
+// OpenRouter summarisation
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `You are a content analyst for a business intelligence platform.
@@ -217,13 +198,9 @@ Return ONLY the JSON array. No markdown fences, no commentary, no extra text.`;
 
 async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiItem[]> {
     if (!OPENROUTER_KEY || pieces.length === 0) return [];
-
     const userContent = pieces
-        .map((p, i) =>
-            `Item ${i + 1}:\nTitle: ${p.title}\nURL: ${p.url}\nPublished: ${p.published_at ?? "unknown"}\nText: ${p.raw_text}`
-        )
+        .map((p, i) => `Item ${i + 1}:\nTitle: ${p.title}\nURL: ${p.url}\nPublished: ${p.published_at ?? "unknown"}\nText: ${p.raw_text}`)
         .join("\n\n---\n\n");
-
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -242,36 +219,22 @@ async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiIte
         }),
         signal: AbortSignal.timeout(30_000),
     });
-
     if (!res.ok) {
         const errText = await res.text();
         console.error("OpenRouter API error:", res.status, errText.slice(0, 300));
         return [];
     }
-
     const data = await res.json();
     const rawText: string = data?.choices?.[0]?.message?.content ?? "[]";
-
-    // Strip any accidental markdown fences
-    const cleaned = rawText
-        .replace(/^```(?:json)?\s*/i, "")
-        .replace(/\s*```$/, "")
-        .trim();
-
-    // response_format:json_object wraps arrays in an object — unwrap if needed
+    const cleaned = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
     let parsed: unknown;
-    try {
-        parsed = JSON.parse(cleaned);
-    } catch (e) {
-        console.error("Failed to parse OpenRouter response as JSON:", e, cleaned.slice(0, 200));
+    try { parsed = JSON.parse(cleaned); } catch (e) {
+        console.error("Failed to parse OpenRouter response:", e, cleaned.slice(0, 200));
         return [];
     }
-
     if (Array.isArray(parsed)) return parsed as AiItem[];
-    // Some models wrap in { items: [...] } or similar
     if (parsed && typeof parsed === "object") {
-        const vals = Object.values(parsed as Record<string, unknown>);
-        for (const v of vals) {
+        for (const v of Object.values(parsed as Record<string, unknown>)) {
             if (Array.isArray(v)) return v as AiItem[];
         }
     }
@@ -282,13 +245,10 @@ async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiIte
 // Dedup helper
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function fetchExistingUrls(supabase: ReturnType<typeof createClient>): Promise<Set<string>> {
+async function fetchExistingUrls(client: ReturnType<typeof createClient>): Promise<Set<string>> {
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (supabase as any)
-        .from("content_items")
-        .select("original_url")
-        .gte("created_at", since);
+    const { data } = await (client as any).from("content_items").select("original_url").gte("created_at", since);
     return new Set((data ?? []).map((r: { original_url: string }) => r.original_url));
 }
 
@@ -303,6 +263,15 @@ Deno.serve(async (req: Request) => {
         return new Response("ok", { headers: corsHeaders });
     }
 
+    // Verify admin/owner role
+    const isAdmin = await verifyAdmin(req);
+    if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+    }
+
     try {
         const body        = await req.json().catch(() => ({}));
         const sourceIds   = body.source_ids as string[] | undefined;
@@ -312,12 +281,10 @@ Deno.serve(async (req: Request) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const db = supabase as any;
 
-        // Fetch sources
         let sourcesQuery = db
             .from("content_sources")
             .select("id, name, type, url, query, max_results")
             .eq("active", true);
-
         if (sourceIds && sourceIds.length > 0) {
             sourcesQuery = sourcesQuery.in("id", sourceIds);
         }
@@ -332,7 +299,6 @@ Deno.serve(async (req: Request) => {
         }
 
         const existingUrls = await fetchExistingUrls(supabase);
-
         let totalNew    = 0;
         let totalErrors = 0;
         const results: { source: string; new_items: number; status: string; error?: string }[] = [];
@@ -363,7 +329,6 @@ Deno.serve(async (req: Request) => {
                 for (let i = 0; i < newPieces.length; i += BATCH) {
                     const batch   = newPieces.slice(i, i + BATCH);
                     const aiItems = await summariseWithOpenRouter(batch);
-
                     const rowsToInsert = (aiItems.length > 0 ? aiItems : batch).map((item) => ({
                         source_id:       source.id,
                         title:           item.title,
@@ -374,11 +339,9 @@ Deno.serve(async (req: Request) => {
                         deep_dive:       (item as AiItem).deep_dive  ?? null,
                         action_items:    (item as AiItem).action_items ?? [],
                     }));
-
                     const { error: insertErr } = await db
                         .from("content_items")
                         .upsert(rowsToInsert, { onConflict: "original_url", ignoreDuplicates: true });
-
                     if (insertErr) {
                         console.error(`Insert error for source "${source.name}":`, insertErr.message);
                     } else {
