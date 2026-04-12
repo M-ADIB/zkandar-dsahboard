@@ -64,7 +64,7 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
                     />
                     {/* Play button overlay */}
                     <div className="absolute inset-0 flex items-center justify-center p-2 group">
-                        <div 
+                        <div
                             onClick={() => setIsFullscreen(true)}
                             className="h-12 w-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20 hover:bg-black/60 hover:scale-110 hover:border-lime/50 transition-all cursor-pointer z-20 group-hover:shadow-[0_0_30px_rgba(208,255,113,0.2)]"
                         >
@@ -80,14 +80,14 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
             <AnimatePresence>
                 {isFullscreen && (
                     <Portal>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 bg-black/80 backdrop-blur-xl"
                             onClick={() => setIsFullscreen(false)}
                         >
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, scale: 0.85, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -115,6 +115,14 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
     )
 }
 
+// ── Timeline item types ────────────────────────────────────────────────────────
+
+type SprintTimelineItem =
+    | { type: 'session'; id: string; title: string; date: string; scheduledDate: string;
+        completed: boolean; current: boolean; recordingUrl: string | null }
+    | { type: 'assignment'; id: string; title: string; dueDate: string;
+        submitted: boolean; sessionCompleted: boolean }
+
 
 export function ParticipantDashboard() {
     const { user } = useAuth()
@@ -135,6 +143,7 @@ export function ParticipantDashboard() {
     const [bookingCompleted, setBookingCompleted] = useState(false)
     const [calendlyUrl, setCalendlyUrl] = useState<string | null>(null)
     const [showBookingDialog, setShowBookingDialog] = useState(false)
+    const [countdown, setCountdown] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null)
 
     const firstName = user?.full_name?.split(' ')[0] || 'there'
 
@@ -225,7 +234,10 @@ export function ParticipantDashboard() {
 
             const [cohortsRes, sessionsRes, chatRes] = await Promise.all([
                 supabase.from('cohorts').select('*').in('id', cohortIds),
-                supabase.from('sessions').select('id, title, scheduled_date, status, cohort_id').in('cohort_id', cohortIds).order('scheduled_date', { ascending: true }),
+                supabase.from('sessions')
+                    .select('id, title, scheduled_date, status, cohort_id, recording_url, session_number')
+                    .in('cohort_id', cohortIds)
+                    .order('scheduled_date', { ascending: true }),
                 chatQuery
             ])
 
@@ -266,7 +278,7 @@ export function ParticipantDashboard() {
                     if (ignore) return
                     const subs = (submissionsData as (Submission & { score?: number })[]) ?? []
                     setSubmissions(subs)
-                    
+
                     // Live compute the exact AI readiness score using the same engine as My Performance
                     if (profileRow?.onboarding_data?.survey_answers) {
                         const answers = profileRow.onboarding_data.survey_answers as SurveyAnswers
@@ -290,6 +302,28 @@ export function ParticipantDashboard() {
         return () => { ignore = true }
     }, [effectiveUserId])
 
+    // ── Countdown timer (sprint members only) ─────────────────────────────────
+    useEffect(() => {
+        if (!isSprintMember || sessions.length === 0) { setCountdown(null); return }
+        const nextSession = [...sessions]
+            .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
+            .find(s => new Date(s.scheduled_date).getTime() > Date.now())
+        if (!nextSession) { setCountdown(null); return }
+        const tick = () => {
+            const diff = new Date(nextSession.scheduled_date).getTime() - Date.now()
+            if (diff <= 0) { setCountdown(null); return }
+            setCountdown({
+                days: Math.floor(diff / 86400000),
+                hours: Math.floor((diff % 86400000) / 3600000),
+                minutes: Math.floor((diff % 3600000) / 60000),
+                seconds: Math.floor((diff % 60000) / 1000),
+            })
+        }
+        tick()
+        const id = setInterval(tick, 1000)
+        return () => clearInterval(id)
+    }, [isSprintMember, sessions])
+
     // ── Derived state ──────────────────────────────────────────────────────────
     const sessionTimeline = useMemo(() => {
         const now = Date.now()
@@ -309,6 +343,7 @@ export function ParticipantDashboard() {
                     date: formatDateLabel(session.scheduled_date) || 'TBD',
                     completed,
                     current,
+                    recordingUrl: session.recording_url ?? null,
                 }
             })
     }, [sessions])
@@ -317,6 +352,51 @@ export function ParticipantDashboard() {
         sessionTimeline.length > 0 && sessionTimeline.every(s => s.completed),
         [sessionTimeline]
     )
+
+    // ── Sprint interleaved timeline (sessions + assignments) ──────────────────
+    const sprintTimeline = useMemo((): SprintTimelineItem[] => {
+        if (!isSprintMember) return []
+        const now = Date.now()
+        let currentMarked = false
+        const submissionIds = new Set(submissions.map(s => s.assignment_id))
+        const result: SprintTimelineItem[] = []
+
+        const sorted = [...sessions].sort((a, b) =>
+            new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime()
+        )
+        for (const session of sorted) {
+            const scheduledAt = new Date(session.scheduled_date).getTime()
+            const completed = session.status === 'completed' || scheduledAt < now
+            const current = !completed && !currentMarked
+            if (current) currentMarked = true
+
+            result.push({
+                type: 'session',
+                id: session.id,
+                title: session.title,
+                date: formatDateLabel(session.scheduled_date) || 'TBD',
+                scheduledDate: session.scheduled_date,
+                completed,
+                current,
+                recordingUrl: session.recording_url ?? null,
+            })
+
+            const sessionAssignments = assignments
+                .filter(a => a.session_id === session.id)
+                .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''))
+            for (const a of sessionAssignments) {
+                result.push({
+                    type: 'assignment',
+                    id: a.id,
+                    title: a.title,
+                    dueDate: a.due_date ? formatDateLabel(a.due_date) : 'TBD',
+                    submitted: submissionIds.has(a.id),
+                    sessionCompleted: completed,
+                })
+            }
+        }
+        return result
+    }, [isSprintMember, sessions, assignments, submissions])
 
     const totalSessions = sessions.length
     const completedSessions = useMemo(() => {
@@ -395,6 +475,28 @@ export function ParticipantDashboard() {
                                 ? "Welcome to your sprint! Follow the sessions below and engage with your program to maximize your learning."
                                 : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
                         </p>
+
+                        {/* Countdown timer — sprint members only, shows until next session starts */}
+                        {isSprintMember && countdown && (
+                            <div className="mt-5 flex items-center gap-3 flex-wrap">
+                                <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">Next session in</span>
+                                <div className="flex items-center gap-1.5">
+                                    {[
+                                        { v: countdown.days, label: 'd' },
+                                        { v: countdown.hours, label: 'h' },
+                                        { v: countdown.minutes, label: 'm' },
+                                        { v: countdown.seconds, label: 's' },
+                                    ].map(({ v, label }) => (
+                                        <div key={label} className="flex flex-col items-center">
+                                            <span className="w-10 h-9 flex items-center justify-center bg-lime/10 border border-lime/20 rounded-lg text-lime font-mono font-bold text-sm tabular-nums">
+                                                {String(v).padStart(2, '0')}
+                                            </span>
+                                            <span className="text-[9px] text-gray-600 mt-0.5 uppercase tracking-wider">{label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Welcome video mini-frame */}
@@ -460,7 +562,9 @@ export function ParticipantDashboard() {
                     transition={{ delay: 0.2 }}
                     className={`${isSprintMember ? 'lg:col-span-3' : 'lg:col-span-2'} bg-bg-card border border-border rounded-2xl p-6`}
                 >
-                    <h2 className="font-heading text-lg font-bold mb-6">Session Timeline</h2>
+                    <h2 className="font-heading text-lg font-bold mb-6">
+                        {isSprintMember ? 'Your Sprint Journey' : 'Session Timeline'}
+                    </h2>
                     {loading ? (
                         <div className="space-y-6">
                             {[1, 2, 3].map(i => (
@@ -479,60 +583,131 @@ export function ParticipantDashboard() {
                         <div className="p-6 text-center text-gray-500">No sessions yet.</div>
                     ) : (
                         <div className="space-y-0">
-                            {sessionTimeline.map((session, idx) => {
-                                const isLast = !isSprintMember && idx === sessionTimeline.length - 1
-                                return (
-                                    <div key={session.id} className="relative group">
-                                        {/* Connector line - Absolute for perfect alignment */}
-                                        {!isLast && (
-                                            <div className="absolute left-[35px] top-[56px] bottom-[-16px] w-px bg-border z-0" />
-                                        )}
-                                        
-                                        <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors ${
-                                            session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
-                                        }`}>
-                                            {/* Left Side: Icon */}
-                                            <div className="flex flex-col items-center shrink-0 w-10">
-                                                <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                    session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
-                                                }`}>
-                                                    {session.completed ? (
-                                                        <CheckCircle2 className="h-5 w-5 text-lime" />
-                                                    ) : session.current ? (
-                                                        <Play className="h-5 w-5 text-black ml-0.5" />
-                                                    ) : (
-                                                        <Clock className="h-5 w-5 text-gray-500" />
-                                                    )}
-                                                </div>
-                                            </div>
+                            {isSprintMember ? (
+                                // ── Sprint: interleaved sessions + assignments ────────────
+                                sprintTimeline.map((item, idx) => {
+                                    // Sprint always has booking milestone after, so always draw connector
+                                    return (
+                                        <div key={item.type + item.id} className="relative group">
+                                            {/* Connector line — always drawn; booking milestone follows */}
+                                            <div className="absolute left-[35px] top-[48px] bottom-[-8px] w-px bg-border z-0" />
 
-                                            {/* Right Side: content */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div className="min-w-0">
-                                                        <p className={`font-medium truncate ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
-                                                            {session.title}
-                                                        </p>
-                                                        <p className={`text-xs mt-0.5 truncate ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
+                                            {item.type === 'session' ? (
+                                                <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
+                                                    item.current ? 'bg-lime/5 border-lime/20' : 'hover:bg-white/5 border-transparent'
+                                                }`}>
+                                                    <div className="flex flex-col items-center shrink-0 w-10">
+                                                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                            item.completed ? 'bg-lime/10' : item.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                        }`}>
+                                                            {item.completed ? (
+                                                                <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                            ) : item.current ? (
+                                                                <Play className="h-5 w-5 text-black ml-0.5" />
+                                                            ) : (
+                                                                <Clock className="h-5 w-5 text-gray-500" />
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    {session.current && (
-                                                        <button className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform">
-                                                            Watch Now
-                                                        </button>
-                                                    )}
-                                                    {session.completed && (
-                                                        <button className="px-4 py-2 text-sm border border-border rounded-lg hover:border-lime/50 text-gray-300 hover:text-white transition-colors shrink-0">
-                                                            Rewatch
-                                                        </button>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between gap-4">
+                                                            <div className="min-w-0">
+                                                                <p className={`font-medium truncate ${item.completed ? 'text-gray-400' : item.current ? 'text-lime' : 'text-white'}`}>
+                                                                    {item.title}
+                                                                </p>
+                                                                <p className={`text-xs mt-0.5 ${item.current ? 'text-lime/70' : 'text-gray-500'}`}>{item.date}</p>
+                                                            </div>
+                                                            {item.recordingUrl ? (
+                                                                <button
+                                                                    onClick={() => window.open(item.recordingUrl!, '_blank')}
+                                                                    className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                >
+                                                                    {item.completed ? 'Watch Now' : 'Join Now'}
+                                                                </button>
+                                                            ) : item.current ? (
+                                                                <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Soon</span>
+                                                            ) : null}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                // Assignment row
+                                                <div className="relative flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-white/[0.03] border border-transparent transition-colors">
+                                                    <div className="flex flex-col items-center shrink-0 w-10">
+                                                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center relative z-10 ${
+                                                            item.submitted ? 'bg-lime/10' : 'bg-white/[0.04]'
+                                                        }`}>
+                                                            {item.submitted ? (
+                                                                <CheckCircle2 className="h-4 w-4 text-lime" />
+                                                            ) : (
+                                                                <FileText className="h-4 w-4 text-gray-500" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`text-sm truncate ${item.submitted ? 'text-gray-400' : 'text-white/80'}`}>{item.title}</p>
+                                                        <p className="text-xs text-gray-600 mt-0.5">Due: {item.dueDate}</p>
+                                                    </div>
+                                                    {item.submitted && (
+                                                        <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg shrink-0">Submitted</span>
                                                     )}
                                                 </div>
-                                            </div>
+                                            )}
+                                            <div className="h-1.5" />
                                         </div>
-                                        {/* Spacing between rows */}
-                                        {!isLast && <div className="h-2" />}
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })
+                            ) : (
+                                // ── Master Class: sessions only ──────────────────────────
+                                sessionTimeline.map((session, idx) => {
+                                    const isLast = idx === sessionTimeline.length - 1
+                                    return (
+                                        <div key={session.id} className="relative group">
+                                            {!isLast && (
+                                                <div className="absolute left-[35px] top-[56px] bottom-[-16px] w-px bg-border z-0" />
+                                            )}
+                                            <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors ${
+                                                session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
+                                            }`}>
+                                                <div className="flex flex-col items-center shrink-0 w-10">
+                                                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                        session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                    }`}>
+                                                        {session.completed ? (
+                                                            <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                        ) : session.current ? (
+                                                            <Play className="h-5 w-5 text-black ml-0.5" />
+                                                        ) : (
+                                                            <Clock className="h-5 w-5 text-gray-500" />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-4">
+                                                        <div className="min-w-0">
+                                                            <p className={`font-medium truncate ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
+                                                                {session.title}
+                                                            </p>
+                                                            <p className={`text-xs mt-0.5 truncate ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
+                                                        </div>
+                                                        {session.recordingUrl ? (
+                                                            <button
+                                                                onClick={() => window.open(session.recordingUrl!, '_blank')}
+                                                                className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                            >
+                                                                {session.completed ? 'Watch Now' : 'Join Now'}
+                                                            </button>
+                                                        ) : session.current ? (
+                                                            <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Soon</span>
+                                                        ) : null}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {!isLast && <div className="h-2" />}
+                                        </div>
+                                    )
+                                })
+                            )}
 
                             {/* Booking milestone — sprint members only */}
                             {isSprintMember && (
@@ -561,10 +736,10 @@ export function ParticipantDashboard() {
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
                                                     <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : allSessionsCompleted ? 'text-lime' : 'text-gray-600'}`}>
-                                                        Book a one-on-one call with Khaled
+                                                        Book Your 1-on-1
                                                     </p>
                                                     <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : allSessionsCompleted ? 'text-lime/70' : 'text-gray-600'}`}>
-                                                        {bookingCompleted ? 'Booked!' : allSessionsCompleted ? 'Ready to schedule your call' : 'Unlocks after completing all sessions'}
+                                                        {bookingCompleted ? 'Booked!' : allSessionsCompleted ? 'Schedule a call with Khaled' : 'Unlocks after completing all sessions'}
                                                     </p>
                                                 </div>
                                                 {allSessionsCompleted && !bookingCompleted && (
@@ -698,7 +873,7 @@ export function ParticipantDashboard() {
                                 {/* Header */}
                                 <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] shrink-0">
                                     <div>
-                                        <h2 className="font-heading text-lg font-bold text-white">Book Your One-on-One Call</h2>
+                                        <h2 className="font-heading text-lg font-bold text-white">Book Your 1-on-1 Call</h2>
                                         <p className="text-xs text-gray-500">Schedule your call with Khaled</p>
                                     </div>
                                     <button
