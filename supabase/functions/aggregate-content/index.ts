@@ -184,17 +184,22 @@ async function fetchSearchQuery(source: ContentSource): Promise<RawContentPiece[
 // OpenRouter summarisation
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are a content analyst for a business intelligence platform.
-For each news item provided, output a JSON array where each element has:
+const SYSTEM_PROMPT = `You are a senior content strategist for Skander AI, a business intelligence platform that helps companies adopt AI.
+
+For each news item provided, output a JSON object with a single key "items" containing an array. Each element must have ALL of the following fields:
+
 - "title": the article title (string)
 - "url": the article URL unchanged (string)
 - "published_at": the published date unchanged or null
-- "summary": concise 2–3 sentence summary (string)
-- "relevance_score": integer 1–100 scoring business / AI relevance
-- "deep_dive": 3–5 sentences on why this matters, context, and implications (string)
-- "action_items": array of 2–4 short actionable bullet strings (string[])
+- "summary": a crisp 2–3 sentence summary of what happened and why it matters (string) — REQUIRED, never null or empty
+- "relevance_score": integer 1–100. Score HIGH (70+) for: breaking news, viral/trending stories, content published within the last 7 days, major AI product launches, regulatory changes, or enterprise adoption signals. Score LOW (<40) for: old news, opinion pieces without new facts, or generic evergreen content.
+- "deep_dive": 3–5 sentences on why this specific development matters for Skander AI's clients, the strategic opportunity or risk it represents, and what is likely to happen next (string) — REQUIRED, never null or empty
+- "action_items": an array of exactly 3 specific, concrete actions Skander AI can take based on this content — e.g. "Alert clients in the healthcare sector about this regulatory shift", "Use this as a case study in Session 3 on AI adoption ROI" (string[]) — REQUIRED, always 3 items
 
-Return ONLY the JSON array. No markdown fences, no commentary, no extra text.`;
+IMPORTANT: Every single field must be populated. Never return null, empty string, or empty array for summary, deep_dive, or action_items.
+Focus on content that is recent, high-velocity (trending/viral/breaking), and directly relevant to AI adoption in business.
+
+Return ONLY the JSON object. No markdown fences, no extra text.`;
 
 async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiItem[]> {
     if (!OPENROUTER_KEY || pieces.length === 0) return [];
@@ -215,6 +220,8 @@ async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiIte
                 { role: "system", content: SYSTEM_PROMPT },
                 { role: "user",   content: userContent },
             ],
+            // json_object mode requires the prompt to ask for an object (not array)
+            // Our prompt asks for {"items":[...]} which satisfies this constraint
             response_format: { type: "json_object" },
         }),
         signal: AbortSignal.timeout(30_000),
@@ -225,19 +232,22 @@ async function summariseWithOpenRouter(pieces: RawContentPiece[]): Promise<AiIte
         return [];
     }
     const data = await res.json();
-    const rawText: string = data?.choices?.[0]?.message?.content ?? "[]";
+    const rawText: string = data?.choices?.[0]?.message?.content ?? "{}";
     const cleaned = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
     let parsed: unknown;
     try { parsed = JSON.parse(cleaned); } catch (e) {
         console.error("Failed to parse OpenRouter response:", e, cleaned.slice(0, 200));
         return [];
     }
-    if (Array.isArray(parsed)) return parsed as AiItem[];
+    // Always expect {"items": [...]} — look for the items key first, then any array value
     if (parsed && typeof parsed === "object") {
-        for (const v of Object.values(parsed as Record<string, unknown>)) {
+        const obj = parsed as Record<string, unknown>;
+        if (Array.isArray(obj["items"])) return obj["items"] as AiItem[];
+        for (const v of Object.values(obj)) {
             if (Array.isArray(v)) return v as AiItem[];
         }
     }
+    if (Array.isArray(parsed)) return parsed as AiItem[];
     return [];
 }
 
@@ -329,7 +339,12 @@ Deno.serve(async (req: Request) => {
                 for (let i = 0; i < newPieces.length; i += BATCH) {
                     const batch   = newPieces.slice(i, i + BATCH);
                     const aiItems = await summariseWithOpenRouter(batch);
-                    const rowsToInsert = (aiItems.length > 0 ? aiItems : batch).map((item) => ({
+                    // Filter out low-relevance items (score < 40) — keeps only recent/trending content
+                    const relevantItems = aiItems.length > 0
+                        ? aiItems.filter((item) => (item.relevance_score ?? 100) >= 40)
+                        : batch;
+                    if (relevantItems.length === 0) continue;
+                    const rowsToInsert = relevantItems.map((item) => ({
                         source_id:       source.id,
                         title:           item.title,
                         original_url:    (item as AiItem).url ?? (item as RawContentPiece).url,

@@ -272,25 +272,31 @@ function FeedTableRow({ item, onClick, onToggle }: TableRowProps) {
                 </div>
             </td>
 
-            {/* Title + Description */}
+            {/* Title + Summary + First Action */}
             <td className="py-3 pr-4 align-middle">
-                <p className={`text-sm font-semibold leading-snug line-clamp-1 mb-0.5 ${item.is_read ? 'text-gray-400' : 'text-white'}`}>
+                <p className={`text-sm font-semibold leading-snug line-clamp-1 mb-1 ${item.is_read ? 'text-gray-400' : 'text-white'}`}>
                     {item.title}
                 </p>
                 {item.summary ? (
-                    <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{item.summary}</p>
+                    <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-1.5">{item.summary}</p>
                 ) : (
-                    <p className="text-xs text-gray-700 italic">No summary — re-sync to generate</p>
+                    <p className="text-xs text-gray-700 italic mb-1.5">No summary — re-sync to generate</p>
+                )}
+                {item.action_items && item.action_items.length > 0 && (
+                    <div className="flex items-start gap-1.5">
+                        <Lightbulb className="h-3 w-3 text-lime flex-shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-lime/70 leading-snug line-clamp-1">{item.action_items[0]}</p>
+                    </div>
                 )}
             </td>
 
             {/* Source */}
-            <td className="py-3 pr-4 w-36 align-middle">
+            <td className="py-3 pr-4 w-32 align-middle">
                 {item.content_sources ? (
                     <div className="flex items-center gap-1.5">
                         <SourceIcon type={item.content_sources.type} />
                         <div>
-                            <p className="text-xs text-gray-300 font-medium leading-tight truncate max-w-[100px]">{item.content_sources.name}</p>
+                            <p className="text-xs text-gray-300 font-medium leading-tight truncate max-w-[88px]">{item.content_sources.name}</p>
                             <p className="text-[10px] text-gray-600">{SOURCE_TYPE_LABELS[item.content_sources.type]}</p>
                         </div>
                     </div>
@@ -300,24 +306,24 @@ function FeedTableRow({ item, onClick, onToggle }: TableRowProps) {
             </td>
 
             {/* AI Insights */}
-            <td className="py-3 pr-4 w-28 align-middle">
+            <td className="py-3 pr-4 w-24 align-middle">
                 {(actionCount > 0 || hasDeepDive) ? (
                     <div className="flex flex-col gap-1">
                         {actionCount > 0 && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-lime/[0.08] text-lime border border-lime/[0.15] w-fit">
                                 <Lightbulb className="h-2.5 w-2.5" />
-                                {actionCount} action{actionCount !== 1 ? 's' : ''}
+                                {actionCount}
                             </span>
                         )}
                         {hasDeepDive && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/[0.08] text-amber-400 border border-amber-500/[0.15] w-fit">
                                 <Zap className="h-2.5 w-2.5" />
-                                Deep dive
+                                Dive
                             </span>
                         )}
                     </div>
                 ) : (
-                    <span className="text-[10px] text-gray-700 italic">Not enriched</span>
+                    <span className="text-[10px] text-gray-700 italic">—</span>
                 )}
             </td>
 

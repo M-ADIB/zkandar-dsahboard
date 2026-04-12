@@ -16,6 +16,8 @@ import {
     ChevronDown,
     Hash,
     Globe,
+    Info,
+    TrendingUp,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -459,9 +461,26 @@ export function SourcesTab({ sources, onSourcesChange }: SourcesTabProps) {
     }
 
     return (
-        <div className="p-6">
+        <div className="p-6 space-y-5">
+            {/* Guidance banner */}
+            <div className="flex gap-3 p-4 rounded-xl bg-lime/[0.05] border border-lime/[0.15]">
+                <TrendingUp className="h-4 w-4 text-lime flex-shrink-0 mt-0.5" />
+                <div className="space-y-1.5">
+                    <p className="text-xs font-semibold text-lime">Tips for high-quality scraping</p>
+                    <ul className="text-xs text-gray-400 space-y-1 list-none">
+                        <li><span className="text-white font-medium">Search queries:</span> Use specific, trend-oriented phrasing — e.g. <span className="text-gray-300 font-mono">"AI agents enterprise 2025 breaking"</span> or <span className="text-gray-300 font-mono">"LLM adoption ROI case study"</span>. Avoid generic terms.</li>
+                        <li><span className="text-white font-medium">Velocity signals:</span> Add words like <span className="text-gray-300 font-mono">trending, viral, breaking, new</span> to prioritise fresh results.</li>
+                        <li><span className="text-white font-medium">Blogs:</span> Point to an RSS feed or a <span className="text-gray-300 font-mono">/blog</span> index page, not individual articles.</li>
+                        <li><span className="text-white font-medium">YouTube channels:</span> Use the channel URL (<span className="text-gray-300 font-mono">youtube.com/@handle</span>) and keep max results ≤ 10 for recent videos only.</li>
+                    </ul>
+                    <p className="text-[10px] text-gray-600 flex items-center gap-1 pt-0.5">
+                        <Info className="h-3 w-3" />Items scored below 40 relevance are automatically filtered out before saving.
+                    </p>
+                </div>
+            </div>
+
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-base font-semibold text-white">Content Sources</h2>
                     <p className="text-sm text-gray-500 mt-0.5">{sources.length} source{sources.length !== 1 ? 's' : ''} configured</p>
