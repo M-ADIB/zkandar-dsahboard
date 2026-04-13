@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { ExternalLink, FileText, MessageSquare, Sparkles } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ModalForm } from '@/components/admin/shared/ModalForm'
 import { formatDateLabel, formatTimeLabel } from '@/lib/time'
@@ -12,6 +13,63 @@ interface SubmissionsModalProps {
     assignment: Assignment | null
 }
 
+function isImageUrl(url: string) {
+    return /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?.*)?$/i.test(url)
+}
+
+function isVideoUrl(url: string) {
+    return /\.(mp4|mov|webm|avi|mkv)(\?.*)?$/i.test(url)
+}
+
+function SubmissionContent({ sub }: { sub: SubmissionRow }) {
+    if (sub.file_url) {
+        if (isImageUrl(sub.file_url)) {
+            return (
+                <div className="space-y-2">
+                    <a href={sub.file_url} target="_blank" rel="noreferrer">
+                        <img
+                            src={sub.file_url}
+                            alt="Submission"
+                            className="max-h-64 w-auto rounded-xl border border-border object-contain bg-black/20 hover:opacity-90 transition cursor-pointer"
+                        />
+                    </a>
+                    <a href={sub.file_url} target="_blank" rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline">
+                        <ExternalLink className="h-3 w-3" /> Open full size
+                    </a>
+                </div>
+            )
+        }
+        if (isVideoUrl(sub.file_url)) {
+            return (
+                <video
+                    src={sub.file_url}
+                    controls
+                    className="w-full rounded-xl border border-border max-h-64"
+                />
+            )
+        }
+        // Generic file link
+        return (
+            <a href={sub.file_url} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-lime hover:underline">
+                <ExternalLink className="h-4 w-4" /> View uploaded file
+            </a>
+        )
+    }
+
+    if (sub.notes) {
+        return (
+            <div className="flex items-start gap-2">
+                <FileText className="h-4 w-4 text-gray-500 mt-0.5 shrink-0" />
+                <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{sub.notes}</p>
+            </div>
+        )
+    }
+
+    return <p className="text-xs text-gray-600 italic">No submission content.</p>
+}
+
 export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsModalProps) {
     const supabase = useSupabase()
     const [submissions, setSubmissions] = useState<SubmissionRow[]>([])
@@ -23,15 +81,15 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
     useEffect(() => {
         if (!isOpen || !assignment) return
-
         let ignore = false
+
         const fetchSubmissions = async () => {
             setIsLoading(true)
             setError(null)
 
             const { data, error: fetchError } = await supabase
                 .from('submissions')
-                .select('id, assignment_id, user_id, content, submitted_at, status, admin_feedback, score, user:users(id, full_name, email)')
+                .select('id, assignment_id, user_id, file_url, notes, prompt_text, submitted_at, status, feedback, score, user:users(id, full_name, email)')
                 .eq('assignment_id', assignment.id)
                 .order('submitted_at', { ascending: false })
 
@@ -43,167 +101,138 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
             } else {
                 const rows = (data as SubmissionRow[]) ?? []
                 setSubmissions(rows)
-                setFeedbackDrafts(Object.fromEntries(rows.map((row: SubmissionRow) => [row.id, row.admin_feedback ?? ''])))
-                setScoreDrafts(Object.fromEntries(rows.map((row: SubmissionRow) => [row.id, row.score ?? null])))
+                setFeedbackDrafts(Object.fromEntries(rows.map((r) => [r.id, r.feedback ?? ''])))
+                setScoreDrafts(Object.fromEntries(rows.map((r) => [r.id, r.score ?? null])))
             }
-
             setIsLoading(false)
         }
 
         fetchSubmissions()
-
-        return () => {
-            ignore = true
-        }
+        return () => { ignore = true }
     }, [isOpen, assignment?.id])
 
     const handleSave = async (submissionId: string) => {
-        const feedback = feedbackDrafts[submissionId] ?? ''
-        const score = scoreDrafts[submissionId] ?? null
+        const feedbackVal = feedbackDrafts[submissionId] ?? ''
+        const scoreVal    = scoreDrafts[submissionId] ?? null
         setSavingId(submissionId)
 
         const { error: updateError } = await supabase
             .from('submissions')
-            // @ts-expect-error - Supabase update type inference issue
-            .update({
-                admin_feedback: feedback.trim() || null,
-                score,
-                status: 'reviewed',
-            })
+            // @ts-expect-error - runtime columns
+            .update({ feedback: feedbackVal.trim() || null, score: scoreVal, status: 'reviewed' })
             .eq('id', submissionId)
 
-        if (updateError) {
-            setError(updateError.message)
-            setSavingId(null)
-            return
-        }
+        if (updateError) { setError(updateError.message); setSavingId(null); return }
 
-        setSubmissions((prev) => prev.map((row) => (
-            row.id === submissionId
-                ? { ...row, admin_feedback: feedback.trim() || null, score, status: 'reviewed' }
-                : row
-        )))
+        setSubmissions((prev) => prev.map((r) =>
+            r.id === submissionId
+                ? { ...r, feedback: feedbackVal.trim() || null, score: scoreVal, status: 'reviewed' }
+                : r
+        ))
         setSavingId(null)
     }
 
     const title = assignment ? `Submissions · ${assignment.title}` : 'Submissions'
 
-    const submissionsContent = useMemo(() => submissions.map((submission) => {
-        const rawContent = submission.content as Submission['content'] | null | undefined
-        const content = rawContent && typeof rawContent === 'object' ? rawContent : {}
-        const submittedDate = submission.submitted_at
-        const dateLabel = submittedDate ? formatDateLabel(submittedDate) : '—'
-        const timeLabel = submittedDate ? formatTimeLabel(submittedDate) : ''
-        const link = content.link || content.file_url
-        const textValue = content.text
-
-        return (
-            <div key={submission.id} className="rounded-xl border border-border bg-bg-card/60 p-4 space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                        <p className="text-sm font-medium text-white">{submission.user?.full_name ?? 'Participant'}</p>
-                        <p className="text-xs text-gray-500">{submission.user?.email ?? 'No email on file'}</p>
-                    </div>
-                    <div className="text-xs text-gray-400">
-                        {dateLabel} {timeLabel}
-                    </div>
-                </div>
-
-                <div className="text-sm text-gray-300">
-                    {link ? (
-                        <a
-                            href={link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-lime hover:underline"
-                        >
-                            {link}
-                        </a>
-                    ) : textValue ? (
-                        <p className="whitespace-pre-wrap">{textValue}</p>
-                    ) : (
-                        <span className="text-gray-500">No submission content.</span>
-                    )}
-                </div>
-
-                <div className="flex items-center gap-2 text-xs">
-                    <span className={`px-2 py-1 rounded-lg border ${submission.status === 'reviewed'
-                        ? 'border-lime/30 text-lime bg-lime/10'
-                        : 'border-yellow-500/30 text-yellow-300 bg-yellow-500/10'
-                        }`}
-                    >
-                        {submission.status === 'reviewed' ? 'Reviewed' : 'Pending'}
-                    </span>
-                </div>
-
-                <div>
-                    <label className="block text-xs text-gray-400 mb-1">Score (0–100)</label>
-                    <div className="flex items-center gap-3">
-                        <input
-                            type="range"
-                            min={0}
-                            max={100}
-                            step={5}
-                            value={scoreDrafts[submission.id] ?? 0}
-                            onChange={(e) =>
-                                setScoreDrafts((prev) => ({ ...prev, [submission.id]: Number(e.target.value) }))
-                            }
-                            className="flex-1 h-2 rounded-full appearance-none bg-white/[0.05] accent-lime cursor-pointer"
-                        />
-                        <span className={`text-sm font-bold min-w-[3ch] text-right ${(scoreDrafts[submission.id] ?? 0) < 30 ? 'text-red-400' :
-                            (scoreDrafts[submission.id] ?? 0) < 60 ? 'text-amber-400' : 'text-lime'
-                            }`}>
-                            {scoreDrafts[submission.id] ?? 0}
-                        </span>
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-xs text-gray-400 mb-1">Admin Feedback</label>
-                    <textarea
-                        value={feedbackDrafts[submission.id] ?? ''}
-                        onChange={(e) =>
-                            setFeedbackDrafts((prev) => ({ ...prev, [submission.id]: e.target.value }))
-                        }
-                        className="w-full rounded-xl border border-white/[0.05] bg-white/[0.03] px-3 py-2 text-sm text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
-                        rows={3}
-                        placeholder="Add feedback for this submission"
-                    />
-                </div>
-
-                <div className="flex justify-end">
-                    <button
-                        onClick={() => handleSave(submission.id)}
-                        disabled={savingId === submission.id}
-                        className="px-3 py-1.5 rounded-lg border border-lime/40 text-xs text-lime hover:border-lime/70 disabled:opacity-50"
-                    >
-                        {savingId === submission.id ? 'Saving...' : 'Save feedback'}
-                    </button>
-                </div>
-            </div>
-        )
-    }), [feedbackDrafts, savingId, submissions])
-
     return (
-        <ModalForm
-            isOpen={isOpen}
-            onClose={onClose}
-            title={title}
-            showActions={false}
-        >
+        <ModalForm isOpen={isOpen} onClose={onClose} title={title} showActions={false}>
             {error && (
-                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 mb-3">
                     {error}
                 </div>
             )}
 
             {isLoading ? (
-                <div className="text-sm text-gray-400">Loading submissions...</div>
+                <div className="text-sm text-gray-400">Loading submissions…</div>
             ) : submissions.length === 0 ? (
-                <div className="text-sm text-gray-400">No submissions yet.</div>
+                <div className="flex flex-col items-center gap-2 py-8 text-center">
+                    <MessageSquare className="h-8 w-8 text-gray-700" />
+                    <p className="text-sm text-gray-400">No submissions yet.</p>
+                    <p className="text-xs text-gray-600">Participants haven't submitted this assignment.</p>
+                </div>
             ) : (
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                    {submissionsContent}
+                <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-1">
+                    {submissions.map((sub) => {
+                        const dateLabel = sub.submitted_at ? formatDateLabel(sub.submitted_at) : '—'
+                        const timeLabel = sub.submitted_at ? formatTimeLabel(sub.submitted_at) : ''
+                        return (
+                            <div key={sub.id} className="rounded-xl border border-border bg-bg-card/60 p-4 space-y-3">
+                                {/* Participant + date */}
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <div>
+                                        <p className="text-sm font-semibold text-white">{sub.user?.full_name ?? 'Participant'}</p>
+                                        <p className="text-xs text-gray-500">{sub.user?.email ?? ''}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`px-2 py-0.5 rounded-lg border text-[11px] font-medium ${
+                                            sub.status === 'reviewed'
+                                                ? 'border-lime/30 text-lime bg-lime/10'
+                                                : 'border-yellow-500/30 text-yellow-300 bg-yellow-500/10'
+                                        }`}>
+                                            {sub.status === 'reviewed' ? 'Reviewed' : 'Pending'}
+                                        </span>
+                                        <span className="text-xs text-gray-500">{dateLabel} {timeLabel}</span>
+                                    </div>
+                                </div>
+
+                                {/* Submission content */}
+                                <SubmissionContent sub={sub} />
+
+                                {/* Prompt (if present) */}
+                                {sub.prompt_text && (
+                                    <div className="flex items-start gap-2 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                                        <Sparkles className="h-3.5 w-3.5 text-purple-400 shrink-0 mt-0.5" />
+                                        <div>
+                                            <p className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider mb-0.5">Prompt used</p>
+                                            <p className="text-xs text-gray-300 leading-relaxed">{sub.prompt_text}</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Score slider */}
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1.5">Score (0–100)</label>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="range" min={0} max={100} step={5}
+                                            value={scoreDrafts[sub.id] ?? 0}
+                                            onChange={(e) => setScoreDrafts((p) => ({ ...p, [sub.id]: Number(e.target.value) }))}
+                                            className="flex-1 h-2 rounded-full appearance-none bg-white/[0.05] accent-lime cursor-pointer"
+                                        />
+                                        <span className={`text-sm font-bold min-w-[3ch] text-right ${
+                                            (scoreDrafts[sub.id] ?? 0) < 30 ? 'text-red-400'
+                                            : (scoreDrafts[sub.id] ?? 0) < 60 ? 'text-amber-400'
+                                            : 'text-lime'
+                                        }`}>
+                                            {scoreDrafts[sub.id] ?? 0}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Feedback */}
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1.5">Feedback</label>
+                                    <textarea
+                                        value={feedbackDrafts[sub.id] ?? ''}
+                                        onChange={(e) => setFeedbackDrafts((p) => ({ ...p, [sub.id]: e.target.value }))}
+                                        rows={3}
+                                        placeholder="Add feedback for this submission…"
+                                        className="w-full rounded-xl border border-white/[0.05] bg-white/[0.03] px-3 py-2 text-sm text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all resize-none"
+                                    />
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => handleSave(sub.id)}
+                                        disabled={savingId === sub.id}
+                                        className="px-3 py-1.5 rounded-lg border border-lime/40 text-xs text-lime hover:border-lime/70 disabled:opacity-50 transition"
+                                    >
+                                        {savingId === sub.id ? 'Saving…' : 'Save feedback'}
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             )}
         </ModalForm>

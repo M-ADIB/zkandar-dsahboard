@@ -129,7 +129,7 @@ export function Sidebar({ userRole, userType }: SidebarProps) {
     const [isProfileOpen, setIsProfileOpen] = useState(false)
     const location = useLocation()
     const { isPreviewing, canPreview, previewUser, setPreviewUser } = useViewMode()
-    const { unreadCount } = useNotifications()
+    const { unreadCount, pendingSubmissionsCount } = useNotifications()
 
     // Member picker state
     const [pickerOpen, setPickerOpen] = useState(false)
@@ -307,6 +307,11 @@ export function Sidebar({ userRole, userType }: SidebarProps) {
                                                         {item.label === 'Chat' && unreadCount > 0 && (
                                                             <span className="relative z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
                                                                 {unreadCount > 99 ? '99+' : unreadCount}
+                                                            </span>
+                                                        )}
+                                                        {item.label === 'Programs' && pendingSubmissionsCount > 0 && (
+                                                            <span className="relative z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold rounded-full bg-amber-500 text-black">
+                                                                {pendingSubmissionsCount > 99 ? '99+' : pendingSubmissionsCount}
                                                             </span>
                                                         )}
                                                     </NavLink>

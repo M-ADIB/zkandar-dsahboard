@@ -6,6 +6,7 @@ import type { Notification } from '@/types/database'
 interface NotificationContextType {
     notifications: Notification[]
     unreadCount: number
+    pendingSubmissionsCount: number
     loading: boolean
     error: string | null
     markAsRead: (id: string) => void
@@ -21,6 +22,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [pendingSubmissionsCount, setPendingSubmissionsCount] = useState(0)
 
     const sortByCreatedAt = (items: Notification[]) => {
         return [...items].sort((a, b) => {
@@ -126,6 +128,37 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         }
     }, [authLoading, user?.id])
 
+    // Pending submissions count — only relevant for admin/owner users
+    useEffect(() => {
+        if (authLoading || !user) return
+        if (user.role !== 'owner' && user.role !== 'admin') return
+
+        const fetchPending = async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { count } = await (supabase as any)
+                .from('submissions')
+                .select('id', { count: 'exact', head: true })
+                .eq('status', 'pending')
+            setPendingSubmissionsCount(count ?? 0)
+        }
+
+        fetchPending()
+
+        // Subscribe to submission inserts/updates to keep count live
+        const sub = supabase
+            .channel('pending-submissions-count')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'submissions' }, () => {
+                setPendingSubmissionsCount((c) => c + 1)
+            })
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'submissions' }, () => {
+                // Re-fetch on any update (status may have changed to 'reviewed')
+                fetchPending()
+            })
+            .subscribe()
+
+        return () => { void supabase.removeChannel(sub) }
+    }, [authLoading, user?.id, user?.role])
+
     const unreadCount = notifications.filter((n) => !n.read).length
 
     const markAsRead = (id: string) => {
@@ -183,6 +216,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             value={{
                 notifications,
                 unreadCount,
+                pendingSubmissionsCount,
                 loading,
                 error,
                 markAsRead,

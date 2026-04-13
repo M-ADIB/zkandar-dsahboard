@@ -16,9 +16,10 @@ interface Submission {
     id: string
     assignment_id: string
     user_id: string
-    content: { file_url?: string; link?: string; text?: string }
+    file_url: string | null
+    notes: string | null
     score: number | null
-    admin_feedback: string | null
+    feedback: string | null
     status: string
     submitted_at: string | null
 }
@@ -406,9 +407,9 @@ export function MyProgramPage() {
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg ${sub.score != null ? 'bg-lime/10 text-lime' : 'bg-amber-500/10 text-amber-300'}`}>
                                                         {sub.score != null ? <><CheckCircle2 className="h-3.5 w-3.5" /> {sub.score}pts</> : <><Clock className="h-3.5 w-3.5" /> Submitted</>}
                                                     </span>
-                                                    {sub.admin_feedback && (
-                                                        <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.admin_feedback}>
-                                                            💬 {sub.admin_feedback}
+                                                    {sub.feedback && (
+                                                        <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.feedback}>
+                                                            💬 {sub.feedback}
                                                         </p>
                                                     )}
                                                 </div>

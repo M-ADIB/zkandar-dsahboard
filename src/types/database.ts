@@ -232,17 +232,13 @@ export interface Submission {
     id: string
     assignment_id: string
     user_id: string
-    content: SubmissionContent
+    file_url: string | null
+    notes: string | null
+    prompt_text: string | null
     submitted_at: string
     status: SubmissionStatus
-    admin_feedback: string | null
+    feedback: string | null
     score: number | null
-}
-
-export interface SubmissionContent {
-    file_url?: string
-    link?: string
-    text?: string
 }
 
 export interface ChatMessage {
