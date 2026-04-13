@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, Download, MessageSquare, Loader2, CheckCircle2, Clock, Link as LinkIcon, FileText, Sparkles, Image } from 'lucide-react'
+import { X, Download, MessageSquare, Loader2, CheckCircle2, Clock, FileText, Sparkles, Image } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { Portal } from '@/components/shared/Portal'

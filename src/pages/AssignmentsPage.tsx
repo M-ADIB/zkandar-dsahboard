@@ -138,7 +138,7 @@ export function AssignmentsPage() {
                 dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
                 submissionFormat: assignment.submission_format,
                 status,
-                feedback: submission?.admin_feedback ?? undefined,
+                feedback: submission?.feedback ?? undefined,
                 materials: assignment.materials ?? [],
             }
         })
