@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, Download, MessageSquare, Loader2, CheckCircle2, Clock, Link as LinkIcon, FileText } from 'lucide-react'
+import { X, Download, MessageSquare, Loader2, CheckCircle2, Clock, Link as LinkIcon, FileText, Sparkles, Image } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { Portal } from '@/components/shared/Portal'
@@ -10,9 +10,11 @@ interface Submission {
     id: string
     assignment_id: string
     user_id: string
-    content: { link?: string; file_url?: string; text?: string } | null
+    file_url: string | null
+    notes: string | null
+    prompt_text: string | null
     score: number | null
-    admin_feedback: string | null
+    feedback: string | null
     status: string
     submitted_at: string | null
 }
@@ -21,6 +23,60 @@ interface SubmissionsPanelProps {
     assignment: Assignment
     members: User[]
     onClose: () => void
+}
+
+function isImageUrl(url: string) {
+    return /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?.*)?$/i.test(url)
+}
+
+function isVideoUrl(url: string) {
+    return /\.(mp4|mov|webm|avi|mkv)(\?.*)?$/i.test(url)
+}
+
+function SubmissionContent({ sub }: { sub: Submission }) {
+    if (sub.file_url) {
+        if (isImageUrl(sub.file_url)) {
+            return (
+                <div className="space-y-1.5">
+                    <a href={sub.file_url} target="_blank" rel="noreferrer">
+                        <img
+                            src={sub.file_url}
+                            alt="Submission"
+                            className="max-h-48 w-auto rounded-lg border border-border object-contain bg-black/20 hover:opacity-90 transition cursor-pointer"
+                        />
+                    </a>
+                    <a href={sub.file_url} target="_blank" rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-lime hover:underline">
+                        <Image className="h-3 w-3" /> Open full size
+                    </a>
+                </div>
+            )
+        }
+        if (isVideoUrl(sub.file_url)) {
+            return (
+                <video
+                    src={sub.file_url}
+                    controls
+                    className="w-full rounded-lg border border-border max-h-48"
+                />
+            )
+        }
+        return (
+            <a href={sub.file_url} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline">
+                <Download className="h-3.5 w-3.5" /> Download Submission
+            </a>
+        )
+    }
+    if (sub.notes) {
+        return (
+            <div className="flex items-start gap-1.5">
+                <FileText className="h-3.5 w-3.5 text-gray-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-gray-400 bg-white/5 rounded-lg p-2 flex-1 whitespace-pre-wrap">{sub.notes}</p>
+            </div>
+        )
+    }
+    return null
 }
 
 export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPanelProps) {
@@ -33,7 +89,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
         setIsLoading(true)
         const { data } = await supabase
             .from('submissions')
-            .select('id, assignment_id, user_id, content, score, admin_feedback, status, submitted_at')
+            .select('id, assignment_id, user_id, file_url, notes, prompt_text, score, feedback, status, submitted_at')
             .eq('assignment_id', assignment.id)
         setSubmissions((data as Submission[]) ?? [])
         setIsLoading(false)
@@ -41,7 +97,6 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
 
     useEffect(() => { fetchSubmissions() }, [assignment.id])
 
-    // Build a map: userId -> submission
     const subMap = new Map(submissions.map((s) => [s.user_id, s]))
 
     const handleSaveFeedback = async (userId: string) => {
@@ -54,7 +109,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
         const score = draft.score.trim() ? parseInt(draft.score, 10) : null
         // @ts-expect-error - Supabase update type
         await supabase.from('submissions').update({
-            admin_feedback: draft.feedback.trim() || null,
+            feedback: draft.feedback.trim() || null,
             score: Number.isNaN(score) ? null : score,
             status: 'reviewed',
         }).eq('id', sub.id)
@@ -68,11 +123,13 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
         setFeedbackDrafts((prev) => ({
             ...prev,
             [userId]: {
-                feedback: sub?.admin_feedback ?? '',
+                feedback: sub?.feedback ?? '',
                 score: sub?.score != null ? String(sub.score) : '',
             },
         }))
     }
+
+    const pendingCount = submissions.filter((s) => s.status !== 'reviewed').length
 
     return (
         <Portal>
@@ -96,10 +153,17 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                         <div className="sticky top-0 bg-bg-card/95 backdrop-blur border-b border-border px-6 py-4 flex items-center justify-between z-10">
                             <div>
                                 <h3 className="text-base font-semibold text-white">{assignment.title}</h3>
-                                <p className="text-xs text-gray-500 mt-0.5">
-                                    {submissions.length}/{members.length} submitted
-                                    {assignment.due_date && ` · Due ${formatDateLabel(assignment.due_date)}`}
-                                </p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <p className="text-xs text-gray-500">
+                                        {submissions.length}/{members.length} submitted
+                                        {assignment.due_date && ` · Due ${formatDateLabel(assignment.due_date)}`}
+                                    </p>
+                                    {pendingCount > 0 && (
+                                        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            {pendingCount} pending review
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <button onClick={onClose} className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition">
                                 <X className="h-5 w-5" />
@@ -118,8 +182,6 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                     const draft = feedbackDrafts[member.id]
                                     const hasSubmitted = !!sub
                                     const isReviewed = sub?.status === 'reviewed'
-                                    const content = sub?.content ?? {}
-                                    const linkOrFile = content.link || content.file_url
 
                                     return (
                                         <div key={member.id} className="bg-bg-elevated border border-border rounded-xl p-4">
@@ -134,7 +196,7 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                                 </div>
                                                 {hasSubmitted ? (
                                                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-md border ${isReviewed ? 'bg-lime/10 text-lime border-lime/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30'}`}>
-                                                        {isReviewed ? <><CheckCircle2 className="h-3 w-3" /> Reviewed</> : <><Clock className="h-3 w-3" /> Submitted</>}
+                                                        {isReviewed ? <><CheckCircle2 className="h-3 w-3" /> Reviewed</> : <><Clock className="h-3 w-3" /> Needs Review</>}
                                                     </span>
                                                 ) : (
                                                     <span className="px-2 py-0.5 text-[10px] text-gray-500 border border-border rounded-md">Not submitted</span>
@@ -146,21 +208,16 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                                     <p className="text-xs text-gray-500">Submitted {sub.submitted_at ? formatDateLabel(sub.submitted_at) : ''}</p>
 
                                                     {/* Submission content */}
-                                                    {linkOrFile && (
-                                                        <a
-                                                            href={linkOrFile}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline"
-                                                        >
-                                                            {content.file_url ? <Download className="h-3.5 w-3.5" /> : <LinkIcon className="h-3.5 w-3.5" />}
-                                                            {content.file_url ? 'Download Submission' : linkOrFile}
-                                                        </a>
-                                                    )}
-                                                    {content.text && (
-                                                        <div className="flex items-start gap-1.5">
-                                                            <FileText className="h-3.5 w-3.5 text-gray-500 shrink-0 mt-0.5" />
-                                                            <p className="text-xs text-gray-400 bg-white/5 rounded-lg p-2 flex-1">{content.text}</p>
+                                                    <SubmissionContent sub={sub} />
+
+                                                    {/* Prompt used */}
+                                                    {sub.prompt_text && (
+                                                        <div className="flex items-start gap-1.5 p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                                                            <Sparkles className="h-3 w-3 text-purple-400 shrink-0 mt-0.5" />
+                                                            <div>
+                                                                <p className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider mb-0.5">Prompt used</p>
+                                                                <p className="text-xs text-gray-300">{sub.prompt_text}</p>
+                                                            </div>
                                                         </div>
                                                     )}
 
@@ -212,15 +269,15 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
                                                             {isReviewed && (
                                                                 <div className="text-xs text-gray-400 mb-1">
                                                                     {sub.score != null && <span className="text-lime font-medium">Score: {sub.score}</span>}
-                                                                    {sub.admin_feedback && <p className="mt-1">{sub.admin_feedback}</p>}
+                                                                    {sub.feedback && <p className="mt-1">{sub.feedback}</p>}
                                                                 </div>
                                                             )}
                                                             <button
                                                                 onClick={() => initDraft(member.id)}
-                                                                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-lime transition"
+                                                                className={`inline-flex items-center gap-1 text-xs transition ${isReviewed ? 'text-gray-500 hover:text-lime' : 'text-amber-400 hover:text-amber-300 font-medium'}`}
                                                             >
                                                                 <MessageSquare className="h-3 w-3" />
-                                                                {isReviewed ? 'Edit Feedback' : 'Give Feedback'}
+                                                                {isReviewed ? 'Edit Feedback' : 'Review & Give Feedback'}
                                                             </button>
                                                         </div>
                                                     )}

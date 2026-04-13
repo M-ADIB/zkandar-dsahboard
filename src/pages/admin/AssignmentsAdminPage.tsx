@@ -12,6 +12,7 @@ export function AssignmentsAdminPage() {
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [programs, setPrograms] = useState<Cohort[]>([])
     const [sessions, setSessions] = useState<Session[]>([])
+    const [submissionCounts, setSubmissionCounts] = useState<Record<string, { total: number; pending: number }>>({})
     const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
     const [selectedSessionId, setSelectedSessionId] = useState<string>('all')
     const [isLoading, setIsLoading] = useState(true)
@@ -40,9 +41,25 @@ export function AssignmentsAdminPage() {
             return
         }
 
-        setAssignments((assignmentsResult.data as Assignment[]) ?? [])
+        const rows = (assignmentsResult.data as Assignment[]) ?? []
+        setAssignments(rows)
         setSessions((sessionsResult.data as Session[]) ?? [])
         setPrograms((programsResult.data as Cohort[]) ?? [])
+
+        if (rows.length > 0) {
+            const { data: subs } = await supabase
+                .from('submissions')
+                .select('assignment_id, status')
+                .in('assignment_id', rows.map((a) => a.id))
+            const counts: Record<string, { total: number; pending: number }> = {}
+            ;(subs as { assignment_id: string; status: string }[] | null)?.forEach((s) => {
+                if (!counts[s.assignment_id]) counts[s.assignment_id] = { total: 0, pending: 0 }
+                counts[s.assignment_id].total += 1
+                if (s.status !== 'reviewed') counts[s.assignment_id].pending += 1
+            })
+            setSubmissionCounts(counts)
+        }
+
         setIsLoading(false)
     }
 
@@ -105,16 +122,27 @@ export function AssignmentsAdminPage() {
         },
         {
             header: 'Submissions',
-            accessor: (assignment: Assignment) => (
-                <button
-                    onClick={() => setSubmissionsAssignment(assignment)}
-                    className="text-sm text-lime hover:underline"
-                >
-                    View
-                </button>
-            ),
+            accessor: (assignment: Assignment) => {
+                const counts = submissionCounts[assignment.id]
+                const total = counts?.total ?? 0
+                const pending = counts?.pending ?? 0
+                return (
+                    <button
+                        onClick={() => setSubmissionsAssignment(assignment)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition ${
+                            pending > 0
+                                ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25'
+                                : total > 0
+                                ? 'bg-lime/10 border-lime/30 text-lime hover:bg-lime/20'
+                                : 'bg-white/[0.03] border-white/[0.08] text-gray-500 hover:text-white hover:border-white/20'
+                        }`}
+                    >
+                        {pending > 0 ? `${pending} to review` : total > 0 ? `${total} reviewed` : 'No submissions'}
+                    </button>
+                )
+            },
         },
-    ], [programMap, sessionMap])
+    ], [programMap, sessionMap, submissionCounts])
 
     const handleDelete = async (assignment: Assignment) => {
         if (!confirm(`Delete ${assignment.title}?`)) return
