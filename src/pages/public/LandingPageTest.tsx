@@ -421,51 +421,95 @@ export function LandingPageTest() {
                     </FadeIn>
                 </div>
 
-                {/* ── Desktop: horizontal scroll with bold arrows ── */}
-                <div className="hidden md:flex items-start gap-0 overflow-x-auto no-scrollbar"
-                    style={{ paddingLeft: 'max(24px, calc((100vw - 1280px)/2 + 24px))', paddingRight: '24px' }}>
-                    {JOURNEY_STEPS.map((step, i) => (
-                        <div key={i} className="flex items-start gap-0 shrink-0">
-                            <FadeIn delay={i * 0.07} className="w-64 xl:w-72">
-                                <motion.div whileHover={{ y: -6 }} className="relative group cursor-default">
-                                    <div className="absolute top-3 left-3 z-10">
-                                        <span className="text-[0.625rem] font-heading font-black uppercase tracking-widest text-white/70 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md border border-white/10">
-                                            {step.num}
-                                        </span>
-                                    </div>
-                                    <div className="relative h-52 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-lime/40 transition-all duration-300">
-                                        <img src={step.img} alt={step.label}
-                                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                        <div className="absolute bottom-3 left-3 right-3">
-                                            <p className="text-[0.7rem] font-heading font-black uppercase tracking-[0.18em] text-lime">{step.label}</p>
-                                            <p className="text-[0.65rem] text-gray-400 mt-0.5 leading-snug">{step.caption}</p>
+                {/* ── Desktop: 3+3 two-row grid ── */}
+                <div className="hidden md:block container mx-auto px-5 sm:px-6">
+                    {/* Row 1 — steps 01 02 03 */}
+                    <div className="grid grid-cols-[1fr_52px_1fr_52px_1fr] items-center">
+                        {[0, 1, 2].map((idx, pos) => (
+                            <>
+                                <FadeIn key={idx} delay={pos * 0.1}>
+                                    <motion.div whileHover={{ y: -5 }} className="group cursor-default">
+                                        {/* Step badge */}
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-lime/60 border border-lime/20 px-2 py-0.5 rounded">
+                                                {JOURNEY_STEPS[idx].num}
+                                            </span>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            </FadeIn>
-
-                            {/* Bold connector arrow between steps */}
-                            {i < JOURNEY_STEPS.length - 1 && (
-                                <div className="flex items-center self-start mt-[88px] shrink-0">
-                                    <div className="w-6 h-[2px] bg-gradient-to-r from-lime/20 to-lime/60" />
-                                    <div className="w-[28px] h-[28px] flex items-center justify-center">
-                                        <svg viewBox="0 0 28 28" fill="none" className="w-7 h-7">
-                                            <path d="M4 14h16M14 8l6 6-6 6" stroke="rgb(208 255 113 / 0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        {/* Image */}
+                                        <div className="relative h-44 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-lime/40 transition-all duration-300">
+                                            <img src={JOURNEY_STEPS[idx].img} alt={JOURNEY_STEPS[idx].label}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                        </div>
+                                        {/* Label below image */}
+                                        <div className="mt-3">
+                                            <p className="text-[0.72rem] font-heading font-black uppercase tracking-[0.18em] text-lime leading-tight">{JOURNEY_STEPS[idx].label}</p>
+                                            <p className="text-[0.68rem] text-gray-600 mt-1 leading-snug">{JOURNEY_STEPS[idx].caption}</p>
+                                        </div>
+                                    </motion.div>
+                                </FadeIn>
+                                {pos < 2 && (
+                                    <div key={`arrow-${pos}`} className="flex items-center justify-center mt-[38px]">
+                                        <svg viewBox="0 0 52 20" fill="none" className="w-full h-5">
+                                            <line x1="0" y1="10" x2="36" y2="10" stroke="rgb(208 255 113 / 0.35)" strokeWidth="1.5" />
+                                            <path d="M34 4l8 6-8 6" stroke="rgb(208 255 113 / 0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
-                                    <div className="w-6 h-[2px] bg-gradient-to-r from-lime/60 to-lime/20" />
-                                </div>
-                            )}
+                                )}
+                            </>
+                        ))}
+                    </div>
+
+                    {/* Row connector: line going down on the right, then across on the left */}
+                    <div className="flex items-stretch my-4">
+                        <div className="flex-1 border-b border-white/[0.04]" />
+                        <div className="w-px bg-lime/20 mx-0 self-stretch" />
+                        <div className="shrink-0 flex items-center px-3">
+                            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-lime/40">
+                                <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
                         </div>
-                    ))}
+                    </div>
+
+                    {/* Row 2 — steps 04 05 06 */}
+                    <div className="grid grid-cols-[1fr_52px_1fr_52px_1fr] items-center">
+                        {[3, 4, 5].map((idx, pos) => (
+                            <>
+                                <FadeIn key={idx} delay={0.35 + pos * 0.1}>
+                                    <motion.div whileHover={{ y: -5 }} className="group cursor-default">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-lime/60 border border-lime/20 px-2 py-0.5 rounded">
+                                                {JOURNEY_STEPS[idx].num}
+                                            </span>
+                                        </div>
+                                        <div className="relative h-44 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-lime/40 transition-all duration-300">
+                                            <img src={JOURNEY_STEPS[idx].img} alt={JOURNEY_STEPS[idx].label}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                        </div>
+                                        <div className="mt-3">
+                                            <p className="text-[0.72rem] font-heading font-black uppercase tracking-[0.18em] text-lime leading-tight">{JOURNEY_STEPS[idx].label}</p>
+                                            <p className="text-[0.68rem] text-gray-600 mt-1 leading-snug">{JOURNEY_STEPS[idx].caption}</p>
+                                        </div>
+                                    </motion.div>
+                                </FadeIn>
+                                {pos < 2 && (
+                                    <div key={`arrow2-${pos}`} className="flex items-center justify-center mt-[38px]">
+                                        <svg viewBox="0 0 52 20" fill="none" className="w-full h-5">
+                                            <line x1="0" y1="10" x2="36" y2="10" stroke="rgb(208 255 113 / 0.35)" strokeWidth="1.5" />
+                                            <path d="M34 4l8 6-8 6" stroke="rgb(208 255 113 / 0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                )}
+                            </>
+                        ))}
+                    </div>
                 </div>
 
                 {/* ── Mobile: vertical timeline ── */}
                 <div className="md:hidden px-5 space-y-0">
                     {JOURNEY_STEPS.map((step, i) => (
                         <div key={i} className="flex gap-4">
-                            {/* Left timeline */}
                             <div className="flex flex-col items-center shrink-0 pt-1">
                                 <div className="w-8 h-8 rounded-full border border-lime/40 bg-lime/5 flex items-center justify-center shrink-0">
                                     <span className="text-[0.6rem] font-heading font-black text-lime">{step.num}</span>
@@ -474,14 +518,13 @@ export function LandingPageTest() {
                                     <div className="w-px flex-1 bg-gradient-to-b from-lime/30 to-lime/5 my-1.5 min-h-[24px]" />
                                 )}
                             </div>
-                            {/* Card */}
-                            <div className="flex-1 pb-4">
-                                <div className="relative h-36 rounded-xl overflow-hidden border border-white/[0.06] mb-2">
+                            <div className="flex-1 pb-5">
+                                <div className="relative h-40 rounded-xl overflow-hidden border border-white/[0.06] mb-2.5">
                                     <img src={step.img} alt={step.label} className="absolute inset-0 w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                 </div>
-                                <p className="text-[0.65rem] font-heading font-black uppercase tracking-wider text-lime">{step.label}</p>
-                                <p className="text-[0.65rem] text-gray-600 mt-0.5 leading-snug">{step.caption}</p>
+                                <p className="text-[0.7rem] font-heading font-black uppercase tracking-wider text-lime">{step.label}</p>
+                                <p className="text-[0.68rem] text-gray-500 mt-1 leading-snug">{step.caption}</p>
                             </div>
                         </div>
                     ))}
