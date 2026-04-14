@@ -595,6 +595,58 @@ export function LandingPageTest() {
                 </div>
             </section>
 
+            {/* ── FULL FILM ──────────────────────────────────────────── */}
+            <section className="border-t border-white/[0.04] bg-black">
+                {/* Cinematic header */}
+                <div className="container mx-auto px-5 sm:px-6 pt-20 md:pt-28 pb-10 md:pb-14">
+                    <FadeIn>
+                        <MicroLabel>The Full Product</MicroLabel>
+                        <div className="flex flex-wrap items-end justify-between gap-6 mt-4">
+                            <div>
+                                <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                                    A FULLY AI-GENERATED<br />
+                                    <span className="text-lime">FEATURE FILM.</span>
+                                </h2>
+                                <p className="text-gray-500 text-sm mt-4 max-w-xl leading-relaxed">
+                                    Every frame. Every scene. Every visual — produced entirely through AI-directed workflows.
+                                    No cameras. No crew. No traditional production.
+                                    This is what you learn to build.
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-600">Full feature · AI-generated</span>
+                            </div>
+                        </div>
+                    </FadeIn>
+                </div>
+
+                {/* Full-width video */}
+                <FadeIn delay={0.15}>
+                    <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                        <iframe
+                            src="https://player.vimeo.com/video/1183148939?title=0&byline=0&portrait=0&badge=0&dnt=1"
+                            className="absolute inset-0 w-full h-full"
+                            frameBorder="0"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            title="Fully AI-Generated Feature Film — Zkandar AI"
+                        />
+                    </div>
+                </FadeIn>
+
+                {/* Caption strip */}
+                <div className="container mx-auto px-5 sm:px-6 py-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.04]">
+                    <p className="text-xs text-gray-700 uppercase tracking-[0.15em]">
+                        Produced using AI workflows taught in the Sprint Workshop &amp; Masterclass
+                    </p>
+                    <a href="/submit-form"
+                        className="inline-flex items-center gap-2 text-xs font-bold text-lime hover:text-lime/80 uppercase tracking-[0.15em] transition">
+                        Learn to build this <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                </div>
+            </section>
+
             {/* ── 5 AI CAPABILITIES ──────────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
                 <div className="container mx-auto px-5 sm:px-6">
