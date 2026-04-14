@@ -1,15 +1,18 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
-import { Eye, ArrowRight, Brain, Layers, Sparkles, Users, Building2, ChevronRight } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
+import {
+    Eye, ArrowRight, Brain, Layers, Sparkles, Users, Building2,
+    X, ZoomIn, ZoomOut, TrendingDown, BarChart2, AlertCircle, ShieldOff,
+} from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const PROBLEM_STATS = [
-    { value: '78%',   label: 'struggle controlling AI output' },
-    { value: '2.5/5', label: 'average confidence across 73 designers' },
-    { value: '71%',   label: 'report inconsistent output quality' },
-    { value: '0',     label: 'studios with formal AI guidelines' },
+    { value: '78%',   label: 'struggle controlling AI output quality',      Icon: TrendingDown },
+    { value: '2.5/5', label: 'average confidence rating across 73 designers', Icon: BarChart2   },
+    { value: '71%',   label: 'report inconsistent results across projects',  Icon: AlertCircle },
+    { value: '0',     label: 'studios with a formal AI design framework',   Icon: ShieldOff   },
 ]
 
 const JOURNEY_STEPS = [
@@ -21,17 +24,19 @@ const JOURNEY_STEPS = [
     { num: '06', label: 'THE EXPERIENCE', img: '/lander/1.png',  caption: 'The crowd. The energy. AI imagined this.' },
 ]
 
-// Smart editorial grid — each entry carries its own Tailwind span classes
+// 11 images — clean 4-col grid: rows 1-2 share the big feature, row 3 has the wide+tall combo, row 4 is even
 const GALLERY_ITEMS = [
     { label: 'Night Render',  img: '/lander/24.png', cls: 'col-span-2 row-span-2' },
-    { label: 'Detail',        img: '/lander/8.png',  cls: 'col-span-1 row-span-1' },
-    { label: 'Atmosphere',    img: '/lander/10.png', cls: 'col-span-1 row-span-1' },
-    { label: 'Interior',      img: '/lander/11.png', cls: 'col-span-1 row-span-2' },
-    { label: 'Section Cut',   img: '/lander/13.png', cls: 'col-span-1 row-span-1' },
-    { label: 'Exterior',      img: '/lander/15.png', cls: 'col-span-2 row-span-1' },
-    { label: 'Sketch',        img: '/lander/2.png',  cls: 'col-span-1 row-span-1' },
-    { label: 'Crowd',         img: '/lander/1.png',  cls: 'col-span-1 row-span-1' },
-    { label: 'Urban Plan',    img: '/lander/19.png', cls: 'col-span-1 row-span-1' },
+    { label: 'Detail',        img: '/lander/8.png',  cls: '' },
+    { label: 'Atmosphere',    img: '/lander/10.png', cls: '' },
+    { label: 'Interior',      img: '/lander/11.png', cls: 'row-span-2' },
+    { label: 'Section Cut',   img: '/lander/13.png', cls: '' },
+    { label: 'Exterior',      img: '/lander/15.png', cls: 'col-span-2' },
+    { label: 'Urban Plan',    img: '/lander/19.png', cls: '' },
+    { label: 'Sketch',        img: '/lander/2.png',  cls: '' },
+    { label: 'Crowd',         img: '/lander/1.png',  cls: '' },
+    { label: 'Structure',     img: '/lander/22.png', cls: '' },
+    { label: 'Storyboard',    img: '/lander/25.png', cls: '' },
 ]
 
 const CAPABILITIES = [
@@ -70,9 +75,24 @@ const STUDIOS = [
 ]
 
 const STEPS = [
-    { num: '01', Icon: Brain,    title: 'Learn the Tools',         copy: 'Master AI tools purpose-built for spatial design — Midjourney, ControlNet, Krea.ai — with structured workflows that produce consistent results every time.' },
-    { num: '02', Icon: Layers,   title: 'Build a Workflow',        copy: 'Install a repeatable system: from client brief to moodboard to final render, every step guided by proven prompting frameworks and templates.' },
-    { num: '03', Icon: Sparkles, title: 'Deliver Client-Ready Work', copy: "Output professional-grade visuals that match your studio's standards — not random AI experiments. On time, every time." },
+    {
+        num: '01', Icon: Brain,
+        title: 'Learn the Tools',
+        img: '/lander/23.png',
+        copy: 'Master AI tools purpose-built for spatial design — Midjourney, ControlNet, Krea.ai — with structured workflows that produce consistent results every time.',
+    },
+    {
+        num: '02', Icon: Layers,
+        title: 'Build a Workflow',
+        img: '/lander/3.png',
+        copy: 'Install a repeatable system: from client brief to moodboard to final render, every step guided by proven prompting frameworks and templates.',
+    },
+    {
+        num: '03', Icon: Sparkles,
+        title: 'Deliver Client-Ready Work',
+        img: '/lander/15.png',
+        copy: "Output professional-grade visuals that match your studio's standards — not random AI experiments. On time, every time.",
+    },
 ]
 
 const SPRINT_FEATURES     = ['3-Day Intensive', '2 Hours per day', 'Concept creation & ideation', 'Prompting frameworks included']
@@ -136,38 +156,121 @@ function LimeBar({ width = '4rem' }: { width?: string }) {
     )
 }
 
+// ── Lightbox ─────────────────────────────────────────────────────────────────
+
+function Lightbox({ images, index, onClose }: {
+    images: typeof GALLERY_ITEMS; index: number; onClose: () => void
+}) {
+    const [current, setCurrent] = useState(index)
+    const [zoom, setZoom] = useState(1)
+
+    const item = images[current]
+
+    const prev = () => { setZoom(1); setCurrent((c) => (c - 1 + images.length) % images.length) }
+    const next = () => { setZoom(1); setCurrent((c) => (c + 1) % images.length) }
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col"
+            onClick={onClose}
+        >
+            {/* Top bar */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] shrink-0" onClick={(e) => e.stopPropagation()}>
+                <span className="text-xs uppercase tracking-widest text-gray-500">{item.label} · {current + 1}/{images.length}</span>
+                <div className="flex items-center gap-2">
+                    <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))}
+                        className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition">
+                        <ZoomOut className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs text-gray-500 w-10 text-center tabular-nums">{Math.round(zoom * 100)}%</span>
+                    <button onClick={() => setZoom(z => Math.min(3, z + 0.25))}
+                        className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition">
+                        <ZoomIn className="w-4 h-4" />
+                    </button>
+                    <div className="w-px h-4 bg-white/10 mx-1" />
+                    <button onClick={onClose}
+                        className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition">
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Image area */}
+            <div className="flex-1 flex items-center justify-center overflow-hidden cursor-default relative" onClick={(e) => e.stopPropagation()}>
+                <motion.img
+                    key={current}
+                    src={item.img}
+                    alt={item.label}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: zoom }}
+                    transition={{ duration: 0.25 }}
+                    className="max-h-full max-w-full object-contain select-none"
+                    style={{ cursor: zoom > 1 ? 'grab' : 'default' }}
+                    draggable={false}
+                />
+                {/* Prev / Next */}
+                <button onClick={prev}
+                    className="absolute left-4 p-3 rounded-full bg-black/60 border border-white/10 hover:border-white/30 text-white transition">
+                    <ArrowRight className="w-5 h-5 rotate-180" />
+                </button>
+                <button onClick={next}
+                    className="absolute right-4 p-3 rounded-full bg-black/60 border border-white/10 hover:border-white/30 text-white transition">
+                    <ArrowRight className="w-5 h-5" />
+                </button>
+            </div>
+
+            {/* Thumbnail strip */}
+            <div className="flex gap-2 px-5 py-3 border-t border-white/[0.06] overflow-x-auto no-scrollbar shrink-0" onClick={(e) => e.stopPropagation()}>
+                {images.map((img, i) => (
+                    <button key={i} onClick={() => { setZoom(1); setCurrent(i) }}
+                        className={`shrink-0 w-14 h-10 rounded-lg overflow-hidden border transition ${i === current ? 'border-lime/60' : 'border-white/10 opacity-50 hover:opacity-80'}`}>
+                        <img src={img.img} alt={img.label} className="w-full h-full object-cover" />
+                    </button>
+                ))}
+            </div>
+        </motion.div>
+    )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function LandingPageTest() {
     const heroRef = useRef(null)
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
     const heroBgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
+    const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
     return (
         <div className="min-h-screen bg-black text-white font-body overflow-x-hidden relative selection:bg-lime/30">
             <GrainOverlay />
 
-            <div className="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full pointer-events-none z-0"
-                style={{ background: 'radial-gradient(circle, rgba(208,255,113,0.09) 0%, transparent 70%)', filter: 'blur(100px)', animation: 'orbDrift 22s ease-in-out infinite' }} />
-
             <style>{`
-                @keyframes orbDrift {
-                    0%,100% { transform: translate(0,0) scale(1); }
-                    33%     { transform: translate(60px,-40px) scale(1.05); }
-                    66%     { transform: translate(-30px,30px) scale(0.97); }
-                }
                 @keyframes marquee { 0% { transform:translateX(0) } 100% { transform:translateX(-50%) } }
                 .marquee-track { animation: marquee 30s linear infinite; }
                 .no-scrollbar::-webkit-scrollbar { display:none; }
                 .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
             `}</style>
 
+            {/* Lightbox portal */}
+            <AnimatePresence>
+                {lightboxIndex !== null && (
+                    <Lightbox
+                        images={GALLERY_ITEMS}
+                        index={lightboxIndex}
+                        onClose={() => setLightboxIndex(null)}
+                    />
+                )}
+            </AnimatePresence>
+
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">
                 <motion.div style={{ y: heroBgY }} className="absolute inset-0 z-0">
-                    <img src="/lander/4.png" alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                    <img src="/lander/1.png" alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/30" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
                 </motion.div>
 
                 <div className="relative z-10 container mx-auto px-5 sm:px-6 py-24 sm:py-32">
@@ -224,7 +327,7 @@ export function LandingPageTest() {
                             className="hidden lg:flex flex-col border-l border-white/10 pl-8">
                             {[{ value: '73', label: 'Surveyed' }, { value: '78%', label: 'Struggle' }, { value: '2.5/5', label: 'Confidence' }].map((s, i) => (
                                 <div key={i} className="py-5 border-b border-white/5 last:border-0">
-                                    <div className="text-2xl font-heading font-black text-lime">{s.value}</div>
+                                    <div className="text-2xl font-heading font-black text-red-400">{s.value}</div>
                                     <div className="text-[0.6875rem] uppercase tracking-[0.15em] text-gray-600 mt-0.5">{s.label}</div>
                                 </div>
                             ))}
@@ -242,7 +345,7 @@ export function LandingPageTest() {
 
                 <div className="relative z-10 text-center max-w-5xl mx-auto">
                     <FadeIn direction="up">
-                        <MicroLabel center>Skidmore Owings &amp; Merrill × Zkandar AI</MicroLabel>
+                        <MicroLabel center>An AI-Directed Project — Built From a Sketch</MicroLabel>
                     </FadeIn>
                     <FadeIn direction="up" delay={0.2}>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4.5rem)] leading-[0.93] mt-8 mb-8">
@@ -252,8 +355,8 @@ export function LandingPageTest() {
                     </FadeIn>
                     <FadeIn direction="up" delay={0.4}>
                         <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                            We worked with one of the world's top architecture firms to find out.<br className="hidden sm:block" />
-                            The answer is on this page.
+                            We ran a real project — from a blank desert site to a finished colosseum — using only AI.<br className="hidden sm:block" />
+                            Every render on this page was generated. Nothing was built.
                         </p>
                     </FadeIn>
                     <FadeIn direction="up" delay={0.6}>
@@ -263,17 +366,11 @@ export function LandingPageTest() {
                         </div>
                     </FadeIn>
                 </div>
-
-                <div className="absolute bottom-6 left-6">
-                    <MicroLabel>+ ZKANDAR AI +</MicroLabel>
-                </div>
             </section>
 
             {/* ── THE PROBLEM ────────────────────────────────────────── */}
-            <section className="py-20 md:py-28 relative">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style={{ backgroundImage: 'repeating-linear-gradient(0deg,white,white 1px,transparent 1px,transparent 60px)' }} />
-                <div className="container mx-auto px-5 sm:px-6 relative z-10">
+            <section className="py-20 md:py-28 bg-black border-t border-white/[0.04]">
+                <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
                         <MicroLabel>What we found — 73 architects &amp; designers surveyed</MicroLabel>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -284,15 +381,25 @@ export function LandingPageTest() {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                         {PROBLEM_STATS.map((stat, i) => (
                             <FadeIn key={i} delay={i * 0.1}>
-                                <motion.div whileHover={{ scale: 1.02, y: -4 }}
-                                    className="relative bg-bg-card border border-white/5 rounded-2xl sm:rounded-3xl p-5 sm:p-8 overflow-hidden group hover:border-lime/30 transition-colors duration-300">
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                                        style={{ background: 'radial-gradient(circle at 50% 0%,rgba(208,255,113,0.07) 0%,transparent 70%)', filter: 'blur(16px)' }} />
-                                    <div className="relative z-10">
-                                        <div className="text-[clamp(2rem,5vw,3.5rem)] font-heading font-black text-lime leading-none mb-2 sm:mb-3">{stat.value}</div>
-                                        <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">{stat.label}</p>
+                                <div className="relative bg-[#0d0d0d] border border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-8 overflow-hidden h-full">
+                                    {/* Visual bar */}
+                                    <div className="flex items-end gap-0.5 mb-4 h-8">
+                                        {Array.from({ length: 8 }).map((_, j) => (
+                                            <motion.div key={j}
+                                                initial={{ height: 0 }}
+                                                whileInView={{ height: `${30 + Math.sin((i + j) * 1.3) * 25 + 25}%` }}
+                                                viewport={{ once: true }}
+                                                transition={{ delay: i * 0.1 + j * 0.04, duration: 0.5 }}
+                                                className={`flex-1 rounded-sm ${j < 5 ? 'bg-red-500/60' : 'bg-white/10'}`}
+                                            />
+                                        ))}
                                     </div>
-                                </motion.div>
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="text-[clamp(1.8rem,4.5vw,3rem)] font-heading font-black text-red-400 leading-none mb-2">{stat.value}</div>
+                                        <stat.Icon className="w-4 h-4 text-red-400/50 mt-1 shrink-0" />
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{stat.label}</p>
+                                </div>
                             </FadeIn>
                         ))}
                     </div>
@@ -300,7 +407,7 @@ export function LandingPageTest() {
             </section>
 
             {/* ── THE JOURNEY ────────────────────────────────────────── */}
-            <section className="py-20 md:py-28 bg-bg-elevated border-y border-white/5">
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
                 <div className="container mx-auto px-5 sm:px-6 mb-10 md:mb-14">
                     <FadeIn>
                         <MicroLabel>The Process</MicroLabel>
@@ -314,77 +421,75 @@ export function LandingPageTest() {
                     </FadeIn>
                 </div>
 
-                {/* ── Desktop: horizontal scroll with arrows ── */}
-                <div className="hidden md:flex items-stretch gap-0 overflow-x-auto no-scrollbar px-6"
-                    style={{ paddingLeft: 'max(24px, calc((100vw - 1280px)/2 + 24px))' }}>
+                {/* ── Desktop: horizontal scroll with bold arrows ── */}
+                <div className="hidden md:flex items-start gap-0 overflow-x-auto no-scrollbar"
+                    style={{ paddingLeft: 'max(24px, calc((100vw - 1280px)/2 + 24px))', paddingRight: '24px' }}>
                     {JOURNEY_STEPS.map((step, i) => (
-                        <div key={i} className="flex items-center gap-0 shrink-0">
+                        <div key={i} className="flex items-start gap-0 shrink-0">
                             <FadeIn delay={i * 0.07} className="w-64 xl:w-72">
                                 <motion.div whileHover={{ y: -6 }} className="relative group cursor-default">
                                     <div className="absolute top-3 left-3 z-10">
-                                        <span className="text-[0.625rem] font-heading font-black uppercase tracking-widest text-white/70 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md border border-white/10">
+                                        <span className="text-[0.625rem] font-heading font-black uppercase tracking-widest text-white/70 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md border border-white/10">
                                             {step.num}
                                         </span>
                                     </div>
-                                    <div className="relative h-48 rounded-2xl overflow-hidden border border-white/5 group-hover:border-lime/30 transition-all duration-300">
+                                    <div className="relative h-52 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-lime/40 transition-all duration-300">
                                         <img src={step.img} alt={step.label}
                                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                                    </div>
-                                    <div className="mt-3 px-1">
-                                        <p className="text-[0.7rem] font-heading font-black uppercase tracking-[0.18em] text-lime">{step.label}</p>
-                                        <p className="text-[0.7rem] text-gray-600 mt-0.5 leading-snug">{step.caption}</p>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                        <div className="absolute bottom-3 left-3 right-3">
+                                            <p className="text-[0.7rem] font-heading font-black uppercase tracking-[0.18em] text-lime">{step.label}</p>
+                                            <p className="text-[0.65rem] text-gray-400 mt-0.5 leading-snug">{step.caption}</p>
+                                        </div>
                                     </div>
                                 </motion.div>
                             </FadeIn>
 
-                            {/* Arrow between steps */}
+                            {/* Bold connector arrow between steps */}
                             {i < JOURNEY_STEPS.length - 1 && (
-                                <div className="flex flex-col items-center justify-center px-3 xl:px-4 self-start mt-20">
-                                    <ChevronRight className="w-5 h-5 text-lime/40" />
+                                <div className="flex items-center self-start mt-[88px] shrink-0">
+                                    <div className="w-6 h-[2px] bg-gradient-to-r from-lime/20 to-lime/60" />
+                                    <div className="w-[28px] h-[28px] flex items-center justify-center">
+                                        <svg viewBox="0 0 28 28" fill="none" className="w-7 h-7">
+                                            <path d="M4 14h16M14 8l6 6-6 6" stroke="rgb(208 255 113 / 0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div className="w-6 h-[2px] bg-gradient-to-r from-lime/60 to-lime/20" />
                                 </div>
                             )}
                         </div>
                     ))}
-                    {/* right padding spacer */}
-                    <div className="shrink-0 w-6" />
                 </div>
 
-                {/* ── Mobile: 2-col grid with down arrows ── */}
-                <div className="md:hidden px-5 space-y-3">
+                {/* ── Mobile: vertical timeline ── */}
+                <div className="md:hidden px-5 space-y-0">
                     {JOURNEY_STEPS.map((step, i) => (
-                        <div key={i}>
-                            <FadeIn delay={i * 0.06}>
-                                <div className="relative group flex gap-4 items-center">
-                                    {/* Step number pill */}
-                                    <div className="shrink-0 w-10 h-10 rounded-full border border-lime/30 bg-lime/5 flex items-center justify-center">
-                                        <span className="text-[0.6rem] font-heading font-black text-lime">{step.num}</span>
-                                    </div>
-                                    {/* Image + text */}
-                                    <div className="flex-1 flex gap-3 items-center">
-                                        <div className="relative w-20 h-14 rounded-xl overflow-hidden border border-white/5 shrink-0">
-                                            <img src={step.img} alt={step.label} className="absolute inset-0 w-full h-full object-cover" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[0.65rem] font-heading font-black uppercase tracking-wider text-lime leading-tight">{step.label}</p>
-                                            <p className="text-[0.65rem] text-gray-600 mt-0.5 leading-snug">{step.caption}</p>
-                                        </div>
-                                    </div>
+                        <div key={i} className="flex gap-4">
+                            {/* Left timeline */}
+                            <div className="flex flex-col items-center shrink-0 pt-1">
+                                <div className="w-8 h-8 rounded-full border border-lime/40 bg-lime/5 flex items-center justify-center shrink-0">
+                                    <span className="text-[0.6rem] font-heading font-black text-lime">{step.num}</span>
                                 </div>
-                            </FadeIn>
-                            {/* Down connector */}
-                            {i < JOURNEY_STEPS.length - 1 && (
-                                <div className="flex items-center pl-5 py-1">
-                                    <div className="w-px h-4 bg-lime/20 ml-4" />
+                                {i < JOURNEY_STEPS.length - 1 && (
+                                    <div className="w-px flex-1 bg-gradient-to-b from-lime/30 to-lime/5 my-1.5 min-h-[24px]" />
+                                )}
+                            </div>
+                            {/* Card */}
+                            <div className="flex-1 pb-4">
+                                <div className="relative h-36 rounded-xl overflow-hidden border border-white/[0.06] mb-2">
+                                    <img src={step.img} alt={step.label} className="absolute inset-0 w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                                 </div>
-                            )}
+                                <p className="text-[0.65rem] font-heading font-black uppercase tracking-wider text-lime">{step.label}</p>
+                                <p className="text-[0.65rem] text-gray-600 mt-0.5 leading-snug">{step.caption}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* ── GALLERY ────────────────────────────────────────────── */}
-            <section className="py-20 md:py-28 border-b border-white/5">
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-4">
                         <MicroLabel>Output Gallery</MicroLabel>
@@ -395,52 +500,61 @@ export function LandingPageTest() {
                     </FadeIn>
                     <FadeIn delay={0.1} className="mb-10 md:mb-14">
                         <p className="text-gray-600 text-sm max-w-lg mt-3">
-                            The colosseum doesn't exist. AI built it from a sketch. This is the output level you'll reach.
+                            The colosseum doesn't exist. AI built it from a sketch. Click any image to preview.
                         </p>
                     </FadeIn>
 
-                    {/* Desktop editorial grid */}
-                    <div className="hidden sm:grid grid-cols-4 auto-rows-[180px] md:auto-rows-[210px] gap-3 md:gap-4">
+                    {/* Desktop editorial grid — 4 cols, 4 rows, all 11 items visible */}
+                    <div className="hidden sm:grid grid-cols-4 auto-rows-[200px] gap-3 md:gap-4">
                         {GALLERY_ITEMS.map((item, i) => (
-                            <FadeIn key={i} delay={i * 0.04} className={item.cls}>
-                                <motion.div whileHover={{ scale: 1.015 }}
-                                    className="relative rounded-2xl border border-white/5 hover:border-lime/20 overflow-hidden group cursor-pointer h-full transition-colors duration-300">
-                                    <img src={item.img} alt={item.label}
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/45 transition-all duration-300" />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 gap-2">
-                                        <Eye className="w-4 h-4 text-white" />
-                                        <span className="text-[0.65rem] uppercase tracking-[0.15em] text-gray-200">{item.label}</span>
-                                    </div>
-                                    <div className="absolute bottom-2.5 left-3">
-                                        <span className="text-[0.6rem] uppercase tracking-wider text-white/30">{item.label}</span>
-                                    </div>
-                                </motion.div>
-                            </FadeIn>
+                            <motion.div
+                                key={i}
+                                onClick={() => setLightboxIndex(i)}
+                                whileHover={{ scale: 1.015 }}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: '-40px' }}
+                                transition={{ delay: (i % 4) * 0.06, duration: 0.5 }}
+                                className={`relative rounded-2xl border border-white/[0.05] hover:border-lime/25 overflow-hidden group cursor-pointer transition-colors duration-300 ${item.cls}`}
+                            >
+                                <img src={item.img} alt={item.label}
+                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-300" />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 gap-2">
+                                    <Eye className="w-5 h-5 text-white" />
+                                    <span className="text-[0.65rem] uppercase tracking-[0.15em] text-gray-200">{item.label}</span>
+                                </div>
+                            </motion.div>
                         ))}
                     </div>
 
-                    {/* Mobile: simple 2-col grid, no spans */}
+                    {/* Mobile: 2-col, no spans */}
                     <div className="sm:hidden grid grid-cols-2 gap-3">
                         {GALLERY_ITEMS.map((item, i) => (
-                            <FadeIn key={i} delay={i * 0.04}>
-                                <div className="relative h-36 rounded-xl border border-white/5 overflow-hidden">
-                                    <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
-                                    <div className="absolute bottom-2 left-2.5">
-                                        <span className="text-[0.55rem] uppercase tracking-wider text-white/50">{item.label}</span>
-                                    </div>
+                            <motion.div
+                                key={i}
+                                onClick={() => setLightboxIndex(i)}
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.04 }}
+                                className="relative h-36 rounded-xl border border-white/[0.05] overflow-hidden cursor-pointer"
+                            >
+                                <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/20 hover:bg-black/50 transition-colors duration-300" />
+                                <div className="absolute bottom-2 left-2.5 flex items-center gap-1">
+                                    <Eye className="w-3 h-3 text-white/60" />
+                                    <span className="text-[0.55rem] uppercase tracking-wider text-white/60">{item.label}</span>
                                 </div>
-                            </FadeIn>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* ── 5 AI CAPABILITIES ──────────────────────────────────── */}
-            <section className="py-20 md:py-28 bg-bg-elevated border-y border-white/5 relative">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style={{ backgroundImage: 'repeating-linear-gradient(0deg,white,white 1px,transparent 1px,transparent 60px)' }} />
-                <div className="container mx-auto px-5 sm:px-6 relative z-10">
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
+                <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
                         <MicroLabel>What AI Can Do</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4">
@@ -450,23 +564,24 @@ export function LandingPageTest() {
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">We teach each of these in the Sprint Workshop and Masterclass.</p>
                     </FadeIn>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+                    {/* 2×2 grid + last card full-width */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
                         {CAPABILITIES.map((cap, i) => (
                             <FadeIn key={i} delay={i * 0.08}
-                                className={i === 3 ? 'sm:col-span-1 lg:col-span-1' : i === 4 ? 'sm:col-span-2 lg:col-span-1' : ''}>
-                                <motion.div whileHover={{ y: -5 }}
-                                    className="relative bg-bg-card border border-white/5 hover:border-lime/25 rounded-2xl sm:rounded-3xl overflow-hidden group h-full transition-colors duration-300">
-                                    <div className="relative h-44 sm:h-48 overflow-hidden">
+                                className={i === 4 ? 'sm:col-span-2' : ''}>
+                                <motion.div whileHover={{ y: -4 }}
+                                    className={`relative bg-[#0d0d0d] border border-white/[0.06] hover:border-lime/25 rounded-2xl overflow-hidden group h-full transition-colors duration-300 ${i === 4 ? 'flex flex-col sm:flex-row' : 'flex flex-col'}`}>
+                                    <div className={`relative overflow-hidden shrink-0 ${i === 4 ? 'h-48 sm:h-auto sm:w-72' : 'h-44 sm:h-48'}`}>
                                         <img src={cap.img} alt={cap.title}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-bg-card/30 to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/20 to-transparent" />
                                         <div className="absolute top-3 right-3">
-                                            <span className="text-[0.625rem] font-heading font-black text-lime bg-black/60 backdrop-blur-sm border border-lime/20 px-2 py-1 rounded-lg tracking-wider">
+                                            <span className="text-[0.625rem] font-heading font-black text-lime bg-black/70 backdrop-blur-sm border border-lime/20 px-2 py-1 rounded-lg tracking-wider">
                                                 {cap.num}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="p-4 sm:p-5">
+                                    <div className="p-5 sm:p-6 flex flex-col justify-center">
                                         <h3 className="font-heading font-black uppercase text-sm sm:text-base mb-2">{cap.title}</h3>
                                         <p className="text-xs text-gray-500 leading-relaxed">{cap.copy}</p>
                                     </div>
@@ -478,7 +593,7 @@ export function LandingPageTest() {
             </section>
 
             {/* ── SOCIAL PROOF ───────────────────────────────────────── */}
-            <section className="py-20 md:py-28">
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-10 md:mb-12">
                         <div className="flex flex-wrap items-center gap-3">
@@ -490,13 +605,13 @@ export function LandingPageTest() {
                         {STUDIOS.map((s, i) => (
                             <FadeIn key={i} delay={i * 0.025}>
                                 <motion.div whileHover={{ scale: 1.02, y: -2 }}
-                                    className="px-3 sm:px-4 py-2.5 sm:py-3 bg-bg-card border border-white/5 hover:border-lime/20 rounded-xl sm:rounded-2xl text-center transition-colors duration-300">
+                                    className="px-3 sm:px-4 py-2.5 sm:py-3 bg-[#0d0d0d] border border-white/[0.05] hover:border-lime/20 rounded-xl sm:rounded-2xl text-center transition-colors duration-300">
                                     <span className="text-xs text-gray-400">{s}</span>
                                 </motion.div>
                             </FadeIn>
                         ))}
                     </div>
-                    <div className="overflow-hidden border-t border-b border-white/5 py-3.5">
+                    <div className="overflow-hidden border-t border-b border-white/[0.04] py-3.5">
                         <div className="flex gap-8 marquee-track whitespace-nowrap">
                             {[...STUDIOS, ...STUDIOS].map((s, i) => (
                                 <span key={i} className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-700 inline-flex items-center gap-8">
@@ -508,11 +623,9 @@ export function LandingPageTest() {
                 </div>
             </section>
 
-            {/* ── THE SOLUTION ───────────────────────────────────────── */}
-            <section className="py-20 md:py-28 bg-bg-elevated border-y border-white/5 relative">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style={{ backgroundImage: 'repeating-linear-gradient(0deg,white,white 1px,transparent 1px,transparent 60px)' }} />
-                <div className="container mx-auto px-5 sm:px-6 relative z-10">
+            {/* ── THE FRAMEWORK ──────────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
+                <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
                         <MicroLabel>The Framework</MicroLabel>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -520,18 +633,27 @@ export function LandingPageTest() {
                             <LimeBar />
                         </div>
                     </FadeIn>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
                         {STEPS.map((step, i) => (
                             <FadeIn key={i} delay={i * 0.15}>
-                                <motion.div whileHover={{ scale: 1.02, y: -4 }}
-                                    className="relative bg-bg-card border border-white/5 hover:border-lime/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 overflow-hidden group h-full transition-colors duration-300">
-                                    <div className="absolute top-4 right-5 font-heading font-black text-[5rem] sm:text-[6rem] text-lime/8 leading-none select-none pointer-events-none">{step.num}</div>
-                                    <div className="relative z-10">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-lime/10 flex items-center justify-center text-lime mb-5 sm:mb-6">
-                                            <step.Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                                <motion.div whileHover={{ y: -4 }}
+                                    className="relative bg-[#0d0d0d] border border-white/[0.06] hover:border-lime/30 rounded-2xl sm:rounded-3xl overflow-hidden group h-full transition-colors duration-300 flex flex-col">
+                                    {/* Visual image top */}
+                                    <div className="relative h-44 overflow-hidden shrink-0">
+                                        <img src={step.img} alt={step.title}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/30 to-transparent" />
+                                        <div className="absolute top-4 right-4">
+                                            <span className="text-[4.5rem] font-heading font-black text-white/[0.06] leading-none select-none">{step.num}</span>
                                         </div>
-                                        <h3 className="font-heading font-black uppercase text-base sm:text-xl mb-3">{step.title}</h3>
-                                        <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">{step.copy}</p>
+                                    </div>
+                                    {/* Text */}
+                                    <div className="p-5 sm:p-6 flex flex-col flex-1">
+                                        <div className="w-9 h-9 rounded-xl bg-lime/10 flex items-center justify-center text-lime mb-4 shrink-0">
+                                            <step.Icon className="w-4.5 h-4.5" />
+                                        </div>
+                                        <h3 className="font-heading font-black uppercase text-sm sm:text-base mb-2">{step.title}</h3>
+                                        <p className="text-xs text-gray-500 leading-relaxed">{step.copy}</p>
                                     </div>
                                 </motion.div>
                             </FadeIn>
@@ -541,7 +663,7 @@ export function LandingPageTest() {
             </section>
 
             {/* ── CTA / PRICING ──────────────────────────────────────── */}
-            <section id="sprint" className="py-20 md:py-28">
+            <section id="sprint" className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16 text-center">
                         <MicroLabel center>Choose Your Path</MicroLabel>
@@ -552,8 +674,7 @@ export function LandingPageTest() {
                         {/* Sprint */}
                         <FadeIn direction="left" className="flex">
                             <motion.div whileHover={{ scale: 1.01, y: -4 }}
-                                className="relative bg-bg-card border border-white/5 hover:border-white/20 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group transition-colors duration-300 w-full">
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-br from-white/5 to-transparent transition-opacity duration-500 pointer-events-none" />
+                                className="relative bg-[#0d0d0d] border border-white/[0.06] hover:border-white/20 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group transition-colors duration-300 w-full">
                                 <div className="relative z-10 flex flex-col flex-1">
                                     <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center mb-5">
                                         <Users className="w-5 h-5 text-white" />
@@ -579,10 +700,9 @@ export function LandingPageTest() {
                         {/* Masterclass */}
                         <FadeIn direction="right" className="flex">
                             <motion.div whileHover={{ scale: 1.01, y: -4 }}
-                                className="relative bg-bg-card border border-lime/30 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group w-full"
-                                style={{ boxShadow: '0 0 40px -10px rgba(208,255,113,0.15)' }}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-lime/10 to-transparent pointer-events-none" />
-                                <div className="absolute top-0 right-10 w-px h-24 bg-gradient-to-b from-lime to-transparent pointer-events-none" />
+                                className="relative bg-[#0d0d0d] border border-lime/30 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group w-full"
+                                style={{ boxShadow: '0 0 40px -10px rgba(208,255,113,0.12)' }}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-lime/[0.06] to-transparent pointer-events-none" />
                                 <div className="relative z-10 flex flex-col flex-1">
                                     <div className="w-11 h-11 rounded-full bg-lime/20 flex items-center justify-center mb-5">
                                         <Building2 className="w-5 h-5 text-lime" />
@@ -609,7 +729,7 @@ export function LandingPageTest() {
             </section>
 
             {/* ── FOOTER ─────────────────────────────────────────────── */}
-            <footer className="py-7 border-t border-white/5">
+            <footer className="py-7 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 flex items-center justify-between">
                     <div className="flex items-center gap-3 opacity-40">
                         <img src={logoSrc} alt="Zkandar AI" className="h-6 object-contain grayscale" />
