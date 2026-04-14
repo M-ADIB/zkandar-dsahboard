@@ -24,6 +24,10 @@ const ProgramPage = lazy(() => import('@/pages/public/ProgramPage').then(module 
 const ThankYouPage = lazy(() => import('@/pages/public/ThankYouPage').then(module => ({ default: module.ThankYouPage })))
 const LandingPageTest = lazy(() => import('@/pages/public/LandingPageTest').then(module => ({ default: module.LandingPageTest })))
 const SubmitFormPage = lazy(() => import('@/pages/public/SubmitFormPage').then(module => ({ default: module.SubmitFormPage })))
+const NotSurePage = lazy(() => import('@/pages/public/NotSurePage').then(module => ({ default: module.NotSurePage })))
+const CheckoutPage = lazy(() => import('@/pages/public/CheckoutPage').then(module => ({ default: module.CheckoutPage })))
+const EnrollPage = lazy(() => import('@/pages/public/EnrollPage').then(module => ({ default: module.EnrollPage })))
+const CheckoutSuccessPage = lazy(() => import('@/pages/public/CheckoutSuccessPage').then(module => ({ default: module.CheckoutSuccessPage })))
 const PostCompletionSurvey = lazy(() => import('@/pages/public/PostCompletionSurvey').then(module => ({ default: module.PostCompletionSurvey })))
 const PublicPreSurvey = lazy(() => import('@/pages/public/PublicPreSurvey').then(module => ({ default: module.PublicPreSurvey })))
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
@@ -96,6 +100,10 @@ function App() {
                                 <Route path="/thank-you" element={<ThankYouPage />} />
                                 <Route path="/test-landingpage" element={<LandingPageTest />} />
                                 <Route path="/submit-form" element={<SubmitFormPage />} />
+                                <Route path="/not-sure" element={<NotSurePage />} />
+                                <Route path="/checkout" element={<CheckoutPage />} />
+                                <Route path="/enroll" element={<EnrollPage />} />
+                                <Route path="/checkout-success" element={<CheckoutSuccessPage />} />
                                 <Route path="/survey/post-completion" element={<PostCompletionSurvey />} />
                                 <Route path="/survey/pre-completion" element={<PublicPreSurvey />} />
                                 <Route path="/privacy" element={<PrivacyPolicyPage />} />

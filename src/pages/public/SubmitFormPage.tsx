@@ -114,7 +114,21 @@ export function SubmitFormPage() {
             return
         }
 
-        setSubmitted(true)
+        // Route based on interest + commitment
+        if (interest === 'masterclass') {
+            // Masterclass always goes to a discovery call — no direct checkout
+            window.location.href = 'https://calendly.com/zkandar/masterclass'
+        } else if (interest === 'sprint') {
+            if (commitment === 'ready') {
+                window.location.href = '/enroll'
+            } else {
+                // curious or exploring — show checkout with "book a call" banner
+                window.location.href = '/checkout?questions=true'
+            }
+        } else {
+            // 'other' — no specific page yet, show inline confirmation
+            setSubmitted(true)
+        }
         setSubmitting(false)
     }
 

@@ -1,0 +1,340 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - generic [ref=e9]: Dev Shortcuts
+      - button [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+    - generic [ref=e14]:
+      - paragraph [ref=e15]: Click any credential to copy it to your clipboard.
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic [ref=e18]: Owner / Admin
+          - generic [ref=e19]:
+            - generic [ref=e20] [cursor=pointer]:
+              - generic [ref=e21]:
+                - generic [ref=e22]: "Email:"
+                - generic [ref=e23]: admin@zkandar.com
+              - img [ref=e24]
+            - generic [ref=e27] [cursor=pointer]:
+              - generic [ref=e28]:
+                - generic [ref=e29]: "Pass:"
+                - generic [ref=e30]: password123
+              - img [ref=e31]
+        - generic [ref=e34]:
+          - generic [ref=e35]: Participant
+          - generic [ref=e36]:
+            - generic [ref=e37] [cursor=pointer]:
+              - generic [ref=e38]:
+                - generic [ref=e39]: "Email:"
+                - generic [ref=e40]: adib@theclips.agency
+              - img [ref=e41]
+            - generic [ref=e44] [cursor=pointer]:
+              - generic [ref=e45]:
+                - generic [ref=e46]: "Pass:"
+                - generic [ref=e47]: password123
+              - img [ref=e48]
+        - generic [ref=e51]:
+          - generic [ref=e52]: Other User
+          - generic [ref=e53]:
+            - generic [ref=e54] [cursor=pointer]:
+              - generic [ref=e55]:
+                - generic [ref=e56]: "Email:"
+                - generic [ref=e57]: test@finasi.com
+              - img [ref=e58]
+            - generic [ref=e61] [cursor=pointer]:
+              - generic [ref=e62]:
+                - generic [ref=e63]: "Pass:"
+                - generic [ref=e64]: password123
+              - img [ref=e65]
+  - generic [ref=e68]:
+    - generic:
+      - img
+    - generic [ref=e75]:
+      - generic [ref=e76]:
+        - paragraph [ref=e77]: AI FOR ARCHITECTS & DESIGNERS
+        - heading "YOUR TEAM IS USING AI. WITHOUT A SYSTEM." [level=1] [ref=e78]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: YOUR
+            - generic [ref=e82]: TEAM
+            - generic [ref=e83]: IS
+            - generic [ref=e84]: USING
+            - generic [ref=e85]: AI.
+          - generic [ref=e87]:
+            - generic [ref=e88]: WITHOUT
+            - generic [ref=e89]: A
+            - generic [ref=e90]: SYSTEM.
+        - paragraph [ref=e91]: "73 designers surveyed. The #1 problem? No control over results."
+        - generic [ref=e92]:
+          - link "I'm an Individual" [ref=e93] [cursor=pointer]:
+            - /url: "#sprint"
+            - text: I'm an Individual
+            - img [ref=e94]
+          - link "I Lead a Team" [ref=e96] [cursor=pointer]:
+            - /url: "#masterclass"
+            - text: I Lead a Team
+            - img [ref=e97]
+        - generic [ref=e99]:
+          - generic [ref=e100]: 73 Surveyed
+          - generic [ref=e102]: 15+ Studios
+          - generic [ref=e104]: Architects & Designers
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - generic [ref=e107]: "73"
+          - generic [ref=e108]: Surveyed
+        - generic [ref=e109]:
+          - generic [ref=e110]: 78%
+          - generic [ref=e111]: Struggle
+        - generic [ref=e112]:
+          - generic [ref=e113]: 2.5/5
+          - generic [ref=e114]: Confidence
+    - generic [ref=e116]:
+      - generic [ref=e117]:
+        - paragraph [ref=e118]: Survey Results — 73 Respondents
+        - heading "THE DATA DOESN'T LIE" [level=2] [ref=e120]
+      - generic [ref=e121]:
+        - generic [ref=e124]:
+          - generic [ref=e125]: 78%
+          - paragraph [ref=e126]: struggle with controlling AI results
+        - generic [ref=e129]:
+          - generic [ref=e130]: 2.5/5
+          - paragraph [ref=e131]: average confidence score across 73 designers
+        - generic [ref=e134]:
+          - generic [ref=e135]: 71%
+          - paragraph [ref=e136]: report inconsistent output quality
+        - generic [ref=e139]:
+          - generic [ref=e140]: "0"
+          - paragraph [ref=e141]: studios have formal AI guidelines in place
+    - generic [ref=e143]:
+      - generic [ref=e144]:
+        - paragraph [ref=e145]: Output Gallery
+        - heading "THIS IS WHAT AI-DIRECTED DESIGN LOOKS LIKE. IT'S OUTPUT." [level=2] [ref=e146]:
+          - text: THIS IS WHAT AI-DIRECTED
+          - text: DESIGN LOOKS LIKE. IT'S OUTPUT.
+      - generic [ref=e147]:
+        - generic [ref=e149] [cursor=pointer]:
+          - generic [ref=e151]:
+            - img [ref=e152]
+            - generic [ref=e155]: Residential
+          - generic [ref=e156]: Residential
+        - generic [ref=e158] [cursor=pointer]:
+          - generic [ref=e160]:
+            - img [ref=e161]
+            - generic [ref=e164]: Commercial
+          - generic [ref=e165]: Commercial
+        - generic [ref=e167] [cursor=pointer]:
+          - generic [ref=e169]:
+            - img [ref=e170]
+            - generic [ref=e173]: Interior
+          - generic [ref=e174]: Interior
+        - generic [ref=e176] [cursor=pointer]:
+          - generic [ref=e178]:
+            - img [ref=e179]
+            - generic [ref=e182]: Facade
+          - generic [ref=e183]: Facade
+        - generic [ref=e185] [cursor=pointer]:
+          - generic [ref=e187]:
+            - img [ref=e188]
+            - generic [ref=e191]: Landscape
+          - generic [ref=e192]: Landscape
+        - generic [ref=e194] [cursor=pointer]:
+          - generic [ref=e196]:
+            - img [ref=e197]
+            - generic [ref=e200]: Concept
+          - generic [ref=e201]: Concept
+        - generic [ref=e203] [cursor=pointer]:
+          - generic [ref=e205]:
+            - img [ref=e206]
+            - generic [ref=e209]: Urban
+          - generic [ref=e210]: Urban
+        - generic [ref=e212] [cursor=pointer]:
+          - generic [ref=e214]:
+            - img [ref=e215]
+            - generic [ref=e218]: Render
+          - generic [ref=e219]: Render
+    - generic [ref=e221]:
+      - generic [ref=e223]:
+        - heading "TRUSTED BY 15+ STUDIOS" [level=2] [ref=e224]
+        - generic [ref=e225]: Growing
+      - generic [ref=e226]:
+        - generic [ref=e228]: FORM Studio
+        - generic [ref=e230]: Atelier Haus
+        - generic [ref=e232]: Studio Collective
+        - generic [ref=e234]: Arc & Co.
+        - generic [ref=e236]: Design Meridian
+        - generic [ref=e238]: Whitespace Lab
+        - generic [ref=e240]: Grid Atelier
+        - generic [ref=e242]: The Spatial Co.
+        - generic [ref=e244]: Studio Mira
+        - generic [ref=e246]: Blank Canvas
+        - generic [ref=e248]: Forma Group
+        - generic [ref=e250]: Norte Studio
+        - generic [ref=e252]: Eleven Architecture
+        - generic [ref=e254]: Archway
+        - generic [ref=e256]: Blueprint Studio
+        - generic [ref=e258]: Render+
+      - generic [ref=e260]:
+        - generic [ref=e261]:
+          - text: FORM Studio
+          - generic [ref=e262]: ·
+        - generic [ref=e263]:
+          - text: Atelier Haus
+          - generic [ref=e264]: ·
+        - generic [ref=e265]:
+          - text: Studio Collective
+          - generic [ref=e266]: ·
+        - generic [ref=e267]:
+          - text: Arc & Co.
+          - generic [ref=e268]: ·
+        - generic [ref=e269]:
+          - text: Design Meridian
+          - generic [ref=e270]: ·
+        - generic [ref=e271]:
+          - text: Whitespace Lab
+          - generic [ref=e272]: ·
+        - generic [ref=e273]:
+          - text: Grid Atelier
+          - generic [ref=e274]: ·
+        - generic [ref=e275]:
+          - text: The Spatial Co.
+          - generic [ref=e276]: ·
+        - generic [ref=e277]:
+          - text: Studio Mira
+          - generic [ref=e278]: ·
+        - generic [ref=e279]:
+          - text: Blank Canvas
+          - generic [ref=e280]: ·
+        - generic [ref=e281]:
+          - text: Forma Group
+          - generic [ref=e282]: ·
+        - generic [ref=e283]:
+          - text: Norte Studio
+          - generic [ref=e284]: ·
+        - generic [ref=e285]:
+          - text: Eleven Architecture
+          - generic [ref=e286]: ·
+        - generic [ref=e287]:
+          - text: Archway
+          - generic [ref=e288]: ·
+        - generic [ref=e289]:
+          - text: Blueprint Studio
+          - generic [ref=e290]: ·
+        - generic [ref=e291]:
+          - text: Render+
+          - generic [ref=e292]: ·
+        - generic [ref=e293]:
+          - text: FORM Studio
+          - generic [ref=e294]: ·
+        - generic [ref=e295]:
+          - text: Atelier Haus
+          - generic [ref=e296]: ·
+        - generic [ref=e297]:
+          - text: Studio Collective
+          - generic [ref=e298]: ·
+        - generic [ref=e299]:
+          - text: Arc & Co.
+          - generic [ref=e300]: ·
+        - generic [ref=e301]:
+          - text: Design Meridian
+          - generic [ref=e302]: ·
+        - generic [ref=e303]:
+          - text: Whitespace Lab
+          - generic [ref=e304]: ·
+        - generic [ref=e305]:
+          - text: Grid Atelier
+          - generic [ref=e306]: ·
+        - generic [ref=e307]:
+          - text: The Spatial Co.
+          - generic [ref=e308]: ·
+        - generic [ref=e309]:
+          - text: Studio Mira
+          - generic [ref=e310]: ·
+        - generic [ref=e311]:
+          - text: Blank Canvas
+          - generic [ref=e312]: ·
+        - generic [ref=e313]:
+          - text: Forma Group
+          - generic [ref=e314]: ·
+        - generic [ref=e315]:
+          - text: Norte Studio
+          - generic [ref=e316]: ·
+        - generic [ref=e317]:
+          - text: Eleven Architecture
+          - generic [ref=e318]: ·
+        - generic [ref=e319]:
+          - text: Archway
+          - generic [ref=e320]: ·
+        - generic [ref=e321]:
+          - text: Blueprint Studio
+          - generic [ref=e322]: ·
+        - generic [ref=e323]:
+          - text: Render+
+          - generic [ref=e324]: ·
+    - generic [ref=e326]:
+      - generic [ref=e327]:
+        - paragraph [ref=e328]: The Framework
+        - heading "FROM CHAOS TO SYSTEM" [level=2] [ref=e330]
+      - generic [ref=e331]:
+        - generic [ref=e333]:
+          - generic: "01"
+          - generic [ref=e334]:
+            - img [ref=e336]
+            - heading "Learn the Tools" [level=3] [ref=e346]
+            - paragraph [ref=e347]: Master AI tools purpose-built for spatial design — Midjourney, ControlNet, Krea.ai — with structured workflows that produce consistent results every time.
+        - generic [ref=e349]:
+          - generic: "02"
+          - generic [ref=e350]:
+            - img [ref=e352]
+            - heading "Build a Workflow" [level=3] [ref=e356]
+            - paragraph [ref=e357]: "Install a repeatable system: from client brief to moodboard to final render, every step guided by proven prompting frameworks and templates."
+        - generic [ref=e359]:
+          - generic: "03"
+          - generic [ref=e360]:
+            - img [ref=e362]
+            - heading "Deliver Client-Ready Work" [level=3] [ref=e364]
+            - paragraph [ref=e365]: Output professional-grade visuals that match your studio's standards — not random AI experiments. On time, every time.
+    - generic [ref=e367]:
+      - generic [ref=e368]:
+        - paragraph [ref=e369]: Choose Your Path
+        - heading "WHERE DO YOU START?" [level=2] [ref=e370]
+      - generic [ref=e371]:
+        - generic [ref=e374]:
+          - img [ref=e376]
+          - paragraph [ref=e381]: Sprint Workshop
+          - heading "For Individuals" [level=3] [ref=e382]
+          - paragraph [ref=e383]: A fast-paced, focused 3-day workshop to master AI ideation tools. Perfect for designers who want immediate workflow integration.
+          - list [ref=e384]:
+            - listitem [ref=e385]: 3-Day Intensive
+            - listitem [ref=e387]: 2 Hours per day
+            - listitem [ref=e389]: Concept creation & ideation
+            - listitem [ref=e391]: Prompting frameworks included
+          - link "Apply for Sprint" [ref=e393] [cursor=pointer]:
+            - /url: "#"
+            - text: Apply for Sprint
+            - img [ref=e394]
+        - generic [ref=e398]:
+          - img [ref=e400]
+          - paragraph [ref=e404]: Exclusive Masterclass
+          - heading "For Teams & Studios" [level=3] [ref=e405]
+          - paragraph [ref=e406]: A comprehensive AI system overhaul for your studio. Align firm standards with AI capabilities, track team progress, and certify readiness.
+          - list [ref=e407]:
+            - listitem [ref=e408]: End-to-end curriculum
+            - listitem [ref=e410]: Custom dashboard & analytics
+            - listitem [ref=e412]: Team readiness certification
+            - listitem [ref=e414]: Advanced render workflows
+          - link "Book Team Discovery" [ref=e416] [cursor=pointer]:
+            - /url: "#"
+            - text: Book Team Discovery
+            - img [ref=e417]
+    - contentinfo [ref=e419]:
+      - generic [ref=e420]:
+        - generic [ref=e421]:
+          - img "Zkandar AI" [ref=e422]
+          - generic [ref=e423]: Zkandar AI
+        - paragraph [ref=e424]: © 2026 Zkandar AI
+  - region "Notifications alt+T"
+  - generic [ref=e425]:
+    - img [ref=e427]
+    - button "Open Tanstack query devtools" [ref=e475] [cursor=pointer]:
+      - img [ref=e476]
