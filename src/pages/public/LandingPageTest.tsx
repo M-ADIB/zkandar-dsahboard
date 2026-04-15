@@ -15,13 +15,10 @@ const PROBLEM_STATS = [
     { value: '0',     label: 'studios with a formal AI design framework',   Icon: ShieldOff   },
 ]
 
-const JOURNEY_STEPS = [
-    { num: '01', label: 'BLANK SITE',     img: '/lander/16.png', caption: 'Empty desert. Just a boundary.' },
-    { num: '02', label: 'THE SKETCH',     img: '/lander/2.png',  caption: "A rough concept. AI's first input." },
-    { num: '03', label: 'THE ANALYSIS',   img: '/lander/3.png',  caption: 'AI maps every element of the site.' },
-    { num: '04', label: 'THE VISION',     img: '/lander/15.png', caption: 'Full photorealistic render. AI-generated.' },
-    { num: '05', label: 'THE BUILD',      img: '/lander/9.png',  caption: 'Construction begins. Every layer predicted.' },
-    { num: '06', label: 'THE EXPERIENCE', img: '/lander/1.png',  caption: 'The crowd. The energy. AI imagined this.' },
+const TRADITIONAL_STEPS = [
+    { num: '01', label: 'The Sketch',          img: '/lander/2.png',  caption: 'A hand-drawn concept. The starting point for every design.' },
+    { num: '02', label: 'Massing Analysis',    img: '/lander/3.png',  caption: 'Weeks of analysis to understand the site and program.' },
+    { num: '03', label: 'Visualization',       img: '/lander/15.png', caption: 'Final renders. Months of work. One direction committed.' },
 ]
 
 // 11 images — clean 4-col grid: rows 1-2 share the big feature, row 3 has the wide+tall combo, row 4 is even
@@ -406,53 +403,48 @@ export function LandingPageTest() {
                 </div>
             </section>
 
-            {/* ── THE JOURNEY ────────────────────────────────────────── */}
+            {/* ── THE PROCESS ────────────────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
+
+                {/* Part 1 — Traditional workflow header */}
                 <div className="container mx-auto px-5 sm:px-6 mb-10 md:mb-14">
                     <FadeIn>
-                        <MicroLabel>The Process</MicroLabel>
+                        <MicroLabel>The Traditional Process</MicroLabel>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
-                                FROM BLANK LAND<br className="sm:hidden" /> TO FINISHED VISION
+                                HOW IT USED TO WORK
                             </h2>
                             <LimeBar />
                         </div>
-                        <p className="text-gray-500 text-sm mt-3 max-w-md">AI touched every step. This is what it looked like.</p>
+                        <p className="text-gray-500 text-sm mt-3 max-w-md">Three stages. Linear. Slow. Expensive to change course.</p>
                     </FadeIn>
                 </div>
 
-                {/* ── Desktop: 3+3 two-row grid ── */}
-                <div className="hidden md:block container mx-auto px-5 sm:px-6">
-                    {/* Row 1 — steps 01 02 03 */}
-                    <div className="grid grid-cols-[1fr_52px_1fr_52px_1fr] items-center">
-                        {[0, 1, 2].map((idx, pos) => (
+                {/* Part 1 — 3-step row with arrows */}
+                <div className="container mx-auto px-5 sm:px-6">
+                    {/* Desktop */}
+                    <div className="hidden md:grid grid-cols-[1fr_52px_1fr_52px_1fr] items-start">
+                        {TRADITIONAL_STEPS.map((step, pos) => (
                             <>
-                                <FadeIn key={idx} delay={pos * 0.1}>
-                                    <motion.div whileHover={{ y: -5 }} className="group cursor-default">
-                                        {/* Step badge */}
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-lime/60 border border-lime/20 px-2 py-0.5 rounded">
-                                                {JOURNEY_STEPS[idx].num}
-                                            </span>
-                                        </div>
-                                        {/* Image */}
-                                        <div className="relative h-44 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-lime/40 transition-all duration-300">
-                                            <img src={JOURNEY_STEPS[idx].img} alt={JOURNEY_STEPS[idx].label}
+                                <FadeIn key={step.num} delay={pos * 0.1}>
+                                    <motion.div whileHover={{ y: -4 }} className="group cursor-default">
+                                        <div className="relative h-52 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-white/20 transition-all duration-300">
+                                            <img src={step.img} alt={step.label}
                                                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                                            <div className="absolute bottom-3 left-3">
+                                                <p className="text-[0.55rem] font-heading font-black uppercase tracking-[0.2em] text-white/50">Step {step.num}</p>
+                                                <p className="text-xs font-heading font-black uppercase tracking-wide text-white">{step.label}</p>
+                                            </div>
                                         </div>
-                                        {/* Label below image */}
-                                        <div className="mt-3">
-                                            <p className="text-[0.72rem] font-heading font-black uppercase tracking-[0.18em] text-lime leading-tight">{JOURNEY_STEPS[idx].label}</p>
-                                            <p className="text-[0.68rem] text-gray-600 mt-1 leading-snug">{JOURNEY_STEPS[idx].caption}</p>
-                                        </div>
+                                        <p className="text-[0.68rem] text-gray-600 mt-2.5 leading-snug px-0.5">{step.caption}</p>
                                     </motion.div>
                                 </FadeIn>
                                 {pos < 2 && (
-                                    <div key={`arrow-${pos}`} className="flex items-center justify-center mt-[38px]">
+                                    <div key={`arr-${pos}`} className="flex items-center justify-center pt-[84px]">
                                         <svg viewBox="0 0 52 20" fill="none" className="w-full h-5">
-                                            <line x1="0" y1="10" x2="36" y2="10" stroke="rgb(208 255 113 / 0.35)" strokeWidth="1.5" />
-                                            <path d="M34 4l8 6-8 6" stroke="rgb(208 255 113 / 0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <line x1="0" y1="10" x2="36" y2="10" stroke="rgb(255 255 255 / 0.18)" strokeWidth="1.5" />
+                                            <path d="M34 4l8 6-8 6" stroke="rgb(255 255 255 / 0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
                                 )}
@@ -460,75 +452,97 @@ export function LandingPageTest() {
                         ))}
                     </div>
 
-                    {/* Row connector: line going down on the right, then across on the left */}
-                    <div className="flex items-stretch my-4">
-                        <div className="flex-1 border-b border-white/[0.04]" />
-                        <div className="w-px bg-lime/20 mx-0 self-stretch" />
-                        <div className="shrink-0 flex items-center px-3">
-                            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-lime/40">
-                                <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    {/* Row 2 — steps 04 05 06 */}
-                    <div className="grid grid-cols-[1fr_52px_1fr_52px_1fr] items-center">
-                        {[3, 4, 5].map((idx, pos) => (
-                            <>
-                                <FadeIn key={idx} delay={0.35 + pos * 0.1}>
-                                    <motion.div whileHover={{ y: -5 }} className="group cursor-default">
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-lime/60 border border-lime/20 px-2 py-0.5 rounded">
-                                                {JOURNEY_STEPS[idx].num}
-                                            </span>
-                                        </div>
-                                        <div className="relative h-44 rounded-2xl overflow-hidden border border-white/[0.06] group-hover:border-lime/40 transition-all duration-300">
-                                            <img src={JOURNEY_STEPS[idx].img} alt={JOURNEY_STEPS[idx].label}
-                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                                        </div>
-                                        <div className="mt-3">
-                                            <p className="text-[0.72rem] font-heading font-black uppercase tracking-[0.18em] text-lime leading-tight">{JOURNEY_STEPS[idx].label}</p>
-                                            <p className="text-[0.68rem] text-gray-600 mt-1 leading-snug">{JOURNEY_STEPS[idx].caption}</p>
-                                        </div>
-                                    </motion.div>
-                                </FadeIn>
-                                {pos < 2 && (
-                                    <div key={`arrow2-${pos}`} className="flex items-center justify-center mt-[38px]">
-                                        <svg viewBox="0 0 52 20" fill="none" className="w-full h-5">
-                                            <line x1="0" y1="10" x2="36" y2="10" stroke="rgb(208 255 113 / 0.35)" strokeWidth="1.5" />
-                                            <path d="M34 4l8 6-8 6" stroke="rgb(208 255 113 / 0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
+                    {/* Mobile — vertical */}
+                    <div className="md:hidden space-y-4">
+                        {TRADITIONAL_STEPS.map((step, i) => (
+                            <div key={step.num} className="flex gap-4 items-start">
+                                <div className="flex flex-col items-center shrink-0 pt-1">
+                                    <div className="w-8 h-8 rounded-full border border-white/20 bg-white/5 flex items-center justify-center">
+                                        <span className="text-[0.6rem] font-heading font-black text-white/60">{step.num}</span>
                                     </div>
-                                )}
-                            </>
+                                    {i < TRADITIONAL_STEPS.length - 1 && (
+                                        <div className="w-px flex-1 bg-gradient-to-b from-white/20 to-white/5 my-1.5 min-h-[24px]" />
+                                    )}
+                                </div>
+                                <div className="flex-1 pb-2">
+                                    <div className="relative h-40 rounded-xl overflow-hidden border border-white/[0.06] mb-2">
+                                        <img src={step.img} alt={step.label} className="absolute inset-0 w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    </div>
+                                    <p className="text-[0.7rem] font-heading font-black uppercase tracking-wider text-white/80">{step.label}</p>
+                                    <p className="text-[0.68rem] text-gray-500 mt-1 leading-snug">{step.caption}</p>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
 
-                {/* ── Mobile: vertical timeline ── */}
-                <div className="md:hidden px-5 space-y-0">
-                    {JOURNEY_STEPS.map((step, i) => (
-                        <div key={i} className="flex gap-4">
-                            <div className="flex flex-col items-center shrink-0 pt-1">
-                                <div className="w-8 h-8 rounded-full border border-lime/40 bg-lime/5 flex items-center justify-center shrink-0">
-                                    <span className="text-[0.6rem] font-heading font-black text-lime">{step.num}</span>
-                                </div>
-                                {i < JOURNEY_STEPS.length - 1 && (
-                                    <div className="w-px flex-1 bg-gradient-to-b from-lime/30 to-lime/5 my-1.5 min-h-[24px]" />
-                                )}
-                            </div>
-                            <div className="flex-1 pb-5">
-                                <div className="relative h-40 rounded-xl overflow-hidden border border-white/[0.06] mb-2.5">
-                                    <img src={step.img} alt={step.label} className="absolute inset-0 w-full h-full object-cover" />
+                {/* Part 2 — HOW IS AI REDEFINING THIS? */}
+                <FadeIn>
+                    <div className="relative mt-20 mb-14 overflow-hidden">
+                        <div className="absolute inset-0">
+                            <img src="/lander/pres-8.png" alt="AI Process Diagram" className="w-full h-full object-cover opacity-[0.1]" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-[#080808]/60 to-[#080808]" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-[#080808] via-transparent to-[#080808]" />
+                        </div>
+                        <div className="relative container mx-auto px-5 sm:px-6 py-16 md:py-20 text-center">
+                            <MicroLabel>Skidmore Owings &amp; Merrill × Zkandar AI</MicroLabel>
+                            <h2 className="font-heading font-black uppercase text-[clamp(2rem,6vw,4.5rem)] leading-[0.9] mt-5 mb-5">
+                                HOW IS AI<br />
+                                <span className="text-lime">REDEFINING THIS?</span>
+                            </h2>
+                            <p className="text-gray-500 text-sm max-w-sm mx-auto leading-relaxed">
+                                We ran this process with one of the world's top architecture firms. The difference came down to one thing: how you prompt.
+                            </p>
+                        </div>
+                    </div>
+                </FadeIn>
+
+                {/* Part 3 — Mediocre vs Advanced prompting */}
+                <div className="container mx-auto px-5 sm:px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+
+                        {/* Mediocre Prompting */}
+                        <FadeIn delay={0}>
+                            <div className="group rounded-2xl overflow-hidden border border-white/[0.06] hover:border-red-500/25 transition-all duration-300 bg-white/[0.02]">
+                                <div className="relative aspect-[16/10] overflow-hidden">
+                                    <img src="/lander/pres-19.png" alt="Mediocre Prompting result"
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                 </div>
-                                <p className="text-[0.7rem] font-heading font-black uppercase tracking-wider text-lime">{step.label}</p>
-                                <p className="text-[0.68rem] text-gray-500 mt-1 leading-snug">{step.caption}</p>
+                                <div className="p-5 border-t border-white/[0.05]">
+                                    <div className="flex items-center gap-2 mb-2.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/70" />
+                                        <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-red-400/80">Mediocre Prompting</span>
+                                    </div>
+                                    <p className="text-white/90 font-semibold text-sm leading-snug mb-1.5">Generic output. No context, no direction.</p>
+                                    <p className="text-gray-600 text-xs leading-relaxed">What you get when you describe the project without understanding how to steer AI. Technically correct. Architecturally forgettable.</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        </FadeIn>
+
+                        {/* Advanced Prompting */}
+                        <FadeIn delay={0.12}>
+                            <div className="group rounded-2xl overflow-hidden border border-white/[0.06] hover:border-lime/25 transition-all duration-300 bg-white/[0.02]">
+                                <div className="relative aspect-[16/10] overflow-hidden">
+                                    <img src="/lander/pres-20.png" alt="Advanced Prompting result"
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                </div>
+                                <div className="p-5 border-t border-white/[0.05]">
+                                    <div className="flex items-center gap-2 mb-2.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-lime/70" />
+                                        <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-lime/80">Advanced Prompting</span>
+                                    </div>
+                                    <p className="text-white/90 font-semibold text-sm leading-snug mb-1.5">Cinematic. Atmospheric. Client-ready.</p>
+                                    <p className="text-gray-600 text-xs leading-relaxed">Same project. Same AI. Completely different result. This is what happens when you know the framework — and it's exactly what Zkandar AI teaches.</p>
+                                </div>
+                            </div>
+                        </FadeIn>
+
+                    </div>
                 </div>
+
             </section>
 
             {/* ── GALLERY ────────────────────────────────────────────── */}
