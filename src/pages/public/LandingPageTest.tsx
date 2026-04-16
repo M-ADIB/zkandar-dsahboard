@@ -23,17 +23,17 @@ const TRADITIONAL_STEPS = [
 
 // 11 images — clean 4-col grid: rows 1-2 share the big feature, row 3 has the wide+tall combo, row 4 is even
 const GALLERY_ITEMS = [
-    { label: 'Night Entrance', img: '/lander/24.png', cls: 'col-span-2 row-span-2' }, // wide cinematic entrance — hero piece
-    { label: 'Arch Detail',    img: '/lander/26.png', cls: '' },                       // stone arch close-up, S.O.M. sign
-    { label: 'Reflecting Pool',img: '/lander/27.png', cls: '' },                       // pool reflection at night
-    { label: 'Interior Hall',  img: '/lander/30.png', cls: 'row-span-2' },             // grand colosseum interior with torches
-    { label: 'Section Cut',    img: '/lander/13.png', cls: '' },                       // facade cutaway
-    { label: 'Exterior',       img: '/lander/15.png', cls: 'col-span-2' },             // full dusk exterior wide shot
-    { label: 'Blueprint',      img: '/lander/29.png', cls: '' },                       // technical blueprint with dimensions
-    { label: 'Sketch',         img: '/lander/2.png',  cls: '' },                       // original pen & ink concept sketch
-    { label: 'Crowd',          img: '/lander/1.png',  cls: '' },                       // arena gladiator scene
-    { label: 'Landscape',      img: '/lander/28.png', cls: '' },                       // AI-generated plant/landscape palette
-    { label: 'Armor Detail',   img: '/lander/31.png', cls: '' },                       // gladiator armor close-up
+    { label: 'Night Entrance',  img: '/lander/24.png', cls: 'col-span-2 row-span-2' }, // cinematic entrance close-up
+    { label: 'Arch Detail',     img: '/lander/26.png', cls: '' },                       // stone arch with S.O.M. sign
+    { label: 'Reflecting Pool', img: '/lander/27.png', cls: '' },                       // pool reflection at night
+    { label: 'Interior Hall',   img: '/lander/30.png', cls: 'row-span-2' },             // grand colosseum interior with torches
+    { label: 'Section Cut',     img: '/lander/13.png', cls: '' },                       // facade cutaway
+    { label: 'Wide Entrance',   img: '/lander/4.png',  cls: 'col-span-2' },             // definitive S.O.M. entrance — full width, cypress + reflecting pool
+    { label: 'Concept Sketch',  img: '/lander/33.png', cls: '' },                       // white-line concept sketch on blue
+    { label: 'Materials',       img: '/lander/32.png', cls: '' },                       // S.O.M. editorial detail collage
+    { label: 'Construction',    img: '/lander/9.png',  cls: '' },                       // aerial night construction tilt-shift
+    { label: 'Arena',           img: '/lander/1.png',  cls: '' },                       // gladiator crowd scene
+    { label: 'Armor Detail',    img: '/lander/31.png', cls: '' },                       // gladiator armor close-up
 ]
 
 const CAPABILITIES = [
@@ -396,7 +396,7 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 bg-black border-t border-white/[0.04]">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>What we found — 73 architects &amp; designers surveyed</MicroLabel>
+                        <MicroLabel>What we found — 500 architects &amp; designers surveyed</MicroLabel>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">THE DATA DOESN'T LIE</h2>
                             <LimeBar />
@@ -405,9 +405,14 @@ export function LandingPageTest() {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                         {PROBLEM_STATS.map((stat, i) => (
                             <FadeIn key={i} delay={i * 0.1}>
-                                <div className="relative bg-[#0d0d0d] border border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-8 overflow-hidden h-full">
-                                    {/* Visual bar */}
-                                    <div className="flex items-end gap-0.5 mb-4 h-8">
+                                <div className="relative bg-[#0d0d0d] border border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-8 overflow-hidden h-full flex flex-col">
+                                    <div className="flex items-start justify-between gap-2 mb-2">
+                                        <div className="text-[clamp(1.8rem,4.5vw,3rem)] font-heading font-black text-red-400 leading-none">{stat.value}</div>
+                                        <stat.Icon className="w-4 h-4 text-red-400/50 mt-1 shrink-0" />
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed mb-4 flex-1">{stat.label}</p>
+                                    {/* Visual bar — below the text */}
+                                    <div className="flex items-end gap-0.5 h-8">
                                         {Array.from({ length: 8 }).map((_, j) => (
                                             <motion.div key={j}
                                                 initial={{ height: 0 }}
@@ -418,11 +423,6 @@ export function LandingPageTest() {
                                             />
                                         ))}
                                     </div>
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="text-[clamp(1.8rem,4.5vw,3rem)] font-heading font-black text-red-400 leading-none mb-2">{stat.value}</div>
-                                        <stat.Icon className="w-4 h-4 text-red-400/50 mt-1 shrink-0" />
-                                    </div>
-                                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{stat.label}</p>
                                 </div>
                             </FadeIn>
                         ))}
