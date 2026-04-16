@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
 import {
-    Eye, ArrowRight, Brain, Layers, Sparkles, Users, Building2,
+    Eye, ArrowRight, Users, Building2,
     X, ZoomIn, ZoomOut, TrendingDown, BarChart2, AlertCircle, ShieldOff,
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
@@ -71,29 +71,27 @@ const STUDIOS = [
     'Eleven Architecture', 'Archway', 'Blueprint Studio', 'Render+',
 ]
 
-const STEPS = [
-    {
-        num: '01', Icon: Brain,
-        title: 'Learn the Tools',
-        img: '/lander/23.png',
-        copy: 'Master AI tools purpose-built for spatial design — Midjourney, ControlNet, Krea.ai — with structured workflows that produce consistent results every time.',
-    },
-    {
-        num: '02', Icon: Layers,
-        title: 'Build a Workflow',
-        img: '/lander/3.png',
-        copy: 'Install a repeatable system: from client brief to moodboard to final render, every step guided by proven prompting frameworks and templates.',
-    },
-    {
-        num: '03', Icon: Sparkles,
-        title: 'Deliver Client-Ready Work',
-        img: '/lander/15.png',
-        copy: "Output professional-grade visuals that match your studio's standards — not random AI experiments. On time, every time.",
-    },
-]
 
 const SPRINT_FEATURES     = ['3-Day Intensive', '2 Hours per day', 'Concept creation & ideation', 'Prompting frameworks included']
 const MASTERCLASS_FEATURES = ['End-to-end curriculum', 'Custom dashboard & analytics', 'Team readiness certification', 'Advanced render workflows']
+
+const WORKSHOPS = [
+    { num: 1,  id: '1113394139', label: 'Sprint Workshop 1' },
+    { num: 2,  id: '1113394104', label: 'Sprint Workshop 2' },
+    { num: 3,  id: '1113394254', label: 'Sprint Workshop 3' },
+    { num: 4,  id: '1113394271', label: 'Sprint Workshop 4' },
+    { num: 5,  id: '1113394244', label: 'Sprint Workshop 5' },
+    { num: 6,  id: '1113394028', label: 'Sprint Workshop 6' },
+    { num: 7,  id: '1141677962', label: 'Sprint Workshop 7' },
+    { num: 8,  id: '1141677978', label: 'Sprint Workshop 8' },
+    { num: 9,  id: '1183473523', label: 'Sprint Workshop 9' },
+]
+
+const MASTERCLASS_VIDEOS = [
+    { num: 1, id: '1113394028', label: 'Masterclass — Cohort 1' },
+    { num: 2, id: '1113394271', label: 'Masterclass — Cohort 2' },
+    { num: 3, id: '1113394139', label: 'Masterclass — Cohort 3' },
+]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -239,6 +237,8 @@ export function LandingPageTest() {
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
     const heroBgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+    const [videoTab, setVideoTab] = useState<'sprint' | 'masterclass'>('sprint')
+    const [activeVideo, setActiveVideo] = useState(0)
 
     return (
         <div className="min-h-screen bg-black text-white font-body overflow-x-hidden relative selection:bg-lime/30">
@@ -262,6 +262,17 @@ export function LandingPageTest() {
                 )}
             </AnimatePresence>
 
+            {/* ── NAV ────────────────────────────────────────────────── */}
+            <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.05] bg-black/75 backdrop-blur-md px-5 sm:px-10 py-3 flex items-center justify-between">
+                <a href="/test-landingpage" className="flex items-center">
+                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                </a>
+                <div className="flex items-center gap-3 sm:gap-5">
+                    <span className="hidden sm:block text-[0.6rem] uppercase tracking-[0.18em] text-lime/60 font-bold">#1 AI Education · Dubai</span>
+                    <a href="/submit-form" className="px-4 py-2 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-lime transition-colors duration-200">Apply Now</a>
+                </div>
+            </nav>
+
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">
                 <motion.div style={{ y: heroBgY }} className="absolute inset-0 z-0">
@@ -270,7 +281,7 @@ export function LandingPageTest() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
                 </motion.div>
 
-                <div className="relative z-10 container mx-auto px-5 sm:px-6 py-24 sm:py-32">
+                <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-28 pb-24 sm:pt-36 sm:pb-32">
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
                         <div className="max-w-3xl">
                             <motion.div initial={{ width: 0 }} animate={{ width: '3rem' }}
@@ -732,42 +743,129 @@ export function LandingPageTest() {
                 </div>
             </section>
 
-            {/* ── THE FRAMEWORK ──────────────────────────────────────── */}
-            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
+            {/* ── TESTIMONIAL VIDEOS ─────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#050505]">
                 <div className="container mx-auto px-5 sm:px-6">
-                    <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>The Framework</MicroLabel>
-                        <div className="flex flex-wrap items-center gap-4 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">FROM CHAOS TO SYSTEM</h2>
+
+                    {/* Header */}
+                    <FadeIn className="mb-10 md:mb-14">
+                        <MicroLabel>Real Results. Real Participants.</MicroLabel>
+                        <div className="flex flex-wrap items-end gap-4 mt-4">
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                                10 WORKSHOPS.<br className="sm:hidden" /> 500+ PARTICIPANTS.
+                            </h2>
                             <LimeBar />
                         </div>
+                        <p className="text-gray-500 text-sm mt-3 max-w-lg">
+                            The most attended AI design education program in the UAE — for architects and interior designers.
+                        </p>
                     </FadeIn>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
-                        {STEPS.map((step, i) => (
-                            <FadeIn key={i} delay={i * 0.15}>
-                                <motion.div whileHover={{ y: -4 }}
-                                    className="relative bg-[#0d0d0d] border border-white/[0.06] hover:border-lime/30 rounded-2xl sm:rounded-3xl overflow-hidden group h-full transition-colors duration-300 flex flex-col">
-                                    {/* Visual image top */}
-                                    <div className="relative h-44 overflow-hidden shrink-0">
-                                        <img src={step.img} alt={step.title}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/30 to-transparent" />
-                                        <div className="absolute top-4 right-4">
-                                            <span className="text-[4.5rem] font-heading font-black text-white/[0.06] leading-none select-none">{step.num}</span>
-                                        </div>
+
+                    {/* Stats strip */}
+                    <FadeIn delay={0.05} className="mb-10 md:mb-12">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {[
+                                { val: '10',   label: 'Sprint Workshops run' },
+                                { val: '500+', label: 'Participants trained' },
+                                { val: '#1',   label: 'AI education in Dubai' },
+                                { val: 'UAE',  label: 'Architects & designers' },
+                            ].map((s, i) => (
+                                <div key={i} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl px-5 py-4 text-center">
+                                    <div className="text-xl sm:text-2xl font-heading font-black text-lime">{s.val}</div>
+                                    <div className="text-[0.6rem] sm:text-[0.6875rem] uppercase tracking-[0.15em] text-gray-600 mt-1">{s.label}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </FadeIn>
+
+                    {/* Tab switcher */}
+                    <FadeIn delay={0.1} className="mb-6">
+                        <div className="inline-flex items-center gap-1 bg-white/[0.04] border border-white/[0.06] rounded-full p-1">
+                            <button
+                                onClick={() => { setVideoTab('sprint'); setActiveVideo(0) }}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 ${videoTab === 'sprint' ? 'bg-lime text-black' : 'text-gray-400 hover:text-white'}`}
+                            >Sprint Workshops</button>
+                            <button
+                                onClick={() => { setVideoTab('masterclass'); setActiveVideo(0) }}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 ${videoTab === 'masterclass' ? 'bg-lime text-black' : 'text-gray-400 hover:text-white'}`}
+                            >Masterclasses</button>
+                        </div>
+                    </FadeIn>
+
+                    {/* Featured video player */}
+                    <FadeIn delay={0.15}>
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-black aspect-video mb-4">
+                            {videoTab === 'sprint' ? (
+                                <iframe
+                                    key={`sprint-${activeVideo}`}
+                                    src={`https://player.vimeo.com/video/${WORKSHOPS[activeVideo].id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                    className="w-full h-full"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            ) : (
+                                <iframe
+                                    key={`master-${activeVideo}`}
+                                    src={`https://player.vimeo.com/video/${MASTERCLASS_VIDEOS[activeVideo].id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                    className="w-full h-full"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            )}
+                        </div>
+                    </FadeIn>
+
+                    {/* Workshop selector row */}
+                    {videoTab === 'sprint' ? (
+                        <FadeIn delay={0.2}>
+                            <div className="flex flex-wrap gap-2 mb-6">
+                                {WORKSHOPS.map((w, i) => (
+                                    <button
+                                        key={w.num}
+                                        onClick={() => setActiveVideo(i)}
+                                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all duration-200 ${i === activeVideo ? 'bg-lime/10 border-lime/40 text-lime' : 'border-white/[0.08] text-gray-500 hover:border-white/20 hover:text-gray-300'}`}
+                                    >
+                                        {w.num < 10 ? `0${w.num}` : w.num}
+                                    </button>
+                                ))}
+                                {/* Sprint Workshop 10 — Pro Workshop */}
+                                <div className="px-3 py-1.5 rounded-xl text-xs font-bold border border-lime/20 text-lime/50 bg-lime/[0.03] flex items-center gap-1.5 cursor-default">
+                                    <span>10</span>
+                                    <span className="text-[0.55rem] uppercase tracking-wider bg-lime/20 text-lime rounded px-1 py-0.5">Pro</span>
+                                </div>
+                            </div>
+
+                            {/* Sprint Workshop 10 Pro teaser */}
+                            <div className="bg-gradient-to-r from-lime/[0.06] to-transparent border border-lime/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <span className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-lime/70">Sprint Workshop 10 — Pro Edition</span>
+                                        <span className="text-[0.55rem] uppercase tracking-wider bg-lime/20 text-lime rounded px-1.5 py-0.5 font-bold">Limited 20 Spots</span>
                                     </div>
-                                    {/* Text */}
-                                    <div className="p-5 sm:p-6 flex flex-col flex-1">
-                                        <div className="w-9 h-9 rounded-xl bg-lime/10 flex items-center justify-center text-lime mb-4 shrink-0">
-                                            <step.Icon className="w-4.5 h-4.5" />
-                                        </div>
-                                        <h3 className="font-heading font-black uppercase text-sm sm:text-base mb-2">{step.title}</h3>
-                                        <p className="text-xs text-gray-500 leading-relaxed">{step.copy}</p>
-                                    </div>
-                                </motion.div>
-                            </FadeIn>
-                        ))}
-                    </div>
+                                    <p className="text-white font-semibold text-sm mb-1">A Pro Workshop. Only for serious practitioners.</p>
+                                    <p className="text-gray-500 text-xs leading-relaxed">Deeper curriculum, smaller cohort, higher-level output. Happens only a few times a year. If you're on this page, be part of it.</p>
+                                </div>
+                                <a href="/submit-form" className="shrink-0 px-5 py-2.5 rounded-full bg-lime text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition">
+                                    Express Interest
+                                </a>
+                            </div>
+                        </FadeIn>
+                    ) : (
+                        <FadeIn delay={0.2}>
+                            <div className="flex flex-wrap gap-2">
+                                {MASTERCLASS_VIDEOS.map((w, i) => (
+                                    <button
+                                        key={w.num}
+                                        onClick={() => setActiveVideo(i)}
+                                        className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all duration-200 ${i === activeVideo ? 'bg-lime/10 border-lime/40 text-lime' : 'border-white/[0.08] text-gray-500 hover:border-white/20 hover:text-gray-300'}`}
+                                    >
+                                        {w.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </FadeIn>
+                    )}
+
                 </div>
             </section>
 
@@ -777,6 +875,10 @@ export function LandingPageTest() {
                     <FadeIn className="mb-12 md:mb-16 text-center">
                         <MicroLabel center>Choose Your Path</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4">WHERE DO YOU START?</h2>
+                        <div className="mt-5 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-lime/10 border border-lime/25">
+                            <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                            <span className="text-xs font-bold text-lime uppercase tracking-wider">Next Sprint Workshop: May 13–15, 2026</span>
+                        </div>
                     </FadeIn>
 
                     <div id="masterclass" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 max-w-5xl mx-auto">

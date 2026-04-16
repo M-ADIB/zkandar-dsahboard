@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Loader2, ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import logoSrc from '../../assets/logo.png'
 
 type Interest = 'masterclass' | 'sprint' | 'other' | null
 type Commitment = 'ready' | 'curious' | 'exploring' | null
@@ -163,14 +164,11 @@ export function SubmitFormPage() {
     return (
         <div className="min-h-screen bg-black text-white">
             {/* Nav strip */}
-            <div className="border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-between">
+            <div className="border-b border-white/[0.06] px-5 sm:px-10 py-3.5 flex items-center justify-between">
                 <a href="/test-landingpage" className="flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-lg bg-lime flex items-center justify-center">
-                        <span className="text-black font-black text-xs">Z</span>
-                    </div>
-                    <span className="font-semibold tracking-tight text-white">Zkandar AI</span>
+                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
                 </a>
-                <span className="text-xs text-gray-500 hidden sm:block">Application Form</span>
+                <span className="text-[0.6875rem] text-gray-500 hidden sm:block uppercase tracking-[0.15em]">Application Form</span>
             </div>
 
             {/* Page content */}
