@@ -247,6 +247,7 @@ export function LandingPageTest() {
             <style>{`
                 @keyframes marquee { 0% { transform:translateX(0) } 100% { transform:translateX(-50%) } }
                 .marquee-track { animation: marquee 30s linear infinite; }
+                .announce-track { animation: marquee 22s linear infinite; }
                 .no-scrollbar::-webkit-scrollbar { display:none; }
                 .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
             `}</style>
@@ -262,13 +263,29 @@ export function LandingPageTest() {
                 )}
             </AnimatePresence>
 
+            {/* ── ANNOUNCEMENT BAR ───────────────────────────────────── */}
+            <div className="fixed top-0 inset-x-0 z-[51] bg-lime overflow-hidden h-8 flex items-center">
+                <div className="flex announce-track whitespace-nowrap">
+                    {[...Array(6)].map((_, i) => (
+                        <span key={i} className="inline-flex items-center gap-5 px-4 text-[0.6rem] font-black uppercase tracking-[0.2em] text-black">
+                            <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
+                            Sprint Workshop — May 13–15
+                            <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
+                            Limited Spots Remaining
+                            <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
+                            Secure Your Place Now
+                        </span>
+                    ))}
+                </div>
+            </div>
+
             {/* ── NAV ────────────────────────────────────────────────── */}
-            <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.05] bg-black/75 backdrop-blur-md px-5 sm:px-10 py-3 flex items-center justify-between">
+            <nav className="fixed top-8 inset-x-0 z-50 border-b border-white/[0.05] bg-black/80 backdrop-blur-md px-5 sm:px-10 py-3 flex items-center justify-between">
                 <a href="/test-landingpage" className="flex items-center">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
                 </a>
                 <div className="flex items-center gap-3 sm:gap-5">
-                    <span className="hidden sm:block text-[0.6rem] uppercase tracking-[0.18em] text-lime/60 font-bold">#1 AI Education · Dubai</span>
+                    <span className="hidden sm:block text-[0.6rem] uppercase tracking-[0.18em] text-gray-500 font-bold">10 Workshops · 500+ Participants</span>
                     <a href="/submit-form" className="px-4 py-2 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-lime transition-colors duration-200">Apply Now</a>
                 </div>
             </nav>
@@ -281,7 +298,7 @@ export function LandingPageTest() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
                 </motion.div>
 
-                <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-28 pb-24 sm:pt-36 sm:pb-32">
+                <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
                         <div className="max-w-3xl">
                             <motion.div initial={{ width: 0 }} animate={{ width: '3rem' }}
@@ -715,22 +732,108 @@ export function LandingPageTest() {
             {/* ── SOCIAL PROOF ───────────────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
-                    <FadeIn className="mb-10 md:mb-12">
-                        <div className="flex flex-wrap items-center gap-3">
+
+                    <FadeIn className="mb-10 md:mb-14">
+                        <MicroLabel>Who We Work With</MicroLabel>
+                        <div className="flex flex-wrap items-center gap-3 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2.5rem)] leading-[0.95]">TRUSTED BY 15+ STUDIOS</h2>
                             <span className="px-3 py-1 rounded-full bg-lime/10 border border-lime/20 text-lime text-[0.6875rem] uppercase tracking-[0.15em] font-bold shrink-0">Growing</span>
                         </div>
+                        <p className="text-gray-500 text-sm mt-3 max-w-lg">Two ways in. One for your studio, one for you.</p>
                     </FadeIn>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 mb-10">
-                        {STUDIOS.map((s, i) => (
-                            <FadeIn key={i} delay={i * 0.025}>
-                                <motion.div whileHover={{ scale: 1.02, y: -2 }}
-                                    className="px-3 sm:px-4 py-2.5 sm:py-3 bg-[#0d0d0d] border border-white/[0.05] hover:border-lime/20 rounded-xl sm:rounded-2xl text-center transition-colors duration-300">
-                                    <span className="text-xs text-gray-400">{s}</span>
-                                </motion.div>
-                            </FadeIn>
-                        ))}
+
+                    {/* Two-track layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-12">
+
+                        {/* Masterclass — featured, sell this the most */}
+                        <FadeIn direction="left">
+                            <div className="relative rounded-2xl sm:rounded-3xl border border-lime/25 bg-gradient-to-br from-lime/[0.05] to-transparent p-6 sm:p-8 h-full flex flex-col"
+                                style={{ boxShadow: '0 0 50px -15px rgba(208,255,113,0.1)' }}>
+                                <div className="flex items-start justify-between gap-4 mb-5">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime/80">AI Masterclass</span>
+                                            <span className="text-[0.55rem] font-bold uppercase tracking-wider bg-lime/20 text-lime px-2 py-0.5 rounded">For Studios</span>
+                                        </div>
+                                        <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight">Transform Your<br />Entire Firm.</h3>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-lime/20 flex items-center justify-center shrink-0 mt-1">
+                                        <Building2 className="w-5 h-5 text-lime" />
+                                    </div>
+                                </div>
+                                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">
+                                    A comprehensive AI system rollout built for your studio. Custom curriculum, team-wide training, and a certified AI workflow your firm owns permanently.
+                                </p>
+                                <div className="space-y-2 mb-6">
+                                    {['Team of 3–12 designers', 'Custom AI workflow built for your studio', 'Live sessions + async work', 'Readiness certification for every team member'].map(f => (
+                                        <div key={f} className="flex items-center gap-2.5 text-xs text-gray-300">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-lime shrink-0" />{f}
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Studios grid */}
+                                <div className="border-t border-white/[0.06] pt-5 mb-5">
+                                    <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gray-600 mb-3">Studios already in</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {STUDIOS.slice(0, 8).map((s, i) => (
+                                            <span key={i} className="text-[0.6rem] px-2.5 py-1 bg-white/[0.04] border border-white/[0.06] rounded-lg text-gray-500">{s}</span>
+                                        ))}
+                                        <span className="text-[0.6rem] px-2.5 py-1 bg-lime/[0.06] border border-lime/15 rounded-lg text-lime/60">+{STUDIOS.length - 8} more</span>
+                                    </div>
+                                </div>
+                                <a href="/submit-form"
+                                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-lime text-black font-bold uppercase tracking-wider text-xs hover:opacity-90 transition">
+                                    Book Studio Discovery <ArrowRight className="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+                        </FadeIn>
+
+                        {/* Sprint Workshops — secondary */}
+                        <FadeIn direction="right">
+                            <div className="rounded-2xl sm:rounded-3xl border border-white/[0.06] bg-[#0d0d0d] p-6 sm:p-8 h-full flex flex-col">
+                                <div className="flex items-start justify-between gap-4 mb-5">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-gray-400">Sprint Workshop</span>
+                                            <span className="text-[0.55rem] font-bold uppercase tracking-wider bg-white/10 text-gray-400 px-2 py-0.5 rounded">For Individuals</span>
+                                        </div>
+                                        <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight">Go From Zero<br />to AI-Fluent.</h3>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-1">
+                                        <Users className="w-5 h-5 text-white" />
+                                    </div>
+                                </div>
+                                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">
+                                    3 days. Hands-on. Output-focused. You leave with real AI-generated deliverables and the skills to keep going. Open to architects and designers worldwide.
+                                </p>
+                                <div className="space-y-2 mb-6">
+                                    {SPRINT_FEATURES.map(f => (
+                                        <div key={f} className="flex items-center gap-2.5 text-xs text-gray-300">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-white/40 shrink-0" />{f}
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Stats */}
+                                <div className="border-t border-white/[0.06] pt-5 mb-5">
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {[{ val: '10', label: 'Workshops' }, { val: '500+', label: 'Participants' }, { val: 'Global', label: 'Access' }].map(s => (
+                                            <div key={s.label} className="text-center">
+                                                <div className="text-lg font-heading font-black text-white">{s.val}</div>
+                                                <div className="text-[0.6rem] uppercase tracking-wider text-gray-600 mt-0.5">{s.label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <a href="/submit-form"
+                                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-white text-black font-bold uppercase tracking-wider text-xs hover:bg-lime transition-colors">
+                                    Apply for Sprint <ArrowRight className="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+                        </FadeIn>
+
                     </div>
+
+                    {/* Marquee strip */}
                     <div className="overflow-hidden border-t border-b border-white/[0.04] py-3.5">
                         <div className="flex gap-8 marquee-track whitespace-nowrap">
                             {[...STUDIOS, ...STUDIOS].map((s, i) => (
@@ -740,6 +843,7 @@ export function LandingPageTest() {
                             ))}
                         </div>
                     </div>
+
                 </div>
             </section>
 
@@ -757,7 +861,7 @@ export function LandingPageTest() {
                             <LimeBar />
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
-                            The most attended AI design education program in the UAE — for architects and interior designers.
+                            The most hands-on AI design education for architects and interior designers — anywhere in the world.
                         </p>
                     </FadeIn>
 
@@ -765,10 +869,10 @@ export function LandingPageTest() {
                     <FadeIn delay={0.05} className="mb-10 md:mb-12">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             {[
-                                { val: '10',   label: 'Sprint Workshops run' },
-                                { val: '500+', label: 'Participants trained' },
-                                { val: '#1',   label: 'AI education in Dubai' },
-                                { val: 'UAE',  label: 'Architects & designers' },
+                                { val: '10',    label: 'Sprint Workshops run' },
+                                { val: '500+',  label: 'Participants trained' },
+                                { val: 'Global',label: 'Open to all countries' },
+                                { val: '#1',    label: 'AI design education in UAE' },
                             ].map((s, i) => (
                                 <div key={i} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl px-5 py-4 text-center">
                                     <div className="text-xl sm:text-2xl font-heading font-black text-lime">{s.val}</div>
@@ -875,41 +979,12 @@ export function LandingPageTest() {
                     <FadeIn className="mb-12 md:mb-16 text-center">
                         <MicroLabel center>Choose Your Path</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4">WHERE DO YOU START?</h2>
-                        <div className="mt-5 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-lime/10 border border-lime/25">
-                            <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                            <span className="text-xs font-bold text-lime uppercase tracking-wider">Next Sprint Workshop: May 13–15, 2026</span>
-                        </div>
                     </FadeIn>
 
                     <div id="masterclass" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 max-w-5xl mx-auto">
-                        {/* Sprint */}
-                        <FadeIn direction="left" className="flex">
-                            <motion.div whileHover={{ scale: 1.01, y: -4 }}
-                                className="relative bg-[#0d0d0d] border border-white/[0.06] hover:border-white/20 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group transition-colors duration-300 w-full">
-                                <div className="relative z-10 flex flex-col flex-1">
-                                    <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center mb-5">
-                                        <Users className="w-5 h-5 text-white" />
-                                    </div>
-                                    <MicroLabel>Sprint Workshop</MicroLabel>
-                                    <h3 className="font-heading font-black uppercase text-xl sm:text-2xl mt-2 mb-4">For Individuals</h3>
-                                    <p className="text-gray-400 text-sm leading-relaxed mb-7 flex-1">A fast-paced, focused 3-day workshop to master AI ideation tools. Perfect for designers who want immediate workflow integration.</p>
-                                    <ul className="space-y-2.5 mb-7">
-                                        {SPRINT_FEATURES.map(f => (
-                                            <li key={f} className="flex items-center gap-3 text-sm text-gray-300">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-lime shrink-0" />{f}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <a href="/submit-form"
-                                        className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-white text-black font-body font-bold uppercase tracking-wider text-sm hover:bg-lime transition-colors duration-300">
-                                        Apply for Sprint <ArrowRight className="w-4 h-4" />
-                                    </a>
-                                </div>
-                            </motion.div>
-                        </FadeIn>
 
-                        {/* Masterclass */}
-                        <FadeIn direction="right" className="flex">
+                        {/* Masterclass — LEFT, featured */}
+                        <FadeIn direction="left" className="flex">
                             <motion.div whileHover={{ scale: 1.01, y: -4 }}
                                 className="relative bg-[#0d0d0d] border border-lime/30 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group w-full"
                                 style={{ boxShadow: '0 0 40px -10px rgba(208,255,113,0.12)' }}>
@@ -931,6 +1006,37 @@ export function LandingPageTest() {
                                     <a href="/submit-form"
                                         className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 transition-opacity duration-300">
                                         Book Team Discovery <ArrowRight className="w-4 h-4" />
+                                    </a>
+                                </div>
+                            </motion.div>
+                        </FadeIn>
+
+                        {/* Sprint — RIGHT, with May 13–15 urgency badge inside */}
+                        <FadeIn direction="right" className="flex">
+                            <motion.div whileHover={{ scale: 1.01, y: -4 }}
+                                className="relative bg-[#0d0d0d] border border-white/[0.06] hover:border-white/20 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col overflow-hidden group transition-colors duration-300 w-full">
+                                <div className="relative z-10 flex flex-col flex-1">
+                                    <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center mb-5">
+                                        <Users className="w-5 h-5 text-white" />
+                                    </div>
+                                    <MicroLabel>Sprint Workshop</MicroLabel>
+                                    <h3 className="font-heading font-black uppercase text-xl sm:text-2xl mt-2 mb-4">For Individuals</h3>
+                                    {/* Urgency badge */}
+                                    <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] w-fit">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse shrink-0" />
+                                        <span className="text-[0.6rem] font-bold uppercase tracking-wider text-lime">Next: May 13–15, 2026 · Limited Spots</span>
+                                    </div>
+                                    <p className="text-gray-400 text-sm leading-relaxed mb-7 flex-1">A fast-paced, focused 3-day workshop to master AI ideation tools. Perfect for designers who want immediate workflow integration.</p>
+                                    <ul className="space-y-2.5 mb-7">
+                                        {SPRINT_FEATURES.map(f => (
+                                            <li key={f} className="flex items-center gap-3 text-sm text-gray-300">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-white/40 shrink-0" />{f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <a href="/submit-form"
+                                        className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-white text-black font-body font-bold uppercase tracking-wider text-sm hover:bg-lime transition-colors duration-300">
+                                        Apply for Sprint <ArrowRight className="w-4 h-4" />
                                     </a>
                                 </div>
                             </motion.div>
