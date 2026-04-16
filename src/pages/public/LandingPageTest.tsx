@@ -23,17 +23,17 @@ const TRADITIONAL_STEPS = [
 
 // 11 images — clean 4-col grid: rows 1-2 share the big feature, row 3 has the wide+tall combo, row 4 is even
 const GALLERY_ITEMS = [
-    { label: 'Night Render',  img: '/lander/24.png', cls: 'col-span-2 row-span-2' },
-    { label: 'Detail',        img: '/lander/8.png',  cls: '' },
-    { label: 'Atmosphere',    img: '/lander/10.png', cls: '' },
-    { label: 'Interior',      img: '/lander/11.png', cls: 'row-span-2' },
-    { label: 'Section Cut',   img: '/lander/13.png', cls: '' },
-    { label: 'Exterior',      img: '/lander/15.png', cls: 'col-span-2' },
-    { label: 'Urban Plan',    img: '/lander/19.png', cls: '' },
-    { label: 'Sketch',        img: '/lander/2.png',  cls: '' },
-    { label: 'Crowd',         img: '/lander/1.png',  cls: '' },
-    { label: 'Structure',     img: '/lander/22.png', cls: '' },
-    { label: 'Storyboard',    img: '/lander/25.png', cls: '' },
+    { label: 'Night Entrance', img: '/lander/24.png', cls: 'col-span-2 row-span-2' }, // wide cinematic entrance — hero piece
+    { label: 'Arch Detail',    img: '/lander/26.png', cls: '' },                       // stone arch close-up, S.O.M. sign
+    { label: 'Reflecting Pool',img: '/lander/27.png', cls: '' },                       // pool reflection at night
+    { label: 'Interior Hall',  img: '/lander/30.png', cls: 'row-span-2' },             // grand colosseum interior with torches
+    { label: 'Section Cut',    img: '/lander/13.png', cls: '' },                       // facade cutaway
+    { label: 'Exterior',       img: '/lander/15.png', cls: 'col-span-2' },             // full dusk exterior wide shot
+    { label: 'Blueprint',      img: '/lander/29.png', cls: '' },                       // technical blueprint with dimensions
+    { label: 'Sketch',         img: '/lander/2.png',  cls: '' },                       // original pen & ink concept sketch
+    { label: 'Crowd',          img: '/lander/1.png',  cls: '' },                       // arena gladiator scene
+    { label: 'Landscape',      img: '/lander/28.png', cls: '' },                       // AI-generated plant/landscape palette
+    { label: 'Armor Detail',   img: '/lander/31.png', cls: '' },                       // gladiator armor close-up
 ]
 
 const CAPABILITIES = [
