@@ -5,6 +5,7 @@ import {
     Zap, Users, Star, AlertTriangle
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import logoSrc from '../../assets/logo.png'
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 // Set to the enrollment deadline for the next cohort
@@ -104,11 +105,8 @@ export function EnrollPage() {
         <div className="min-h-screen bg-black text-white">
             {/* Nav */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-lg bg-lime flex items-center justify-center">
-                        <span className="text-black font-black text-xs">Z</span>
-                    </div>
-                    <span className="font-semibold tracking-tight text-white">Zkandar AI</span>
+                <a href="/test-landingpage" className="flex items-center">
+                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
                 </a>
                 <button
                     onClick={() => checkoutRef.current?.scrollIntoView({ behavior: 'smooth' })}

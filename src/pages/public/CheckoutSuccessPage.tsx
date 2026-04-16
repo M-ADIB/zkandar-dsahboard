@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { CheckCircle2, ArrowRight, Calendar } from 'lucide-react'
+import logoSrc from '../../assets/logo.png'
 
 // TODO: Replace with your actual onboarding / next steps Calendly URL
 const ONBOARDING_URL = 'https://calendly.com/zkandar/sprint-onboarding'
@@ -9,11 +10,8 @@ export function CheckoutSuccessPage() {
         <div className="min-h-screen bg-black flex flex-col items-center justify-center px-5 text-white">
             {/* Nav */}
             <div className="absolute top-0 left-0 right-0 border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center">
-                <a href="/test-landingpage" className="flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-lg bg-lime flex items-center justify-center">
-                        <span className="text-black font-black text-xs">Z</span>
-                    </div>
-                    <span className="font-semibold tracking-tight text-white">Zkandar AI</span>
+                <a href="/test-landingpage" className="flex items-center">
+                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
                 </a>
             </div>
 

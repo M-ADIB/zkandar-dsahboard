@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ArrowRight, Loader2, Phone, Calendar, Shield, Clock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import logoSrc from '../../assets/logo.png'
 
 const WHAT_YOU_GET = [
     '3 days of live, hands-on AI design sessions',
@@ -46,11 +47,8 @@ export function CheckoutPage() {
         <div className="min-h-screen bg-black text-white">
             {/* Nav */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-lg bg-lime flex items-center justify-center">
-                        <span className="text-black font-black text-xs">Z</span>
-                    </div>
-                    <span className="font-semibold tracking-tight text-white">Zkandar AI</span>
+                <a href="/test-landingpage" className="flex items-center">
+                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
                 </a>
                 <div className="flex items-center gap-1.5 text-xs text-gray-500">
                     <Shield className="h-3.5 w-3.5" />
