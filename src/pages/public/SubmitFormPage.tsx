@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, CheckCircle2, Loader2, ChevronDown } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Loader2, ChevronDown, Instagram, AlertCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import logoSrc from '../../assets/logo.png'
 
@@ -15,6 +15,17 @@ const ROLES = [
     'Design Studio Owner',
     'Real Estate Developer',
     'Design Student',
+    'Other',
+]
+
+const DESIGNATIONS = [
+    'Principal / Partner',
+    'Senior Architect / Senior Designer',
+    'Project Manager',
+    'Design Director / Creative Director',
+    'Junior Architect / Junior Designer',
+    'Intern / Graduate',
+    'Freelancer / Independent',
     'Other',
 ]
 
@@ -69,31 +80,80 @@ const COMMITMENT_OPTIONS = [
     },
 ]
 
+function getValidationErrors({
+    firstName,
+    lastName,
+    email,
+    phone,
+    role,
+    designation,
+    designationOther,
+    interest,
+    interestOther,
+    commitment,
+}: {
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+    role: string
+    designation: string
+    designationOther: string
+    interest: Interest
+    interestOther: string
+    commitment: Commitment
+}): string[] {
+    const errors: string[] = []
+    if (!firstName.trim()) errors.push('We need your first name — just your first one is fine!')
+    if (!lastName.trim()) errors.push('Don\'t forget your last name!')
+    if (!email.trim()) errors.push('We need your email so we can reach you.')
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errors.push('That email doesn\'t look right. Double-check it?')
+    if (!phone.trim()) errors.push('Your phone number is required — we may need to reach you quickly.')
+    if (!role) errors.push('Tell us your role — pick the one that fits best!')
+    if (!designation) errors.push('What\'s your designation? Pick the closest one from the list.')
+    if (designation === 'Other' && !designationOther.trim()) errors.push('You picked "Other" for designation — what is it exactly?')
+    if (!interest) errors.push('Which program are you interested in? Pick one above.')
+    if (interest === 'other' && !interestOther.trim()) errors.push('You said "Something Else" — tell us what you have in mind!')
+    if (!commitment) errors.push('Almost there! Just tell us where you\'re at in your decision.')
+    return errors
+}
+
 export function SubmitFormPage() {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [role, setRole] = useState('')
+    const [designation, setDesignation] = useState('')
+    const [designationOther, setDesignationOther] = useState('')
+    const [companyInstagram, setCompanyInstagram] = useState('')
+    const [personalInstagram, setPersonalInstagram] = useState('')
     const [interest, setInterest] = useState<Interest>(null)
     const [interestOther, setInterestOther] = useState('')
     const [commitment, setCommitment] = useState<Commitment>(null)
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [error, setError] = useState<string | null>(null)
-
-    const isValid =
-        firstName.trim() &&
-        lastName.trim() &&
-        email.trim() &&
-        interest &&
-        commitment &&
-        (interest !== 'other' || interestOther.trim())
+    const [validationErrors, setValidationErrors] = useState<string[]>([])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!isValid || submitting) return
+        if (submitting) return
 
+        const errors = getValidationErrors({
+            firstName, lastName, email, phone, role,
+            designation, designationOther,
+            interest, interestOther, commitment,
+        })
+
+        if (errors.length > 0) {
+            setValidationErrors(errors)
+            // Scroll to errors
+            document.getElementById('validation-errors')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            return
+        }
+
+        setValidationErrors([])
         setSubmitting(true)
         setError(null)
 
@@ -104,6 +164,10 @@ export function SubmitFormPage() {
             email: email.trim().toLowerCase(),
             phone: phone.trim() || null,
             role: role || null,
+            designation: designation || null,
+            designation_other: designation === 'Other' ? designationOther.trim() : null,
+            company_instagram: companyInstagram.trim() || null,
+            personal_instagram: personalInstagram.trim() || null,
             interest,
             interest_other: interest === 'other' ? interestOther.trim() : null,
             commitment,
@@ -117,17 +181,14 @@ export function SubmitFormPage() {
 
         // Route based on interest + commitment
         if (interest === 'masterclass') {
-            // Masterclass always goes to a discovery call — no direct checkout
             window.location.href = 'https://calendly.com/zkandar/masterclass'
         } else if (interest === 'sprint') {
             if (commitment === 'ready') {
                 window.location.href = '/enroll'
             } else {
-                // curious or exploring — show checkout with "book a call" banner
                 window.location.href = '/checkout?questions=true'
             }
         } else {
-            // 'other' — no specific page yet, show inline confirmation
             setSubmitted(true)
         }
         setSubmitting(false)
@@ -206,14 +267,14 @@ export function SubmitFormPage() {
                                 label="First Name"
                                 value={firstName}
                                 onChange={setFirstName}
-                                placeholder="Ahmad"
+                                placeholder="First name"
                                 required
                             />
                             <Field
                                 label="Last Name"
                                 value={lastName}
                                 onChange={setLastName}
-                                placeholder="Al Mansoori"
+                                placeholder="Last name"
                                 required
                             />
                         </div>
@@ -232,13 +293,14 @@ export function SubmitFormPage() {
                                 value={phone}
                                 onChange={setPhone}
                                 placeholder="+971 50 000 0000"
+                                required
                             />
                         </div>
 
                         {/* Role dropdown */}
                         <div>
                             <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
-                                Your Role
+                                Your Role <span className="text-lime">*</span>
                             </label>
                             <div className="relative">
                                 <select
@@ -252,6 +314,80 @@ export function SubmitFormPage() {
                                     ))}
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        {/* Designation dropdown */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                Your Designation <span className="text-lime">*</span>
+                            </label>
+                            <div className="relative">
+                                <select
+                                    value={designation}
+                                    onChange={(e) => { setDesignation(e.target.value); setDesignationOther('') }}
+                                    className="w-full appearance-none bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-lime/40 transition-colors pr-10"
+                                >
+                                    <option value="">Your position within the company</option>
+                                    {DESIGNATIONS.map((d) => (
+                                        <option key={d} value={d}>{d}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                            </div>
+                            <AnimatePresence>
+                                {designation === 'Other' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <input
+                                            type="text"
+                                            value={designationOther}
+                                            onChange={(e) => setDesignationOther(e.target.value)}
+                                            placeholder="Describe your designation"
+                                            className="mt-2 w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                                        />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Instagram fields */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                    Company Instagram
+                                    <span className="ml-1.5 text-[10px] normal-case text-gray-600 tracking-normal">(optional)</span>
+                                </label>
+                                <div className="relative">
+                                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
+                                    <input
+                                        type="text"
+                                        value={companyInstagram}
+                                        onChange={(e) => setCompanyInstagram(e.target.value)}
+                                        placeholder="@yourstudio"
+                                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                    Personal Instagram
+                                    <span className="ml-1.5 text-[10px] normal-case text-gray-600 tracking-normal">(optional)</span>
+                                </label>
+                                <div className="relative">
+                                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
+                                    <input
+                                        type="text"
+                                        value={personalInstagram}
+                                        onChange={(e) => setPersonalInstagram(e.target.value)}
+                                        placeholder="@yourhandle"
+                                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -374,12 +510,42 @@ export function SubmitFormPage() {
                         transition={{ delay: 0.4 }}
                         className="pt-2"
                     >
+                        {/* Validation errors */}
+                        <AnimatePresence>
+                            {validationErrors.length > 0 && (
+                                <motion.div
+                                    id="validation-errors"
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    className="mb-6 bg-red-500/[0.06] border border-red-500/20 rounded-2xl p-5"
+                                >
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                                        <p className="text-sm font-semibold text-red-300">
+                                            {validationErrors.length === 1
+                                                ? 'One thing is missing:'
+                                                : `${validationErrors.length} things need your attention:`}
+                                        </p>
+                                    </div>
+                                    <ul className="space-y-1.5">
+                                        {validationErrors.map((err, i) => (
+                                            <li key={i} className="flex items-start gap-2 text-sm text-red-300/80">
+                                                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-red-400/60 shrink-0" />
+                                                {err}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         {error && (
                             <p className="text-sm text-red-400 mb-4 text-center">{error}</p>
                         )}
                         <button
                             type="submit"
-                            disabled={!isValid || submitting}
+                            disabled={submitting}
                             className="w-full py-4 rounded-2xl gradient-lime text-black font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             {submitting ? (
@@ -434,7 +600,6 @@ function Field({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                required={required}
                 className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
             />
         </div>
