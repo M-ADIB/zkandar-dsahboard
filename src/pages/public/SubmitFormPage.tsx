@@ -35,14 +35,14 @@ const INTEREST_OPTIONS = [
         title: 'AI Masterclass',
         tag: 'FOR CORPORATE TEAMS',
         description: 'A complete AI transformation for your firm. We come in, build the system, and leave your team certified.',
-        detail: 'Intensive boot camp · Team of 3–12 · Live sessions + async work',
+        detail: 'Intensive boot camp · Team of 3 to 12 · Live sessions + async work',
     },
     {
         id: 'sprint' as const,
         title: 'Sprint Workshop',
         tag: 'FOR INDIVIDUALS',
-        description: 'Go from zero to AI-fluent in days, not months. Intensive, hands-on, output-focused.',
-        detail: '3-Day Sprint Program · Real deliverables by day 3',
+        description: 'Go from zero to AI fluent in days, not months. Intensive, hands on, output focused.',
+        detail: '3 Day Sprint Program · Real deliverables by day 3',
     },
     {
         id: 'other' as const,
@@ -57,14 +57,14 @@ const COMMITMENT_OPTIONS = [
     {
         id: 'ready' as const,
         label: 'Ready to build. Let\'s move.',
-        sub: 'I know what I want — just show me how to start.',
+        sub: 'I know what I want. Just show me how to start.',
         color: 'border-lime/40 bg-lime/5 hover:border-lime/60',
         activeColor: 'border-lime bg-lime/10',
         dot: 'bg-lime',
     },
     {
         id: 'curious' as const,
-        label: 'Interested — I have a few questions first.',
+        label: 'Interested. I have a few questions first.',
         sub: 'I\'m in the right direction but want to confirm this fits before committing.',
         color: 'border-white/10 bg-white/[0.02] hover:border-white/20',
         activeColor: 'border-white/30 bg-white/[0.05]',
@@ -104,16 +104,16 @@ function getValidationErrors({
     commitment: Commitment
 }): string[] {
     const errors: string[] = []
-    if (!firstName.trim()) errors.push('We need your first name — just your first one is fine!')
+    if (!firstName.trim()) errors.push('We need your first name. Just your first one is fine!')
     if (!lastName.trim()) errors.push('Don\'t forget your last name!')
     if (!email.trim()) errors.push('We need your email so we can reach you.')
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errors.push('That email doesn\'t look right. Double-check it?')
-    if (!phone.trim()) errors.push('Your phone number is required — we may need to reach you quickly.')
-    if (!role) errors.push('Tell us your role — pick the one that fits best!')
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errors.push('That email doesn\'t look right. Double check it?')
+    if (!phone.trim()) errors.push('Your phone number is required. We may need to reach you quickly.')
+    if (!role) errors.push('Tell us your role. Pick the one that fits best!')
     if (!designation) errors.push('What\'s your designation? Pick the closest one from the list.')
-    if (designation === 'Other' && !designationOther.trim()) errors.push('You picked "Other" for designation — what is it exactly?')
+    if (designation === 'Other' && !designationOther.trim()) errors.push('You picked "Other" for designation. What is it exactly?')
     if (!interest) errors.push('Which program are you interested in? Pick one above.')
-    if (interest === 'other' && !interestOther.trim()) errors.push('You said "Something Else" — tell us what you have in mind!')
+    if (interest === 'other' && !interestOther.trim()) errors.push('You said "Something Else". Tell us what you have in mind!')
     if (!commitment) errors.push('Almost there! Just tell us where you\'re at in your decision.')
     return errors
 }
@@ -210,8 +210,8 @@ export function SubmitFormPage() {
                     </div>
                     <h2 className="font-heading font-black uppercase text-2xl text-white mb-3">You're in the queue.</h2>
                     <p className="text-gray-400 leading-relaxed mb-8">
-                        We received your application. Our team reviews every submission personally —
-                        expect a response within 48 hours.
+                        We received your application. Our team reviews every submission personally.
+                        Expect a response within 48 hours.
                     </p>
                     <a
                         href="/test-landingpage"

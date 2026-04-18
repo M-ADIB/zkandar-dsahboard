@@ -12,29 +12,29 @@ const ENROLLMENT_DEADLINE = new Date('2026-05-13T23:59:59')
 const SPOTS_REMAINING = 4
 
 const VALUE_STACK = [
-    { item: '3-Day Live Sprint Workshop', value: '8,500 AED', included: true },
+    { item: '3 Day Live Sprint Workshop', value: '8,500 AED', included: true },
     { item: 'Lifetime access to all session recordings', value: '1,200 AED', included: true },
     { item: 'AI Prompt Library (200+ architecture-specific prompts)', value: '800 AED', included: true },
     { item: 'Private cohort community (Slack)', value: '400 AED', included: true },
-    { item: 'Post-sprint 1-on-1 follow-up session', value: '600 AED', included: true },
+    { item: 'Post sprint 1 on 1 follow up session', value: '600 AED', included: true },
     { item: 'Zkandar AI Certification of Completion', value: 'Priceless', included: true },
 ]
 
 const WHAT_YOU_WILL_DO = [
     {
         icon: Zap,
-        title: 'Day 1 — Foundation',
-        body: 'Identify your AI design stack. Run your first prompt-to-render workflow on a live brief. Learn to direct AI like a tool you own.',
+        title: 'Day 1: Foundation',
+        body: 'Identify your AI design stack. Run your first prompt to render workflow on a live brief. Learn to direct AI like a tool you own.',
     },
     {
         icon: Star,
-        title: 'Day 2 — In-Depth',
-        body: 'Master prompting — from mediocre output to advanced, client-ready results. The gap between generic AI and precision AI is in this session.',
+        title: 'Day 2: In Depth',
+        body: 'Master prompting. From mediocre output to advanced, client ready results. The gap between generic AI and precision AI is in this session.',
     },
     {
         icon: Users,
-        title: 'Day 3 — Full Circle',
-        body: 'Package your results for client presentation. Walk out with deliverables, a workflow you can repeat, and the confidence to pitch AI-directed work.',
+        title: 'Day 3: Full Circle',
+        body: 'Package your results for client presentation. Walk out with deliverables, a workflow you can repeat, and the confidence to pitch AI directed work.',
     },
 ]
 
@@ -43,7 +43,7 @@ const WHAT_YOU_LEAVE_WITH = [
     'A portfolio of renders from actual project briefs',
     'A prompt library that keeps working after the Sprint ends',
     'The ability to generate renders in 20 minutes, not 3 weeks',
-    'Confidence to pitch AI-directed work to any client',
+    'Confidence to pitch AI directed work to any client',
 ]
 
 const CALENDLY_URL = 'https://calendly.com/zkandar/sprint-questions'
@@ -148,7 +148,7 @@ export function EnrollPage() {
                             </h2>
                             <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto sm:mx-0">
                                 We deliberately keep cohorts small so every participant gets real attention.
-                                Once these fill, the next opening won't be for 6–8 weeks.
+                                Once these fill, the next opening won't be for 6 to 8 weeks.
                             </p>
                         </motion.div>
 
@@ -194,7 +194,7 @@ export function EnrollPage() {
                     </h2>
                     <p className="text-gray-400 max-w-xl mx-auto leading-relaxed text-sm">
                         This isn't a course. There are no slides. Every session is live,
-                        hands-on, and built around real project briefs.
+                        hands on, and built around real project briefs.
                     </p>
                 </motion.div>
 
@@ -208,7 +208,7 @@ export function EnrollPage() {
                     <div>
                         <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-1">The Program</p>
                         <h3 className="font-heading font-black uppercase text-xl text-white">
-                            3-Day Sprint Program
+                            3 Day Sprint Program
                             {!countdown.expired && (
                                 <span className="ml-3 text-lime text-base tabular-nums">
                                     [{String(countdown.hours).padStart(2,'0')}:{String(countdown.minutes).padStart(2,'0')}:{String(countdown.seconds).padStart(2,'0')}]
@@ -325,7 +325,7 @@ export function EnrollPage() {
                                 <span className="font-heading font-black uppercase text-sm text-white">Sprint Workshop</span>
                                 <span className="text-xs font-bold text-lime bg-lime/10 border border-lime/20 px-2 py-0.5 rounded-md">Next cohort</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">3-Day Sprint Program · Small cohort · Full AI design workflow</p>
+                            <p className="text-xs text-gray-500 mt-1">3 Day Sprint Program · Small cohort · Full AI design workflow</p>
                         </div>
                         <div className="px-6 py-5 space-y-2.5">
                             {VALUE_STACK.map((row, i) => (

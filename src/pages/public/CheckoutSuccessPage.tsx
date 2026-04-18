@@ -32,7 +32,7 @@ export function CheckoutSuccessPage() {
                 </h1>
                 <p className="text-gray-400 leading-relaxed mb-8 text-sm">
                     Welcome to the next Zkandar AI Sprint Workshop cohort.
-                    Check your inbox — you'll receive your confirmation and
+                    Check your inbox. You'll receive your confirmation and
                     pre-work details within the next few minutes.
                 </p>
 
@@ -42,7 +42,7 @@ export function CheckoutSuccessPage() {
                         'Confirmation email with session dates and Zoom links',
                         'Pre-work brief to set up your AI tools before Day 1',
                         'Access to the private cohort Slack channel',
-                        'Optional 1-on-1 onboarding call with the Zkandar team',
+                        'Optional 1 on 1 onboarding call with the Zkandar team',
                     ].map((step, i) => (
                         <div key={i} className="flex items-start gap-2.5">
                             <CheckCircle2 className="h-4 w-4 text-lime shrink-0 mt-0.5" />

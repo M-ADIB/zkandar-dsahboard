@@ -40,7 +40,7 @@ const CAPABILITIES = [
     {
         num: '01', title: 'Generate Detail Shots',
         img: '/lander/8.png',
-        copy: 'AI produces photorealistic close-ups of any material, texture, or architectural element — on demand.',
+        copy: 'AI produces photorealistic close-ups of any material, texture, or architectural element. On demand.',
     },
     {
         num: '02', title: 'Analyze Any Site',
@@ -55,12 +55,12 @@ const CAPABILITIES = [
     {
         num: '04', title: 'Sketch to Photorealistic Render',
         img: '/lander/2.png',
-        copy: 'Draw the idea rough. AI builds the world — fully rendered, client-ready, in minutes.',
+        copy: 'Draw the idea rough. AI builds the world. Fully rendered, client ready, in minutes.',
     },
     {
         num: '05', title: 'Section & Interior Visualization',
         img: '/lander/13.png',
-        copy: 'AI cuts through any building and renders the spatial experience inside — no modeling software needed.',
+        copy: 'AI cuts through any building and renders the spatial experience inside. No modeling software needed.',
     },
 ]
 
@@ -73,10 +73,10 @@ const STUDIOS = [
 
 
 const SPRINT_FEATURES = [
-    'Day 1 — Foundation: identify AI stack, first prompt-to-render workflow',
-    'Day 2 — In-Depth: master prompting from mediocre to advanced',
-    'Day 3 — Full Circle: package results for client presentation',
-    'Leave with portfolio renders + generate in 20 min, not 3 weeks',
+    'Day 1: Foundation. Identify AI stack, run first prompt to render workflow',
+    'Day 2: In Depth. Master prompting from mediocre to advanced',
+    'Day 3: Full Circle. Package results for client presentation',
+    'Leave with portfolio renders. Generate in 20 min, not 3 weeks',
 ]
 
 const WORKSHOPS = [
@@ -92,9 +92,9 @@ const WORKSHOPS = [
 ]
 
 const MASTERCLASS_VIDEOS = [
-    { num: 1, id: '1113394028', label: 'Masterclass — Cohort 1' },
-    { num: 2, id: '1113394271', label: 'Masterclass — Cohort 2' },
-    { num: 3, id: '1113394139', label: 'Masterclass — Cohort 3' },
+    { num: 1, id: '1113394028', label: 'Masterclass Cohort 1' },
+    { num: 2, id: '1113394271', label: 'Masterclass Cohort 2' },
+    { num: 3, id: '1113394139', label: 'Masterclass Cohort 3' },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -273,7 +273,7 @@ export function LandingPageTest() {
                     {[...Array(6)].map((_, i) => (
                         <span key={i} className="inline-flex items-center gap-5 px-4 text-[0.6rem] font-black uppercase tracking-[0.2em] text-black">
                             <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
-                            Sprint Workshop — May 13–15
+                            Sprint Workshop · May 13 to 15
                             <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
                             Limited Spots Remaining
                             <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
@@ -318,14 +318,14 @@ export function LandingPageTest() {
 
                             <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.6rem,7vw,5.5rem)] mb-6">
                                 <span className="block text-white"><SplitText text="THIS IS WHAT" baseDelay={0.1} /></span>
-                                <span className="block text-white"><SplitText text="AI-DIRECTED" baseDelay={0.28} /></span>
+                                <span className="block text-white"><SplitText text="AI DIRECTED" baseDelay={0.28} /></span>
                                 <span className="block text-lime"><SplitText text="DESIGN LOOKS LIKE." baseDelay={0.52} /></span>
                             </h1>
 
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.95 }}
                                 className="text-sm sm:text-base md:text-lg text-gray-300 max-w-xl mb-10 leading-relaxed">
-                                From a blank sketch to a world-class colosseum — entirely AI-generated.{' '}
+                                From a blank sketch to a world class colosseum. Entirely AI generated.{' '}
                                 <span className="text-lime/80">This is what Zkandar AI teaches.</span>
                             </motion.p>
 
@@ -376,7 +376,7 @@ export function LandingPageTest() {
 
                 <div className="relative z-10 text-center max-w-5xl mx-auto">
                     <FadeIn direction="up">
-                        <MicroLabel center>An AI-Directed Project — Built From a Sketch</MicroLabel>
+                        <MicroLabel center>An AI Directed Project. Built From a Sketch</MicroLabel>
                     </FadeIn>
                     <FadeIn direction="up" delay={0.2}>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4.5rem)] leading-[0.93] mt-8 mb-8">
@@ -403,7 +403,7 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 bg-black border-t border-white/[0.04]">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>What we found — 500 architects &amp; designers surveyed</MicroLabel>
+                        <MicroLabel>What we found. 500 architects &amp; designers surveyed</MicroLabel>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">THE DATA DOESN'T LIE</h2>
                             <LimeBar />
@@ -656,7 +656,7 @@ export function LandingPageTest() {
                                     <span className="text-lime">FEATURE FILM.</span>
                                 </h2>
                                 <p className="text-gray-500 text-sm mt-4 max-w-xl leading-relaxed">
-                                    Every frame. Every scene. Every visual — produced entirely through AI-directed workflows.
+                                    Every frame. Every scene. Every visual. Produced entirely through AI directed workflows.
                                     No cameras. No crew. No traditional production.
                                     This is what you learn to build.
                                 </p>
@@ -746,7 +746,7 @@ export function LandingPageTest() {
                             <span className="px-3 py-1 rounded-full bg-lime/10 border border-lime/20 text-lime text-[0.6875rem] uppercase tracking-[0.15em] font-bold shrink-0">Growing</span>
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
-                            3 firm-wide masterclasses delivered. Every studio left with a certified AI workflow they own.
+                            3 firmwide masterclasses delivered. Every studio left with a certified AI workflow they own.
                         </p>
                     </FadeIn>
 
@@ -808,7 +808,7 @@ export function LandingPageTest() {
                             <LimeBar />
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
-                            The most hands-on AI design education for architects and interior designers — anywhere in the world.
+                            The most hands on AI design education for architects and interior designers. Anywhere in the world.
                         </p>
                     </FadeIn>
 
@@ -865,7 +865,7 @@ export function LandingPageTest() {
                         <div className="bg-gradient-to-r from-lime/[0.06] to-transparent border border-lime/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1.5">
-                                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-lime/70">Sprint Workshop 10 — Pro Edition</span>
+                                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-lime/70">Sprint Workshop 10. Pro Edition</span>
                                     <span className="text-[0.55rem] uppercase tracking-wider bg-lime/20 text-lime rounded px-1.5 py-0.5 font-bold">Limited 20 Spots</span>
                                 </div>
                                 <p className="text-white font-semibold text-sm mb-1">A Pro Workshop. Only for serious practitioners.</p>
@@ -911,7 +911,7 @@ export function LandingPageTest() {
                                     A comprehensive AI system rollout built for your studio. Custom curriculum, team-wide training, and a certified AI workflow your firm owns permanently.
                                 </p>
                                 <div className="space-y-2.5 mb-6">
-                                    {['Team of 3–12 designers', 'Custom AI workflow built for your studio', 'Live sessions + async work', 'Readiness certification for every team member'].map(f => (
+                                    {['Team of 3 to 12 designers', 'Custom AI workflow built for your studio', 'Live sessions + async work', 'Readiness certification for every team member'].map(f => (
                                         <div key={f} className="flex items-center gap-3 text-sm text-gray-300">
                                             <div className="w-1.5 h-1.5 rounded-full bg-lime shrink-0" />{f}
                                         </div>
@@ -955,7 +955,7 @@ export function LandingPageTest() {
                                     <span className="text-[0.6rem] font-bold uppercase tracking-wider text-lime">Next: May 13–15, 2026 · Limited Spots</span>
                                 </div>
                                 <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">
-                                    3 days. Hands-on. Output-focused. You leave with real AI-generated deliverables and the skills to keep going. Open to architects and designers worldwide.
+                                    3 days. Hands on. Output focused. You leave with real AI generated deliverables and the skills to keep going. Open to architects and designers worldwide.
                                 </p>
                                 <div className="space-y-2.5 mb-6">
                                     {SPRINT_FEATURES.map(f => (

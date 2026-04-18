@@ -4,7 +4,7 @@ import { useState } from 'react'
 import logoSrc from '../../assets/logo.png'
 
 const OUTCOMES = [
-    { metric: '3 days', label: 'Average time to first client-ready render', sub: 'vs 3–4 weeks traditional workflow' },
+    { metric: '3 days', label: 'Average time to first client ready render', sub: 'vs 3 to 4 weeks traditional workflow' },
     { metric: '8×', label: 'Faster concept iteration', sub: 'From sketch to photorealistic in minutes, not weeks' },
     { metric: '100%', label: 'Of graduates used AI on a live project within 30 days', sub: 'Real deliverables, real clients' },
     { metric: '0', label: 'Prior AI experience required', sub: 'We designed this for architects, not engineers' },
@@ -22,14 +22,14 @@ const TESTIMONIALS = [
         name: 'Mariam Khalil',
         role: 'Interior Design Studio Owner, Abu Dhabi',
         initials: 'MK',
-        quote: 'The ROI was immediate. I used to outsource renders for AED 800–1,200 each. Now I generate them myself in 20 minutes. The Sprint paid for itself in the first two weeks after I got back.',
+        quote: 'The ROI was immediate. I used to outsource renders for AED 800 to 1,200 each. Now I generate them myself in 20 minutes. The Sprint paid for itself in the first two weeks after I got back.',
         highlight: 'Recovered cost in under 2 weeks.',
     },
     {
         name: 'Faisal Al-Mutairi',
         role: 'Urban Planner, Saudi Arabia',
         initials: 'FM',
-        quote: 'What surprised me most wasn\'t the output quality — it was how it changed how I think about design. AI doesn\'t replace your eye. It amplifies it. I pitch differently now.',
+        quote: 'What surprised me most wasn\'t the output quality. It was how it changed how I think about design. AI doesn\'t replace your eye. It amplifies it. I pitch differently now.',
         highlight: 'Changed how he presents and pitches entirely.',
     },
 ]
@@ -37,15 +37,15 @@ const TESTIMONIALS = [
 const FAQS = [
     {
         q: 'I\'m not technical. Will I keep up?',
-        a: 'Every person in every cohort has said some version of this on day one. By day two, they\'re generating renders. We designed the Sprint specifically for architects and designers — zero coding, zero machine learning. If you can describe a space, you can direct AI.',
+        a: 'Every person in every cohort has said some version of this on day one. By day two, they\'re generating renders. We designed the Sprint specifically for architects and designers. Zero coding, zero machine learning. If you can describe a space, you can direct AI.',
     },
     {
         q: 'I\'ve tried AI tools before and they weren\'t accurate enough.',
-        a: 'You were probably using generic tools. What we teach are workflows built specifically for architectural output — correct proportions, material logic, spatial coherence. The gap between "AI art" and "AI-directed design" is enormous. This is the latter.',
+        a: 'You were probably using generic tools. What we teach are workflows built specifically for architectural output. Correct proportions, material logic, spatial coherence. The gap between "AI art" and "AI directed design" is enormous. This is the latter.',
     },
     {
-        q: 'Is 8,500 AED worth it for a 3-day program?',
-        a: 'A single outsourced high-quality render costs 800–1,500 AED. After the Sprint, you generate those in 20 minutes. Most participants recover the cost within the first client project. The question isn\'t whether it\'s worth it — it\'s how fast it pays back.',
+        q: 'Is 8,500 AED worth it for a 3 day program?',
+        a: 'A single outsourced high quality render costs 800 to 1,500 AED. After the Sprint, you generate those in 20 minutes. Most participants recover the cost within the first client project. The question isn\'t whether it\'s worth it. It\'s how fast it pays back.',
     },
     {
         q: 'What if I fall behind during the Sprint?',
@@ -53,7 +53,7 @@ const FAQS = [
     },
     {
         q: 'I\'m worried my clients won\'t trust AI-generated work.',
-        a: 'Your clients care about quality and speed — not how it was made. The renders in our gallery? Clients approved them without knowing AI was involved. What matters is the output. And the output is indistinguishable from traditional renders, often better.',
+        a: 'Your clients care about quality and speed. Not how it was made. The renders in our gallery? Clients approved them without knowing AI was involved. What matters is the output. And the output is indistinguishable from traditional renders, often better.',
     },
     {
         q: 'Can I apply this to my actual projects, or is it all theory?',

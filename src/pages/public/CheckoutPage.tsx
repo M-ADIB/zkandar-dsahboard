@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import logoSrc from '../../assets/logo.png'
 
 const WHAT_YOU_GET = [
-    '3-Day Sprint Program — live, hands-on sessions',
+    '3 Day Sprint Program. Live, hands on sessions',
     'Prompt engineering for architectural output',
     'Site analysis, concept sketching, and render workflows',
     'All session recordings + lifetime access to materials',
@@ -138,7 +138,7 @@ export function CheckoutPage() {
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <Clock className="h-3.5 w-3.5" />
-                            3-Day Program
+                            3 Day Program
                         </div>
                     </div>
                 </motion.div>
