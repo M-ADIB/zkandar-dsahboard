@@ -2,15 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
     CheckCircle2, ArrowRight, Loader2, Shield, Clock,
-    Zap, Users, Star, AlertTriangle
+    Zap, Users, Star, AlertTriangle, Calendar
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import logoSrc from '../../assets/logo.png'
 
 // ── Configuration ─────────────────────────────────────────────────────────────
-// Set to the enrollment deadline for the next cohort
-const ENROLLMENT_DEADLINE = new Date('2026-04-20T23:59:59')
-const SPOTS_REMAINING = 4 // Update manually or pull from DB
+const ENROLLMENT_DEADLINE = new Date('2026-05-13T23:59:59')
+const SPOTS_REMAINING = 4
 
 const VALUE_STACK = [
     { item: '3-Day Live Sprint Workshop', value: '8,500 AED', included: true },
@@ -22,20 +21,31 @@ const VALUE_STACK = [
 ]
 
 const WHAT_YOU_WILL_DO = [
-    { icon: Zap, title: 'Day 1 — Foundation', body: 'Set up your full AI design stack. Run your first prompt-to-render workflow on a live project brief. Leave with 5+ client-ready outputs.' },
-    { icon: Star, title: 'Day 2 — Depth', body: 'Master site analysis, facade iteration, and section visualization. Learn the prompting language that makes architectural AI output actually accurate.' },
-    { icon: Users, title: 'Day 3 — Deliver', body: 'Package your outputs for a real client. Present your AI-directed workflow. Leave with a process you can repeat on every future project.' },
+    {
+        icon: Zap,
+        title: 'Day 1 — Foundation',
+        body: 'Identify your AI design stack. Run your first prompt-to-render workflow on a live brief. Learn to direct AI like a tool you own.',
+    },
+    {
+        icon: Star,
+        title: 'Day 2 — In-Depth',
+        body: 'Master prompting — from mediocre output to advanced, client-ready results. The gap between generic AI and precision AI is in this session.',
+    },
+    {
+        icon: Users,
+        title: 'Day 3 — Full Circle',
+        body: 'Package your results for client presentation. Walk out with deliverables, a workflow you can repeat, and the confidence to pitch AI-directed work.',
+    },
 ]
 
 const WHAT_YOU_LEAVE_WITH = [
     'A complete AI design workflow you own and can repeat',
-    'A portfolio of renders from actual briefs — not exercises',
+    'A portfolio of renders from actual project briefs',
     'A prompt library that keeps working after the Sprint ends',
     'The ability to generate renders in 20 minutes, not 3 weeks',
     'Confidence to pitch AI-directed work to any client',
 ]
 
-// TODO: Replace with your actual Calendly URL
 const CALENDLY_URL = 'https://calendly.com/zkandar/sprint-questions'
 
 // ── Countdown hook ─────────────────────────────────────────────────────────────
@@ -63,11 +73,11 @@ function CountdownBlock({ value, label }: { value: number; label: string }) {
     return (
         <div className="flex flex-col items-center">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
-                <span className="text-2xl sm:text-3xl font-black text-white tabular-nums">
+                <span className="text-2xl sm:text-3xl font-heading font-black text-white tabular-nums">
                     {String(value).padStart(2, '0')}
                 </span>
             </div>
-            <span className="text-[10px] text-gray-500 uppercase tracking-widest mt-1.5">{label}</span>
+            <span className="text-[10px] text-gray-500 uppercase tracking-widest mt-1.5 font-body">{label}</span>
         </div>
     )
 }
@@ -102,11 +112,13 @@ export function EnrollPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white font-body">
             {/* Nav */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center">
+                <a href="/test-landingpage" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
+                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
                 <button
                     onClick={() => checkoutRef.current?.scrollIntoView({ behavior: 'smooth' })}
@@ -130,7 +142,7 @@ export function EnrollPage() {
                                 <AlertTriangle className="h-3.5 w-3.5" />
                                 Enrollment closing soon
                             </div>
-                            <h2 className="text-[clamp(1.6rem,4vw,2.8rem)] font-black text-white leading-tight mb-3">
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,2.8rem)] leading-[0.95] text-white mb-3">
                                 Only <span className="text-yellow-400">{SPOTS_REMAINING} spots</span> left<br />
                                 in the next cohort.
                             </h2>
@@ -146,17 +158,17 @@ export function EnrollPage() {
                             animate={{ opacity: 1, x: 0 }}
                             className="shrink-0 text-center"
                         >
-                            <p className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">Enrollment closes in</p>
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">Enrollment closes in</p>
                             {countdown.expired ? (
-                                <p className="text-lg font-bold text-red-400">Enrollment closed</p>
+                                <p className="text-lg font-heading font-black uppercase text-red-400">Enrollment closed</p>
                             ) : (
                                 <div className="flex items-end gap-2">
                                     <CountdownBlock value={countdown.days} label="days" />
-                                    <span className="text-2xl font-black text-white/30 pb-4">:</span>
+                                    <span className="text-2xl font-heading font-black text-white/30 pb-4">:</span>
                                     <CountdownBlock value={countdown.hours} label="hrs" />
-                                    <span className="text-2xl font-black text-white/30 pb-4">:</span>
+                                    <span className="text-2xl font-heading font-black text-white/30 pb-4">:</span>
                                     <CountdownBlock value={countdown.minutes} label="min" />
-                                    <span className="text-2xl font-black text-white/30 pb-4">:</span>
+                                    <span className="text-2xl font-heading font-black text-white/30 pb-4">:</span>
                                     <CountdownBlock value={countdown.seconds} label="sec" />
                                 </div>
                             )}
@@ -174,16 +186,41 @@ export function EnrollPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center"
                 >
-                    <p className="text-xs font-bold tracking-widest text-lime/70 uppercase mb-3">Sprint Workshop — What actually happens</p>
-                    <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-black text-white leading-tight mb-4">
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Sprint Workshop — What actually happens</p>
+                    <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white mb-4">
                         In 3 days, you go from<br />
                         <span className="text-lime">"I've seen AI demos"</span> to<br />
                         <span className="text-white">"I just ran a client workflow."</span>
                     </h2>
-                    <p className="text-gray-400 max-w-xl mx-auto leading-relaxed">
+                    <p className="text-gray-400 max-w-xl mx-auto leading-relaxed text-sm">
                         This isn't a course. There are no slides. Every session is live,
                         hands-on, and built around real project briefs.
                     </p>
+                </motion.div>
+
+                {/* 3-day program label with inline countdown */}
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-6"
+                >
+                    <div>
+                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-1">The Program</p>
+                        <h3 className="font-heading font-black uppercase text-xl text-white">
+                            3-Day Sprint Program
+                            {!countdown.expired && (
+                                <span className="ml-3 text-lime text-base tabular-nums">
+                                    [{String(countdown.hours).padStart(2,'0')}:{String(countdown.minutes).padStart(2,'0')}:{String(countdown.seconds).padStart(2,'0')}]
+                                </span>
+                            )}
+                        </h3>
+                        <p className="text-xs text-gray-600 mt-1">Build AI skills and real project deliverables in 3 intensive days</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <Calendar className="h-4 w-4 text-lime" />
+                        <span className="text-sm font-bold text-lime">May 13–15, 2026</span>
+                    </div>
                 </motion.div>
 
                 {/* 3-day breakdown */}
@@ -194,12 +231,12 @@ export function EnrollPage() {
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="bg-white/[0.02] border border-white/[0.07] rounded-2xl p-6"
+                            className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 hover:border-white/[0.15] transition-colors"
                         >
                             <div className="h-9 w-9 rounded-xl bg-lime/10 border border-lime/20 flex items-center justify-center mb-4">
-                                <day.icon className="h-4.5 w-4.5 text-lime" />
+                                <day.icon className="h-4 w-4 text-lime" />
                             </div>
-                            <h3 className="font-bold text-white mb-2 text-sm">{day.title}</h3>
+                            <h3 className="font-heading font-black uppercase text-sm text-white mb-2">{day.title}</h3>
                             <p className="text-xs text-gray-400 leading-relaxed">{day.body}</p>
                         </motion.div>
                     ))}
@@ -211,7 +248,7 @@ export function EnrollPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-lime/[0.03] border border-lime/10 rounded-2xl p-7"
                 >
-                    <p className="text-xs font-bold tracking-widest text-lime/60 uppercase mb-4">You walk out with</p>
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/60 mb-4">You walk out with</p>
                     <div className="grid sm:grid-cols-2 gap-3">
                         {WHAT_YOU_LEAVE_WITH.map((item, i) => (
                             <div key={i} className="flex items-start gap-2.5">
@@ -224,7 +261,7 @@ export function EnrollPage() {
 
                 {/* Value stack */}
                 <div>
-                    <p className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Everything that's included</p>
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Everything that's included</p>
                     <div className="space-y-2">
                         {VALUE_STACK.map((row, i) => (
                             <div key={i} className="flex items-center justify-between gap-4 py-3 border-b border-white/[0.05]">
@@ -240,9 +277,9 @@ export function EnrollPage() {
                             <span className="text-sm font-bold text-gray-400 line-through">11,500+ AED</span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
-                            <span className="text-base font-black text-white">Your investment</span>
+                            <span className="font-heading font-black uppercase text-base text-white">Your investment</span>
                             <div className="text-right">
-                                <span className="text-2xl font-black text-lime">8,500 AED</span>
+                                <span className="font-heading font-black text-2xl text-lime">8,500 AED</span>
                             </div>
                         </div>
                     </div>
@@ -254,11 +291,11 @@ export function EnrollPage() {
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
                     <div className="absolute inset-0 flex items-center px-8">
                         <div>
-                            <p className="text-xs font-bold tracking-widest text-lime/70 uppercase mb-2">AI-generated</p>
-                            <p className="text-xl sm:text-2xl font-bold text-white max-w-xs leading-snug">
-                                This took 20 minutes to produce.<br />
-                                Not 3 weeks.
-                            </p>
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/70 mb-2">AI-generated</p>
+                            <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white max-w-xs leading-[0.95]">
+                                20 minutes.<br />
+                                <span className="text-lime">Not 3 weeks.</span>
+                            </h3>
                         </div>
                     </div>
                 </div>
@@ -285,10 +322,10 @@ export function EnrollPage() {
                     <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden mb-5">
                         <div className="px-6 py-5 border-b border-white/[0.06]">
                             <div className="flex items-center justify-between mb-1">
-                                <span className="font-bold text-white">Sprint Workshop</span>
+                                <span className="font-heading font-black uppercase text-sm text-white">Sprint Workshop</span>
                                 <span className="text-xs font-bold text-lime bg-lime/10 border border-lime/20 px-2 py-0.5 rounded-md">Next cohort</span>
                             </div>
-                            <p className="text-xs text-gray-500">3-day live program · Small cohort · Full AI design workflow</p>
+                            <p className="text-xs text-gray-500 mt-1">3-Day Sprint Program · Small cohort · Full AI design workflow</p>
                         </div>
                         <div className="px-6 py-5 space-y-2.5">
                             {VALUE_STACK.map((row, i) => (
@@ -302,7 +339,7 @@ export function EnrollPage() {
                             <div>
                                 <p className="text-xs text-gray-500">One-time payment</p>
                                 <div className="flex items-baseline gap-1 mt-0.5">
-                                    <span className="text-3xl font-black text-white">8,500</span>
+                                    <span className="font-heading font-black text-3xl text-white">8,500</span>
                                     <span className="text-sm text-gray-400 font-semibold">AED</span>
                                 </div>
                             </div>
@@ -320,7 +357,7 @@ export function EnrollPage() {
                     <button
                         onClick={handleCheckout}
                         disabled={loading || countdown.expired}
-                        className="w-full py-4 rounded-2xl gradient-lime text-black font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>

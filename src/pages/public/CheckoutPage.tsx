@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import logoSrc from '../../assets/logo.png'
 
 const WHAT_YOU_GET = [
-    '3 days of live, hands-on AI design sessions',
+    '3-Day Sprint Program — live, hands-on sessions',
     'Prompt engineering for architectural output',
     'Site analysis, concept sketching, and render workflows',
     'All session recordings + lifetime access to materials',
@@ -13,11 +13,11 @@ const WHAT_YOU_GET = [
     'Post-sprint 1-on-1 follow-up session',
 ]
 
-// TODO: Replace with your actual Calendly URL
 const CALENDLY_URL = 'https://calendly.com/zkandar/sprint-questions'
 
 export function CheckoutPage() {
-    const hasQuestions = new URLSearchParams(window.location.search).get('questions') === 'true'
+    const params = new URLSearchParams(window.location.search)
+    const hasQuestions = params.get('questions') === 'true'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
@@ -44,11 +44,13 @@ export function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white font-body">
             {/* Nav */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center">
+                <a href="/test-landingpage" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
+                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
                 <div className="flex items-center gap-1.5 text-xs text-gray-500">
                     <Shield className="h-3.5 w-3.5" />
@@ -58,7 +60,7 @@ export function CheckoutPage() {
 
             <div className="max-w-lg mx-auto px-5 sm:px-6 py-12 sm:py-20">
 
-                {/* "Book a call" banner */}
+                {/* "Book a call" banner — shown when user has questions or is exploring */}
                 {hasQuestions && (
                     <motion.div
                         initial={{ opacity: 0, y: -8 }}
@@ -91,8 +93,8 @@ export function CheckoutPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
-                    <p className="text-xs font-bold tracking-widest text-lime/70 uppercase mb-2">Sprint Workshop</p>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white">Complete your enrollment</h1>
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/70 mb-2">Sprint Workshop</p>
+                    <h1 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,2.5rem)] leading-[0.95] text-white">Complete your<br />enrollment.</h1>
                 </motion.div>
 
                 {/* Order card */}
@@ -107,14 +109,14 @@ export function CheckoutPage() {
                         <img src="/lander/4.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80" />
                         <div className="absolute bottom-4 left-5">
-                            <p className="text-xs font-bold tracking-widest text-lime/80 uppercase">Zkandar AI</p>
-                            <h2 className="text-lg font-bold text-white">Sprint Workshop</h2>
+                            <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-lime/80">Zkandar AI</p>
+                            <h2 className="font-heading font-black uppercase text-lg text-white">Sprint Workshop</h2>
                         </div>
                     </div>
 
                     {/* What's included */}
                     <div className="p-5 border-b border-white/[0.06]">
-                        <p className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">What's included</p>
+                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">What's included</p>
                         <div className="space-y-2">
                             {WHAT_YOU_GET.map((item, i) => (
                                 <div key={i} className="flex items-start gap-2.5">
@@ -130,13 +132,13 @@ export function CheckoutPage() {
                         <div>
                             <p className="text-xs text-gray-500">Total (one-time payment)</p>
                             <div className="flex items-baseline gap-1.5 mt-0.5">
-                                <span className="text-2xl font-black text-white">8,500</span>
+                                <span className="font-heading font-black text-2xl text-white">8,500</span>
                                 <span className="text-sm font-semibold text-gray-400">AED</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <Clock className="h-3.5 w-3.5" />
-                            3-day program
+                            3-Day Program
                         </div>
                     </div>
                 </motion.div>
@@ -153,7 +155,7 @@ export function CheckoutPage() {
                     <button
                         onClick={handleCheckout}
                         disabled={loading}
-                        className="w-full py-4 rounded-2xl gradient-lime text-black font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>

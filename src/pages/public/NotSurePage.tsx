@@ -65,11 +65,13 @@ export function NotSurePage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null)
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white font-body">
             {/* Nav */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center">
+                <a href="/test-landingpage" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
+                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
                 <a
                     href="/enroll"
@@ -86,11 +88,11 @@ export function NotSurePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <p className="text-xs font-bold tracking-widest text-lime/70 uppercase mb-4">You're not sure yet</p>
-                    <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-black leading-tight text-white mb-4">
-                        That's fair.<br />Let the results speak.
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">You're not sure yet</p>
+                    <h1 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.2rem)] leading-[0.93] text-white mb-4">
+                        That's fair.<br /><span className="text-lime">Let the results speak.</span>
                     </h1>
-                    <p className="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
+                    <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
                         Every person who enrolled had the same doubts you do right now.
                         Here's what happened after they went anyway.
                     </p>
@@ -108,7 +110,7 @@ export function NotSurePage() {
                             transition={{ delay: i * 0.08 }}
                             className="sm:px-6 text-center sm:text-left"
                         >
-                            <div className="text-3xl font-black text-lime mb-1">{o.metric}</div>
+                            <div className="font-heading font-black text-3xl text-lime mb-1">{o.metric}</div>
                             <div className="text-sm font-semibold text-white leading-snug mb-1">{o.label}</div>
                             <div className="text-xs text-gray-500">{o.sub}</div>
                         </motion.div>
@@ -119,8 +121,8 @@ export function NotSurePage() {
             {/* Gallery teaser */}
             <div className="max-w-5xl mx-auto px-5 sm:px-6 py-16">
                 <div className="text-center mb-8">
-                    <p className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">What graduates built</p>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white">
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">What graduates built</p>
+                    <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] text-white">
                         These renders don't exist in real life.<br />
                         <span className="text-lime">AI built them from a sketch.</span>
                     </h2>
@@ -148,8 +150,8 @@ export function NotSurePage() {
             <div className="bg-white/[0.01] border-y border-white/[0.06] py-16">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6">
                     <div className="text-center mb-10">
-                        <p className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">From past participants</p>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-white">In their own words</h2>
+                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">From past participants</p>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] text-white">In their own words</h2>
                     </div>
                     <div className="grid sm:grid-cols-3 gap-5">
                         {TESTIMONIALS.map((t, i) => (
@@ -185,8 +187,8 @@ export function NotSurePage() {
             {/* FAQ */}
             <div className="max-w-2xl mx-auto px-5 sm:px-6 py-16">
                 <div className="text-center mb-10">
-                    <p className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Still have doubts?</p>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white">We've heard all of them.</h2>
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">Still have doubts?</p>
+                    <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] text-white">We've heard all of them.</h2>
                 </div>
                 <div className="space-y-2">
                     {FAQS.map((faq, i) => (
@@ -220,19 +222,19 @@ export function NotSurePage() {
             {/* Final CTA */}
             <div className="border-t border-white/[0.06] bg-white/[0.01]">
                 <div className="max-w-xl mx-auto px-5 sm:px-6 py-16 text-center">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+                    <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] text-white mb-3">
                         Ready now?
                     </h2>
-                    <p className="text-gray-400 mb-8">
+                    <p className="text-gray-400 mb-8 text-sm leading-relaxed">
                         Cohort spots are limited. If you've read this far, you already know the answer.
                     </p>
                     <a
-                        href="/enroll"
-                        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl gradient-lime text-black font-bold text-base hover:opacity-90 transition"
+                        href="/checkout?questions=true"
+                        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 transition"
                     >
                         Enroll in the Sprint Workshop <ArrowRight className="h-5 w-5" />
                     </a>
-                    <p className="text-xs text-gray-600 mt-4">8,500 AED · 3-day intensive · Next cohort filling fast</p>
+                    <p className="text-xs text-gray-600 mt-4">8,500 AED · 3-Day Sprint Program · Next cohort filling fast</p>
                 </div>
             </div>
         </div>

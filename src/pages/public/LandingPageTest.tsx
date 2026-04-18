@@ -72,7 +72,12 @@ const STUDIOS = [
 ]
 
 
-const SPRINT_FEATURES     = ['3-Day Intensive', '2 Hours per day', 'Concept creation & ideation', 'Prompting frameworks included']
+const SPRINT_FEATURES = [
+    'Day 1 — Foundation: identify AI stack, first prompt-to-render workflow',
+    'Day 2 — In-Depth: master prompting from mediocre to advanced',
+    'Day 3 — Full Circle: package results for client presentation',
+    'Leave with portfolio renders + generate in 20 min, not 3 weeks',
+]
 
 const WORKSHOPS = [
     { num: 1,  id: '1113394139', label: 'Sprint Workshop 1' },
@@ -280,11 +285,13 @@ export function LandingPageTest() {
 
             {/* ── NAV ────────────────────────────────────────────────── */}
             <nav className="fixed top-8 inset-x-0 z-50 border-b border-white/[0.05] bg-black/80 backdrop-blur-md px-5 sm:px-10 py-3 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center">
+                <a href="/test-landingpage" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
+                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
                 <div className="flex items-center gap-3 sm:gap-5">
-                    <span className="hidden sm:block text-[0.6rem] uppercase tracking-[0.18em] text-gray-500 font-bold">10 Workshops · 500+ Participants</span>
+                    <span className="hidden sm:block text-[0.6rem] uppercase tracking-[0.18em] text-gray-500 font-bold">50+ Master Classes · 1000+ Participants</span>
                     <a href="/submit-form" className="px-4 py-2 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-lime transition-colors duration-200">Apply Now</a>
                 </div>
             </nav>
@@ -337,7 +344,7 @@ export function LandingPageTest() {
 
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
                                 className="flex flex-wrap items-center gap-3 sm:gap-4 mt-10 text-[0.6rem] sm:text-[0.6875rem] text-gray-600 uppercase tracking-[0.15em]">
-                                <span>73 Surveyed</span>
+                                <span>500+ Surveyed</span>
                                 <span className="w-1 h-1 rounded-full bg-gray-700" />
                                 <span>15+ Studios</span>
                                 <span className="w-1 h-1 rounded-full bg-gray-700" />
@@ -796,7 +803,7 @@ export function LandingPageTest() {
                         <MicroLabel>Real Results. Real Participants.</MicroLabel>
                         <div className="flex flex-wrap items-end gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
-                                10 WORKSHOPS.<br className="sm:hidden" /> 500+ PARTICIPANTS.
+                                50+ MASTER CLASSES.<br className="sm:hidden" /> 1000+ PARTICIPANTS.
                             </h2>
                             <LimeBar />
                         </div>
@@ -809,8 +816,8 @@ export function LandingPageTest() {
                     <FadeIn delay={0.05} className="mb-10 md:mb-12">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             {[
-                                { val: '10',    label: 'Sprint Workshops run' },
-                                { val: '500+',  label: 'Participants trained' },
+                                { val: '50+',   label: 'Master Classes run' },
+                                { val: '1000+', label: 'Participants trained' },
                                 { val: 'Global',label: 'Open to all countries' },
                                 { val: '#1',    label: 'AI design education in UAE' },
                             ].map((s, i) => (
@@ -959,7 +966,7 @@ export function LandingPageTest() {
                                 </div>
                                 <div className="border-t border-white/[0.06] pt-5 mb-6">
                                     <div className="grid grid-cols-3 gap-3">
-                                        {[{ val: '10', label: 'Workshops' }, { val: '500+', label: 'Participants' }, { val: 'Global', label: 'Access' }].map(s => (
+                                        {[{ val: '50+', label: 'Master Classes' }, { val: '1000+', label: 'Participants' }, { val: 'Global', label: 'Access' }].map(s => (
                                             <div key={s.label} className="text-center">
                                                 <div className="text-lg font-heading font-black text-white">{s.val}</div>
                                                 <div className="text-[0.6rem] uppercase tracking-wider text-gray-600 mt-0.5">{s.label}</div>

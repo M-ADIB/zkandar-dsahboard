@@ -19,10 +19,10 @@ const ROLES = [
 ]
 
 const DESIGNATIONS = [
+    'Design Director / Creative Director',
     'Principal / Partner',
     'Senior Architect / Senior Designer',
     'Project Manager',
-    'Design Director / Creative Director',
     'Junior Architect / Junior Designer',
     'Intern / Graduate',
     'Freelancer / Independent',
@@ -33,22 +33,22 @@ const INTEREST_OPTIONS = [
     {
         id: 'masterclass' as const,
         title: 'AI Masterclass',
-        tag: 'FOR TEAMS',
-        description: 'Transform how your entire firm works. Train your team to run AI-directed design workflows end-to-end.',
-        detail: '8-week deep dive · Team of 3–12 · Live sessions + async work',
+        tag: 'FOR CORPORATE TEAMS',
+        description: 'A complete AI transformation for your firm. We come in, build the system, and leave your team certified.',
+        detail: 'Intensive boot camp · Team of 3–12 · Live sessions + async work',
     },
     {
         id: 'sprint' as const,
         title: 'Sprint Workshop',
         tag: 'FOR INDIVIDUALS',
         description: 'Go from zero to AI-fluent in days, not months. Intensive, hands-on, output-focused.',
-        detail: '3-day sprint · Solo or duo · Real deliverables by day 3',
+        detail: '3-Day Sprint Program · Real deliverables by day 3',
     },
     {
         id: 'other' as const,
         title: 'Something Else',
         tag: 'TELL US',
-        description: 'A custom engagement, a keynote, a licensing deal — if the idea is sharp, we want to hear it.',
+        description: 'If the idea is sharp, we want to hear it.',
         detail: 'Custom scope · We\'ll reach out to explore',
     },
 ]
@@ -65,14 +65,14 @@ const COMMITMENT_OPTIONS = [
     {
         id: 'curious' as const,
         label: 'Interested — I have a few questions first.',
-        sub: 'I\'m in the right direction but want to make sure this fits before committing.',
+        sub: 'I\'m in the right direction but want to confirm this fits before committing.',
         color: 'border-white/10 bg-white/[0.02] hover:border-white/20',
         activeColor: 'border-white/30 bg-white/[0.05]',
         dot: 'bg-white/50',
     },
     {
         id: 'exploring' as const,
-        label: 'Still mapping the territory.',
+        label: 'Not quite ready.',
         sub: 'I\'m early in the process. Keep me in the loop.',
         color: 'border-white/10 bg-white/[0.02] hover:border-white/20',
         activeColor: 'border-white/30 bg-white/[0.05]',
@@ -148,7 +148,6 @@ export function SubmitFormPage() {
 
         if (errors.length > 0) {
             setValidationErrors(errors)
-            // Scroll to errors
             document.getElementById('validation-errors')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
             return
         }
@@ -185,8 +184,11 @@ export function SubmitFormPage() {
         } else if (interest === 'sprint') {
             if (commitment === 'ready') {
                 window.location.href = '/enroll'
-            } else {
+            } else if (commitment === 'curious') {
                 window.location.href = '/checkout?questions=true'
+            } else {
+                // exploring / not quite ready — send to conviction page
+                window.location.href = '/not-sure'
             }
         } else {
             setSubmitted(true)
@@ -206,7 +208,7 @@ export function SubmitFormPage() {
                     <div className="h-16 w-16 rounded-full bg-lime/10 border border-lime/30 flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="h-8 w-8 text-lime" />
                     </div>
-                    <h2 className="text-3xl font-bold text-white mb-3">You're in the queue.</h2>
+                    <h2 className="font-heading font-black uppercase text-2xl text-white mb-3">You're in the queue.</h2>
                     <p className="text-gray-400 leading-relaxed mb-8">
                         We received your application. Our team reviews every submission personally —
                         expect a response within 48 hours.
@@ -223,13 +225,15 @@ export function SubmitFormPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white font-body">
             {/* Nav strip */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-3.5 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center gap-2.5">
+                <a href="/test-landingpage" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
+                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
-                <span className="text-[0.6875rem] text-gray-500 hidden sm:block uppercase tracking-[0.15em]">Application Form</span>
+                <span className="text-[0.6875rem] text-gray-600 hidden sm:block uppercase tracking-[0.15em]">Application Form</span>
             </div>
 
             {/* Page content */}
@@ -242,11 +246,11 @@ export function SubmitFormPage() {
                     transition={{ duration: 0.5 }}
                     className="mb-12"
                 >
-                    <p className="text-xs font-bold tracking-widest text-lime/70 uppercase mb-3">Apply Now</p>
-                    <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-3">
-                        Start your AI design journey.
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Apply Now</p>
+                    <h1 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3rem)] leading-[0.95] text-white mb-3">
+                        Start your AI<br /><span className="text-lime">design journey.</span>
                     </h1>
-                    <p className="text-gray-400">
+                    <p className="text-gray-400 text-sm leading-relaxed">
                         Tell us about yourself and where you want to go. We'll find the right path in.
                     </p>
                 </motion.div>
@@ -263,50 +267,70 @@ export function SubmitFormPage() {
                         <SectionLabel number="01" label="About You" />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field
-                                label="First Name"
-                                value={firstName}
-                                onChange={setFirstName}
-                                placeholder="First name"
-                                required
-                            />
-                            <Field
-                                label="Last Name"
-                                value={lastName}
-                                onChange={setLastName}
-                                placeholder="Last name"
-                                required
-                            />
+                            <Field label="First Name" value={firstName} onChange={setFirstName} placeholder="First name" required />
+                            <Field label="Last Name" value={lastName} onChange={setLastName} placeholder="Last name" required />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field
-                                label="Email"
-                                type="email"
-                                value={email}
-                                onChange={setEmail}
-                                placeholder="you@studio.com"
-                                required
-                            />
-                            <Field
-                                label="Phone"
-                                type="tel"
-                                value={phone}
-                                onChange={setPhone}
-                                placeholder="+971 50 000 0000"
-                                required
-                            />
+                            <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@studio.com" required />
+                            <Field label="Phone" type="tel" value={phone} onChange={setPhone} placeholder="+971 50 000 0000" required />
                         </div>
+
+                        {/* Instagram fields */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                    Company Instagram
+                                    <span className="ml-1.5 text-[10px] normal-case text-gray-600 tracking-normal">(optional)</span>
+                                </label>
+                                <div className="relative">
+                                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
+                                    <input
+                                        type="text"
+                                        value={companyInstagram}
+                                        onChange={(e) => setCompanyInstagram(e.target.value)}
+                                        placeholder="@yourstudio"
+                                        className="w-full bg-white/[0.06] border border-white/[0.15] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                    Personal Instagram
+                                    <span className="ml-1.5 text-[10px] normal-case text-gray-600 tracking-normal">(optional)</span>
+                                </label>
+                                <div className="relative">
+                                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
+                                    <input
+                                        type="text"
+                                        value={personalInstagram}
+                                        onChange={(e) => setPersonalInstagram(e.target.value)}
+                                        placeholder="@yourhandle"
+                                        className="w-full bg-white/[0.06] border border-white/[0.15] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* ── SECTION 2: Your Role & Designation ── */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="space-y-4"
+                    >
+                        <SectionLabel number="02" label="Your Role" />
 
                         {/* Role dropdown */}
                         <div>
                             <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
-                                Your Role <span className="text-lime">*</span>
+                                What do you do? <span className="text-lime">*</span>
                             </label>
                             <div className="relative">
                                 <select
                                     value={role}
                                     onChange={(e) => setRole(e.target.value)}
-                                    className="w-full appearance-none bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-lime/40 transition-colors pr-10"
+                                    className="w-full appearance-none bg-white/[0.06] border border-white/[0.15] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-lime/40 transition-colors pr-10"
                                 >
                                     <option value="">Select your role</option>
                                     {ROLES.map((r) => (
@@ -326,7 +350,7 @@ export function SubmitFormPage() {
                                 <select
                                     value={designation}
                                     onChange={(e) => { setDesignation(e.target.value); setDesignationOther('') }}
-                                    className="w-full appearance-none bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-lime/40 transition-colors pr-10"
+                                    className="w-full appearance-none bg-white/[0.06] border border-white/[0.15] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-lime/40 transition-colors pr-10"
                                 >
                                     <option value="">Your position within the company</option>
                                     {DESIGNATIONS.map((d) => (
@@ -348,58 +372,22 @@ export function SubmitFormPage() {
                                             value={designationOther}
                                             onChange={(e) => setDesignationOther(e.target.value)}
                                             placeholder="Describe your designation"
-                                            className="mt-2 w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                                            className="mt-2 w-full bg-white/[0.06] border border-white/[0.15] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
                                         />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                         </div>
-
-                        {/* Instagram fields */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
-                                    Company Instagram
-                                    <span className="ml-1.5 text-[10px] normal-case text-gray-600 tracking-normal">(optional)</span>
-                                </label>
-                                <div className="relative">
-                                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
-                                    <input
-                                        type="text"
-                                        value={companyInstagram}
-                                        onChange={(e) => setCompanyInstagram(e.target.value)}
-                                        placeholder="@yourstudio"
-                                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
-                                    Personal Instagram
-                                    <span className="ml-1.5 text-[10px] normal-case text-gray-600 tracking-normal">(optional)</span>
-                                </label>
-                                <div className="relative">
-                                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 pointer-events-none" />
-                                    <input
-                                        type="text"
-                                        value={personalInstagram}
-                                        onChange={(e) => setPersonalInstagram(e.target.value)}
-                                        placeholder="@yourhandle"
-                                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
-                                    />
-                                </div>
-                            </div>
-                        </div>
                     </motion.div>
 
-                    {/* ── SECTION 2: What You're After ── */}
+                    {/* ── SECTION 3: What You're After ── */}
                     <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                         className="space-y-4"
                     >
-                        <SectionLabel number="02" label="What You're After" />
+                        <SectionLabel number="03" label="What You're After" />
 
                         <div className="space-y-3">
                             {INTEREST_OPTIONS.map((opt) => (
@@ -409,18 +397,18 @@ export function SubmitFormPage() {
                                     onClick={() => setInterest(opt.id)}
                                     className={`w-full text-left p-5 rounded-2xl border transition-all duration-200 ${
                                         interest === opt.id
-                                            ? 'border-lime/50 bg-lime/5'
-                                            : 'border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
+                                            ? 'border-lime/50 bg-lime/[0.06]'
+                                            : 'border-white/[0.12] bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.05]'
                                     }`}
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className="font-semibold text-white text-sm">{opt.title}</span>
+                                                <span className="font-heading font-black uppercase text-sm text-white tracking-wide">{opt.title}</span>
                                                 <span className={`text-[10px] font-bold tracking-widest px-1.5 py-0.5 rounded border ${
                                                     interest === opt.id
                                                         ? 'text-lime border-lime/30 bg-lime/10'
-                                                        : 'text-gray-500 border-white/[0.08]'
+                                                        : 'text-gray-500 border-white/[0.12]'
                                                 }`}>
                                                     {opt.tag}
                                                 </span>
@@ -459,7 +447,7 @@ export function SubmitFormPage() {
                                             onChange={(e) => setInterestOther(e.target.value)}
                                             placeholder="Describe what you have in mind..."
                                             rows={3}
-                                            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors resize-none"
+                                            className="w-full bg-white/[0.06] border border-white/[0.15] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors resize-none"
                                         />
                                     </div>
                                 </motion.div>
@@ -467,14 +455,14 @@ export function SubmitFormPage() {
                         </AnimatePresence>
                     </motion.div>
 
-                    {/* ── SECTION 3: Commitment Level ── */}
+                    {/* ── SECTION 4: Commitment Level ── */}
                     <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                         className="space-y-4"
                     >
-                        <SectionLabel number="03" label="Where You're At" />
+                        <SectionLabel number="04" label="Where You're At" />
 
                         <div className="space-y-3">
                             {COMMITMENT_OPTIONS.map((opt) => (
@@ -546,7 +534,7 @@ export function SubmitFormPage() {
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="w-full py-4 rounded-2xl gradient-lime text-black font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-full py-4 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             {submitting ? (
                                 <><Loader2 className="h-5 w-5 animate-spin" /> Submitting...</>
@@ -568,9 +556,9 @@ export function SubmitFormPage() {
 function SectionLabel({ number, label }: { number: string; label: string }) {
     return (
         <div className="flex items-center gap-3">
-            <span className="text-xs font-black text-lime/40">{number}</span>
-            <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</span>
+            <span className="text-xs font-black text-lime/40 font-heading">{number}</span>
+            <div className="flex-1 h-px bg-white/[0.08]" />
+            <span className="text-[0.6875rem] font-body font-bold text-gray-500 uppercase tracking-[0.2em]">{label}</span>
         </div>
     )
 }
@@ -600,7 +588,7 @@ function Field({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
+                className="w-full bg-white/[0.06] border border-white/[0.15] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-lime/40 transition-colors"
             />
         </div>
     )
