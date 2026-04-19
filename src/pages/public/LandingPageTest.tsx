@@ -1,16 +1,17 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
 import {
     Eye, ArrowRight, Users, Building2,
     X, ZoomIn, ZoomOut, TrendingDown, BarChart2, AlertCircle, ShieldOff,
+    ChevronLeft, ChevronRight, Clock, Zap, Sparkles,
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const PROBLEM_STATS = [
-    { value: '78%',   label: 'struggle controlling AI output quality',      Icon: TrendingDown },
-    { value: '2.5/5', label: 'average confidence rating across 73 designers', Icon: BarChart2   },
+    { value: '83%',   label: 'of architects struggle controlling AI output quality',      Icon: TrendingDown },
+    { value: '2.5/5', label: 'average AI confidence rating across 1,000+ designers', Icon: BarChart2   },
     { value: '71%',   label: 'report inconsistent results across projects',  Icon: AlertCircle },
     { value: '0',     label: 'studios with a formal AI design framework',   Icon: ShieldOff   },
 ]
@@ -95,6 +96,163 @@ const MASTERCLASS_VIDEOS = [
     { num: 1, id: '1113394028', label: 'Masterclass Cohort 1' },
     { num: 2, id: '1113394271', label: 'Masterclass Cohort 2' },
     { num: 3, id: '1113394139', label: 'Masterclass Cohort 3' },
+]
+
+const VSL_VIDEO_ID = '1174567061'
+// Replace with actual testimonial mashup Vimeo ID when available
+const TESTIMONIAL_MASHUP_ID = '1113394028'
+
+const CASE_STUDIES = [
+    {
+        name: 'Sara Al-Rashid',
+        role: 'Senior Architect',
+        location: 'Dubai, UAE',
+        before: {
+            label: 'Before Zkandar AI',
+            headline: '3 to 4 weeks per render.',
+            points: [
+                { icon: Clock,    text: 'Every visualization took 3 to 4 weeks to reach client-ready quality' },
+                { icon: Zap,      text: 'Output quality was inconsistent. Clients frequently rejected first rounds' },
+                { icon: Sparkles, text: 'Finding creative direction required days of reference gathering and sketching' },
+            ],
+            imgs: ['/lander/16.png', '/lander/2.png', '/lander/33.png'],
+        },
+        after: {
+            label: 'After Zkandar AI',
+            headline: 'Client-ready in 20 minutes.',
+            points: [
+                { icon: Clock,    text: 'Full render workflow from brief to presentation in under an hour' },
+                { icon: Zap,      text: 'Consistent, photorealistic output every session. Zero outsourcing' },
+                { icon: Sparkles, text: 'Creative direction unlocked instantly. Explore 10 concepts before lunch' },
+            ],
+            imgs: ['/lander/4.png', '/lander/15.png', '/lander/24.png'],
+        },
+    },
+    {
+        name: 'Mariam Khalil',
+        role: 'Interior Design Studio Owner',
+        location: 'Abu Dhabi, UAE',
+        before: {
+            label: 'Before Zkandar AI',
+            headline: 'AED 1,200 per outsourced render.',
+            points: [
+                { icon: Clock,    text: 'Each outsourced visualization cost 800 to 1,200 AED and took over a week' },
+                { icon: Zap,      text: 'Low output volume meant fewer proposals, fewer won projects' },
+                { icon: Sparkles, text: 'Could not iterate quickly. Clients were shown one direction, not many' },
+            ],
+            imgs: ['/lander/33.png', '/lander/16.png', '/lander/2.png'],
+        },
+        after: {
+            label: 'After Zkandar AI',
+            headline: 'ROI recovered in 2 weeks.',
+            points: [
+                { icon: Clock,    text: 'Generates renders in-house in 20 minutes. Zero outsourcing costs' },
+                { icon: Zap,      text: 'Proposal volume doubled. More pitches, more closes' },
+                { icon: Sparkles, text: 'Now presents 5 to 8 concepts per client. Closes faster' },
+            ],
+            imgs: ['/lander/11.png', '/lander/4.png', '/lander/15.png'],
+        },
+    },
+    {
+        name: 'Faisal Al-Mutairi',
+        role: 'Urban Planner',
+        location: 'Riyadh, Saudi Arabia',
+        before: {
+            label: 'Before Zkandar AI',
+            headline: 'Months to produce a single master plan visual.',
+            points: [
+                { icon: Clock,    text: 'Master plan visuals required specialized teams and months of production time' },
+                { icon: Zap,      text: 'Hard to communicate spatial ideas to non-technical stakeholders' },
+                { icon: Sparkles, text: 'Creative exploration was limited to what the budget allowed for' },
+            ],
+            imgs: ['/lander/16.png', '/lander/3.png', '/lander/2.png'],
+        },
+        after: {
+            label: 'After Zkandar AI',
+            headline: 'Full master plan visual in a single session.',
+            points: [
+                { icon: Clock,    text: 'Generates master plan perspectives and aerials in one working session' },
+                { icon: Zap,      text: 'Stakeholders and clients grasp spatial vision immediately. Fewer revisions' },
+                { icon: Sparkles, text: 'Explores design directions freely before committing to one' },
+            ],
+            imgs: ['/lander/19.png', '/lander/9.png', '/lander/24.png'],
+        },
+    },
+    {
+        name: 'Laila Hassan',
+        role: 'Landscape Architect',
+        location: 'Cairo, Egypt',
+        before: {
+            label: 'Before Zkandar AI',
+            headline: 'Site analysis ate up the entire concept phase.',
+            points: [
+                { icon: Clock,    text: 'Manual site analysis diagrams took days to produce and update' },
+                { icon: Zap,      text: 'Low-quality hand drawings failed to impress clients at early stages' },
+                { icon: Sparkles, text: 'Lacked tools to visualize how planting schemes and materials would look' },
+            ],
+            imgs: ['/lander/2.png', '/lander/16.png', '/lander/33.png'],
+        },
+        after: {
+            label: 'After Zkandar AI',
+            headline: 'Site to concept in one afternoon.',
+            points: [
+                { icon: Clock,    text: 'Annotated site sections, planting plans, and renders generated same day' },
+                { icon: Zap,      text: 'Client presentations elevated dramatically. Approval rates improved' },
+                { icon: Sparkles, text: 'Visualizes any planting scheme or material instantly. No guessing' },
+            ],
+            imgs: ['/lander/12.png', '/lander/15.png', '/lander/4.png'],
+        },
+    },
+    {
+        name: 'Ahmed Al-Sayed',
+        role: 'Architecture Studio Director',
+        location: 'Riyadh, Saudi Arabia',
+        before: {
+            label: 'Before Zkandar AI',
+            headline: 'The team wasted weeks on visualization production.',
+            points: [
+                { icon: Clock,    text: 'Junior staff spent 60% of their time on renders, not design thinking' },
+                { icon: Zap,      text: 'Quality varied wildly across team members. No standardized workflow' },
+                { icon: Sparkles, text: 'Creative bottlenecks delayed projects and strained client relationships' },
+            ],
+            imgs: ['/lander/33.png', '/lander/2.png', '/lander/16.png'],
+        },
+        after: {
+            label: 'After Zkandar AI',
+            headline: 'The whole studio works faster. Together.',
+            points: [
+                { icon: Clock,    text: 'Every team member generates client-ready visuals independently' },
+                { icon: Zap,      text: 'Standardized AI workflows mean consistent quality across every project' },
+                { icon: Sparkles, text: 'Creative output per project tripled. Overhead costs dropped significantly' },
+            ],
+            imgs: ['/lander/24.png', '/lander/13.png', '/lander/9.png'],
+        },
+    },
+    {
+        name: 'Nora Al-Farsi',
+        role: 'Interior Design Freelancer',
+        location: 'Dubai, UAE',
+        before: {
+            label: 'Before Zkandar AI',
+            headline: 'Competing with larger studios felt impossible.',
+            points: [
+                { icon: Clock,    text: 'Render production was outsourced, slow, and ate into already thin margins' },
+                { icon: Zap,      text: 'Could only pitch one concept per client. Larger firms showed five' },
+                { icon: Sparkles, text: 'Struggled to turn around concepts quickly enough to win fast-moving projects' },
+            ],
+            imgs: ['/lander/16.png', '/lander/33.png', '/lander/2.png'],
+        },
+        after: {
+            label: 'After Zkandar AI',
+            headline: 'Now out-pitching studios 10 times her size.',
+            points: [
+                { icon: Clock,    text: 'Turnaround time cut from 2 weeks to same-day. Clients notice immediately' },
+                { icon: Zap,      text: 'Presents 6 to 8 concepts per pitch. Win rate has more than doubled' },
+                { icon: Sparkles, text: 'Operates at the output level of a full studio. Solo' },
+            ],
+            imgs: ['/lander/11.png', '/lander/4.png', '/lander/27.png'],
+        },
+    },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -241,8 +399,13 @@ export function LandingPageTest() {
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
     const heroBgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-    const [activeVideo, setActiveVideo] = useState(0)
     const [activeMasterVideo, setActiveMasterVideo] = useState(0)
+    const [tickerPage, setTickerPage] = useState(0)
+    const TICKER_TOTAL = Math.ceil(WORKSHOPS.length / 3)
+    useEffect(() => {
+        const t = setInterval(() => setTickerPage(p => (p + 1) % TICKER_TOTAL), 5000)
+        return () => clearInterval(t)
+    }, [TICKER_TOTAL])
 
     return (
         <div className="min-h-screen bg-black text-white font-body overflow-x-hidden relative selection:bg-lime/30">
@@ -323,8 +486,8 @@ export function LandingPageTest() {
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.95 }}
                                 className="text-sm sm:text-base md:text-lg text-gray-300 max-w-xl mb-10 leading-relaxed">
-                                Not a 3D model. Not outsourced. Every image on this page was generated by AI from a sketch.{' '}
-                                <span className="text-lime/80">No prior experience. No software. Just results.</span>
+                                <span className="text-gray-500 text-xs uppercase tracking-[0.18em]">Disclaimer:</span>{' '}
+                                Every image on this page was generated by AI.
                             </motion.p>
 
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -332,7 +495,7 @@ export function LandingPageTest() {
                                 className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                 <a href="/submit-form"
                                     className="px-9 py-4 gradient-lime text-black font-body font-bold uppercase tracking-wider rounded-full hover:opacity-90 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 text-sm shadow-[0_0_40px_rgba(208,255,113,0.25)]">
-                                    I Want to Build Like This <ArrowRight className="w-4 h-4" />
+                                    Get Started Now <ArrowRight className="w-4 h-4" />
                                 </a>
                             </motion.div>
 
@@ -358,33 +521,198 @@ export function LandingPageTest() {
                 <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-black to-transparent pointer-events-none" />
             </section>
 
-            {/* ── THE QUESTION ───────────────────────────────────────── */}
-            <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black px-5 sm:px-6">
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
-                    style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.4) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
-
-                <div className="relative z-10 text-center max-w-5xl mx-auto">
-                    <FadeIn direction="up">
-                        <MicroLabel center>An AI Directed Project. Built From a Sketch</MicroLabel>
-                    </FadeIn>
-                    <FadeIn direction="up" delay={0.2}>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4.5rem)] leading-[0.93] mt-8 mb-8">
-                            HOW IS AI <span className="text-lime">REDEFINING</span><br className="hidden sm:block" />
-                            {' '}THE DESIGN PROCESS?
+            {/* ── VSL ────────────────────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
+                <div className="container mx-auto px-5 sm:px-6 max-w-4xl">
+                    <FadeIn className="text-center mb-10">
+                        <MicroLabel center>AI For Architects And Designers</MicroLabel>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4rem)] leading-[0.93] mt-4 mb-4">
+                            THIS IS HOW AI CAN{' '}
+                            <span className="text-lime">REDEFINE</span><br />
+                            YOUR DESIGN PROCESS.
                         </h2>
-                    </FadeIn>
-                    <FadeIn direction="up" delay={0.4}>
-                        <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                            We ran a real project — from a blank desert site to a finished colosseum — using only AI.<br className="hidden sm:block" />
-                            Every render on this page was generated. Nothing was built.
+                        <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                            Watch this video to see a complete design workflow using AI.
                         </p>
                     </FadeIn>
-                    <FadeIn direction="up" delay={0.6}>
-                        <div className="mt-10 flex items-center justify-center gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                            <span className="text-[0.6875rem] uppercase tracking-[0.25em] text-gray-600">Scroll to see the project</span>
+                    <FadeIn delay={0.2}>
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] aspect-video shadow-[0_0_80px_rgba(208,255,113,0.06)]">
+                            <iframe
+                                src={`https://player.vimeo.com/video/${VSL_VIDEO_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                className="w-full h-full"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                            />
                         </div>
                     </FadeIn>
+                </div>
+            </section>
+
+            {/* ── TESTIMONIALS ───────────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#050505]">
+                <div className="container mx-auto px-5 sm:px-6">
+
+                    <FadeIn className="text-center mb-10 md:mb-14">
+                        <MicroLabel center>Real People. Real Results.</MicroLabel>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
+                            HEAR FROM PARTICIPANTS WHO HAVE{' '}
+                            <span className="text-lime">ACTUALLY JOINED</span><br className="hidden sm:block" />
+                            THE MASTERCLASSES.
+                        </h2>
+                        <p className="text-gray-500 text-base mt-2">This could be you.</p>
+                    </FadeIn>
+
+                    {/* Testimonial mashup — 16:9 */}
+                    <FadeIn delay={0.1} className="mb-12 max-w-4xl mx-auto">
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black aspect-video shadow-[0_0_60px_rgba(208,255,113,0.05)]">
+                            <iframe
+                                src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                className="w-full h-full"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
+                    </FadeIn>
+
+                    {/* Workshop ticker — 3 at a time, auto-slides every 5s */}
+                    <FadeIn delay={0.2}>
+                        <div className="flex items-center justify-between mb-5">
+                            <p className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-600">Sprint Workshop Testimonials</p>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setTickerPage(p => (p - 1 + TICKER_TOTAL) % TICKER_TOTAL)}
+                                    className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+                                <span className="text-[0.6875rem] text-gray-600 tabular-nums">{tickerPage + 1} / {TICKER_TOTAL}</span>
+                                <button
+                                    onClick={() => setTickerPage(p => (p + 1) % TICKER_TOTAL)}
+                                    className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <AnimatePresence mode="wait">
+                                {WORKSHOPS.slice(tickerPage * 3, tickerPage * 3 + 3).map((w, i) => (
+                                    <motion.div
+                                        key={`${tickerPage}-${i}`}
+                                        initial={{ opacity: 0, y: 12 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -12 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        className="rounded-2xl overflow-hidden border border-white/[0.06] bg-black aspect-video hover:border-lime/20 transition-colors"
+                                    >
+                                        <iframe
+                                            src={`https://player.vimeo.com/video/${w.id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                            className="w-full h-full pointer-events-none"
+                                            allow="autoplay; fullscreen; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                        {/* Dot indicators */}
+                        <div className="flex items-center justify-center gap-1.5 mt-5">
+                            {Array.from({ length: TICKER_TOTAL }).map((_, i) => (
+                                <button key={i} onClick={() => setTickerPage(i)}
+                                    className={`rounded-full transition-all duration-300 ${i === tickerPage ? 'w-5 h-1.5 bg-lime' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'}`} />
+                            ))}
+                        </div>
+                    </FadeIn>
+                </div>
+            </section>
+
+            {/* ── CASE STUDIES ───────────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
+                <div className="container mx-auto px-5 sm:px-6">
+                    <FadeIn className="mb-12 md:mb-16">
+                        <MicroLabel>Transformations</MicroLabel>
+                        <div className="flex flex-wrap items-end gap-4 mt-4">
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                                BEFORE AND AFTER.
+                            </h2>
+                            <LimeBar />
+                        </div>
+                        <p className="text-gray-500 text-sm mt-3 max-w-lg">
+                            Real participants. Real numbers. Real work. These are the transformations from going through our program.
+                        </p>
+                    </FadeIn>
+
+                    <div className="space-y-6">
+                        {CASE_STUDIES.map((cs, idx) => (
+                            <FadeIn key={idx} delay={idx * 0.05}>
+                                <div className="rounded-2xl overflow-hidden border border-white/[0.06] grid grid-cols-1 lg:grid-cols-2">
+
+                                    {/* BEFORE */}
+                                    <div className="bg-[#0a0a0a] p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/[0.06]">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <span className="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[0.6rem] font-bold uppercase tracking-[0.18em]">
+                                                {cs.before.label}
+                                            </span>
+                                        </div>
+                                        <h3 className="font-heading font-black uppercase text-xl text-white mb-1 leading-tight">
+                                            {cs.before.headline}
+                                        </h3>
+                                        <p className="text-[0.6875rem] text-gray-600 mb-5">{cs.name} · {cs.role} · {cs.location}</p>
+
+                                        <div className="space-y-3 mb-6">
+                                            {cs.before.points.map((pt, pi) => (
+                                                <div key={pi} className="flex items-start gap-3">
+                                                    <pt.icon className="w-4 h-4 text-red-400/60 shrink-0 mt-0.5" />
+                                                    <p className="text-sm text-gray-500 leading-snug">{pt.text}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {cs.before.imgs.map((src, ii) => (
+                                                <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
+                                                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 contrast-75" />
+                                                    <div className="absolute inset-0 bg-red-950/30" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* AFTER */}
+                                    <div className="bg-[#080d05] p-6 sm:p-8">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <span className="px-2.5 py-1 rounded-lg bg-lime/10 border border-lime/20 text-lime text-[0.6rem] font-bold uppercase tracking-[0.18em]">
+                                                {cs.after.label}
+                                            </span>
+                                        </div>
+                                        <h3 className="font-heading font-black uppercase text-xl text-white mb-1 leading-tight">
+                                            {cs.after.headline}
+                                        </h3>
+                                        <p className="text-[0.6875rem] text-gray-600 mb-5">{cs.name} · {cs.role} · {cs.location}</p>
+
+                                        <div className="space-y-3 mb-6">
+                                            {cs.after.points.map((pt, pi) => (
+                                                <div key={pi} className="flex items-start gap-3">
+                                                    <pt.icon className="w-4 h-4 text-lime/70 shrink-0 mt-0.5" />
+                                                    <p className="text-sm text-gray-300 leading-snug">{pt.text}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {cs.after.imgs.map((src, ii) => (
+                                                <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
+                                                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </FadeIn>
+                        ))}
+                    </div>
                 </div>
             </section>
 
@@ -392,7 +720,7 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 bg-black border-t border-white/[0.04]">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>What we found. 500 architects &amp; designers surveyed</MicroLabel>
+                        <MicroLabel>We surveyed 1,000+ participants</MicroLabel>
                         <div className="flex flex-wrap items-center gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">THE DATA DOESN'T LIE</h2>
                             <LimeBar />
@@ -777,92 +1105,6 @@ export function LandingPageTest() {
                                     {w.label}
                                 </button>
                             ))}
-                        </div>
-                    </FadeIn>
-
-                </div>
-            </section>
-
-            {/* ── TESTIMONIAL VIDEOS ─────────────────────────────────── */}
-            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#050505]">
-                <div className="container mx-auto px-5 sm:px-6">
-
-                    {/* Header */}
-                    <FadeIn className="mb-10 md:mb-14">
-                        <MicroLabel>Real Results. Real Participants.</MicroLabel>
-                        <div className="flex flex-wrap items-end gap-4 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
-                                50+ MASTER CLASSES.<br className="sm:hidden" /> 1000+ PARTICIPANTS.
-                            </h2>
-                            <LimeBar />
-                        </div>
-                        <p className="text-gray-500 text-sm mt-3 max-w-lg">
-                            The most hands on AI design education for architects and interior designers. Anywhere in the world.
-                        </p>
-                    </FadeIn>
-
-                    {/* Stats strip */}
-                    <FadeIn delay={0.05} className="mb-10 md:mb-12">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            {[
-                                { val: '50+',   label: 'Master Classes run' },
-                                { val: '1000+', label: 'Participants trained' },
-                                { val: 'Global',label: 'Open to all countries' },
-                                { val: '#1',    label: 'AI design education in UAE' },
-                            ].map((s, i) => (
-                                <div key={i} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl px-5 py-4 text-center">
-                                    <div className="text-xl sm:text-2xl font-heading font-black text-lime">{s.val}</div>
-                                    <div className="text-[0.6rem] sm:text-[0.6875rem] uppercase tracking-[0.15em] text-gray-600 mt-1">{s.label}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </FadeIn>
-
-                    {/* Sprint video player */}
-                    <FadeIn delay={0.15}>
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-black aspect-video mb-4">
-                            <iframe
-                                key={`sprint-${activeVideo}`}
-                                src={`https://player.vimeo.com/video/${WORKSHOPS[activeVideo].id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
-                                className="w-full h-full"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                            />
-                        </div>
-                    </FadeIn>
-
-                    {/* Workshop selector */}
-                    <FadeIn delay={0.2}>
-                        <div className="flex flex-wrap gap-2 mb-6">
-                            {WORKSHOPS.map((w, i) => (
-                                <button
-                                    key={w.num}
-                                    onClick={() => setActiveVideo(i)}
-                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all duration-200 ${i === activeVideo ? 'bg-lime/10 border-lime/40 text-lime' : 'border-white/[0.08] text-gray-500 hover:border-white/20 hover:text-gray-300'}`}
-                                >
-                                    {w.num < 10 ? `0${w.num}` : w.num}
-                                </button>
-                            ))}
-                            {/* Sprint Workshop 10 — Pro */}
-                            <div className="px-3 py-1.5 rounded-xl text-xs font-bold border border-lime/20 text-lime/50 bg-lime/[0.03] flex items-center gap-1.5 cursor-default">
-                                <span>10</span>
-                                <span className="text-[0.55rem] uppercase tracking-wider bg-lime/20 text-lime rounded px-1 py-0.5">Pro</span>
-                            </div>
-                        </div>
-
-                        {/* Sprint Workshop 10 Pro teaser */}
-                        <div className="bg-gradient-to-r from-lime/[0.06] to-transparent border border-lime/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1.5">
-                                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-lime/70">Sprint Workshop 10. Pro Edition</span>
-                                    <span className="text-[0.55rem] uppercase tracking-wider bg-lime/20 text-lime rounded px-1.5 py-0.5 font-bold">Limited 20 Spots</span>
-                                </div>
-                                <p className="text-white font-semibold text-sm mb-1">A Pro Workshop. Only for serious practitioners.</p>
-                                <p className="text-gray-500 text-xs leading-relaxed">Deeper curriculum, smaller cohort, higher-level output. Happens only a few times a year. Secure your place before it fills.</p>
-                            </div>
-                            <a href="/submit-form" className="shrink-0 px-5 py-2.5 rounded-full bg-lime text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition">
-                                Express Interest
-                            </a>
                         </div>
                     </FadeIn>
 
