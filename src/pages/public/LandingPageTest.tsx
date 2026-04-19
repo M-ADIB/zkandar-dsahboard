@@ -346,16 +346,11 @@ export function LandingPageTest() {
                             </motion.div>
                         </div>
 
-                        {/* Stat strip — desktop only */}
+                        {/* Logo — desktop only */}
                         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.7 }}
-                            className="hidden lg:flex flex-col border-l border-white/10 pl-8">
-                            {[{ value: '73', label: 'Surveyed' }, { value: '78%', label: 'Struggle' }, { value: '2.5/5', label: 'Confidence' }].map((s, i) => (
-                                <div key={i} className="py-5 border-b border-white/5 last:border-0">
-                                    <div className="text-2xl font-heading font-black text-red-400">{s.value}</div>
-                                    <div className="text-[0.6875rem] uppercase tracking-[0.15em] text-gray-600 mt-0.5">{s.label}</div>
-                                </div>
-                            ))}
+                            className="hidden lg:flex items-center justify-center pl-8">
+                            <img src={logoSrc} alt="Zkandar AI" className="h-24 object-contain opacity-80" />
                         </motion.div>
                     </div>
                 </div>
