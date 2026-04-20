@@ -401,9 +401,14 @@ export function LandingPageTest() {
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
     const [activeMasterVideo, setActiveMasterVideo] = useState(0)
     const [tickerPage, setTickerPage] = useState(0)
+    const [mobileTickerIdx, setMobileTickerIdx] = useState(0)
+    const [expandedCase, setExpandedCase] = useState(0)
     const TICKER_TOTAL = Math.ceil(WORKSHOPS.length / 3)
     useEffect(() => {
-        const t = setInterval(() => setTickerPage(p => (p + 1) % TICKER_TOTAL), 5000)
+        const t = setInterval(() => {
+            setTickerPage(p => (p + 1) % TICKER_TOTAL)
+            setMobileTickerIdx(p => (p + 1) % WORKSHOPS.length)
+        }, 5000)
         return () => clearInterval(t)
     }, [TICKER_TOTAL])
 
@@ -478,9 +483,9 @@ export function LandingPageTest() {
                             </motion.p>
 
                             <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.6rem,7vw,5.5rem)] mb-6">
-                                <span className="block text-white"><SplitText text="THIS IS WHAT" baseDelay={0.1} /></span>
-                                <span className="block text-lime"><SplitText text="AI DIRECTED" baseDelay={0.28} /></span>
-                                <span className="block text-white"><SplitText text="DESIGN LOOKS LIKE." baseDelay={0.52} /></span>
+                                <span className="block text-white whitespace-nowrap"><SplitText text="THIS IS WHAT" baseDelay={0.1} /></span>
+                                <span className="block text-lime whitespace-nowrap"><SplitText text="AI DIRECTED" baseDelay={0.28} /></span>
+                                <span className="block text-white whitespace-nowrap"><SplitText text="DESIGN LOOKS LIKE." baseDelay={0.52} /></span>
                             </h1>
 
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -509,11 +514,19 @@ export function LandingPageTest() {
                             </motion.div>
                         </div>
 
-                        {/* Logo — desktop only */}
+                        {/* 4:5 video — desktop only (placeholder until real clip provided) */}
                         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.7 }}
-                            className="hidden lg:flex items-center justify-center pl-8">
-                            <img src={logoSrc} alt="Zkandar AI" className="h-24 object-contain opacity-80" />
+                            className="hidden lg:block pl-8 shrink-0">
+                            <div className="w-48 xl:w-56 rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]"
+                                style={{ aspectRatio: '4/5' }}>
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center px-4">
+                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center">
+                                        <ArrowRight className="w-4 h-4 text-white/30 rotate-90" />
+                                    </div>
+                                    <p className="text-[0.6rem] uppercase tracking-[0.18em] text-white/20">Video placeholder</p>
+                                </div>
+                            </div>
                         </motion.div>
                     </div>
                 </div>
@@ -527,12 +540,10 @@ export function LandingPageTest() {
                     <FadeIn className="text-center mb-10">
                         <MicroLabel center>AI For Architects And Designers</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4rem)] leading-[0.93] mt-4 mb-4">
-                            THIS IS HOW AI CAN{' '}
-                            <span className="text-lime">REDEFINE</span><br />
-                            YOUR DESIGN PROCESS.
+                            AI <span className="text-lime">REDEFINES</span> DESIGN.
                         </h2>
                         <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-                            Watch this video to see a complete design workflow using AI.
+                            Watch a complete AI design workflow from brief to final render.
                         </p>
                     </FadeIn>
                     <FadeIn delay={0.2}>
@@ -555,9 +566,7 @@ export function LandingPageTest() {
                     <FadeIn className="text-center mb-10 md:mb-14">
                         <MicroLabel center>Real People. Real Results.</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
-                            HEAR FROM PARTICIPANTS WHO HAVE{' '}
-                            <span className="text-lime">ACTUALLY JOINED</span><br className="hidden sm:block" />
-                            THE MASTERCLASSES.
+                            HEAR FROM OUR <span className="text-lime">GRADUATES.</span>
                         </h2>
                         <p className="text-gray-500 text-base mt-2">This could be you.</p>
                     </FadeIn>
@@ -574,53 +583,83 @@ export function LandingPageTest() {
                         </div>
                     </FadeIn>
 
-                    {/* Workshop ticker — 3 at a time, auto-slides every 5s */}
+                    {/* Workshop ticker */}
                     <FadeIn delay={0.2}>
-                        <div className="flex items-center justify-between mb-5">
-                            <p className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-600">Sprint Workshop Testimonials</p>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => setTickerPage(p => (p - 1 + TICKER_TOTAL) % TICKER_TOTAL)}
-                                    className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </button>
-                                <span className="text-[0.6875rem] text-gray-600 tabular-nums">{tickerPage + 1} / {TICKER_TOTAL}</span>
-                                <button
-                                    onClick={() => setTickerPage(p => (p + 1) % TICKER_TOTAL)}
-                                    className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition"
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
+                        {/* Mobile: 1 at a time */}
+                        <div className="sm:hidden">
+                            <div className="flex items-center justify-between mb-4">
+                                <p className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-600">Sprint Workshop Testimonials</p>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => setMobileTickerIdx(p => (p - 1 + WORKSHOPS.length) % WORKSHOPS.length)}
+                                        className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition">
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </button>
+                                    <span className="text-[0.6875rem] text-gray-600 tabular-nums">{mobileTickerIdx + 1} / {WORKSHOPS.length}</span>
+                                    <button onClick={() => setMobileTickerIdx(p => (p + 1) % WORKSHOPS.length)}
+                                        className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition">
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                            <AnimatePresence mode="wait">
+                                <motion.div key={mobileTickerIdx}
+                                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                                    className="rounded-2xl overflow-hidden border border-white/[0.06] bg-black aspect-video">
+                                    <iframe
+                                        src={`https://player.vimeo.com/video/${WORKSHOPS[mobileTickerIdx].id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                </motion.div>
+                            </AnimatePresence>
+                            <div className="flex items-center justify-center gap-1.5 mt-4">
+                                {WORKSHOPS.map((_, i) => (
+                                    <button key={i} onClick={() => setMobileTickerIdx(i)}
+                                        className={`rounded-full transition-all duration-300 ${i === mobileTickerIdx ? 'w-5 h-1.5 bg-lime' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'}`} />
+                                ))}
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <AnimatePresence mode="wait">
-                                {WORKSHOPS.slice(tickerPage * 3, tickerPage * 3 + 3).map((w, i) => (
-                                    <motion.div
-                                        key={`${tickerPage}-${i}`}
-                                        initial={{ opacity: 0, y: 12 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -12 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        className="rounded-2xl overflow-hidden border border-white/[0.06] bg-black aspect-video hover:border-lime/20 transition-colors"
-                                    >
-                                        <iframe
-                                            src={`https://player.vimeo.com/video/${w.id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
-                                            className="w-full h-full pointer-events-none"
-                                            allow="autoplay; fullscreen; picture-in-picture"
-                                            allowFullScreen
-                                        />
-                                    </motion.div>
+
+                        {/* Desktop: 3 at a time */}
+                        <div className="hidden sm:block">
+                            <div className="flex items-center justify-between mb-5">
+                                <p className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-600">Sprint Workshop Testimonials</p>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => setTickerPage(p => (p - 1 + TICKER_TOTAL) % TICKER_TOTAL)}
+                                        className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition">
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </button>
+                                    <span className="text-[0.6875rem] text-gray-600 tabular-nums">{tickerPage + 1} / {TICKER_TOTAL}</span>
+                                    <button onClick={() => setTickerPage(p => (p + 1) % TICKER_TOTAL)}
+                                        className="p-2 rounded-full border border-white/10 hover:border-lime/30 hover:text-lime text-gray-500 transition">
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <AnimatePresence mode="wait">
+                                    {WORKSHOPS.slice(tickerPage * 3, tickerPage * 3 + 3).map((w, i) => (
+                                        <motion.div key={`${tickerPage}-${i}`}
+                                            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            className="rounded-2xl overflow-hidden border border-white/[0.06] bg-black aspect-video hover:border-lime/20 transition-colors">
+                                            <iframe
+                                                src={`https://player.vimeo.com/video/${w.id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                                className="w-full h-full pointer-events-none"
+                                                allow="autoplay; fullscreen; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                            <div className="flex items-center justify-center gap-1.5 mt-5">
+                                {Array.from({ length: TICKER_TOTAL }).map((_, i) => (
+                                    <button key={i} onClick={() => setTickerPage(i)}
+                                        className={`rounded-full transition-all duration-300 ${i === tickerPage ? 'w-5 h-1.5 bg-lime' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'}`} />
                                 ))}
-                            </AnimatePresence>
-                        </div>
-                        {/* Dot indicators */}
-                        <div className="flex items-center justify-center gap-1.5 mt-5">
-                            {Array.from({ length: TICKER_TOTAL }).map((_, i) => (
-                                <button key={i} onClick={() => setTickerPage(i)}
-                                    className={`rounded-full transition-all duration-300 ${i === tickerPage ? 'w-5 h-1.5 bg-lime' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'}`} />
-                            ))}
+                            </div>
                         </div>
                     </FadeIn>
                 </div>
@@ -642,76 +681,108 @@ export function LandingPageTest() {
                         </p>
                     </FadeIn>
 
-                    <div className="space-y-6">
-                        {CASE_STUDIES.map((cs, idx) => (
-                            <FadeIn key={idx} delay={idx * 0.05}>
-                                <div className="rounded-2xl overflow-hidden border border-white/[0.06] grid grid-cols-1 lg:grid-cols-2">
+                    <div className="space-y-3">
+                        {CASE_STUDIES.map((cs, idx) => {
+                            const isOpen = expandedCase === idx
+                            const initials = cs.name.split(' ').map((n: string) => n[0]).join('')
+                            return (
+                                <FadeIn key={idx} delay={idx * 0.04}>
+                                    <div className={`rounded-2xl border transition-colors duration-300 overflow-hidden ${isOpen ? 'border-white/[0.1]' : 'border-white/[0.05] hover:border-white/[0.08]'}`}>
 
-                                    {/* BEFORE */}
-                                    <div className="bg-[#0a0a0a] p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/[0.06]">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <span className="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[0.6rem] font-bold uppercase tracking-[0.18em]">
-                                                {cs.before.label}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-heading font-black uppercase text-xl text-white mb-1 leading-tight">
-                                            {cs.before.headline}
-                                        </h3>
-                                        <p className="text-[0.6875rem] text-gray-600 mb-5">{cs.name} · {cs.role} · {cs.location}</p>
+                                        {/* Collapsed header — always visible */}
+                                        <button
+                                            onClick={() => setExpandedCase(isOpen ? -1 : idx)}
+                                            className="w-full flex items-center gap-4 px-5 sm:px-7 py-5 text-left"
+                                        >
+                                            {/* Profile picture placeholder */}
+                                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center shrink-0">
+                                                <span className="font-heading font-black text-lime text-sm">{initials}</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{cs.name}</p>
+                                                <p className="text-sm text-gray-400 mt-0.5">{cs.role}</p>
+                                                <p className="text-xs text-gray-600">{cs.location}</p>
+                                            </div>
+                                            <div className="flex items-center gap-3 shrink-0">
+                                                <span className={`hidden sm:block text-[0.6rem] font-bold uppercase tracking-[0.15em] transition-colors ${isOpen ? 'text-lime' : 'text-gray-600'}`}>
+                                                    {isOpen ? 'Collapse' : 'See transformation'}
+                                                </span>
+                                                <ChevronRight className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} />
+                                            </div>
+                                        </button>
 
-                                        <div className="space-y-3 mb-6">
-                                            {cs.before.points.map((pt, pi) => (
-                                                <div key={pi} className="flex items-start gap-3">
-                                                    <pt.icon className="w-4 h-4 text-red-400/60 shrink-0 mt-0.5" />
-                                                    <p className="text-sm text-gray-500 leading-snug">{pt.text}</p>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        {/* Expanded content */}
+                                        <AnimatePresence initial={false}>
+                                            {isOpen && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="grid grid-cols-1 lg:grid-cols-2 border-t border-white/[0.06]">
 
-                                        <div className="grid grid-cols-3 gap-2">
-                                            {cs.before.imgs.map((src, ii) => (
-                                                <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
-                                                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 contrast-75" />
-                                                    <div className="absolute inset-0 bg-red-950/30" />
-                                                </div>
-                                            ))}
-                                        </div>
+                                                        {/* BEFORE */}
+                                                        <div className="bg-[#0a0a0a] p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/[0.06]">
+                                                            <span className="inline-block px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[0.6rem] font-bold uppercase tracking-[0.18em] mb-4">
+                                                                {cs.before.label}
+                                                            </span>
+                                                            <h3 className="font-heading font-black uppercase text-lg sm:text-xl text-white mb-5 leading-tight">
+                                                                {cs.before.headline}
+                                                            </h3>
+                                                            <div className="space-y-3 mb-6">
+                                                                {cs.before.points.map((pt, pi) => (
+                                                                    <div key={pi} className="flex items-start gap-3">
+                                                                        <pt.icon className="w-4 h-4 text-red-400/60 shrink-0 mt-0.5" />
+                                                                        <p className="text-sm text-gray-500 leading-snug">{pt.text}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <div className="grid grid-cols-3 gap-2">
+                                                                {cs.before.imgs.map((src, ii) => (
+                                                                    <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
+                                                                        <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 contrast-75" />
+                                                                        <div className="absolute inset-0 bg-red-950/30" />
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* AFTER */}
+                                                        <div className="bg-[#080d05] p-6 sm:p-8">
+                                                            <span className="inline-block px-2.5 py-1 rounded-lg bg-lime/10 border border-lime/20 text-lime text-[0.6rem] font-bold uppercase tracking-[0.18em] mb-4">
+                                                                {cs.after.label}
+                                                            </span>
+                                                            <h3 className="font-heading font-black uppercase text-lg sm:text-xl text-white mb-5 leading-tight">
+                                                                {cs.after.headline}
+                                                            </h3>
+                                                            <div className="space-y-3 mb-6">
+                                                                {cs.after.points.map((pt, pi) => (
+                                                                    <div key={pi} className="flex items-start gap-3">
+                                                                        <pt.icon className="w-4 h-4 text-lime/70 shrink-0 mt-0.5" />
+                                                                        <p className="text-sm text-gray-300 leading-snug">{pt.text}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <div className="grid grid-cols-3 gap-2">
+                                                                {cs.after.imgs.map((src, ii) => (
+                                                                    <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
+                                                                        <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
-
-                                    {/* AFTER */}
-                                    <div className="bg-[#080d05] p-6 sm:p-8">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <span className="px-2.5 py-1 rounded-lg bg-lime/10 border border-lime/20 text-lime text-[0.6rem] font-bold uppercase tracking-[0.18em]">
-                                                {cs.after.label}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-heading font-black uppercase text-xl text-white mb-1 leading-tight">
-                                            {cs.after.headline}
-                                        </h3>
-                                        <p className="text-[0.6875rem] text-gray-600 mb-5">{cs.name} · {cs.role} · {cs.location}</p>
-
-                                        <div className="space-y-3 mb-6">
-                                            {cs.after.points.map((pt, pi) => (
-                                                <div key={pi} className="flex items-start gap-3">
-                                                    <pt.icon className="w-4 h-4 text-lime/70 shrink-0 mt-0.5" />
-                                                    <p className="text-sm text-gray-300 leading-snug">{pt.text}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        <div className="grid grid-cols-3 gap-2">
-                                            {cs.after.imgs.map((src, ii) => (
-                                                <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
-                                                    <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </FadeIn>
-                        ))}
+                                </FadeIn>
+                            )
+                        })}
                     </div>
                 </div>
             </section>
@@ -754,6 +825,8 @@ export function LandingPageTest() {
                 </div>
             </section>
 
+            {/* ARCHIVED: THE PROCESS, GALLERY, FULL FILM, AI CAPABILITIES, SOCIAL PROOF */}
+            {false && (<>
             {/* ── THE PROCESS ────────────────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#080808]">
 
@@ -1110,13 +1183,19 @@ export function LandingPageTest() {
 
                 </div>
             </section>
+            </>)}
 
             {/* ── CTA / PRICING ──────────────────────────────────────── */}
             <section id="sprint" className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16 text-center">
-                        <MicroLabel center>Choose Your Path</MicroLabel>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4">WHERE DO YOU START?</h2>
+                        <MicroLabel center>You've seen the results. Now take action.</MicroLabel>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4">
+                            HOW TO <span className="text-lime">GET STARTED.</span>
+                        </h2>
+                        <p className="text-gray-500 text-sm mt-4 max-w-md mx-auto">
+                            Choose the right program for where you are. Both get you to the same result — faster design, better output, real results.
+                        </p>
                     </FadeIn>
 
                     <div id="masterclass" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 max-w-5xl mx-auto">
