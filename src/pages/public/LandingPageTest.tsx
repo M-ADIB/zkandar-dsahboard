@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'fra
 import {
     Eye, ArrowRight, Users, Building2,
     X, ZoomIn, ZoomOut, TrendingDown, BarChart2, AlertCircle, ShieldOff,
-    ChevronLeft, ChevronRight,
+    ChevronLeft, ChevronRight, Play,
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 
@@ -164,6 +164,7 @@ const CASE_STUDIES: CaseStudy[] = [
             '/casestudies/aleena/shot-7.jpg',
         ],
         slides: [
+            { vimeoId: '1185031477', stepLabel: '▶', category: 'Walkthrough', title: 'Full Video Walkthrough', caption: 'A complete AI-directed video walkthrough of the luxury F&B interior. Every surface, angle, and atmosphere — generated.' },
             { img: '/casestudies/aleena/full-shot.jpg',  stepLabel: '01', category: 'Overview',      title: 'The Hero Shot',    caption: 'A luxury F&B interior. Warm stone arches, onyx bar counter, soaring ceilings, palm-framed windows. Client-ready on day one.' },
             { img: '/casestudies/aleena/shot-1.jpg',     stepLabel: '02', category: 'Perspectives',  title: 'Shot 02',          caption: 'AI-generated perspective exploring the spatial sequence from entry to bar.' },
             { img: '/casestudies/aleena/shot-2.jpg',     stepLabel: '03', category: 'Perspectives',  title: 'Shot 03',          caption: '' },
@@ -174,6 +175,22 @@ const CASE_STUDIES: CaseStudy[] = [
             { img: '/casestudies/aleena/shot-7.jpg',     stepLabel: '08', category: 'Perspectives',  title: 'Shot 08',          caption: '' },
             { img: '/casestudies/aleena/shot-9.jpg',     stepLabel: '09', category: 'Perspectives',  title: 'Shot 09',          caption: '' },
             { img: '/casestudies/aleena/shot-10.jpg',    stepLabel: '10', category: 'Perspectives',  title: 'Shot 10',          caption: 'Every angle of the space explored. All generated — no photography, no 3D modeling software.' },
+        ],
+    },
+    {
+        id: 'case3',
+        name: 'Case Study 3',
+        projectType: 'AI-Directed Design',
+        location: 'UAE',
+        tagline: 'Another graduate project — AI-directed from brief to final deliverable.',
+        previewImgs: [
+            '/casestudies/aleena/full-shot.jpg',
+            '/casestudies/aleena/shot-1.jpg',
+            '/casestudies/aleena/shot-4.jpg',
+            '/casestudies/aleena/shot-7.jpg',
+        ],
+        slides: [
+            { vimeoId: '1185031432', stepLabel: '▶', category: 'Walkthrough', title: 'Full Video Walkthrough', caption: 'A complete AI-directed walkthrough of the project. Every render and visualization — generated.' },
         ],
     },
 ]
@@ -318,7 +335,8 @@ function Lightbox({ images, index, onClose }: {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface CaseStudySlide {
-    img: string
+    img?: string        // absent on video slides
+    vimeoId?: string    // present on video slides
     stepLabel: string
     category: string
     title: string
@@ -400,8 +418,12 @@ function CaseStudyPresentation({
                                     className={`shrink-0 flex flex-col items-center gap-1 transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
                                     title={`${currentCategory} — ${s.title}`}
                                 >
-                                    <div className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-colors duration-200 ${isActive ? 'border-lime' : 'border-white/[0.06]'}`}>
-                                        <img src={s.img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                                    <div className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-colors duration-200 flex items-center justify-center bg-white/[0.04] ${isActive ? 'border-lime' : 'border-white/[0.06]'}`}>
+                                        {s.vimeoId ? (
+                                            <Play className="w-3.5 h-3.5 text-lime/80" />
+                                        ) : (
+                                            <img src={s.img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                                        )}
                                     </div>
                                     <span className={`text-[0.5rem] uppercase tracking-wider font-bold tabular-nums ${isActive ? 'text-lime' : 'text-gray-600'}`}>{s.stepLabel}</span>
                                 </button>
@@ -417,19 +439,40 @@ function CaseStudyPresentation({
                 </div>
             </div>
 
-            {/* ── Main image ── */}
+            {/* ── Main image / video ── */}
             <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#060606]">
                 <AnimatePresence mode="wait">
-                    <motion.img
-                        key={slideIdx}
-                        src={slide.img}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.18 }}
-                        className="max-h-full max-w-full object-contain"
-                        alt={slide.title}
-                    />
+                    {slide.vimeoId ? (
+                        <motion.div
+                            key={`video-${slideIdx}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="w-full h-full flex items-center justify-center p-4 sm:p-10"
+                        >
+                            <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                                <iframe
+                                    src={`https://player.vimeo.com/video/${slide.vimeoId}?autoplay=1&loop=0&title=0&byline=0&portrait=0&color=c8f542`}
+                                    className="w-full h-full"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    title={slide.title}
+                                />
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.img
+                            key={slideIdx}
+                            src={slide.img}
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.18 }}
+                            className="max-h-full max-w-full object-contain"
+                            alt={slide.title}
+                        />
+                    )}
                 </AnimatePresence>
 
                 {/* Prev arrow */}
