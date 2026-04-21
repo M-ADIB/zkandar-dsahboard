@@ -345,7 +345,7 @@ export function WorkflowsPage() {
                     className="flex items-center gap-3 pb-4 border-b border-white/5"
                 >
                     <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
-                    <span className="text-sm font-heading font-bold tracking-wider text-white/70">Zkandar AI</span>
+                    <span className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-white/50">Zkandar AI</span>
                     <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Industry Report</span>
                 </motion.div>
 
@@ -360,20 +360,8 @@ export function WorkflowsPage() {
                         >
                             Industry Data
                         </motion.span>
-                        <h1
-                            className="font-heading font-black text-white"
-                            style={{
-                                lineHeight: 1.15,
-                                letterSpacing: '-0.01em',
-                                wordSpacing: '0.05em',
-                                maxWidth: '820px',
-                                overflowWrap: 'break-word',
-                                hyphens: 'none',
-                                whiteSpace: 'normal',
-                                fontSize: 'clamp(28px, 6vw, 52px)'
-                            }}
-                        >
-                            Design Studios Are Experimenting With AI. Very Few Are Using It.
+                        <h1 className="font-heading font-black uppercase text-[clamp(2rem,6vw,4rem)] leading-[0.93] text-white max-w-[820px]">
+                            Design Studios Are<br />Experimenting With AI.<br /><span className="text-lime">Very Few Are Using It.</span>
                         </h1>
                         <p
                             className="text-base md:text-lg text-gray-400 leading-relaxed font-body"
@@ -395,7 +383,7 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 2: Where Teams Are Right Now ─────────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">Where teams are right now</h2>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white">Where Teams Are <span className="text-lime">Right Now</span></h2>
 
                         <StackedBar segments={[
                             { label: 'Not using AI at all', pct: 16, color: '#6B7280' },
@@ -416,7 +404,7 @@ export function WorkflowsPage() {
                 <Section>
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What AI changes in your process</h2>
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white">What AI Changes <span className="text-lime">In Your Process</span></h2>
                             <p className="text-sm text-gray-500 mt-2 font-body">Average time saved per workflow phase when structured AI tools are adopted</p>
                         </div>
 
@@ -440,12 +428,12 @@ export function WorkflowsPage() {
                 {/* ─── SECTION 4: What Teams Actually Want ──────────────────── */}
                 <Section>
                     <div className="space-y-8">
-                        <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What teams actually want</h2>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white">What Teams <span className="text-lime">Actually Want</span></h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Left: Bar chart of team priorities */}
                             <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-5">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest font-heading">Team priorities</h3>
+                                <h3 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">Team priorities</h3>
                                 <AnimatedBar label="Gain more control over AI results" pct={69} delay={0} />
                                 <AnimatedBar label="Learn structured AI workflows" pct={33} delay={0.1} />
                                 <AnimatedBar label="Generate concepts faster" pct={33} delay={0.2} />
@@ -455,7 +443,7 @@ export function WorkflowsPage() {
 
                             {/* Right: Ring charts for what would help most */}
                             <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-6">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest font-heading">What would help most</h3>
+                                <h3 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What would help most</h3>
                                 <RingChart pct={42} label="say structured prompting techniques would make the biggest difference" delay={0.1} />
                                 <RingChart pct={36} label="say learning to refine and control AI results is their top need" delay={0.25} />
                                 <RingChart pct={22} label="want better tools and guidance for client-facing work" delay={0.4} />
@@ -472,14 +460,14 @@ export function WorkflowsPage() {
                 <Section>
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">What leadership sees</h2>
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white">What <span className="text-lime">Leadership Sees</span></h2>
                             <p className="text-sm text-gray-500 mt-2 font-body">Data from 5 studio directors, heads of design, and partners</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Opportunities */}
                             <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest font-heading">Opportunities</h3>
+                                <h3 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">Opportunities</h3>
                                 <AnimatedBar label="Better use of team time" pct={60} color="#D0FF71" delay={0} />
                                 <AnimatedBar label="Faster concept development" pct={60} color="#D0FF71" delay={0.1} />
                                 <AnimatedBar label="Greater design consistency" pct={30} color="#D0FF71" delay={0.2} />
@@ -488,7 +476,7 @@ export function WorkflowsPage() {
 
                             {/* Risks */}
                             <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest font-heading">Risks of not using AI</h3>
+                                <h3 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">Risks of not using AI</h3>
                                 <AnimatedBar label="Falling behind competitors" pct={80} color="#F87171" delay={0} />
                                 <AnimatedBar label="Slower delivery, higher costs" pct={70} color="#F87171" delay={0.1} />
                                 <AnimatedBar label="Team skill gaps widening" pct={60} color="#F87171" delay={0.2} />
@@ -511,13 +499,13 @@ export function WorkflowsPage() {
                 <Section>
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-heading font-black tracking-wide">Your team, amplified</h2>
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white">Your Team, <span className="text-lime">Amplified</span></h2>
                             <p className="text-sm text-gray-500 mt-2 font-body">What the same 10-person studio looks like before and after structured AI workflows</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-bg-card border border-border rounded-2xl p-6 space-y-4">
-                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-heading">Without AI workflows</h3>
+                                <h3 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">Without AI workflows</h3>
                                 <div className="space-y-3">
                                     {[
                                         '3–5 concept directions explored per project',
