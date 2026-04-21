@@ -149,7 +149,7 @@ export function ProgramPage() {
                             className="flex items-center gap-3 pb-4 border-b border-white/5"
                         >
                             <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
-                            <span className="text-sm font-heading font-bold tracking-wider text-white/70">Zkandar AI</span>
+                            <span className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-white/50">Zkandar AI</span>
                             <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Program</span>
                         </motion.div>
 
@@ -205,12 +205,7 @@ export function ProgramPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                                        className="font-heading font-black text-white uppercase"
-                                        style={{
-                                            fontSize: 'clamp(36px, 7vw, 76px)',
-                                            lineHeight: 1.0,
-                                            letterSpacing: '-0.01em',
-                                        }}
+                                        className="font-heading font-black text-white uppercase text-[clamp(2.2rem,6vw,5rem)] leading-[0.93]"
                                     >
                                         Zkandar AI
                                         <br />
@@ -256,7 +251,7 @@ export function ProgramPage() {
 
                             {/* What's included */}
                             <div className="space-y-5">
-                                <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 font-heading">What's included</h2>
+                                <h2 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What's included</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                                     {inclusions.map((item, i) => (
                                         <CheckItem key={item} text={item} delay={0.6 + i * 0.06} />
@@ -269,7 +264,7 @@ export function ProgramPage() {
 
                             {/* What you'll gain */}
                             <div className="space-y-5">
-                                <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 font-heading">What you'll walk away with</h2>
+                                <h2 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     {gains.map((g, i) => (
                                         <motion.div
@@ -280,7 +275,7 @@ export function ProgramPage() {
                                             className="rounded-2xl p-5 space-y-2"
                                             style={{ background: 'rgba(208,255,113,0.03)', border: '1px solid rgba(208,255,113,0.08)' }}
                                         >
-                                            <span className="text-lg font-heading font-black text-lime">{g.label}</span>
+                                            <span className="font-heading font-black uppercase text-xl text-lime leading-none">{g.label}</span>
                                             <p className="text-xs text-gray-400 leading-relaxed font-body">{g.body}</p>
                                         </motion.div>
                                     ))}
