@@ -110,45 +110,45 @@ const CASE_STUDIES: CaseStudy[] = [
         location: 'Riyadh, Saudi Arabia',
         tagline: 'An empty desert plot, a brief, and AI. This is what came out the other side.',
         previewImgs: [
-            '/casestudies/nisreen/money-shot-light.png',
-            '/casestudies/nisreen/progression-3.png',
-            '/casestudies/nisreen/interiors-0.png',
-            '/casestudies/nisreen/details-0.png',
+            '/casestudies/nisreen/money-shot-light.jpg',
+            '/casestudies/nisreen/progression-3.jpg',
+            '/casestudies/nisreen/interiors-0.jpg',
+            '/casestudies/nisreen/details-0.jpg',
         ],
         slides: [
             // ── Progression ──────────────────────────────────────────
-            { img: '/casestudies/nisreen/progression-1.png', stepLabel: '01', category: 'The Site', title: 'The Empty Plot', caption: 'An unmarked piece of desert near King Salman Metro Station, Riyadh. No building. No concept. Just land and a brief.' },
-            { img: '/casestudies/nisreen/progression-2.png', stepLabel: '02', category: 'The Site', title: 'Standing on the Land', caption: 'Nisreen visits the actual site. This is the raw material the AI has to work with. A construction zone, desert heat, and a vision.' },
+            { img: '/casestudies/nisreen/progression-1.jpg', stepLabel: '01', category: 'The Site', title: 'The Empty Plot', caption: 'An unmarked piece of desert near King Salman Metro Station, Riyadh. No building. No concept. Just land and a brief.' },
+            { img: '/casestudies/nisreen/progression-2.jpg', stepLabel: '02', category: 'The Site', title: 'Standing on the Land', caption: 'Nisreen visits the actual site. This is the raw material the AI has to work with. A construction zone, desert heat, and a vision.' },
             { img: '/casestudies/nisreen/progression-4.jpg', stepLabel: '03', category: 'The Design', title: 'Form Mapped Onto Reality', caption: 'The building footprint is drawn directly onto the site photo. AI helps define the organic massing against the real land before any software is opened.' },
-            { img: '/casestudies/nisreen/progression-3.png', stepLabel: '04', category: 'The Design', title: 'First AI Render', caption: 'The building materializes. Organic arched canopy, terracotta facade, rooftop gardens, street life. Generated from a prompt in a single session.' },
-            { img: '/casestudies/nisreen/progression-5.png', stepLabel: '05', category: 'The Design', title: 'Site in Context', caption: 'Aerial view confirming the design responds to its surroundings. King Salman Park next door. The AI-directed massing reads perfectly at urban scale.' },
+            { img: '/casestudies/nisreen/progression-3.jpg', stepLabel: '04', category: 'The Design', title: 'First AI Render', caption: 'The building materializes. Organic arched canopy, terracotta facade, rooftop gardens, street life. Generated from a prompt in a single session.' },
+            { img: '/casestudies/nisreen/progression-5.jpg', stepLabel: '05', category: 'The Design', title: 'Site in Context', caption: 'Aerial view confirming the design responds to its surroundings. King Salman Park next door. The AI-directed massing reads perfectly at urban scale.' },
             // ── Hero Renders ─────────────────────────────────────────
-            { img: '/casestudies/nisreen/money-shot-light.png', stepLabel: '06', category: 'Hero Renders', title: 'The Entrance — Day', caption: 'The money shot. Photorealistic daylight render of the arched entrance canopy, rooftop palms, and cobblestone approach. Client-ready.' },
-            { img: '/casestudies/nisreen/money-shot-night.png', stepLabel: '07', category: 'Hero Renders', title: 'The Entrance — Night', caption: 'Same view after dark. Warm lighting, deep shadows, cinematic mood. Two completely different atmospheres from the same AI workflow.' },
+            { img: '/casestudies/nisreen/money-shot-light.jpg', stepLabel: '06', category: 'Hero Renders', title: 'The Entrance — Day', caption: 'The money shot. Photorealistic daylight render of the arched entrance canopy, rooftop palms, and cobblestone approach. Client-ready.' },
+            { img: '/casestudies/nisreen/money-shot-night.jpg', stepLabel: '07', category: 'Hero Renders', title: 'The Entrance — Night', caption: 'Same view after dark. Warm lighting, deep shadows, cinematic mood. Two completely different atmospheres from the same AI workflow.' },
             // ── Interiors ────────────────────────────────────────────
-            { img: '/casestudies/nisreen/interiors-0.png', stepLabel: '08', category: 'Interiors', title: 'Interior 01', caption: 'AI-generated interior perspective. Material choices, lighting logic, and spatial proportion — all directed through prompts.' },
-            { img: '/casestudies/nisreen/interiors-1.png', stepLabel: '09', category: 'Interiors', title: 'Interior 02', caption: 'Variation generated in minutes. The same space explored from a different angle and atmosphere.' },
-            { img: '/casestudies/nisreen/interiors-2.png', stepLabel: '10', category: 'Interiors', title: 'Interior 03', caption: '' },
-            { img: '/casestudies/nisreen/interiors-3.png', stepLabel: '11', category: 'Interiors', title: 'Interior 04', caption: '' },
-            { img: '/casestudies/nisreen/interiors-4.png', stepLabel: '12', category: 'Interiors', title: 'Interior 05', caption: '' },
-            { img: '/casestudies/nisreen/interiors-5.png', stepLabel: '13', category: 'Interiors', title: 'Interior 06', caption: '' },
+            { img: '/casestudies/nisreen/interiors-0.jpg', stepLabel: '08', category: 'Interiors', title: 'Interior 01', caption: 'AI-generated interior perspective. Material choices, lighting logic, and spatial proportion — all directed through prompts.' },
+            { img: '/casestudies/nisreen/interiors-1.jpg', stepLabel: '09', category: 'Interiors', title: 'Interior 02', caption: 'Variation generated in minutes. The same space explored from a different angle and atmosphere.' },
+            { img: '/casestudies/nisreen/interiors-2.jpg', stepLabel: '10', category: 'Interiors', title: 'Interior 03', caption: '' },
+            { img: '/casestudies/nisreen/interiors-3.jpg', stepLabel: '11', category: 'Interiors', title: 'Interior 04', caption: '' },
+            { img: '/casestudies/nisreen/interiors-4.jpg', stepLabel: '12', category: 'Interiors', title: 'Interior 05', caption: '' },
+            { img: '/casestudies/nisreen/interiors-5.jpg', stepLabel: '13', category: 'Interiors', title: 'Interior 06', caption: '' },
             // ── Details ──────────────────────────────────────────────
-            { img: '/casestudies/nisreen/details-0.png', stepLabel: '14', category: 'Details', title: 'Detail 01', caption: 'AI close-up of key architectural detail. Texture, material, and precision that would take weeks to produce traditionally.' },
-            { img: '/casestudies/nisreen/details-1.png', stepLabel: '15', category: 'Details', title: 'Detail 02', caption: '' },
-            { img: '/casestudies/nisreen/details-2.png', stepLabel: '16', category: 'Details', title: 'Detail 03', caption: '' },
-            { img: '/casestudies/nisreen/details-3.png', stepLabel: '17', category: 'Details', title: 'Detail 04', caption: '' },
-            { img: '/casestudies/nisreen/details-4.png', stepLabel: '18', category: 'Details', title: 'Detail 05', caption: '' },
-            { img: '/casestudies/nisreen/details-5.png', stepLabel: '19', category: 'Details', title: 'Detail 06', caption: '' },
-            { img: '/casestudies/nisreen/details-6.png', stepLabel: '20', category: 'Details', title: 'Detail 07', caption: '' },
-            { img: '/casestudies/nisreen/details-7.png', stepLabel: '21', category: 'Details', title: 'Detail 08', caption: '' },
+            { img: '/casestudies/nisreen/details-0.jpg', stepLabel: '14', category: 'Details', title: 'Detail 01', caption: 'AI close-up of key architectural detail. Texture, material, and precision that would take weeks to produce traditionally.' },
+            { img: '/casestudies/nisreen/details-1.jpg', stepLabel: '15', category: 'Details', title: 'Detail 02', caption: '' },
+            { img: '/casestudies/nisreen/details-2.jpg', stepLabel: '16', category: 'Details', title: 'Detail 03', caption: '' },
+            { img: '/casestudies/nisreen/details-3.jpg', stepLabel: '17', category: 'Details', title: 'Detail 04', caption: '' },
+            { img: '/casestudies/nisreen/details-4.jpg', stepLabel: '18', category: 'Details', title: 'Detail 05', caption: '' },
+            { img: '/casestudies/nisreen/details-5.jpg', stepLabel: '19', category: 'Details', title: 'Detail 06', caption: '' },
+            { img: '/casestudies/nisreen/details-6.jpg', stepLabel: '20', category: 'Details', title: 'Detail 07', caption: '' },
+            { img: '/casestudies/nisreen/details-7.jpg', stepLabel: '21', category: 'Details', title: 'Detail 08', caption: '' },
             // ── Side Views ───────────────────────────────────────────
-            { img: '/casestudies/nisreen/villa-side-0.png', stepLabel: '22', category: 'Side Views', title: 'Side Elevation 01', caption: 'AI-generated side elevation render. The full depth of the project revealed — every angle explored.' },
-            { img: '/casestudies/nisreen/villa-side-1.png', stepLabel: '23', category: 'Side Views', title: 'Side Elevation 02', caption: '' },
+            { img: '/casestudies/nisreen/villa-side-0.jpg', stepLabel: '22', category: 'Side Views', title: 'Side Elevation 01', caption: 'AI-generated side elevation render. The full depth of the project revealed — every angle explored.' },
+            { img: '/casestudies/nisreen/villa-side-1.jpg', stepLabel: '23', category: 'Side Views', title: 'Side Elevation 02', caption: '' },
             // ── Wayfinding ───────────────────────────────────────────
-            { img: '/casestudies/nisreen/wayfinding-0.png', stepLabel: '24', category: 'Wayfinding', title: 'Signage 01', caption: 'AI-generated wayfinding and signage concepts. Brand-consistent, architecturally integrated.' },
-            { img: '/casestudies/nisreen/wayfinding-1.png', stepLabel: '25', category: 'Wayfinding', title: 'Signage 02', caption: '' },
+            { img: '/casestudies/nisreen/wayfinding-0.jpg', stepLabel: '24', category: 'Wayfinding', title: 'Signage 01', caption: 'AI-generated wayfinding and signage concepts. Brand-consistent, architecturally integrated.' },
+            { img: '/casestudies/nisreen/wayfinding-1.jpg', stepLabel: '25', category: 'Wayfinding', title: 'Signage 02', caption: '' },
             // ── Parking ──────────────────────────────────────────────
-            { img: '/casestudies/nisreen/parking-0.png', stepLabel: '26', category: 'Parking', title: 'Parking Level', caption: 'Even utility spaces get the full AI treatment. Underground parking visualization for client presentation.' },
+            { img: '/casestudies/nisreen/parking-0.jpg', stepLabel: '26', category: 'Parking', title: 'Parking Level', caption: 'Even utility spaces get the full AI treatment. Underground parking visualization for client presentation.' },
         ],
     },
     {
@@ -159,20 +159,20 @@ const CASE_STUDIES: CaseStudy[] = [
         tagline: 'A complete luxury F&B interior — every perspective generated with AI. Backed by a full video walkthrough.',
         previewImgs: [
             '/casestudies/aleena/full-shot.jpg',
-            '/casestudies/aleena/shot-1.png',
-            '/casestudies/aleena/shot-4.png',
-            '/casestudies/aleena/shot-7.png',
+            '/casestudies/aleena/shot-1.jpg',
+            '/casestudies/aleena/shot-4.jpg',
+            '/casestudies/aleena/shot-7.jpg',
         ],
         slides: [
             { img: '/casestudies/aleena/full-shot.jpg',  stepLabel: '01', category: 'Overview',      title: 'The Hero Shot',    caption: 'A luxury F&B interior. Warm stone arches, onyx bar counter, soaring ceilings, palm-framed windows. Client-ready on day one.' },
-            { img: '/casestudies/aleena/shot-1.png',     stepLabel: '02', category: 'Perspectives',  title: 'Shot 02',          caption: 'AI-generated perspective exploring the spatial sequence from entry to bar.' },
-            { img: '/casestudies/aleena/shot-2.png',     stepLabel: '03', category: 'Perspectives',  title: 'Shot 03',          caption: '' },
+            { img: '/casestudies/aleena/shot-1.jpg',     stepLabel: '02', category: 'Perspectives',  title: 'Shot 02',          caption: 'AI-generated perspective exploring the spatial sequence from entry to bar.' },
+            { img: '/casestudies/aleena/shot-2.jpg',     stepLabel: '03', category: 'Perspectives',  title: 'Shot 03',          caption: '' },
             { img: '/casestudies/aleena/shot-3.jpg',     stepLabel: '04', category: 'Perspectives',  title: 'Shot 04',          caption: '' },
-            { img: '/casestudies/aleena/shot-4.png',     stepLabel: '05', category: 'Perspectives',  title: 'Shot 05',          caption: '' },
-            { img: '/casestudies/aleena/shot-5.png',     stepLabel: '06', category: 'Perspectives',  title: 'Shot 06',          caption: '' },
+            { img: '/casestudies/aleena/shot-4.jpg',     stepLabel: '05', category: 'Perspectives',  title: 'Shot 05',          caption: '' },
+            { img: '/casestudies/aleena/shot-5.jpg',     stepLabel: '06', category: 'Perspectives',  title: 'Shot 06',          caption: '' },
             { img: '/casestudies/aleena/shot-6.jpg',     stepLabel: '07', category: 'Perspectives',  title: 'Shot 07',          caption: '' },
-            { img: '/casestudies/aleena/shot-7.png',     stepLabel: '08', category: 'Perspectives',  title: 'Shot 08',          caption: '' },
-            { img: '/casestudies/aleena/shot-9.png',     stepLabel: '09', category: 'Perspectives',  title: 'Shot 09',          caption: '' },
+            { img: '/casestudies/aleena/shot-7.jpg',     stepLabel: '08', category: 'Perspectives',  title: 'Shot 08',          caption: '' },
+            { img: '/casestudies/aleena/shot-9.jpg',     stepLabel: '09', category: 'Perspectives',  title: 'Shot 09',          caption: '' },
             { img: '/casestudies/aleena/shot-10.jpg',    stepLabel: '10', category: 'Perspectives',  title: 'Shot 10',          caption: 'Every angle of the space explored. All generated — no photography, no 3D modeling software.' },
         ],
     },
@@ -374,7 +374,7 @@ function CaseStudyPresentation({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-black flex flex-col"
+            className="fixed inset-0 z-[200] bg-black flex flex-col"
         >
             {/* ── Top bar: close + filmstrip ── */}
             <div className="flex items-center gap-3 px-3 sm:px-5 py-2.5 border-b border-white/[0.07] bg-black shrink-0">
@@ -763,15 +763,17 @@ export function LandingPageTest() {
                                     className="bg-[#0a0a0a] border border-white/[0.06] hover:border-white/[0.14] rounded-2xl overflow-hidden cursor-pointer transition-colors duration-300 group"
                                 >
                                     {/* Preview grid */}
-                                    <div className="grid grid-cols-[2fr_1fr] gap-[3px] h-64 sm:h-80">
-                                        <div className="relative overflow-hidden">
+                                    <div className="flex h-60 sm:h-72 gap-[3px]">
+                                        {/* Big left image */}
+                                        <div className="relative overflow-hidden flex-[2]">
                                             <img src={cs.previewImgs[0]} alt=""
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
                                         </div>
-                                        <div className="grid grid-rows-3 gap-[3px]">
-                                            {cs.previewImgs.slice(1).map((img, i) => (
-                                                <div key={i} className="relative overflow-hidden">
+                                        {/* 3 stacked right */}
+                                        <div className="flex flex-col flex-1 gap-[3px]">
+                                            {cs.previewImgs.slice(1, 4).map((img, i) => (
+                                                <div key={i} className="relative overflow-hidden flex-1 min-h-0">
                                                     <img src={img} alt=""
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                                 </div>
@@ -780,18 +782,18 @@ export function LandingPageTest() {
                                     </div>
 
                                     {/* Info row */}
-                                    <div className="px-5 py-4 sm:px-6 sm:py-5 flex items-end justify-between gap-4">
+                                    <div className="px-5 sm:px-6 py-5 flex items-center justify-between gap-4">
                                         <div className="min-w-0">
-                                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 font-bold mb-1">
+                                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 font-bold mb-1.5">
                                                 {cs.projectType} · {cs.location}
                                             </p>
-                                            <h3 className="font-heading font-black uppercase text-xl text-white leading-tight truncate">{cs.name}</h3>
-                                            <p className="text-xs text-gray-600 mt-1.5 leading-snug line-clamp-2 max-w-xs">{cs.tagline}</p>
+                                            <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight">{cs.name}</h3>
+                                            <p className="text-xs text-gray-500 mt-2 leading-relaxed line-clamp-2 max-w-sm">{cs.tagline}</p>
                                         </div>
-                                        <div className="shrink-0 flex items-center gap-2.5">
+                                        <div className="shrink-0 flex items-center gap-3">
                                             <span className="text-[0.6rem] text-gray-600 uppercase tracking-wider hidden sm:block">{cs.slides.length} slides</span>
-                                            <div className="w-8 h-8 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center">
-                                                <ArrowRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-lime transition-colors" />
+                                            <div className="w-9 h-9 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center shrink-0">
+                                                <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-lime transition-colors" />
                                             </div>
                                         </div>
                                     </div>
