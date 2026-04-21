@@ -1,20 +1,14 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
 import {
-    Eye, ArrowRight, Users, Building2,
-    X, ZoomIn, ZoomOut, TrendingDown, BarChart2, AlertCircle, ShieldOff,
+    Eye, ArrowRight, Building2,
+    X, ZoomIn, ZoomOut,
     ChevronLeft, ChevronRight, Play,
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const PROBLEM_STATS = [
-    { value: '83%',   label: 'of architects struggle controlling AI output quality',      Icon: TrendingDown },
-    { value: '2.5/5', label: 'average AI confidence rating across 1,000+ designers', Icon: BarChart2   },
-    { value: '71%',   label: 'report inconsistent results across projects',  Icon: AlertCircle },
-    { value: '0',     label: 'studios with a formal AI design framework',   Icon: ShieldOff   },
-]
 
 const TRADITIONAL_STEPS = [
     { num: '01', label: 'The Sketch',          img: '/lander/2.png',  caption: 'A hand-drawn concept. The starting point for every design.' },
@@ -951,43 +945,7 @@ export function LandingPageTest() {
                 </div>
             </section>
 
-{/* ── THE PROBLEM ────────────────────────────────────────── */}
-            <section className="py-20 md:py-28 bg-black border-t border-white/[0.04]">
-                <div className="container mx-auto px-5 sm:px-6">
-                    <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>We surveyed 1,000+ participants</MicroLabel>
-                        <div className="flex flex-wrap items-center gap-4 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">THE DATA DOESN'T LIE</h2>
-                            <LimeBar />
-                        </div>
-                    </FadeIn>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                        {PROBLEM_STATS.map((stat, i) => (
-                            <FadeIn key={i} delay={i * 0.1}>
-                                <div className="relative bg-[#0d0d0d] border border-white/[0.06] rounded-2xl sm:rounded-3xl p-5 sm:p-8 overflow-hidden h-full flex flex-col">
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <div className="text-[clamp(1.8rem,4.5vw,3rem)] font-heading font-black text-red-400 leading-none">{stat.value}</div>
-                                        <stat.Icon className="w-4 h-4 text-red-400/50 mt-1 shrink-0" />
-                                    </div>
-                                    <p className="text-xs sm:text-sm text-gray-500 leading-relaxed mb-4 flex-1">{stat.label}</p>
-                                    {/* Visual bar — below the text */}
-                                    <div className="flex items-end gap-0.5 h-8">
-                                        {Array.from({ length: 8 }).map((_, j) => (
-                                            <motion.div key={j}
-                                                initial={{ height: 0 }}
-                                                whileInView={{ height: `${30 + Math.sin((i + j) * 1.3) * 25 + 25}%` }}
-                                                viewport={{ once: true }}
-                                                transition={{ delay: i * 0.1 + j * 0.04, duration: 0.5 }}
-                                                className={`flex-1 rounded-sm ${j < 5 ? 'bg-red-500/60' : 'bg-white/10'}`}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            </FadeIn>
-                        ))}
-                    </div>
-                </div>
-            </section>
+{/* Data section removed — case studies carry the proof weight */}
 
             {/* ARCHIVED: THE PROCESS, GALLERY, FULL FILM, AI CAPABILITIES, SOCIAL PROOF */}
             {false && (<>
@@ -1349,125 +1307,216 @@ export function LandingPageTest() {
             </section>
             </>)}
 
-            {/* ── CTA / PRICING ──────────────────────────────────────── */}
-            <section id="sprint" className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
+            {/* ── SPRINT WORKSHOP — PRIMARY CTA ───────────────────────── */}
+            <section id="sprint" className="py-20 md:py-32 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16 text-center">
-                        <MicroLabel center>You've seen the results. Now take action.</MicroLabel>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4">
-                            HOW TO <span className="text-lime">GET STARTED.</span>
+                        <MicroLabel center>You've seen what's possible. Here's how to get there.</MicroLabel>
+                        <h2 className="font-heading font-black uppercase text-[clamp(2rem,5vw,4rem)] leading-[0.93] mt-4">
+                            THREE DAYS.<br /><span className="text-lime">EVERYTHING CHANGES.</span>
                         </h2>
-                        <p className="text-gray-500 text-sm mt-4 max-w-md mx-auto">
-                            Choose the right program for where you are. Both get you to the same result — faster design, better output, real results.
+                        <p className="text-gray-500 text-sm mt-5 max-w-sm mx-auto leading-relaxed">
+                            The Sprint Workshop is where it starts. Hands-on, output-first, and open to architects and designers worldwide.
                         </p>
                     </FadeIn>
 
-                    <div id="masterclass" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 max-w-5xl mx-auto">
-
-                        {/* Masterclass — LEFT, featured */}
-                        <FadeIn direction="left" className="flex">
-                            <motion.div whileHover={{ y: -4 }}
-                                className="relative rounded-2xl sm:rounded-3xl border border-lime/25 bg-gradient-to-br from-lime/[0.05] to-transparent p-7 sm:p-10 flex flex-col w-full"
-                                style={{ boxShadow: '0 0 50px -15px rgba(208,255,113,0.12)' }}>
-                                <div className="flex items-start justify-between gap-4 mb-6">
+                    {/* Sprint card — full-width featured */}
+                    <FadeIn className="max-w-2xl mx-auto">
+                        <motion.div whileHover={{ y: -3 }}
+                            className="relative rounded-3xl border border-lime/20 bg-gradient-to-b from-lime/[0.04] to-transparent overflow-hidden"
+                            style={{ boxShadow: '0 0 80px -20px rgba(208,255,113,0.1)' }}
+                        >
+                            {/* Header image strip */}
+                            <div className="relative h-40 overflow-hidden">
+                                <img src="/casestudies/nisreen/money-shot-light.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black" />
+                                <div className="absolute bottom-0 left-0 right-0 px-8 pb-5 flex items-end justify-between">
                                     <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime/80">AI Masterclass</span>
-                                            <span className="text-[0.55rem] font-bold uppercase tracking-wider bg-lime/20 text-lime px-2 py-0.5 rounded">For Studios</span>
-                                        </div>
-                                        <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight">Transform Your<br />Entire Firm.</h3>
+                                        <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime/80 mb-1">Sprint Workshop</p>
+                                        <h3 className="font-heading font-black uppercase text-2xl sm:text-3xl text-white leading-none">Go From Zero<br />to AI-Fluent.</h3>
                                     </div>
-                                    <div className="w-11 h-11 rounded-full bg-lime/20 flex items-center justify-center shrink-0">
-                                        <Building2 className="w-5 h-5 text-lime" />
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-lime/10 border border-lime/20">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse shrink-0" />
+                                        <span className="text-[0.6rem] font-bold uppercase tracking-wider text-lime whitespace-nowrap">May 13–15 · Filling Fast</span>
                                     </div>
                                 </div>
-                                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">
-                                    A comprehensive AI system rollout built for your studio. Custom curriculum, team-wide training, and a certified AI workflow your firm owns permanently.
+                            </div>
+
+                            {/* Body */}
+                            <div className="px-7 sm:px-10 pt-7 pb-8">
+                                <p className="text-gray-400 text-sm leading-relaxed mb-7">
+                                    3 days. Hands-on. You leave with real AI-generated deliverables and the skills to keep producing — for yourself and your clients.
                                 </p>
-                                <div className="space-y-2.5 mb-6">
-                                    {['Team of 3 to 12 designers', 'Custom AI workflow built for your studio', 'Live sessions + async work', 'Readiness certification for every team member'].map(f => (
+
+                                {/* Features — two columns */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-8">
+                                    {SPRINT_FEATURES.map(f => (
                                         <div key={f} className="flex items-center gap-3 text-sm text-gray-300">
                                             <div className="w-1.5 h-1.5 rounded-full bg-lime shrink-0" />{f}
                                         </div>
                                     ))}
                                 </div>
-                                <div className="border-t border-white/[0.06] pt-5 mb-6">
-                                    <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gray-600 mb-3">Studios already in</p>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {STUDIOS.slice(0, 8).map((s, i) => (
-                                            <span key={i} className="text-[0.6rem] px-2.5 py-1 bg-white/[0.04] border border-white/[0.06] rounded-lg text-gray-500">{s}</span>
-                                        ))}
-                                        <span className="text-[0.6rem] px-2.5 py-1 bg-lime/[0.06] border border-lime/15 rounded-lg text-lime/60">+{STUDIOS.length - 8} more</span>
-                                    </div>
-                                </div>
-                                <a href="/submit-form"
-                                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 transition">
-                                    Book Studio Discovery <ArrowRight className="w-4 h-4" />
-                                </a>
-                            </motion.div>
-                        </FadeIn>
 
-                        {/* Sprint — RIGHT */}
-                        <FadeIn direction="right" className="flex">
-                            <motion.div whileHover={{ y: -4 }}
-                                className="relative bg-[#0d0d0d] border border-white/[0.06] hover:border-white/20 rounded-2xl sm:rounded-3xl p-7 sm:p-10 flex flex-col transition-colors duration-300 w-full">
-                                <div className="flex items-start justify-between gap-4 mb-6">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-gray-400">Sprint Workshop</span>
-                                            <span className="text-[0.55rem] font-bold uppercase tracking-wider bg-white/10 text-gray-400 px-2 py-0.5 rounded">For Individuals</span>
-                                        </div>
-                                        <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight">Go From Zero<br />to AI-Fluent.</h3>
-                                    </div>
-                                    <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                        <Users className="w-5 h-5 text-white" />
-                                    </div>
-                                </div>
-                                {/* Urgency badge */}
-                                <div className="flex items-center gap-2 mb-5 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] w-fit">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse shrink-0" />
-                                    <span className="text-[0.6rem] font-bold uppercase tracking-wider text-lime">Next: May 13–15, 2026 · Limited Spots</span>
-                                </div>
-                                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">
-                                    3 days. Hands on. Output focused. You leave with real AI generated deliverables and the skills to keep going. Open to architects and designers worldwide.
-                                </p>
-                                <div className="space-y-2.5 mb-6">
-                                    {SPRINT_FEATURES.map(f => (
-                                        <div key={f} className="flex items-center gap-3 text-sm text-gray-300">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-white/40 shrink-0" />{f}
+                                {/* Stats strip */}
+                                <div className="grid grid-cols-3 gap-3 mb-8 py-5 border-y border-white/[0.06]">
+                                    {[{ val: '3 Days', label: 'Live & Hands-On' }, { val: '1000+', label: 'Graduates' }, { val: '8,500', label: 'AED · One-Time' }].map(s => (
+                                        <div key={s.label} className="text-center">
+                                            <div className="text-xl font-heading font-black text-white">{s.val}</div>
+                                            <div className="text-[0.6rem] uppercase tracking-wider text-gray-600 mt-0.5">{s.label}</div>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="border-t border-white/[0.06] pt-5 mb-6">
-                                    <div className="grid grid-cols-3 gap-3">
-                                        {[{ val: '50+', label: 'Master Classes' }, { val: '1000+', label: 'Participants' }, { val: 'Global', label: 'Access' }].map(s => (
-                                            <div key={s.label} className="text-center">
-                                                <div className="text-lg font-heading font-black text-white">{s.val}</div>
-                                                <div className="text-[0.6rem] uppercase tracking-wider text-gray-600 mt-0.5">{s.label}</div>
-                                            </div>
-                                        ))}
-                                    </div>
+
+                                {/* CTAs */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <a href="/submit-form"
+                                        className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 transition">
+                                        Apply for the Sprint <ArrowRight className="w-4 h-4" />
+                                    </a>
+                                    <a href="/not-sure"
+                                        className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-white/[0.08] text-gray-400 text-sm font-medium hover:border-white/20 hover:text-white transition">
+                                        Not sure yet?
+                                    </a>
                                 </div>
-                                <a href="/submit-form"
-                                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-white text-black font-body font-bold uppercase tracking-wider text-sm hover:bg-lime transition-colors duration-300">
-                                    Apply for Sprint <ArrowRight className="w-4 h-4" />
-                                </a>
-                            </motion.div>
+                            </div>
+                        </motion.div>
+                    </FadeIn>
+                </div>
+            </section>
+
+            {/* ── STUDIO / FIRM HOOK ───────────────────────────────────── */}
+            <section className="border-t border-white/[0.04] bg-[#080808]">
+                <div className="container mx-auto px-5 sm:px-6">
+                    <div className="max-w-5xl mx-auto py-16 md:py-20 flex flex-col md:flex-row items-center md:items-stretch gap-10 md:gap-16">
+
+                        {/* Left — editorial hook */}
+                        <FadeIn direction="left" className="flex-1">
+                            <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600 mb-4">Not enrolling for yourself</p>
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,2.8rem)] leading-[0.93] text-white mb-5">
+                                YOU'RE NOT<br />AN INDIVIDUAL.<br /><span className="text-lime">YOU'RE A FIRM.</span>
+                            </h2>
+                            <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
+                                Sending one designer to the Sprint is a start. But if you run a studio, an interior design firm, or a team of creatives — there's a program built specifically to transform the entire operation.
+                            </p>
+                            <div className="mt-6 flex items-start gap-3 p-4 rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+                                <div className="w-8 h-8 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center shrink-0 mt-0.5">
+                                    <Building2 className="w-4 h-4 text-lime" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-white mb-0.5">3 firmwide masterclasses delivered.</p>
+                                    <p className="text-xs text-gray-500 leading-relaxed">Every studio left with a certified AI workflow they own permanently. Custom curriculum. Real output.</p>
+                                </div>
+                            </div>
+                        </FadeIn>
+
+                        {/* Right — studio logos + CTA */}
+                        <FadeIn direction="right" className="flex-1 flex flex-col justify-between">
+                            <div className="mb-6">
+                                <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mb-3">Studios already in</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {STUDIOS.map((s, i) => (
+                                        <span key={i} className="text-[0.6rem] px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-lg text-gray-500">{s}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            <motion.a
+                                href="/masterclass-analytics"
+                                whileHover={{ x: 4 }}
+                                className="group flex items-center justify-between gap-4 p-6 rounded-2xl border border-lime/15 bg-lime/[0.03] hover:border-lime/30 hover:bg-lime/[0.06] transition-all duration-300"
+                            >
+                                <div>
+                                    <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime/70 mb-1">AI Masterclass</p>
+                                    <p className="font-heading font-black uppercase text-lg text-white leading-tight">See the Studio Program</p>
+                                    <p className="text-xs text-gray-500 mt-1">Custom curriculum · Team-wide training · Firm certification</p>
+                                </div>
+                                <div className="w-10 h-10 rounded-full border border-lime/20 group-hover:border-lime/50 group-hover:bg-lime/10 flex items-center justify-center shrink-0 transition-all">
+                                    <ArrowRight className="w-4 h-4 text-lime" />
+                                </div>
+                            </motion.a>
                         </FadeIn>
                     </div>
                 </div>
             </section>
 
-            {/* ── FOOTER ─────────────────────────────────────────────── */}
-            <footer className="py-7 border-t border-white/[0.04] bg-black">
-                <div className="container mx-auto px-5 sm:px-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3 opacity-40">
-                        <img src={logoSrc} alt="Zkandar AI" className="h-6 object-contain grayscale" />
-                        <span className="text-xs font-heading tracking-wider">Zkandar AI</span>
+            {/* ── FOOTER ──────────────────────────────────────────────── */}
+            <footer className="border-t border-white/[0.06] bg-black pt-14 pb-8">
+                <div className="container mx-auto px-5 sm:px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8 mb-12">
+
+                        {/* Brand */}
+                        <div className="col-span-2 md:col-span-1">
+                            <a href="/test-landingpage" className="flex items-center gap-2.5 mb-4">
+                                <img src={logoSrc} alt="Zkandar AI" className="h-7 object-contain" />
+                            </a>
+                            <p className="text-xs text-gray-600 leading-relaxed max-w-[180px]">
+                                AI-directed design education for architects and designers.
+                            </p>
+                            <div className="flex items-center gap-3 mt-5">
+                                <a href="https://www.instagram.com/zkandar" target="_blank" rel="noopener noreferrer"
+                                    className="w-8 h-8 rounded-full border border-white/[0.08] flex items-center justify-center text-gray-500 hover:text-white hover:border-white/20 transition">
+                                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                </a>
+                                <a href="https://www.linkedin.com/company/zkandar" target="_blank" rel="noopener noreferrer"
+                                    className="w-8 h-8 rounded-full border border-white/[0.08] flex items-center justify-center text-gray-500 hover:text-white hover:border-white/20 transition">
+                                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Programs */}
+                        <div>
+                            <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 mb-4">Programs</p>
+                            <ul className="space-y-3">
+                                {[
+                                    { label: 'Sprint Workshop', href: '/submit-form' },
+                                    { label: 'AI Masterclass', href: '/masterclass-analytics' },
+                                    { label: 'Studio Discovery Call', href: 'https://calendly.com/zkandarstudio-info/ai-discovery-call' },
+                                    { label: 'Enroll Now', href: '/checkout' },
+                                ].map(l => (
+                                    <li key={l.label}><a href={l.href} className="text-sm text-gray-500 hover:text-white transition">{l.label}</a></li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Resources */}
+                        <div>
+                            <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 mb-4">Resources</p>
+                            <ul className="space-y-3">
+                                {[
+                                    { label: 'Case Studies', href: '#case-studies' },
+                                    { label: 'Not Sure Yet?', href: '/not-sure' },
+                                    { label: 'Apply', href: '/submit-form' },
+                                    { label: 'Participant Login', href: '/login' },
+                                ].map(l => (
+                                    <li key={l.label}><a href={l.href} className="text-sm text-gray-500 hover:text-white transition">{l.label}</a></li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Contact */}
+                        <div>
+                            <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 mb-4">Contact</p>
+                            <ul className="space-y-3">
+                                {[
+                                    { label: 'Book a Call', href: 'https://calendly.com/zkandar/sprint-questions' },
+                                    { label: 'Privacy Policy', href: '/privacy' },
+                                    { label: 'Terms of Service', href: '/terms' },
+                                ].map(l => (
+                                    <li key={l.label}><a href={l.href} className="text-sm text-gray-500 hover:text-white transition">{l.label}</a></li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-                    <p className="text-[0.6rem] sm:text-[0.6875rem] text-gray-700 uppercase tracking-[0.15em]">
-                        © {new Date().getFullYear()} Zkandar AI
-                    </p>
+
+                    {/* Bottom bar */}
+                    <div className="border-t border-white/[0.04] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.15em]">
+                            © {new Date().getFullYear()} Zkandar AI. All rights reserved.
+                        </p>
+                        <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.12em]">
+                            Dubai · Riyadh · Global
+                        </p>
+                    </div>
                 </div>
             </footer>
 
