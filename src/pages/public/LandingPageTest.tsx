@@ -6,6 +6,7 @@ import {
     ChevronLeft, ChevronRight, Play,
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
+import { PublicNav } from '../../components/public/PublicNav'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -666,15 +667,10 @@ export function LandingPageTest() {
             </div>
 
             {/* ── NAV ────────────────────────────────────────────────── */}
-            <nav className="fixed top-8 inset-x-0 z-50 border-b border-white/[0.05] bg-black/80 backdrop-blur-md px-5 sm:px-10 py-3 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center gap-3">
-                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
-                </a>
-                <div className="flex items-center gap-3 sm:gap-5">
-                    <span className="hidden sm:block text-[0.6rem] uppercase tracking-[0.18em] text-gray-500 font-bold">50+ Master Classes · 1000+ Participants</span>
-                    <a href="/submit-form" className="px-4 py-2 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-lime transition-colors duration-200">Apply Now</a>
-                </div>
-            </nav>
+            {/* PublicNav renders at top-0; offset to sit below the announcement bar */}
+            <div className="[&>nav]:top-8">
+                <PublicNav />
+            </div>
 
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">

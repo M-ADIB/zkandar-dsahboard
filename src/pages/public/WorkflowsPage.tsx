@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import logoSrc from '../../assets/logo.png'
 import { ProductivityCalculator } from '../../components/public/ProductivityCalculator'
+import { PublicNav } from '../../components/public/PublicNav'
 import { InlineWidget } from 'react-calendly'
 
 const MASTERCLASS_CALENDLY = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
@@ -309,6 +310,7 @@ export function WorkflowsPage() {
             {modalOpen && <CalendlyModal onClose={() => setModalOpen(false)} />}
         </AnimatePresence>
         <div className="min-h-screen bg-[#0B0B0B] text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
+            <PublicNav />
             {/* Animated ambient gradient orbs */}
             <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float-slow" />
             <div className="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-[#D0FF71]/8 blur-[140px] rounded-full pointer-events-none z-0 animate-float-slow-reverse" />
@@ -335,19 +337,7 @@ export function WorkflowsPage() {
                 .animate-float-slow-reverse { animation: float-slow-reverse 25s ease-in-out infinite; }
             `}</style>
 
-            <div className="max-w-[960px] mx-auto px-6 py-16 md:py-24 space-y-24 relative z-10">
-
-                {/* ─── Zkandar AI Header ────────────────────────────────────── */}
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="flex items-center gap-3 pb-4 border-b border-white/5"
-                >
-                    <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
-                    <span className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-white/50">Zkandar AI</span>
-                    <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Industry Report</span>
-                </motion.div>
+            <div className="max-w-[960px] mx-auto px-6 pt-24 pb-16 md:pt-28 md:pb-24 space-y-24 relative z-10">
 
                 {/* ─── SECTION 1: Hero ──────────────────────────────────────── */}
                 <Section>
@@ -361,7 +351,7 @@ export function WorkflowsPage() {
                             Industry Data
                         </motion.span>
                         <h1 className="font-heading font-black uppercase text-[clamp(2rem,6vw,4rem)] leading-[0.93] text-white max-w-[820px]">
-                            Design Studios Are<br />Experimenting With AI.<br /><span className="text-lime">Very Few Are Using It.</span>
+                            Design Studios Are Experimenting With AI.<br /><span className="text-lime">Very Few Are Using It.</span>
                         </h1>
                         <p
                             className="text-base md:text-lg text-gray-400 leading-relaxed font-body"
