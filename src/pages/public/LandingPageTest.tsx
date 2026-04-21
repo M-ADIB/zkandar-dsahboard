@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'fra
 import {
     Eye, ArrowRight, Users, Building2,
     X, ZoomIn, ZoomOut, TrendingDown, BarChart2, AlertCircle, ShieldOff,
-    ChevronLeft, ChevronRight, Clock, Zap, Sparkles,
+    ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 
@@ -102,156 +102,79 @@ const VSL_VIDEO_ID = '1174567061'
 // Replace with actual testimonial mashup Vimeo ID when available
 const TESTIMONIAL_MASHUP_ID = '1113394028'
 
-const CASE_STUDIES = [
+const CASE_STUDIES: CaseStudy[] = [
     {
-        name: 'Sara Al-Rashid',
-        role: 'Senior Architect',
-        location: 'Dubai, UAE',
-        before: {
-            label: 'Before Zkandar AI',
-            headline: '3 to 4 weeks per render.',
-            points: [
-                { icon: Clock,    text: 'Every visualization took 3 to 4 weeks to reach client-ready quality' },
-                { icon: Zap,      text: 'Output quality was inconsistent. Clients frequently rejected first rounds' },
-                { icon: Sparkles, text: 'Finding creative direction required days of reference gathering and sketching' },
-            ],
-            imgs: ['/lander/16.png', '/lander/2.png', '/lander/33.png'],
-        },
-        after: {
-            label: 'After Zkandar AI',
-            headline: 'Client-ready in 20 minutes.',
-            points: [
-                { icon: Clock,    text: 'Full render workflow from brief to presentation in under an hour' },
-                { icon: Zap,      text: 'Consistent, photorealistic output every session. Zero outsourcing' },
-                { icon: Sparkles, text: 'Creative direction unlocked instantly. Explore 10 concepts before lunch' },
-            ],
-            imgs: ['/lander/4.png', '/lander/15.png', '/lander/24.png'],
-        },
-    },
-    {
-        name: 'Mariam Khalil',
-        role: 'Interior Design Studio Owner',
-        location: 'Abu Dhabi, UAE',
-        before: {
-            label: 'Before Zkandar AI',
-            headline: 'AED 1,200 per outsourced render.',
-            points: [
-                { icon: Clock,    text: 'Each outsourced visualization cost 800 to 1,200 AED and took over a week' },
-                { icon: Zap,      text: 'Low output volume meant fewer proposals, fewer won projects' },
-                { icon: Sparkles, text: 'Could not iterate quickly. Clients were shown one direction, not many' },
-            ],
-            imgs: ['/lander/33.png', '/lander/16.png', '/lander/2.png'],
-        },
-        after: {
-            label: 'After Zkandar AI',
-            headline: 'ROI recovered in 2 weeks.',
-            points: [
-                { icon: Clock,    text: 'Generates renders in-house in 20 minutes. Zero outsourcing costs' },
-                { icon: Zap,      text: 'Proposal volume doubled. More pitches, more closes' },
-                { icon: Sparkles, text: 'Now presents 5 to 8 concepts per client. Closes faster' },
-            ],
-            imgs: ['/lander/11.png', '/lander/4.png', '/lander/15.png'],
-        },
-    },
-    {
-        name: 'Faisal Al-Mutairi',
-        role: 'Urban Planner',
+        id: 'nisreen',
+        name: 'Nisreen Kayyali',
+        projectType: 'Commercial Architecture',
         location: 'Riyadh, Saudi Arabia',
-        before: {
-            label: 'Before Zkandar AI',
-            headline: 'Months to produce a single master plan visual.',
-            points: [
-                { icon: Clock,    text: 'Master plan visuals required specialized teams and months of production time' },
-                { icon: Zap,      text: 'Hard to communicate spatial ideas to non-technical stakeholders' },
-                { icon: Sparkles, text: 'Creative exploration was limited to what the budget allowed for' },
-            ],
-            imgs: ['/lander/16.png', '/lander/3.png', '/lander/2.png'],
-        },
-        after: {
-            label: 'After Zkandar AI',
-            headline: 'Full master plan visual in a single session.',
-            points: [
-                { icon: Clock,    text: 'Generates master plan perspectives and aerials in one working session' },
-                { icon: Zap,      text: 'Stakeholders and clients grasp spatial vision immediately. Fewer revisions' },
-                { icon: Sparkles, text: 'Explores design directions freely before committing to one' },
-            ],
-            imgs: ['/lander/19.png', '/lander/9.png', '/lander/24.png'],
-        },
+        tagline: 'An empty desert plot, a brief, and AI. This is what came out the other side.',
+        previewImgs: [
+            '/casestudies/nisreen/money-shot-light.png',
+            '/casestudies/nisreen/progression-3.png',
+            '/casestudies/nisreen/interiors-0.png',
+            '/casestudies/nisreen/details-0.png',
+        ],
+        slides: [
+            // ── Progression ──────────────────────────────────────────
+            { img: '/casestudies/nisreen/progression-1.png', stepLabel: '01', category: 'The Site', title: 'The Empty Plot', caption: 'An unmarked piece of desert near King Salman Metro Station, Riyadh. No building. No concept. Just land and a brief.' },
+            { img: '/casestudies/nisreen/progression-2.png', stepLabel: '02', category: 'The Site', title: 'Standing on the Land', caption: 'Nisreen visits the actual site. This is the raw material the AI has to work with. A construction zone, desert heat, and a vision.' },
+            { img: '/casestudies/nisreen/progression-4.jpg', stepLabel: '03', category: 'The Design', title: 'Form Mapped Onto Reality', caption: 'The building footprint is drawn directly onto the site photo. AI helps define the organic massing against the real land before any software is opened.' },
+            { img: '/casestudies/nisreen/progression-3.png', stepLabel: '04', category: 'The Design', title: 'First AI Render', caption: 'The building materializes. Organic arched canopy, terracotta facade, rooftop gardens, street life. Generated from a prompt in a single session.' },
+            { img: '/casestudies/nisreen/progression-5.png', stepLabel: '05', category: 'The Design', title: 'Site in Context', caption: 'Aerial view confirming the design responds to its surroundings. King Salman Park next door. The AI-directed massing reads perfectly at urban scale.' },
+            // ── Hero Renders ─────────────────────────────────────────
+            { img: '/casestudies/nisreen/money-shot-light.png', stepLabel: '06', category: 'Hero Renders', title: 'The Entrance — Day', caption: 'The money shot. Photorealistic daylight render of the arched entrance canopy, rooftop palms, and cobblestone approach. Client-ready.' },
+            { img: '/casestudies/nisreen/money-shot-night.png', stepLabel: '07', category: 'Hero Renders', title: 'The Entrance — Night', caption: 'Same view after dark. Warm lighting, deep shadows, cinematic mood. Two completely different atmospheres from the same AI workflow.' },
+            // ── Interiors ────────────────────────────────────────────
+            { img: '/casestudies/nisreen/interiors-0.png', stepLabel: '08', category: 'Interiors', title: 'Interior 01', caption: 'AI-generated interior perspective. Material choices, lighting logic, and spatial proportion — all directed through prompts.' },
+            { img: '/casestudies/nisreen/interiors-1.png', stepLabel: '09', category: 'Interiors', title: 'Interior 02', caption: 'Variation generated in minutes. The same space explored from a different angle and atmosphere.' },
+            { img: '/casestudies/nisreen/interiors-2.png', stepLabel: '10', category: 'Interiors', title: 'Interior 03', caption: '' },
+            { img: '/casestudies/nisreen/interiors-3.png', stepLabel: '11', category: 'Interiors', title: 'Interior 04', caption: '' },
+            { img: '/casestudies/nisreen/interiors-4.png', stepLabel: '12', category: 'Interiors', title: 'Interior 05', caption: '' },
+            { img: '/casestudies/nisreen/interiors-5.png', stepLabel: '13', category: 'Interiors', title: 'Interior 06', caption: '' },
+            // ── Details ──────────────────────────────────────────────
+            { img: '/casestudies/nisreen/details-0.png', stepLabel: '14', category: 'Details', title: 'Detail 01', caption: 'AI close-up of key architectural detail. Texture, material, and precision that would take weeks to produce traditionally.' },
+            { img: '/casestudies/nisreen/details-1.png', stepLabel: '15', category: 'Details', title: 'Detail 02', caption: '' },
+            { img: '/casestudies/nisreen/details-2.png', stepLabel: '16', category: 'Details', title: 'Detail 03', caption: '' },
+            { img: '/casestudies/nisreen/details-3.png', stepLabel: '17', category: 'Details', title: 'Detail 04', caption: '' },
+            { img: '/casestudies/nisreen/details-4.png', stepLabel: '18', category: 'Details', title: 'Detail 05', caption: '' },
+            { img: '/casestudies/nisreen/details-5.png', stepLabel: '19', category: 'Details', title: 'Detail 06', caption: '' },
+            { img: '/casestudies/nisreen/details-6.png', stepLabel: '20', category: 'Details', title: 'Detail 07', caption: '' },
+            { img: '/casestudies/nisreen/details-7.png', stepLabel: '21', category: 'Details', title: 'Detail 08', caption: '' },
+            // ── Side Views ───────────────────────────────────────────
+            { img: '/casestudies/nisreen/villa-side-0.png', stepLabel: '22', category: 'Side Views', title: 'Side Elevation 01', caption: 'AI-generated side elevation render. The full depth of the project revealed — every angle explored.' },
+            { img: '/casestudies/nisreen/villa-side-1.png', stepLabel: '23', category: 'Side Views', title: 'Side Elevation 02', caption: '' },
+            // ── Wayfinding ───────────────────────────────────────────
+            { img: '/casestudies/nisreen/wayfinding-0.png', stepLabel: '24', category: 'Wayfinding', title: 'Signage 01', caption: 'AI-generated wayfinding and signage concepts. Brand-consistent, architecturally integrated.' },
+            { img: '/casestudies/nisreen/wayfinding-1.png', stepLabel: '25', category: 'Wayfinding', title: 'Signage 02', caption: '' },
+            // ── Parking ──────────────────────────────────────────────
+            { img: '/casestudies/nisreen/parking-0.png', stepLabel: '26', category: 'Parking', title: 'Parking Level', caption: 'Even utility spaces get the full AI treatment. Underground parking visualization for client presentation.' },
+        ],
     },
     {
-        name: 'Laila Hassan',
-        role: 'Landscape Architect',
-        location: 'Cairo, Egypt',
-        before: {
-            label: 'Before Zkandar AI',
-            headline: 'Site analysis ate up the entire concept phase.',
-            points: [
-                { icon: Clock,    text: 'Manual site analysis diagrams took days to produce and update' },
-                { icon: Zap,      text: 'Low-quality hand drawings failed to impress clients at early stages' },
-                { icon: Sparkles, text: 'Lacked tools to visualize how planting schemes and materials would look' },
-            ],
-            imgs: ['/lander/2.png', '/lander/16.png', '/lander/33.png'],
-        },
-        after: {
-            label: 'After Zkandar AI',
-            headline: 'Site to concept in one afternoon.',
-            points: [
-                { icon: Clock,    text: 'Annotated site sections, planting plans, and renders generated same day' },
-                { icon: Zap,      text: 'Client presentations elevated dramatically. Approval rates improved' },
-                { icon: Sparkles, text: 'Visualizes any planting scheme or material instantly. No guessing' },
-            ],
-            imgs: ['/lander/12.png', '/lander/15.png', '/lander/4.png'],
-        },
-    },
-    {
-        name: 'Ahmed Al-Sayed',
-        role: 'Architecture Studio Director',
-        location: 'Riyadh, Saudi Arabia',
-        before: {
-            label: 'Before Zkandar AI',
-            headline: 'The team wasted weeks on visualization production.',
-            points: [
-                { icon: Clock,    text: 'Junior staff spent 60% of their time on renders, not design thinking' },
-                { icon: Zap,      text: 'Quality varied wildly across team members. No standardized workflow' },
-                { icon: Sparkles, text: 'Creative bottlenecks delayed projects and strained client relationships' },
-            ],
-            imgs: ['/lander/33.png', '/lander/2.png', '/lander/16.png'],
-        },
-        after: {
-            label: 'After Zkandar AI',
-            headline: 'The whole studio works faster. Together.',
-            points: [
-                { icon: Clock,    text: 'Every team member generates client-ready visuals independently' },
-                { icon: Zap,      text: 'Standardized AI workflows mean consistent quality across every project' },
-                { icon: Sparkles, text: 'Creative output per project tripled. Overhead costs dropped significantly' },
-            ],
-            imgs: ['/lander/24.png', '/lander/13.png', '/lander/9.png'],
-        },
-    },
-    {
-        name: 'Nora Al-Farsi',
-        role: 'Interior Design Freelancer',
-        location: 'Dubai, UAE',
-        before: {
-            label: 'Before Zkandar AI',
-            headline: 'Competing with larger studios felt impossible.',
-            points: [
-                { icon: Clock,    text: 'Render production was outsourced, slow, and ate into already thin margins' },
-                { icon: Zap,      text: 'Could only pitch one concept per client. Larger firms showed five' },
-                { icon: Sparkles, text: 'Struggled to turn around concepts quickly enough to win fast-moving projects' },
-            ],
-            imgs: ['/lander/16.png', '/lander/33.png', '/lander/2.png'],
-        },
-        after: {
-            label: 'After Zkandar AI',
-            headline: 'Now out-pitching studios 10 times her size.',
-            points: [
-                { icon: Clock,    text: 'Turnaround time cut from 2 weeks to same-day. Clients notice immediately' },
-                { icon: Zap,      text: 'Presents 6 to 8 concepts per pitch. Win rate has more than doubled' },
-                { icon: Sparkles, text: 'Operates at the output level of a full studio. Solo' },
-            ],
-            imgs: ['/lander/11.png', '/lander/4.png', '/lander/27.png'],
-        },
+        id: 'aleena',
+        name: 'Aleena Al Waqas',
+        projectType: 'Hospitality Interior Design',
+        location: 'UAE',
+        tagline: 'A complete luxury F&B interior — every perspective generated with AI. Backed by a full video walkthrough.',
+        previewImgs: [
+            '/casestudies/aleena/full-shot.jpg',
+            '/casestudies/aleena/shot-1.png',
+            '/casestudies/aleena/shot-4.png',
+            '/casestudies/aleena/shot-7.png',
+        ],
+        slides: [
+            { img: '/casestudies/aleena/full-shot.jpg',  stepLabel: '01', category: 'Overview',      title: 'The Hero Shot',    caption: 'A luxury F&B interior. Warm stone arches, onyx bar counter, soaring ceilings, palm-framed windows. Client-ready on day one.' },
+            { img: '/casestudies/aleena/shot-1.png',     stepLabel: '02', category: 'Perspectives',  title: 'Shot 02',          caption: 'AI-generated perspective exploring the spatial sequence from entry to bar.' },
+            { img: '/casestudies/aleena/shot-2.png',     stepLabel: '03', category: 'Perspectives',  title: 'Shot 03',          caption: '' },
+            { img: '/casestudies/aleena/shot-3.jpg',     stepLabel: '04', category: 'Perspectives',  title: 'Shot 04',          caption: '' },
+            { img: '/casestudies/aleena/shot-4.png',     stepLabel: '05', category: 'Perspectives',  title: 'Shot 05',          caption: '' },
+            { img: '/casestudies/aleena/shot-5.png',     stepLabel: '06', category: 'Perspectives',  title: 'Shot 06',          caption: '' },
+            { img: '/casestudies/aleena/shot-6.jpg',     stepLabel: '07', category: 'Perspectives',  title: 'Shot 07',          caption: '' },
+            { img: '/casestudies/aleena/shot-7.png',     stepLabel: '08', category: 'Perspectives',  title: 'Shot 08',          caption: '' },
+            { img: '/casestudies/aleena/shot-9.png',     stepLabel: '09', category: 'Perspectives',  title: 'Shot 09',          caption: '' },
+            { img: '/casestudies/aleena/shot-10.jpg',    stepLabel: '10', category: 'Perspectives',  title: 'Shot 10',          caption: 'Every angle of the space explored. All generated — no photography, no 3D modeling software.' },
+        ],
     },
 ]
 
@@ -392,6 +315,155 @@ function Lightbox({ images, index, onClose }: {
     )
 }
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface CaseStudySlide {
+    img: string
+    stepLabel: string
+    category: string
+    title: string
+    caption: string
+}
+
+interface CaseStudy {
+    id: string
+    name: string
+    projectType: string
+    location: string
+    tagline: string
+    previewImgs: string[]
+    slides: CaseStudySlide[]
+}
+
+// ─── Case Study Presentation ──────────────────────────────────────────────────
+
+function CaseStudyPresentation({
+    cs, slideIdx, onClose, onNext, onPrev, onJump,
+}: {
+    cs: CaseStudy
+    slideIdx: number
+    onClose: () => void
+    onNext: () => void
+    onPrev: () => void
+    onJump: (i: number) => void
+}) {
+    const filmstripRef = useRef<HTMLDivElement>(null)
+    const slide = cs.slides[slideIdx]
+
+    useEffect(() => {
+        const el = filmstripRef.current?.children[slideIdx] as HTMLElement
+        el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }, [slideIdx])
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight') onNext()
+            if (e.key === 'ArrowLeft') onPrev()
+            if (e.key === 'Escape') onClose()
+        }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [onNext, onPrev, onClose])
+
+    // Group slides by category for divider lines in filmstrip
+    let lastCategory = ''
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-black flex flex-col"
+        >
+            {/* ── Top bar: close + filmstrip ── */}
+            <div className="flex items-center gap-3 px-3 sm:px-5 py-2.5 border-b border-white/[0.07] bg-black shrink-0">
+                <button onClick={onClose}
+                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-white/10 hover:border-white/30 text-gray-400 hover:text-white transition">
+                    <X className="w-4 h-4" />
+                </button>
+
+                {/* Filmstrip */}
+                <div ref={filmstripRef} className="flex items-end gap-2 overflow-x-auto scrollbar-hide flex-1 py-1">
+                    {cs.slides.map((s, i) => {
+                        const isActive = i === slideIdx
+                        const showDivider = s.category !== lastCategory && i > 0
+                        const currentCategory = s.category
+                        if (s.category !== lastCategory) lastCategory = s.category
+                        return (
+                            <div key={i} className="shrink-0 flex items-end gap-2">
+                                {showDivider && (
+                                    <div className="w-px h-10 bg-white/[0.08] shrink-0" />
+                                )}
+                                <button
+                                    onClick={() => onJump(i)}
+                                    className={`shrink-0 flex flex-col items-center gap-1 transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
+                                    title={`${currentCategory} — ${s.title}`}
+                                >
+                                    <div className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-colors duration-200 ${isActive ? 'border-lime' : 'border-white/[0.06]'}`}>
+                                        <img src={s.img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                                    </div>
+                                    <span className={`text-[0.5rem] uppercase tracking-wider font-bold tabular-nums ${isActive ? 'text-lime' : 'text-gray-600'}`}>{s.stepLabel}</span>
+                                </button>
+                            </div>
+                        )
+                    })}
+                </div>
+
+                {/* Counter + project name */}
+                <div className="shrink-0 text-right hidden sm:block">
+                    <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
+                    <p className="text-[0.6rem] uppercase tracking-[0.15em] text-gray-700">{cs.name}</p>
+                </div>
+            </div>
+
+            {/* ── Main image ── */}
+            <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#060606]">
+                <AnimatePresence mode="wait">
+                    <motion.img
+                        key={slideIdx}
+                        src={slide.img}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                        className="max-h-full max-w-full object-contain"
+                        alt={slide.title}
+                    />
+                </AnimatePresence>
+
+                {/* Prev arrow */}
+                <button onClick={onPrev}
+                    className={`absolute left-3 sm:left-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                {/* Next arrow */}
+                <button onClick={onNext}
+                    className={`absolute right-3 sm:right-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+
+            {/* ── Bottom info ── */}
+            <div className="px-4 sm:px-8 py-3.5 border-t border-white/[0.07] bg-black shrink-0">
+                <div className="max-w-4xl mx-auto flex items-start justify-between gap-6">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[0.6rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
+                        <p className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{slide.title}</p>
+                        {slide.caption && (
+                            <p className="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
+                        )}
+                    </div>
+                    <div className="shrink-0 sm:hidden text-right">
+                        <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function LandingPageTest() {
@@ -402,7 +474,8 @@ export function LandingPageTest() {
     const [activeMasterVideo, setActiveMasterVideo] = useState(0)
     const [tickerPage, setTickerPage] = useState(0)
     const [mobileTickerIdx, setMobileTickerIdx] = useState(0)
-    const [expandedCase, setExpandedCase] = useState(0)
+    const [caseStudyOpen, setCaseStudyOpen] = useState<string | null>(null)
+    const [caseSlideIdx, setCaseSlideIdx] = useState(0)
     const TICKER_TOTAL = Math.ceil(WORKSHOPS.length / 3)
     useEffect(() => {
         const t = setInterval(() => {
@@ -669,125 +742,67 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>Transformations</MicroLabel>
+                        <MicroLabel>Project Showcases</MicroLabel>
                         <div className="flex flex-wrap items-end gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
-                                BEFORE AND AFTER.
+                                REAL PROJECTS.<br /><span className="text-lime">REAL AI OUTPUT.</span>
                             </h2>
                             <LimeBar />
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
-                            Real participants. Real numbers. Real work. These are the transformations from going through our program.
+                            Every image below was generated by AI. Click any project to open the full presentation.
                         </p>
                     </FadeIn>
 
-                    <div className="space-y-3">
-                        {CASE_STUDIES.map((cs, idx) => {
-                            const isOpen = expandedCase === idx
-                            const initials = cs.name.split(' ').map((n: string) => n[0]).join('')
-                            return (
-                                <FadeIn key={idx} delay={idx * 0.04}>
-                                    <div className={`rounded-2xl border transition-colors duration-300 overflow-hidden ${isOpen ? 'border-white/[0.1]' : 'border-white/[0.05] hover:border-white/[0.08]'}`}>
-
-                                        {/* Collapsed header — always visible */}
-                                        <button
-                                            onClick={() => setExpandedCase(isOpen ? -1 : idx)}
-                                            className="w-full flex items-center gap-4 px-5 sm:px-7 py-5 text-left"
-                                        >
-                                            {/* Profile picture placeholder */}
-                                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center shrink-0">
-                                                <span className="font-heading font-black text-lime text-sm">{initials}</span>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{cs.name}</p>
-                                                <p className="text-sm text-gray-400 mt-0.5">{cs.role}</p>
-                                                <p className="text-xs text-gray-600">{cs.location}</p>
-                                            </div>
-                                            <div className="flex items-center gap-3 shrink-0">
-                                                <span className={`hidden sm:block text-[0.6rem] font-bold uppercase tracking-[0.15em] transition-colors ${isOpen ? 'text-lime' : 'text-gray-600'}`}>
-                                                    {isOpen ? 'Collapse' : 'See transformation'}
-                                                </span>
-                                                <ChevronRight className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} />
-                                            </div>
-                                        </button>
-
-                                        {/* Expanded content */}
-                                        <AnimatePresence initial={false}>
-                                            {isOpen && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: 'auto', opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                                                    className="overflow-hidden"
-                                                >
-                                                    <div className="grid grid-cols-1 lg:grid-cols-2 border-t border-white/[0.06]">
-
-                                                        {/* BEFORE */}
-                                                        <div className="bg-[#0a0a0a] p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/[0.06]">
-                                                            <span className="inline-block px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[0.6rem] font-bold uppercase tracking-[0.18em] mb-4">
-                                                                {cs.before.label}
-                                                            </span>
-                                                            <h3 className="font-heading font-black uppercase text-lg sm:text-xl text-white mb-5 leading-tight">
-                                                                {cs.before.headline}
-                                                            </h3>
-                                                            <div className="space-y-3 mb-6">
-                                                                {cs.before.points.map((pt, pi) => (
-                                                                    <div key={pi} className="flex items-start gap-3">
-                                                                        <pt.icon className="w-4 h-4 text-red-400/60 shrink-0 mt-0.5" />
-                                                                        <p className="text-sm text-gray-500 leading-snug">{pt.text}</p>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                            <div className="grid grid-cols-3 gap-2">
-                                                                {cs.before.imgs.map((src, ii) => (
-                                                                    <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
-                                                                        <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 contrast-75" />
-                                                                        <div className="absolute inset-0 bg-red-950/30" />
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* AFTER */}
-                                                        <div className="bg-[#080d05] p-6 sm:p-8">
-                                                            <span className="inline-block px-2.5 py-1 rounded-lg bg-lime/10 border border-lime/20 text-lime text-[0.6rem] font-bold uppercase tracking-[0.18em] mb-4">
-                                                                {cs.after.label}
-                                                            </span>
-                                                            <h3 className="font-heading font-black uppercase text-lg sm:text-xl text-white mb-5 leading-tight">
-                                                                {cs.after.headline}
-                                                            </h3>
-                                                            <div className="space-y-3 mb-6">
-                                                                {cs.after.points.map((pt, pi) => (
-                                                                    <div key={pi} className="flex items-start gap-3">
-                                                                        <pt.icon className="w-4 h-4 text-lime/70 shrink-0 mt-0.5" />
-                                                                        <p className="text-sm text-gray-300 leading-snug">{pt.text}</p>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                            <div className="grid grid-cols-3 gap-2">
-                                                                {cs.after.imgs.map((src, ii) => (
-                                                                    <div key={ii} className="relative rounded-xl overflow-hidden aspect-square bg-white/5">
-                                                                        <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {CASE_STUDIES.map((cs) => (
+                            <FadeIn key={cs.id}>
+                                <motion.div
+                                    whileHover={{ y: -4 }}
+                                    onClick={() => { setCaseStudyOpen(cs.id); setCaseSlideIdx(0) }}
+                                    className="bg-[#0a0a0a] border border-white/[0.06] hover:border-white/[0.14] rounded-2xl overflow-hidden cursor-pointer transition-colors duration-300 group"
+                                >
+                                    {/* Preview grid */}
+                                    <div className="grid grid-cols-[2fr_1fr] gap-[3px] h-64 sm:h-80">
+                                        <div className="relative overflow-hidden">
+                                            <img src={cs.previewImgs[0]} alt=""
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
+                                        </div>
+                                        <div className="grid grid-rows-3 gap-[3px]">
+                                            {cs.previewImgs.slice(1).map((img, i) => (
+                                                <div key={i} className="relative overflow-hidden">
+                                                    <img src={img} alt=""
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </FadeIn>
-                            )
-                        })}
+
+                                    {/* Info row */}
+                                    <div className="px-5 py-4 sm:px-6 sm:py-5 flex items-end justify-between gap-4">
+                                        <div className="min-w-0">
+                                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 font-bold mb-1">
+                                                {cs.projectType} · {cs.location}
+                                            </p>
+                                            <h3 className="font-heading font-black uppercase text-xl text-white leading-tight truncate">{cs.name}</h3>
+                                            <p className="text-xs text-gray-600 mt-1.5 leading-snug line-clamp-2 max-w-xs">{cs.tagline}</p>
+                                        </div>
+                                        <div className="shrink-0 flex items-center gap-2.5">
+                                            <span className="text-[0.6rem] text-gray-600 uppercase tracking-wider hidden sm:block">{cs.slides.length} slides</span>
+                                            <div className="w-8 h-8 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center">
+                                                <ArrowRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-lime transition-colors" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </FadeIn>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── THE PROBLEM ────────────────────────────────────────── */}
+{/* ── THE PROBLEM ────────────────────────────────────────── */}
             <section className="py-20 md:py-28 bg-black border-t border-white/[0.04]">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
@@ -1306,6 +1321,25 @@ export function LandingPageTest() {
                     </p>
                 </div>
             </footer>
+
+            {/* ── CASE STUDY LIGHTBOX ────────────────────────────────── */}
+            <AnimatePresence>
+                {caseStudyOpen && (() => {
+                    const cs = CASE_STUDIES.find(c => c.id === caseStudyOpen)!
+                    const nextSlide = () => setCaseSlideIdx(i => Math.min(i + 1, cs.slides.length - 1))
+                    const prevSlide = () => setCaseSlideIdx(i => Math.max(i - 1, 0))
+                    return (
+                        <CaseStudyPresentation
+                            cs={cs}
+                            slideIdx={caseSlideIdx}
+                            onClose={() => setCaseStudyOpen(null)}
+                            onNext={nextSlide}
+                            onPrev={prevSlide}
+                            onJump={setCaseSlideIdx}
+                        />
+                    )
+                })()}
+            </AnimatePresence>
         </div>
     )
 }
