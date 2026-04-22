@@ -1,95 +1,188 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, ChevronLeft, Calendar, Users, Zap, Clock, Target } from 'lucide-react'
+import { ArrowRight, ChevronLeft, Calendar, Users, Zap, Clock, Target, X } from 'lucide-react'
+import { InlineWidget } from 'react-calendly'
 import { PublicNav } from '../../components/public/PublicNav'
 import logoSrc from '../../assets/logo.png'
 
-// ─── Question definitions ─────────────────────────────────────────────────────
+const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
 
-const QUESTIONS = [
+// ─── Questions — 4 sections, 10 total ────────────────────────────────────────
+
+interface QuestionOption { label: string; sub: string; value: string }
+interface Question { id: string; text: string; sub: string; options: QuestionOption[] }
+interface Section { id: string; label: string; intro: string; questions: Question[] }
+
+const SECTIONS: Section[] = [
     {
-        id: 'context',
-        text: 'Which best describes your situation?',
-        sub: 'Be honest — there\'s no wrong answer. This shapes everything.',
-        options: [
-            { label: 'Individual designer or architect', sub: 'I work independently or as part of someone else\'s team', value: 'individual' },
-            { label: 'Studio or firm owner', sub: 'I run the operation — I decide what tools and training we adopt', value: 'owner' },
-            { label: 'Team lead or creative director', sub: 'I manage a team of designers and set the direction', value: 'lead' },
-            { label: 'Student or recent graduate', sub: 'I\'m building my career and want to get ahead early', value: 'student' },
+        id: 'your-practice',
+        label: 'Your Practice',
+        intro: 'Understanding your context helps us map where AI can move the needle most for you.',
+        questions: [
+            {
+                id: 'context',
+                text: 'Which best describes your situation?',
+                sub: 'Your role and setup define which skills and systems will give you the highest return.',
+                options: [
+                    { label: 'Individual designer or architect', sub: 'I work independently or as part of someone else\'s team', value: 'individual' },
+                    { label: 'Studio or firm owner', sub: 'I run the operation — I set direction, tools, and culture', value: 'owner' },
+                    { label: 'Team lead or creative director', sub: 'I manage designers and drive how the team delivers', value: 'lead' },
+                    { label: 'Student or recent graduate', sub: 'Building my career and want to get ahead early', value: 'student' },
+                ],
+            },
+            {
+                id: 'team_size',
+                text: 'How many people work on design at your firm?',
+                sub: 'Team size changes the scope of what\'s possible — and what\'s necessary.',
+                options: [
+                    { label: 'Just me', sub: 'Solo practice — I own every step of every project', value: 'solo' },
+                    { label: '2–5 people', sub: 'Small, close-knit team — everyone wears multiple hats', value: 'small' },
+                    { label: '6–20 people', sub: 'A structured studio with departments or specialisms', value: 'medium' },
+                    { label: '20+ people', sub: 'A large firm running multiple projects simultaneously', value: 'large' },
+                ],
+            },
         ],
     },
     {
-        id: 'team_size',
-        text: 'How many people work on design at your firm?',
-        sub: 'Count everyone who touches creative or technical work.',
-        options: [
-            { label: 'Just me', sub: 'Solo practice — I do everything', value: 'solo' },
-            { label: '2–5 people', sub: 'A small, close-knit team', value: 'small' },
-            { label: '6–20 people', sub: 'A proper studio with departments', value: 'medium' },
-            { label: '20+ people', sub: 'A large firm with multiple projects running', value: 'large' },
+        id: 'your-work',
+        label: 'Your Work',
+        intro: 'The type of work you do determines exactly which AI workflows give you the fastest lift.',
+        questions: [
+            {
+                id: 'project_type',
+                text: 'What kind of projects do you typically work on?',
+                sub: 'This tells us which visualization and ideation workflows matter most to you.',
+                options: [
+                    { label: 'Residential — villas, apartments, homes', sub: 'High-end or mid-market residential design and visualization', value: 'residential' },
+                    { label: 'Commercial and hospitality', sub: 'Hotels, F&B, retail, corporate offices', value: 'commercial' },
+                    { label: 'Master planning or urban design', sub: 'Large-scale site analysis, masterplans, landscape', value: 'urban' },
+                    { label: 'Mixed or client-driven', sub: 'We take what comes — the work varies project to project', value: 'mixed' },
+                ],
+            },
+            {
+                id: 'output_bottleneck',
+                text: 'Where does most of your time get lost?',
+                sub: 'The biggest time sinks are usually the biggest AI opportunities.',
+                options: [
+                    { label: 'Concept development and early ideation', sub: 'Getting the initial direction right takes too long', value: 'concepts' },
+                    { label: 'Visualization and rendering', sub: 'Creating client-presentable visuals is slow or expensive', value: 'rendering' },
+                    { label: 'Presentations and client materials', sub: 'Packaging the work for pitches and approvals takes too much time', value: 'presentations' },
+                    { label: 'Revisions and feedback loops', sub: 'Changes take longer than the original work', value: 'revisions' },
+                ],
+            },
         ],
     },
     {
-        id: 'ai_current',
-        text: 'Where are you with AI right now?',
-        sub: 'Don\'t worry about what you think you should say.',
-        options: [
-            { label: 'Haven\'t started yet', sub: 'I know I should, but haven\'t found the right entry point', value: 'none' },
-            { label: 'Tried a few things', sub: 'Played with some tools but nothing stuck or produced real output', value: 'tried' },
-            { label: 'Use it occasionally', sub: 'I use it sometimes but not consistently on client work', value: 'occasional' },
-            { label: 'It\'s part of my workflow', sub: 'I use AI regularly but want to go deeper or scale it', value: 'active' },
+        id: 'your-ai-journey',
+        label: 'Your AI Journey',
+        intro: 'Where you are right now shapes how fast you can move — and what gaps are costing you the most.',
+        questions: [
+            {
+                id: 'ai_current',
+                text: 'Where are you with AI in your workflow today?',
+                sub: 'There\'s no ideal starting point — this tells us how much ground to cover.',
+                options: [
+                    { label: 'Haven\'t started yet', sub: 'I know it\'s important but haven\'t found the right entry point', value: 'none' },
+                    { label: 'Tried a few tools — nothing stuck', sub: 'Experimented but didn\'t get output that matched real project needs', value: 'tried' },
+                    { label: 'Use it occasionally', sub: 'Comes and goes — not yet a consistent part of how I work', value: 'occasional' },
+                    { label: 'It\'s part of my regular workflow', sub: 'I use AI often but want to go deeper or expand it across the team', value: 'active' },
+                ],
+            },
+            {
+                id: 'ai_tools',
+                text: 'Which of these have you worked with before?',
+                sub: 'Your tool history tells us where the gaps in your skill set actually are.',
+                options: [
+                    { label: 'None — completely new to AI tools', sub: 'Starting from scratch', value: 'none' },
+                    { label: 'Midjourney or image generation tools', sub: 'Generated imagery but not in a structured design workflow', value: 'midjourney' },
+                    { label: 'AI rendering or visualization tools', sub: 'Tools like Stable Diffusion, Krea, or similar', value: 'render_tools' },
+                    { label: 'Multiple tools — building a workflow', sub: 'Using several together, looking to systemize them', value: 'multi' },
+                ],
+            },
+            {
+                id: 'ai_barrier',
+                text: 'What\'s held you back most from going further with AI?',
+                sub: 'The gap between curiosity and consistent use always has a specific cause.',
+                options: [
+                    { label: 'I don\'t know where to start or what to learn', sub: 'The landscape is overwhelming — too many tools, no clear path', value: 'direction' },
+                    { label: 'The output quality doesn\'t match professional standards', sub: 'Results look "AI-ish" — not something I\'d show a client', value: 'quality' },
+                    { label: 'I can\'t get my team to adopt it consistently', sub: 'Individuals try things but there\'s no shared workflow', value: 'team_adoption' },
+                    { label: 'Time — I\'m too deep in client work to learn something new', sub: 'I need a result fast, not a long learning curve', value: 'time' },
+                ],
+            },
         ],
     },
     {
-        id: 'goal',
-        text: 'What\'s your #1 goal with AI in the next 90 days?',
-        sub: 'Pick the one that matters most right now.',
-        options: [
-            { label: 'Generate client-ready renders myself', sub: 'Stop outsourcing and produce faster, with full control', value: 'renders' },
-            { label: 'Win more pitches and proposals', sub: 'Use AI to produce better presentations in less time', value: 'pitches' },
-            { label: 'Speed up my day-to-day workflow', sub: 'Cut time on repetitive tasks — concepts, iterations, briefs', value: 'speed' },
-            { label: 'Get my whole team AI-capable', sub: 'I need an operation-wide shift, not just one person upskilling', value: 'team' },
+        id: 'your-goals',
+        label: 'Your Goals',
+        intro: 'What you want to achieve in the next 90 days determines which path will actually move you there.',
+        questions: [
+            {
+                id: 'goal',
+                text: 'What\'s your #1 goal with AI in the next 90 days?',
+                sub: 'The most honest answer here — not the most ambitious one — gives the clearest path.',
+                options: [
+                    { label: 'Generate client-ready renders without outsourcing', sub: 'I want full in-house control of visualization — fast and affordable', value: 'renders' },
+                    { label: 'Win more pitches with stronger visual storytelling', sub: 'Better AI-powered presentations that close clients faster', value: 'pitches' },
+                    { label: 'Cut my weekly workflow time significantly', sub: 'Concepts, iterations, briefs — all faster without sacrificing quality', value: 'speed' },
+                    { label: 'Build an AI-capable operation across my whole team', sub: 'I need a firm-wide shift — not just one person upskilling', value: 'team' },
+                ],
+            },
+            {
+                id: 'client_impact',
+                text: 'How important is AI\'s impact on your client relationships?',
+                sub: 'This tells us whether you\'re optimizing for internal speed or external positioning.',
+                options: [
+                    { label: 'Very important — clients are my main driver', sub: 'I want to impress clients and close more work with AI output', value: 'client_primary' },
+                    { label: 'Internal first, clients will follow', sub: 'I want the team efficient first — client output will improve naturally', value: 'internal_first' },
+                    { label: 'Both matter equally', sub: 'I need AI to improve how we work and what we show', value: 'both' },
+                    { label: 'Not sure yet — I\'m still figuring out the use case', sub: 'I need to understand AI\'s role better before committing', value: 'unsure' },
+                ],
+            },
+            {
+                id: 'timeline',
+                text: 'How soon do you need to see results?',
+                sub: 'Urgency shapes the format — intensive sprint vs. deep transformation.',
+                options: [
+                    { label: 'Right now — I have a live project or pitch coming up', sub: 'I need output I can use in the next few weeks', value: 'urgent' },
+                    { label: 'Within the next 3 months', sub: 'There\'s a window coming up and I want to be ready for it', value: 'soon' },
+                    { label: 'I\'m planning ahead for the year', sub: 'No immediate pressure — this is a strategic investment', value: 'planned' },
+                ],
+            },
         ],
     },
-    {
-        id: 'timeline',
-        text: 'How urgent is this for you?',
-        sub: 'This helps us match you to the right format.',
-        options: [
-            { label: 'Very urgent — I have a live project', sub: 'I need to move in the next few weeks', value: 'urgent' },
-            { label: 'Within the next 3 months', sub: 'I have a window coming up and want to be ready', value: 'soon' },
-            { label: 'Planning ahead for the year', sub: 'No immediate pressure — I\'m investing in the future', value: 'planned' },
-        ],
-    },
-] as const
+]
+
+// Flatten for indexed navigation
+const ALL_QUESTIONS = SECTIONS.flatMap(s => s.questions)
+const TOTAL = ALL_QUESTIONS.length
 
 type Answers = Record<string, string>
+type PathResult = 'sprint' | 'masterclass'
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
-type PathResult = 'sprint' | 'masterclass'
-
 function computePath(answers: Answers): PathResult {
     let masterScore = 0
-
     if (answers.context === 'owner' || answers.context === 'lead') masterScore += 2
     if (answers.team_size === 'medium' || answers.team_size === 'large') masterScore += 2
     if (answers.team_size === 'small') masterScore += 1
     if (answers.goal === 'team') masterScore += 2
-
+    if (answers.ai_barrier === 'team_adoption') masterScore += 1
     return masterScore >= 3 ? 'masterclass' : 'sprint'
 }
 
 function computeReadinessScore(answers: Answers): number {
     let score = 10
     const usage = answers.ai_current
-    if (usage === 'tried') score += 20
-    if (usage === 'occasional') score += 40
-    if (usage === 'active') score += 60
-    const timeline = answers.timeline
-    if (timeline === 'urgent') score += 10
-    if (timeline === 'soon') score += 5
-    return Math.min(score, 70)
+    if (usage === 'tried') score += 15
+    if (usage === 'occasional') score += 35
+    if (usage === 'active') score += 55
+    const tools = answers.ai_tools
+    if (tools === 'midjourney') score += 5
+    if (tools === 'render_tools') score += 8
+    if (tools === 'multi') score += 12
+    return Math.min(score, 72)
 }
 
 function scoreLabel(score: number): string {
@@ -106,7 +199,54 @@ function scoreColor(score: number): string {
 }
 
 const HOURS_LOST: Record<string, number> = {
-    solo: 14, small: 18, medium: 32, large: 60,
+    solo: 14, small: 22, medium: 38, large: 65,
+}
+
+// Map bottleneck answer to a bar label
+const BOTTLENECK_LABELS: Record<string, string> = {
+    concepts: 'Early concept development',
+    rendering: 'Visualization & rendering',
+    presentations: 'Client presentation prep',
+    revisions: 'Revision cycles',
+}
+
+// ─── Calendly Modal ───────────────────────────────────────────────────────────
+
+function CalendlyModal({ onClose }: { onClose: () => void }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+            onClick={e => { if (e.target === e.currentTarget) onClose() }}
+        >
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="relative bg-[#111111] border border-white/10 rounded-2xl overflow-hidden w-full max-w-4xl flex flex-col"
+                style={{ height: 'min(850px, 90vh)' }}
+            >
+                <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
+                    <div className="flex items-center gap-2">
+                        <img src={logoSrc} alt="" className="h-5 object-contain" />
+                        <span className="text-sm font-bold font-heading text-white/80">Book a Discovery Call</span>
+                    </div>
+                    <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition-all">
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+                <div className="flex-1 min-h-0 bg-[#111111]">
+                    <InlineWidget
+                        url={CALENDLY_URL}
+                        styles={{ height: '100%', width: '100%' }}
+                        pageSettings={{ hideGdprBanner: true, backgroundColor: '111111', textColor: 'ffffff', primaryColor: 'd0ff71' }}
+                    />
+                </div>
+            </motion.div>
+        </motion.div>
+    )
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -116,17 +256,16 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
         <div className="w-full h-0.5 bg-white/[0.06] rounded-full overflow-hidden">
             <motion.div
                 className="h-full bg-lime rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${((current) / total) * 100}%` }}
+                animate={{ width: `${(current / total) * 100}%` }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
             />
         </div>
     )
 }
 
-function OptionCard({
-    label, sub, selected, onClick,
-}: { label: string; sub: string; selected: boolean; onClick: () => void }) {
+function OptionCard({ label, sub, selected, onClick }: {
+    label: string; sub: string; selected: boolean; onClick: () => void
+}) {
     return (
         <motion.button
             onClick={onClick}
@@ -143,11 +282,8 @@ function OptionCard({
                     selected ? 'border-lime bg-lime' : 'border-white/20'
                 }`}>
                     {selected && (
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-1.5 h-1.5 rounded-full bg-black"
-                        />
+                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                            className="w-1.5 h-1.5 rounded-full bg-black" />
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -162,229 +298,226 @@ function OptionCard({
 // ─── Results screen ───────────────────────────────────────────────────────────
 
 function ResultsScreen({ answers }: { answers: Answers }) {
+    const [modalOpen, setModalOpen] = useState(false)
     const path = computePath(answers)
     const score = computeReadinessScore(answers)
     const hoursLost = HOURS_LOST[answers.team_size ?? 'solo'] ?? 14
     const gaugeCircumference = 2 * Math.PI * 70
     const gaugeFill = (score / 100) * gaugeCircumference
-
     const isSprint = path === 'sprint'
 
+    const bottleneckLabel = BOTTLENECK_LABELS[answers.output_bottleneck] ?? 'Workflow efficiency'
+
+    const bars = [
+        { label: bottleneckLabel, pct: 85 },
+        { label: 'Visualization turnaround', pct: 70 },
+        { label: 'Presentation prep', pct: 60 },
+    ]
+
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-2xl mx-auto px-5 sm:px-6 py-8 space-y-8"
-        >
-            {/* Top label */}
-            <div className="text-center">
-                <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-lime border border-lime/25 bg-lime/[0.06] px-3 py-1.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                    Your Assessment Results
-                </span>
-            </div>
+        <>
+            <AnimatePresence>
+                {modalOpen && <CalendlyModal onClose={() => setModalOpen(false)} />}
+            </AnimatePresence>
 
-            {/* Score ring + productivity gap */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                {/* Readiness ring */}
-                <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 flex flex-col items-center justify-center">
-                    <svg width="160" height="160" viewBox="0 0 180 180" className="mb-4">
-                        <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
-                        <motion.circle
-                            cx="90" cy="90" r="70"
-                            fill="none"
-                            stroke={scoreColor(score)}
-                            strokeWidth="10"
-                            strokeLinecap="round"
-                            strokeDasharray={gaugeCircumference}
-                            strokeDashoffset={gaugeCircumference}
-                            transform="rotate(-90 90 90)"
-                            animate={{ strokeDashoffset: gaugeCircumference - gaugeFill }}
-                            transition={{ duration: 1.6, ease: 'easeOut', delay: 0.3 }}
-                        />
-                        <text x="90" y="84" textAnchor="middle" fill="white" fontFamily="inherit" fontSize="28" fontWeight="900">
-                            {score}
-                        </text>
-                        <text x="90" y="105" textAnchor="middle" fill="#6b7280" fontFamily="inherit" fontSize="11">
-                            /100
-                        </text>
-                    </svg>
-                    <p className="text-[0.65rem] uppercase tracking-[0.18em] font-bold mb-1" style={{ color: scoreColor(score) }}>
-                        {scoreLabel(score)}
-                    </p>
-                    <p className="text-[0.6rem] text-gray-600 uppercase tracking-wider">AI Readiness Score</p>
-                </div>
-
-                {/* Productivity gap */}
-                <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 flex flex-col justify-between">
-                    <div>
-                        <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gray-500 font-bold mb-3">Productivity Gap</p>
-                        <p className="font-heading font-black text-4xl text-white leading-none">
-                            {hoursLost}h
-                            <span className="text-base text-gray-500 font-body font-normal ml-1">/week</span>
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2 leading-relaxed">
-                            Estimated hours lost to manual workflows your {answers.team_size === 'solo' ? 'practice' : 'team'} could automate with AI.
-                        </p>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                        {[
-                            { label: 'Concept generation', pct: 85 },
-                            { label: 'Render iterations', pct: 70 },
-                            { label: 'Presentation prep', pct: 60 },
-                        ].map(b => (
-                            <div key={b.label} className="space-y-1">
-                                <div className="flex justify-between">
-                                    <span className="text-[0.6rem] text-gray-600 uppercase tracking-wider">{b.label}</span>
-                                    <span className="text-[0.6rem] text-lime/60">{b.pct}% reducible</span>
-                                </div>
-                                <div className="h-1 bg-white/[0.05] rounded-full overflow-hidden">
-                                    <motion.div
-                                        className="h-full bg-lime/50 rounded-full"
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${b.pct}%` }}
-                                        transition={{ duration: 1, delay: 0.5 + Math.random() * 0.3, ease: 'easeOut' }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Recommendation card */}
-            <div
-                className="rounded-3xl overflow-hidden border"
-                style={{
-                    background: isSprint
-                        ? 'linear-gradient(145deg, #0d1a0d 0%, #080f08 100%)'
-                        : 'linear-gradient(145deg, #0f0f1a 0%, #08080f 100%)',
-                    borderColor: isSprint ? 'rgba(208,255,113,0.2)' : 'rgba(139,92,246,0.25)',
-                    boxShadow: isSprint
-                        ? '0 0 60px -20px rgba(208,255,113,0.15)'
-                        : '0 0 60px -20px rgba(139,92,246,0.15)',
-                }}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="max-w-2xl mx-auto px-5 sm:px-6 py-8 space-y-8"
             >
-                <div className="px-6 sm:px-8 py-6 sm:py-8">
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                        <div>
-                            <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] mb-1"
-                                style={{ color: isSprint ? '#D0FF71' : '#a78bfa' }}>
-                                Recommended for You
-                            </p>
-                            <h3 className="font-heading font-black uppercase text-2xl sm:text-3xl text-white leading-tight">
-                                {isSprint ? 'Sprint Workshop' : 'AI Masterclass'}
-                            </h3>
-                        </div>
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                            style={{ background: isSprint ? 'rgba(208,255,113,0.1)' : 'rgba(139,92,246,0.1)' }}>
-                            {isSprint
-                                ? <Zap className="w-5 h-5" style={{ color: '#D0FF71' }} />
-                                : <Users className="w-5 h-5" style={{ color: '#a78bfa' }} />
-                            }
-                        </div>
-                    </div>
-
-                    <p className="text-sm text-gray-400 leading-relaxed mb-5">
-                        {isSprint
-                            ? 'Based on your profile, you need a fast, hands-on intensive that gets you producing real AI output immediately. The Sprint Workshop is built exactly for this — 3 days, real deliverables, zero fluff.'
-                            : 'Based on your profile, you need more than individual upskilling. You need a program that transforms how your entire team operates. The AI Masterclass is built for firms — we come in, build the system, and leave your operation certified.'}
-                    </p>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
-                        {(isSprint
-                            ? [
-                                { icon: Clock, label: '3 Days', sub: 'Intensive' },
-                                { icon: Target, label: 'Output-First', sub: 'Real deliverables' },
-                                { icon: Zap, label: 'Day 3', sub: 'Client-ready render' },
-                            ]
-                            : [
-                                { icon: Users, label: 'Team-Wide', sub: 'Everyone trained' },
-                                { icon: Target, label: '15 Hours', sub: 'Live + async' },
-                                { icon: Calendar, label: 'Custom', sub: 'Your schedule' },
-                            ]
-                        ).map(f => (
-                            <div key={f.label} className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                                <f.icon className="w-3.5 h-3.5 mt-0.5 shrink-0"
-                                    style={{ color: isSprint ? '#D0FF71' : '#a78bfa' }} />
-                                <div>
-                                    <p className="text-xs font-bold text-white">{f.label}</p>
-                                    <p className="text-[0.6rem] text-gray-600">{f.sub}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <a
-                        href={isSprint ? '/submit-form' : '/masterclass-analytics'}
-                        className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:-translate-y-0.5"
-                        style={{
-                            background: isSprint ? '#D0FF71' : 'rgba(139,92,246,0.15)',
-                            color: isSprint ? '#000' : '#c4b5fd',
-                            border: isSprint ? 'none' : '1px solid rgba(139,92,246,0.3)',
-                            boxShadow: isSprint ? '0 0 0 transparent' : 'none',
-                        }}
-                        onMouseEnter={e => {
-                            if (isSprint) (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 30px rgba(208,255,113,0.3)'
-                        }}
-                        onMouseLeave={e => {
-                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none'
-                        }}
-                    >
-                        {isSprint ? 'Apply for the Sprint Workshop' : 'See the Masterclass Program'}
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                {/* Top badge */}
+                <div className="text-center">
+                    <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-lime border border-lime/25 bg-lime/[0.06] px-3 py-1.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                        Your AI Readiness Assessment
+                    </span>
                 </div>
-            </div>
 
-            {/* Escape hatch */}
-            <p className="text-center text-xs text-gray-700">
-                Not quite right?{' '}
-                <a href="/not-sure" className="text-gray-500 hover:text-white underline underline-offset-2 transition-colors">
-                    Browse everything we offer
-                </a>
-            </p>
-        </motion.div>
+                {/* Score ring + productivity gap */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Score ring */}
+                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 flex flex-col items-center justify-center">
+                        <svg width="160" height="160" viewBox="0 0 180 180" className="mb-4">
+                            <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+                            <motion.circle
+                                cx="90" cy="90" r="70" fill="none"
+                                stroke={scoreColor(score)} strokeWidth="10" strokeLinecap="round"
+                                strokeDasharray={gaugeCircumference}
+                                strokeDashoffset={gaugeCircumference}
+                                transform="rotate(-90 90 90)"
+                                animate={{ strokeDashoffset: gaugeCircumference - gaugeFill }}
+                                transition={{ duration: 1.6, ease: 'easeOut', delay: 0.3 }}
+                            />
+                            <text x="90" y="84" textAnchor="middle" fill="white" fontFamily="inherit" fontSize="28" fontWeight="900">{score}</text>
+                            <text x="90" y="105" textAnchor="middle" fill="#6b7280" fontFamily="inherit" fontSize="11">/100</text>
+                        </svg>
+                        <p className="text-[0.65rem] uppercase tracking-[0.18em] font-bold mb-1" style={{ color: scoreColor(score) }}>
+                            {scoreLabel(score)}
+                        </p>
+                        <p className="text-[0.6rem] text-gray-600 uppercase tracking-wider">AI Readiness Score</p>
+                    </div>
+
+                    {/* Productivity gap */}
+                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 flex flex-col justify-between">
+                        <div>
+                            <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gray-500 font-bold mb-3">Productivity Gap</p>
+                            <p className="font-heading font-black text-4xl text-white leading-none">
+                                {hoursLost}h
+                                <span className="text-base text-gray-500 font-body font-normal ml-1">/week</span>
+                            </p>
+                            <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                                Estimated hours your {answers.team_size === 'solo' ? 'practice' : 'team'} loses to workflows AI could handle.
+                            </p>
+                        </div>
+                        <div className="mt-4 space-y-2">
+                            {bars.map((b, i) => (
+                                <div key={b.label} className="space-y-1">
+                                    <div className="flex justify-between">
+                                        <span className="text-[0.6rem] text-gray-600 uppercase tracking-wider">{b.label}</span>
+                                        <span className="text-[0.6rem] text-lime/60">{b.pct}% reducible</span>
+                                    </div>
+                                    <div className="h-1 bg-white/[0.05] rounded-full overflow-hidden">
+                                        <motion.div className="h-full bg-lime/50 rounded-full" initial={{ width: 0 }}
+                                            animate={{ width: `${b.pct}%` }}
+                                            transition={{ duration: 1, delay: 0.5 + i * 0.15, ease: 'easeOut' }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recommendation card */}
+                <div className="rounded-3xl overflow-hidden border"
+                    style={{
+                        background: isSprint ? 'linear-gradient(145deg,#0d1a0d,#080f08)' : 'linear-gradient(145deg,#0f0f1a,#08080f)',
+                        borderColor: isSprint ? 'rgba(208,255,113,0.2)' : 'rgba(139,92,246,0.25)',
+                        boxShadow: isSprint ? '0 0 60px -20px rgba(208,255,113,0.15)' : '0 0 60px -20px rgba(139,92,246,0.15)',
+                    }}
+                >
+                    <div className="px-6 sm:px-8 py-6 sm:py-8">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] mb-1"
+                                    style={{ color: isSprint ? '#D0FF71' : '#a78bfa' }}>
+                                    Your Recommended Path
+                                </p>
+                                <h3 className="font-heading font-black uppercase text-2xl sm:text-3xl text-white leading-tight">
+                                    {isSprint ? 'Sprint Workshop' : 'AI Masterclass'}
+                                </h3>
+                            </div>
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                                style={{ background: isSprint ? 'rgba(208,255,113,0.1)' : 'rgba(139,92,246,0.1)' }}>
+                                {isSprint
+                                    ? <Zap className="w-5 h-5" style={{ color: '#D0FF71' }} />
+                                    : <Users className="w-5 h-5" style={{ color: '#a78bfa' }} />
+                                }
+                            </div>
+                        </div>
+
+                        <p className="text-sm text-gray-400 leading-relaxed mb-5">
+                            {isSprint
+                                ? 'Your profile points to a fast, hands-on intensive that gets you producing real AI output immediately. 3 days. Real deliverables. You leave with a workflow that works on your next client project.'
+                                : 'Your profile shows this isn\'t just about one person upskilling — it\'s about transforming how your operation works. The AI Masterclass is built for firms. We come in, build the system, and leave your team certified and producing.'}
+                        </p>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
+                            {(isSprint
+                                ? [
+                                    { icon: Clock, label: '3 Days', sub: 'Intensive sprint' },
+                                    { icon: Target, label: 'Output-First', sub: 'Real deliverables' },
+                                    { icon: Zap, label: 'Day 3', sub: 'Client-ready render' },
+                                ]
+                                : [
+                                    { icon: Users, label: 'Team-Wide', sub: 'Everyone trained' },
+                                    { icon: Target, label: '15 Hours', sub: 'Live + async' },
+                                    { icon: Calendar, label: 'Custom', sub: 'Your schedule' },
+                                ]
+                            ).map(f => (
+                                <div key={f.label} className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                                    <f.icon className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: isSprint ? '#D0FF71' : '#a78bfa' }} />
+                                    <div>
+                                        <p className="text-xs font-bold text-white">{f.label}</p>
+                                        <p className="text-[0.6rem] text-gray-600">{f.sub}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {isSprint ? (
+                            <a href="/submit-form"
+                                className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] hover:-translate-y-0.5 transition-all duration-300"
+                            >
+                                Reserve Your Spot in the Sprint
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </a>
+                        ) : (
+                            <button
+                                onClick={() => setModalOpen(true)}
+                                className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:-translate-y-0.5"
+                                style={{
+                                    background: 'rgba(139,92,246,0.12)',
+                                    color: '#c4b5fd',
+                                    border: '1px solid rgba(139,92,246,0.3)',
+                                }}
+                            >
+                                <Calendar className="w-4 h-4" />
+                                Book a Discovery Call with Khaled
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <p className="text-center text-xs text-gray-700">
+                    Want to explore both?{' '}
+                    <a href="/masterclass-analytics" className="text-gray-500 hover:text-white underline underline-offset-2 transition-colors">
+                        See the full program overview
+                    </a>
+                </p>
+            </motion.div>
+        </>
     )
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function FindYourPathPage() {
-    const [step, setStep] = useState(0)
+    const [globalIdx, setGlobalIdx] = useState(0)
     const [answers, setAnswers] = useState<Answers>({})
     const [showResults, setShowResults] = useState(false)
 
-    const question = QUESTIONS[step]
-    const selected = answers[question?.id]
-    const isLast = step === QUESTIONS.length - 1
+    const question = ALL_QUESTIONS[globalIdx]
+    const selected = question ? answers[question.id] : undefined
+    const isLast = globalIdx === TOTAL - 1
+
+    // Which section are we in?
+    let cumulativeCount = 0
+    const currentSection = SECTIONS.find(s => {
+        if (globalIdx < cumulativeCount + s.questions.length) return true
+        cumulativeCount += s.questions.length
+        return false
+    }) ?? SECTIONS[0]
+    const questionInSection = globalIdx - (SECTIONS.slice(0, SECTIONS.indexOf(currentSection)).reduce((acc, s) => acc + s.questions.length, 0)) + 1
 
     const handleSelect = (value: string) => {
-        setAnswers(prev => ({ ...prev, [question.id]: value }))
+        if (question) setAnswers(prev => ({ ...prev, [question.id]: value }))
     }
 
     const handleNext = () => {
         if (!selected) return
-        if (isLast) {
-            setShowResults(true)
-        } else {
-            setStep(s => s + 1)
-        }
+        if (isLast) { setShowResults(true) } else { setGlobalIdx(i => i + 1) }
     }
 
     const handleBack = () => {
-        if (step > 0) setStep(s => s - 1)
+        if (globalIdx > 0) setGlobalIdx(i => i - 1)
     }
 
     if (showResults) {
         return (
             <div className="min-h-screen bg-black text-white font-body">
                 <PublicNav />
-                <div className="pt-20">
-                    <ResultsScreen answers={answers} />
-                </div>
+                <div className="pt-20"><ResultsScreen answers={answers} /></div>
             </div>
         )
     }
@@ -394,43 +527,56 @@ export function FindYourPathPage() {
             <PublicNav />
 
             <div className="flex-1 flex flex-col pt-16">
-                {/* Progress bar */}
+                {/* Progress + section label */}
                 <div className="px-5 sm:px-10 pt-6 pb-0 max-w-2xl mx-auto w-full">
-                    <div className="flex items-center justify-between mb-3">
-                        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 font-bold">
-                            Question {step + 1} of {QUESTIONS.length}
-                        </p>
-                        {step > 0 && (
-                            <button
-                                onClick={handleBack}
-                                className="flex items-center gap-1 text-[0.65rem] text-gray-600 hover:text-white transition-colors uppercase tracking-wider"
-                            >
+                    <div className="flex items-center justify-between mb-2">
+                        <div>
+                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-lime/70 font-bold">{currentSection.label}</p>
+                            <p className="text-[0.55rem] uppercase tracking-wider text-gray-700">
+                                Question {globalIdx + 1} of {TOTAL}
+                            </p>
+                        </div>
+                        {globalIdx > 0 && (
+                            <button onClick={handleBack}
+                                className="flex items-center gap-1 text-[0.65rem] text-gray-600 hover:text-white transition-colors uppercase tracking-wider">
                                 <ChevronLeft className="w-3.5 h-3.5" /> Back
                             </button>
                         )}
                     </div>
-                    <ProgressBar current={step + 1} total={QUESTIONS.length} />
+                    <ProgressBar current={globalIdx + 1} total={TOTAL} />
+
+                    {/* Section intro — show on first question of each section */}
+                    {questionInSection === 1 && (
+                        <motion.p
+                            key={currentSection.id}
+                            initial={{ opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-[0.65rem] text-gray-600 mt-3 leading-relaxed border-l-2 border-lime/20 pl-3"
+                        >
+                            {currentSection.intro}
+                        </motion.p>
+                    )}
                 </div>
 
                 {/* Question */}
-                <div className="flex-1 flex flex-col justify-center px-5 sm:px-6 py-8 max-w-2xl mx-auto w-full">
+                <div className="flex-1 flex flex-col justify-center px-5 sm:px-6 py-6 max-w-2xl mx-auto w-full">
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={step}
+                            key={globalIdx}
                             initial={{ opacity: 0, x: 24 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -24 }}
-                            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                            className="space-y-6"
+                            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                            className="space-y-5"
                         >
                             <div>
-                                <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2.2rem)] leading-[1.0] text-white mb-2">
+                                <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.8vw,2rem)] leading-[1.05] text-white mb-2">
                                     {question.text}
                                 </h2>
                                 <p className="text-sm text-gray-500 leading-relaxed">{question.sub}</p>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-2.5">
                                 {question.options.map(opt => (
                                     <OptionCard
                                         key={opt.value}
@@ -453,8 +599,8 @@ export function FindYourPathPage() {
                                         : 'bg-white/[0.04] text-gray-600 cursor-not-allowed border border-white/[0.06]'
                                 }`}
                             >
-                                {isLast ? 'See My Results' : 'Continue'}
-                                <ArrowRight className={`w-4 h-4 transition-transform ${selected ? 'group-hover:translate-x-1' : ''}`} />
+                                {isLast ? 'See My AI Assessment' : 'Continue'}
+                                <ArrowRight className="w-4 h-4" />
                             </motion.button>
                         </motion.div>
                     </AnimatePresence>
@@ -467,7 +613,7 @@ export function FindYourPathPage() {
                             <img src={logoSrc} alt="" className="h-4 object-contain grayscale" />
                             <span className="text-[0.55rem] font-heading font-black uppercase tracking-[0.2em] text-white">Zkandar AI</span>
                         </div>
-                        <p className="text-[0.55rem] text-gray-700 uppercase tracking-wider">Takes about 1 minute</p>
+                        <p className="text-[0.55rem] text-gray-700 uppercase tracking-wider">Takes about 2 minutes</p>
                     </div>
                 </div>
             </div>

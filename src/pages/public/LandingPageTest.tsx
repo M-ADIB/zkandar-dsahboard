@@ -709,9 +709,9 @@ export function LandingPageTest() {
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 1.1 }}
                                 className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                                <a href="/submit-form"
+                                <a href="/find-your-path"
                                     className="px-9 py-4 gradient-lime text-black font-body font-bold uppercase tracking-wider rounded-full hover:opacity-90 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2 text-sm shadow-[0_0_40px_rgba(208,255,113,0.25)]">
-                                    Get Started Now <ArrowRight className="w-4 h-4" />
+                                    See Where You're At With AI <ArrowRight className="w-4 h-4" />
                                 </a>
                             </motion.div>
 
@@ -1197,9 +1197,9 @@ export function LandingPageTest() {
                     <p className="text-xs text-gray-700 uppercase tracking-[0.15em]">
                         Produced using AI workflows taught in the Sprint Workshop &amp; Masterclass
                     </p>
-                    <a href="/submit-form"
+                    <a href="/find-your-path"
                         className="inline-flex items-center gap-2 text-xs font-bold text-lime hover:text-lime/80 uppercase tracking-[0.15em] transition">
-                        Learn to build this <ArrowRight className="w-3.5 h-3.5" />
+                        See where you're at with AI <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                 </div>
             </section>
@@ -1366,9 +1366,9 @@ export function LandingPageTest() {
 
                                 {/* CTAs */}
                                 <div className="flex flex-col sm:flex-row gap-3">
-                                    <a href="/submit-form"
+                                    <a href="/find-your-path"
                                         className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 transition">
-                                        Apply for the Sprint <ArrowRight className="w-4 h-4" />
+                                        Find Your Path <ArrowRight className="w-4 h-4" />
                                     </a>
                                     <a href="/find-your-path"
                                         className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-white/[0.08] text-gray-400 text-sm font-medium hover:border-white/20 hover:text-white transition">
@@ -1465,7 +1465,7 @@ export function LandingPageTest() {
                             <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 mb-4">Programs</p>
                             <ul className="space-y-3">
                                 {[
-                                    { label: 'Sprint Workshop', href: '/submit-form' },
+                                    { label: 'Sprint Workshop', href: '/find-your-path' },
                                     { label: 'AI Masterclass', href: '/masterclass-analytics' },
                                     { label: 'Studio Discovery Call', href: 'https://calendly.com/zkandarstudio-info/ai-discovery-call' },
                                     { label: 'Enroll Now', href: '/checkout' },
@@ -1482,7 +1482,7 @@ export function LandingPageTest() {
                                 {[
                                     { label: 'Case Studies', href: '#case-studies' },
                                     { label: 'Find Your Path', href: '/find-your-path' },
-                                    { label: 'Apply', href: '/submit-form' },
+                                    { label: 'Find Your Path', href: '/find-your-path' },
                                     { label: 'Participant Login', href: '/login' },
                                 ].map(l => (
                                     <li key={l.label}><a href={l.href} className="text-sm text-gray-500 hover:text-white transition">{l.label}</a></li>

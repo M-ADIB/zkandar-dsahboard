@@ -78,7 +78,7 @@ export function PublicNav() {
                 {/* ── Right: CTA + mobile toggle ────────────────────────── */}
                 <div className="flex items-center gap-3 shrink-0">
                     <motion.a
-                        href="/submit-form"
+                        href="/find-your-path"
                         initial={{ opacity: 0, scale: 0.88 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.45, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
@@ -86,7 +86,7 @@ export function PublicNav() {
                         whileTap={{ scale: 0.96 }}
                         className="px-4 py-2 rounded-full bg-white text-black font-bold text-[0.65rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_22px_rgba(208,255,113,0.45)] transition-all duration-300"
                     >
-                        Apply Now
+                        See Where You're At
                     </motion.a>
 
                     {/* Hamburger — mobile only */}
@@ -144,11 +144,11 @@ export function PublicNav() {
                         ))}
                         <div className="mt-3 pt-3 border-t border-white/[0.06]">
                             <a
-                                href="/submit-form"
+                                href="/find-your-path"
                                 onClick={() => setMobileOpen(false)}
                                 className="block w-full text-center px-4 py-3 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-lime transition-colors duration-200"
                             >
-                                Apply Now
+                                See Where You're At
                             </a>
                         </div>
                     </motion.div>
