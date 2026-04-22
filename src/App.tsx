@@ -25,6 +25,7 @@ const ThankYouPage = lazy(() => import('@/pages/public/ThankYouPage').then(modul
 const LandingPageTest = lazy(() => import('@/pages/public/LandingPageTest').then(module => ({ default: module.LandingPageTest })))
 const SubmitFormPage = lazy(() => import('@/pages/public/SubmitFormPage').then(module => ({ default: module.SubmitFormPage })))
 const NotSurePage = lazy(() => import('@/pages/public/NotSurePage').then(module => ({ default: module.NotSurePage })))
+const FindYourPathPage = lazy(() => import('@/pages/public/FindYourPathPage').then(module => ({ default: module.FindYourPathPage })))
 const CheckoutPage = lazy(() => import('@/pages/public/CheckoutPage').then(module => ({ default: module.CheckoutPage })))
 const EnrollPage = lazy(() => import('@/pages/public/EnrollPage').then(module => ({ default: module.EnrollPage })))
 const CheckoutSuccessPage = lazy(() => import('@/pages/public/CheckoutSuccessPage').then(module => ({ default: module.CheckoutSuccessPage })))
@@ -101,6 +102,7 @@ function App() {
                                 <Route path="/test-landingpage" element={<LandingPageTest />} />
                                 <Route path="/submit-form" element={<SubmitFormPage />} />
                                 <Route path="/not-sure" element={<NotSurePage />} />
+                                <Route path="/find-your-path" element={<FindYourPathPage />} />
                                 <Route path="/checkout" element={<CheckoutPage />} />
                                 <Route path="/enroll" element={<EnrollPage />} />
                                 <Route path="/checkout-success" element={<CheckoutSuccessPage />} />

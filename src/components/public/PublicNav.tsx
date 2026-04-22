@@ -7,7 +7,7 @@ const NAV_LINKS = [
     { label: 'Sprint Workshop', href: '/test-landingpage#sprint' },
     { label: 'For Studios',     href: '/masterclass-analytics'   },
     { label: 'Case Studies',    href: '/test-landingpage#case-studies' },
-    { label: 'Not Sure Yet',    href: '/not-sure'                },
+    { label: 'Find Your Path',  href: '/find-your-path'          },
 ]
 
 export function PublicNav() {

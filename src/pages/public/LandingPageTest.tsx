@@ -1370,9 +1370,9 @@ export function LandingPageTest() {
                                         className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 transition">
                                         Apply for the Sprint <ArrowRight className="w-4 h-4" />
                                     </a>
-                                    <a href="/not-sure"
+                                    <a href="/find-your-path"
                                         className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-white/[0.08] text-gray-400 text-sm font-medium hover:border-white/20 hover:text-white transition">
-                                        Not sure yet?
+                                        Find your path →
                                     </a>
                                 </div>
                             </div>
@@ -1481,7 +1481,7 @@ export function LandingPageTest() {
                             <ul className="space-y-3">
                                 {[
                                     { label: 'Case Studies', href: '#case-studies' },
-                                    { label: 'Not Sure Yet?', href: '/not-sure' },
+                                    { label: 'Find Your Path', href: '/find-your-path' },
                                     { label: 'Apply', href: '/submit-form' },
                                     { label: 'Participant Login', href: '/login' },
                                 ].map(l => (
