@@ -494,7 +494,7 @@ function CaseStudyPresentation({
             className="fixed inset-0 z-[200] bg-black flex flex-col"
         >
             {/* ── Top bar: close + filmstrip ── */}
-            <div className="flex items-center gap-3 px-3 sm:px-5 py-2.5 border-b border-white/[0.07] bg-black shrink-0">
+            <div className="flex items-center gap-3 px-3 sm:px-5 pt-2.5 pb-0 bg-black shrink-0">
                 <button onClick={onClose}
                     className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-white/10 hover:border-white/30 text-gray-400 hover:text-white transition">
                     <X className="w-4 h-4" />
@@ -538,8 +538,24 @@ function CaseStudyPresentation({
                 </div>
             </div>
 
+            {/* ── Slide info — below filmstrip ── */}
+            <div className="px-4 sm:px-8 py-3 border-b border-white/[0.07] bg-black shrink-0">
+                <div className="max-w-4xl mx-auto flex items-start justify-between gap-6">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
+                        <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
+                        {slide.caption && (
+                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
+                        )}
+                    </div>
+                    <div className="shrink-0 text-right hidden sm:block">
+                        <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
+                    </div>
+                </div>
+            </div>
+
             {/* ── Main image / video ── */}
-            <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#060606]">
+            <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#060606] p-6 sm:p-10">
                 <AnimatePresence mode="wait">
                     {slide.vimeoId ? (
                         <motion.div
@@ -548,7 +564,7 @@ function CaseStudyPresentation({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.25 }}
-                            className="w-full h-full flex items-center justify-center p-4 sm:p-10"
+                            className="w-full h-full flex items-center justify-center"
                         >
                             <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
                                 <iframe
@@ -587,21 +603,6 @@ function CaseStudyPresentation({
                 </button>
             </div>
 
-            {/* ── Bottom info ── */}
-            <div className="px-4 sm:px-8 py-3.5 border-t border-white/[0.07] bg-black shrink-0">
-                <div className="max-w-4xl mx-auto flex items-start justify-between gap-6">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[0.6rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
-                        <p className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{slide.title}</p>
-                        {slide.caption && (
-                            <p className="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
-                        )}
-                    </div>
-                    <div className="shrink-0 sm:hidden text-right">
-                        <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
-                    </div>
-                </div>
-            </div>
         </motion.div>
     )
 }
@@ -689,7 +690,7 @@ export function LandingPageTest() {
                             <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                                 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-400 mb-5">
-                                AI for Architects &amp; Designers
+                                AI for Interior Designers, Architects, and Marketers.
                             </motion.p>
 
                             <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.6rem,7vw,5.5rem)] mb-6">
@@ -776,7 +777,7 @@ export function LandingPageTest() {
                     <FadeIn className="text-center mb-10 md:mb-14">
                         <MicroLabel center>Real People. Real Results.</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
-                            HEAR FROM OUR <span className="text-lime">GRADUATES.</span>
+                            HEAR FROM OUR <span className="text-lime">PARTICIPANTS.</span>
                         </h2>
                         <p className="text-gray-500 text-base mt-2">This could be you.</p>
                     </FadeIn>
@@ -879,7 +880,7 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>Project Showcases</MicroLabel>
+                        <MicroLabel>Project Case Studies From Our Participants</MicroLabel>
                         <div className="flex flex-wrap items-end gap-4 mt-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
                                 REAL PROJECTS.<br /><span className="text-lime">REAL AI OUTPUT.</span>
@@ -1254,7 +1255,7 @@ export function LandingPageTest() {
                             <span className="px-3 py-1 rounded-full bg-lime/10 border border-lime/20 text-lime text-[0.6875rem] uppercase tracking-[0.15em] font-bold shrink-0">Growing</span>
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
-                            3 firmwide masterclasses delivered. Every studio left with a certified AI workflow they own.
+                            5 Firm-Wide Master Classes Delivered. Every studio left with a certified AI workflow they own.
                         </p>
                     </FadeIn>
 
@@ -1354,8 +1355,8 @@ export function LandingPageTest() {
                                 </div>
 
                                 {/* Stats strip */}
-                                <div className="grid grid-cols-3 gap-3 mb-8 py-5 border-y border-white/[0.06]">
-                                    {[{ val: '3 Days', label: 'Live & Hands-On' }, { val: '1000+', label: 'Graduates' }, { val: '8,500', label: 'AED · One-Time' }].map(s => (
+                                <div className="grid grid-cols-2 gap-3 mb-8 py-5 border-y border-white/[0.06]">
+                                    {[{ val: '3 Days', label: 'Live & Hands-On' }, { val: '1000+', label: 'Participants' }].map(s => (
                                         <div key={s.label} className="text-center">
                                             <div className="text-xl font-heading font-black text-white">{s.val}</div>
                                             <div className="text-[0.6rem] uppercase tracking-wider text-gray-600 mt-0.5">{s.label}</div>
@@ -1399,7 +1400,7 @@ export function LandingPageTest() {
                                     <Building2 className="w-4 h-4 text-lime" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-white mb-0.5">3 firmwide masterclasses delivered.</p>
+                                    <p className="text-sm font-semibold text-white mb-0.5">5 Firm-Wide Master Classes Delivered.</p>
                                     <p className="text-xs text-gray-500 leading-relaxed">Every studio left with a certified AI workflow they own permanently. Custom curriculum. Real output.</p>
                                 </div>
                             </div>
@@ -1507,10 +1508,10 @@ export function LandingPageTest() {
                     {/* Bottom bar */}
                     <div className="border-t border-white/[0.04] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                         <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.15em]">
-                            © {new Date().getFullYear()} Zkandar AI. All rights reserved.
+                            © {new Date().getFullYear()} Zkandar LLC. All rights reserved.
                         </p>
                         <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.12em]">
-                            Dubai · Riyadh · Global
+                            Dubai, United Arab Emirates
                         </p>
                     </div>
                 </div>
