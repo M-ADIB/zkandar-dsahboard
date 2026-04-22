@@ -129,12 +129,12 @@ function StatPill({ value, label, decimals = 0, suffix = '', delay = 0 }: { valu
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
             transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center gap-2 px-8 py-5 bg-bg-card/80 backdrop-blur-sm border border-border rounded-2xl min-w-[150px] group hover:border-lime/30 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
+            className="flex flex-col items-center gap-1.5 px-3 sm:px-8 py-3 sm:py-5 bg-bg-card/80 backdrop-blur-sm border border-border rounded-2xl min-w-0 group hover:border-lime/30 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
         >
-            <span className="text-3xl md:text-4xl font-heading font-black text-lime tabular-nums">
+            <span className="text-xl sm:text-3xl md:text-4xl font-heading font-black text-lime tabular-nums">
                 {animated}{suffix}
             </span>
-            <span className="text-xs text-gray-500 uppercase tracking-widest font-body">{label}</span>
+            <span className="text-[0.6rem] sm:text-xs text-gray-500 uppercase tracking-widest font-body text-center leading-tight">{label}</span>
         </motion.div>
     )
 }
@@ -362,7 +362,7 @@ export function WorkflowsPage() {
                         >
                             Real data from +200 Participants across 10 studios shows where the gap is and what teams actually need.
                         </p>
-                        <div className="flex flex-wrap gap-4">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4">
                             <StatPill value={200} suffix="+" label="Participants surveyed" delay={0.1} />
                             <StatPill value={10} label="Studios" delay={0.2} />
                             <StatPill value={62} label="Only experimenting" suffix="%" delay={0.3} />
