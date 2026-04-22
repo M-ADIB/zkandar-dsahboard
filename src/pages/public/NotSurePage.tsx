@@ -280,7 +280,7 @@ export function NotSurePage() {
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                         className="text-center mb-6"
                     >
-                        <h2 className="font-heading font-black uppercase text-[clamp(2.2rem,6vw,5rem)] leading-[0.92] text-white">
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.75rem,4.8vw,4rem)] leading-[0.95] text-white">
                             You've read this far.<br />
                             <span className="text-lime">You already know.</span>
                         </h2>
