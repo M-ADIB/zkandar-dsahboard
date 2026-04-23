@@ -202,14 +202,6 @@ const HOURS_LOST: Record<string, number> = {
     solo: 14, small: 22, medium: 38, large: 65,
 }
 
-// Map bottleneck answer to a bar label
-const BOTTLENECK_LABELS: Record<string, string> = {
-    concepts: 'Early concept development',
-    rendering: 'Visualization & rendering',
-    presentations: 'Client presentation prep',
-    revisions: 'Revision cycles',
-}
-
 // ─── Calendly Modal ───────────────────────────────────────────────────────────
 
 function CalendlyModal({ onClose }: { onClose: () => void }) {
@@ -306,11 +298,15 @@ function ResultsScreen({ answers }: { answers: Answers }) {
     const gaugeFill = (score / 100) * gaugeCircumference
     const isSprint = path === 'sprint'
 
-    const bottleneckLabel = BOTTLENECK_LABELS[answers.output_bottleneck] ?? 'Workflow efficiency'
-
-    const bars = [
-        { label: bottleneckLabel, pct: 85 },
-        { label: 'Visualization turnaround', pct: 70 },
+    const BOTTLENECK_BARS: Record<string, { label: string; pct: number }[]> = {
+        concepts:      [{ label: 'Early concept generation', pct: 88 }, { label: 'Iteration speed', pct: 75 }, { label: 'Brief to visual', pct: 65 }],
+        rendering:     [{ label: 'Render turnaround', pct: 90 }, { label: 'Visual iterations', pct: 78 }, { label: 'Output quality', pct: 60 }],
+        presentations: [{ label: 'Presentation prep', pct: 85 }, { label: 'Pitch visuals', pct: 80 }, { label: 'Client approval time', pct: 65 }],
+        revisions:     [{ label: 'Revision cycles', pct: 82 }, { label: 'Feedback turnaround', pct: 72 }, { label: 'Change communication', pct: 58 }],
+    }
+    const bars = BOTTLENECK_BARS[answers.output_bottleneck] ?? [
+        { label: 'Concept development', pct: 85 },
+        { label: 'Visualization', pct: 72 },
         { label: 'Presentation prep', pct: 60 },
     ]
 
@@ -480,12 +476,80 @@ function ResultsScreen({ answers }: { answers: Answers }) {
     )
 }
 
+// ─── Intro screen ─────────────────────────────────────────────────────────────
+
+function IntroScreen({ onStart }: { onStart: () => void }) {
+    return (
+        <div className="min-h-screen bg-black text-white font-body flex flex-col">
+            <PublicNav />
+            <div className="flex-1 flex items-center justify-center px-5 sm:px-6 py-16">
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="max-w-xl w-full text-center space-y-8"
+                >
+                    {/* Badge */}
+                    <div className="flex justify-center">
+                        <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.22em] text-lime border border-lime/25 bg-lime/[0.06] px-4 py-2 rounded-full">
+                            <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                            AI Readiness Assessment
+                        </span>
+                    </div>
+
+                    {/* Headline */}
+                    <div className="space-y-4">
+                        <h1 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.2rem)] leading-[0.95] text-white">
+                            See exactly where<br />
+                            <span className="text-lime">you stand with AI.</span>
+                        </h1>
+                        <p className="text-gray-400 text-base leading-relaxed max-w-md mx-auto">
+                            10 questions. 2 minutes. You'll walk away with your AI readiness score, a clear picture of where you're losing time, and the path that actually fits your situation.
+                        </p>
+                    </div>
+
+                    {/* What you get */}
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                        {[
+                            { val: 'AI Score', sub: 'Personalized to you' },
+                            { val: 'Gap Report', sub: 'Hours lost per week' },
+                            { val: 'Clear Path', sub: 'No guessing' },
+                        ].map(i => (
+                            <div key={i.val} className="p-3 rounded-xl border border-white/[0.07] bg-white/[0.02]">
+                                <p className="text-xs font-bold text-white mb-0.5">{i.val}</p>
+                                <p className="text-[0.6rem] text-gray-600 uppercase tracking-wider">{i.sub}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* CTA */}
+                    <motion.button
+                        onClick={onStart}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:shadow-[0_0_35px_rgba(208,255,113,0.3)] transition-all duration-300"
+                    >
+                        Start My Assessment <ArrowRight className="w-4 h-4" />
+                    </motion.button>
+
+                    <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.15em]">
+                        No sign-up required · Takes about 2 minutes
+                    </p>
+                </motion.div>
+            </div>
+        </div>
+    )
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function FindYourPathPage() {
+    const [started, setStarted] = useState(false)
     const [globalIdx, setGlobalIdx] = useState(0)
     const [answers, setAnswers] = useState<Answers>({})
     const [showResults, setShowResults] = useState(false)
+
+    if (!started) return <IntroScreen onStart={() => setStarted(true)} />
 
     const question = ALL_QUESTIONS[globalIdx]
     const selected = question ? answers[question.id] : undefined

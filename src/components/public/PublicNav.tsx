@@ -22,7 +22,7 @@ export function PublicNav() {
     }, [])
 
     const isActive = (href: string) =>
-        href.startsWith('/') && pathname === href.split('#')[0]
+        !href.includes('#') && href.startsWith('/') && pathname === href
 
     return (
         <>
