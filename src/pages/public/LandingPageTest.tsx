@@ -60,11 +60,26 @@ const CAPABILITIES = [
     },
 ]
 
-const STUDIOS = [
-    'FORM Studio', 'Atelier Haus', 'Studio Collective', 'Arc & Co.',
-    'Design Meridian', 'Whitespace Lab', 'Grid Atelier', 'The Spatial Co.',
-    'Studio Mira', 'Blank Canvas', 'Forma Group', 'Norte Studio',
-    'Eleven Architecture', 'Archway', 'Blueprint Studio', 'Render+',
+const LOGOS = [
+    { name: 'Skidmore, Owings & Merrill', file: '/logos/som.png' },
+    { name: 'Vitra',                      file: '/logos/vitra.png' },
+    { name: 'SBE',                        file: '/logos/sbe.avif' },
+    { name: 'KCA International',          file: '/logos/kca.avif' },
+    { name: 'Genting',                    file: '/logos/genting.avif' },
+    { name: 'GGB',                        file: '/logos/ggb.avif' },
+    { name: 'EHN Interiors',              file: '/logos/ehn.avif' },
+    { name: 'Al Bayan',                   file: '/logos/al-bayan.avif' },
+    { name: 'Poincaré Studio',            file: '/logos/poincare.avif' },
+    { name: 'Studio Echelle',             file: '/logos/studio-echelle.avif' },
+    { name: 'JT CPL Designs',             file: '/logos/jt-cpl.avif' },
+    { name: 'Beyond Dreams',              file: '/logos/beyond-dreams.avif' },
+    { name: 'Rolling Stones Korea',       file: '/logos/rolling-stones-korea.avif' },
+    { name: 'Zouk',                       file: '/logos/zouk.avif' },
+    { name: 'Hawke House',                file: '/logos/hawke-house.avif' },
+    { name: 'By IDI',                     file: '/logos/by-idi.png' },
+    { name: 'Finasi',                     file: '/logos/finasi.jpg' },
+    { name: 'Ravi Space',                 file: '/logos/ravi-space.png' },
+    { name: 'Non-Designed',               file: '/logos/non-designed.webp' },
 ]
 
 
@@ -1250,7 +1265,7 @@ export function LandingPageTest() {
                     <FadeIn className="mb-10 md:mb-12">
                         <MicroLabel>Studio Masterclasses</MicroLabel>
                         <div className="flex flex-wrap items-center gap-3 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2.5rem)] leading-[0.95]">TRUSTED BY 15+ STUDIOS</h2>
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2.5rem)] leading-[0.95]">TRUSTED BY 19+ STUDIOS</h2>
                             <span className="px-3 py-1 rounded-full bg-lime/10 border border-lime/20 text-lime text-[0.6875rem] uppercase tracking-[0.15em] font-bold shrink-0">Growing</span>
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
@@ -1260,12 +1275,16 @@ export function LandingPageTest() {
 
                     {/* Studios marquee */}
                     <FadeIn delay={0.05} className="mb-10">
-                        <div className="overflow-hidden border-t border-b border-white/[0.04] py-3.5">
-                            <div className="flex gap-8 marquee-track whitespace-nowrap">
-                                {[...STUDIOS, ...STUDIOS].map((s, i) => (
-                                    <span key={i} className="text-[0.6875rem] uppercase tracking-[0.2em] text-gray-600 inline-flex items-center gap-8">
-                                        {s}<span className="text-lime/30">·</span>
-                                    </span>
+                        <div className="overflow-hidden border-t border-b border-white/[0.04] py-4">
+                            <div className="flex items-center gap-12 marquee-track whitespace-nowrap">
+                                {[...LOGOS, ...LOGOS].map((logo, i) => (
+                                    <img
+                                        key={i}
+                                        src={logo.file}
+                                        alt={logo.name}
+                                        className="h-7 w-auto object-contain opacity-30 hover:opacity-60 transition-opacity duration-300"
+                                        style={{ filter: 'brightness(0) invert(1)' }}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -1408,10 +1427,16 @@ export function LandingPageTest() {
                         {/* Right — studio logos + CTA */}
                         <FadeIn direction="right" className="flex-1 flex flex-col justify-between">
                             <div className="mb-6">
-                                <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mb-3">Studios already in</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {STUDIOS.map((s, i) => (
-                                        <span key={i} className="text-[0.6rem] px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-lg text-gray-500">{s}</span>
+                                <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mb-4">Studios already in</p>
+                                <div className="grid grid-cols-3 gap-x-6 gap-y-5">
+                                    {LOGOS.slice(0, 12).map((logo, i) => (
+                                        <img
+                                            key={i}
+                                            src={logo.file}
+                                            alt={logo.name}
+                                            className="h-6 w-auto object-contain opacity-40 hover:opacity-70 transition-opacity duration-300"
+                                            style={{ filter: 'brightness(0) invert(1)' }}
+                                        />
                                     ))}
                                 </div>
                             </div>
