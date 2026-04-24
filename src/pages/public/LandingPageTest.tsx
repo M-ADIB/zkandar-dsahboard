@@ -1421,22 +1421,8 @@ export function LandingPageTest() {
                             </div>
                         </FadeIn>
 
-                        {/* Right — studio logos + CTA */}
-                        <FadeIn direction="right" className="flex-1 flex flex-col justify-between">
-                            <div className="mb-6">
-                                <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mb-4">Studios already in</p>
-                                <div className="grid grid-cols-3 gap-x-6 gap-y-5">
-                                    {LOGOS.slice(0, 12).map((logo, i) => (
-                                        <img
-                                            key={i}
-                                            src={logo.file}
-                                            alt={logo.name}
-                                            className="h-6 w-auto object-contain opacity-40 hover:opacity-70 transition-opacity duration-300"
-                                            style={{ filter: 'brightness(0) invert(1)' }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                        {/* Right — CTA */}
+                        <FadeIn direction="right" className="flex-1 flex flex-col justify-end">
                             <motion.a
                                 href="/masterclass-analytics"
                                 whileHover={{ x: 4 }}
@@ -1452,6 +1438,31 @@ export function LandingPageTest() {
                                 </div>
                             </motion.a>
                         </FadeIn>
+                    </div>
+                </div>
+            </section>
+
+            {/* ── LOGO TICKER ─────────────────────────────────────────── */}
+            <section className="border-t border-white/[0.05] bg-black py-14">
+                <style>{`
+                    @keyframes ticker { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
+                    .logo-ticker { animation: ticker 35s linear infinite; }
+                    .logo-ticker:hover { animation-play-state: paused; }
+                `}</style>
+                <FadeIn className="text-center mb-8">
+                    <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600">Studios &amp; Firms Already In</p>
+                </FadeIn>
+                <div className="overflow-hidden">
+                    <div className="flex items-center gap-16 logo-ticker whitespace-nowrap w-max">
+                        {[...LOGOS, ...LOGOS].map((logo, i) => (
+                            <img
+                                key={i}
+                                src={logo.file}
+                                alt={logo.name}
+                                className="h-10 w-auto object-contain flex-shrink-0 opacity-35 hover:opacity-65 transition-opacity duration-300"
+                                style={{ filter: 'brightness(0) invert(1)' }}
+                            />
+                        ))}
                     </div>
                 </div>
             </section>
