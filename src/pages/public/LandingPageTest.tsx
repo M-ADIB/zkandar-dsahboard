@@ -1262,7 +1262,7 @@ export function LandingPageTest() {
                     <FadeIn className="mb-10 md:mb-12">
                         <MicroLabel>Studio Masterclasses</MicroLabel>
                         <div className="flex flex-wrap items-center gap-3 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2.5rem)] leading-[0.95]">TRUSTED BY 19+ STUDIOS</h2>
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2.5rem)] leading-[0.95]">TRUSTED BY 30+ STUDIOS</h2>
                             <span className="px-3 py-1 rounded-full bg-lime/10 border border-lime/20 text-lime text-[0.6875rem] uppercase tracking-[0.15em] font-bold shrink-0">Growing</span>
                         </div>
                         <p className="text-gray-500 text-sm mt-3 max-w-lg">
@@ -1421,8 +1421,22 @@ export function LandingPageTest() {
                             </div>
                         </FadeIn>
 
-                        {/* Right — CTA */}
-                        <FadeIn direction="right" className="flex-1 flex flex-col justify-end">
+                        {/* Right — stats + CTA */}
+                        <FadeIn direction="right" className="flex-1 flex flex-col justify-between gap-6">
+                            {/* Stat row */}
+                            <div className="grid grid-cols-3 gap-4">
+                                {[
+                                    { val: '30+',  label: 'Studios & Firms' },
+                                    { val: '5',    label: 'Firm-Wide\nMasterclasses' },
+                                    { val: '100%', label: 'Keep Their\nAI Workflow' },
+                                ].map(({ val, label }) => (
+                                    <div key={val} className="p-4 border border-white/[0.06] bg-white/[0.02]">
+                                        <p className="font-heading font-black text-2xl text-lime leading-none mb-1.5">{val}</p>
+                                        <p className="text-[0.6rem] uppercase tracking-[0.12em] text-gray-500 leading-snug whitespace-pre-line">{label}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            {/* CTA card */}
                             <motion.a
                                 href="/masterclass-analytics"
                                 whileHover={{ x: 4 }}
@@ -1459,7 +1473,7 @@ export function LandingPageTest() {
                                 key={i}
                                 src={logo.file}
                                 alt={logo.name}
-                                className="h-10 w-auto object-contain flex-shrink-0 opacity-35 hover:opacity-65 transition-opacity duration-300"
+                                className="h-14 w-auto object-contain flex-shrink-0 opacity-40 hover:opacity-70 transition-opacity duration-300"
                                 style={{ filter: 'brightness(0) invert(1)' }}
                             />
                         ))}
