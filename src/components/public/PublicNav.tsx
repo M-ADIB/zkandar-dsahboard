@@ -40,7 +40,7 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                     initial={{ y: -80, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    className={`pointer-events-auto w-full max-w-[1100px] px-4 sm:px-6 py-2.5 flex items-center justify-between backdrop-blur-2xl rounded-2xl border transition-all duration-500 ${
+                    className={`pointer-events-auto w-full max-w-[1100px] px-4 sm:px-6 py-2.5 flex items-center justify-between backdrop-blur-2xl rounded-xl border transition-all duration-500 ${
                         scrolled
                             ? 'bg-black/60 border-white/[0.14] shadow-[0_8px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.06)]'
                             : 'bg-white/[0.05] border-white/[0.09] shadow-[0_4px_24px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.08)]'
@@ -134,7 +134,7 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                         exit={{ opacity: 0, y: -8, scale: 0.97 }}
                         transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                         style={{ originY: 0, top: pillTop + 62 }}
-                        className="fixed inset-x-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-[1100px] z-40 rounded-2xl bg-black/80 backdrop-blur-2xl border border-white/[0.09] px-4 pt-4 pb-5 flex flex-col gap-1 md:hidden shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
+                        className="fixed inset-x-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-[1100px] z-40 rounded-xl bg-black/80 backdrop-blur-2xl border border-white/[0.09] px-4 pt-4 pb-5 flex flex-col gap-1 md:hidden shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
                     >
                         {NAV_LINKS.map((link, i) => (
                             <motion.a
