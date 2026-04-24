@@ -683,10 +683,7 @@ export function LandingPageTest() {
             </div>
 
             {/* ── NAV ────────────────────────────────────────────────── */}
-            {/* PublicNav renders at top-0; offset to sit below the announcement bar */}
-            <div className="[&>nav]:top-8">
-                <PublicNav />
-            </div>
+            <PublicNav topOffset={32} />
 
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">
