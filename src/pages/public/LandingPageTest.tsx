@@ -108,7 +108,7 @@ const MASTERCLASS_VIDEOS = [
     { num: 3, id: '1113394139', label: 'Masterclass Cohort 3' },
 ]
 
-const VSL_VIDEO_ID = '1174567061'
+const VSL_VIDEO_ID = '1186145925'
 // Replace with actual testimonial mashup Vimeo ID when available
 const TESTIMONIAL_MASHUP_ID = '1113394028'
 
