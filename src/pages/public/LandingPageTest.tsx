@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
     Eye, ArrowRight, Building2,
     X, ZoomIn, ZoomOut,
@@ -626,8 +626,6 @@ function CaseStudyPresentation({
 
 export function LandingPageTest() {
     const heroRef = useRef(null)
-    const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
-    const heroBgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
     const [activeMasterVideo, setActiveMasterVideo] = useState(0)
     const [tickerPage, setTickerPage] = useState(0)
@@ -687,15 +685,23 @@ export function LandingPageTest() {
 
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-                <motion.div style={{ y: heroBgY }} className="absolute inset-0 z-0">
-                    <img src="/lander/1.png" alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/30" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
-                </motion.div>
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                    {/* Full-bleed video background */}
+                    <div className="absolute inset-0" style={{ filter: 'blur(3px) brightness(0.55)' }}>
+                        <iframe
+                            src="https://player.vimeo.com/video/1186560999?background=1&autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0"
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                            style={{ width: '100vw', height: '56.25vw', minHeight: '100%', minWidth: '177.78vh' }}
+                            allow="autoplay; fullscreen; picture-in-picture"
+                        />
+                    </div>
+                    {/* Gradient overlays for text legibility */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                </div>
 
                 <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
-                        <div className="max-w-3xl">
+                    <div className="max-w-3xl">
                             <motion.div initial={{ width: 0 }} animate={{ width: '3rem' }}
                                 transition={{ duration: 0.8 }} className="h-[3px] bg-lime mb-5" />
 
@@ -735,22 +741,6 @@ export function LandingPageTest() {
                                 <span>Architects &amp; Designers</span>
                             </motion.div>
                         </div>
-
-                        {/* 4:5 portrait video — desktop only */}
-                        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.7 }}
-                            className="hidden lg:block pl-8 shrink-0">
-                            <div className="w-52 xl:w-60 rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.6)]"
-                                style={{ aspectRatio: '4/5' }}>
-                                <iframe
-                                    src="https://player.vimeo.com/video/1186560999?autoplay=1&loop=1&muted=1&background=1&title=0&byline=0&portrait=0"
-                                    className="w-full h-full scale-[1.02]"
-                                    allow="autoplay; fullscreen; picture-in-picture"
-                                    allowFullScreen
-                                />
-                            </div>
-                        </motion.div>
-                    </div>
                 </div>
 
                 <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-black to-transparent pointer-events-none" />
