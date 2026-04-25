@@ -736,18 +736,18 @@ export function LandingPageTest() {
                             </motion.div>
                         </div>
 
-                        {/* 4:5 video — desktop only (placeholder until real clip provided) */}
+                        {/* 4:5 portrait video — desktop only */}
                         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.7 }}
                             className="hidden lg:block pl-8 shrink-0">
-                            <div className="w-48 xl:w-56 rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]"
+                            <div className="w-52 xl:w-60 rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.6)]"
                                 style={{ aspectRatio: '4/5' }}>
-                                <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center px-4">
-                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center">
-                                        <ArrowRight className="w-4 h-4 text-white/30 rotate-90" />
-                                    </div>
-                                    <p className="text-[0.6rem] uppercase tracking-[0.18em] text-white/20">Video placeholder</p>
-                                </div>
+                                <iframe
+                                    src="https://player.vimeo.com/video/1186560999?autoplay=1&loop=1&muted=1&background=1&title=0&byline=0&portrait=0"
+                                    className="w-full h-full scale-[1.02]"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                />
                             </div>
                         </motion.div>
                     </div>
