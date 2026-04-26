@@ -438,9 +438,9 @@ export function LandingPageTest() {
                     <FadeIn delay={0.35} className="flex flex-col items-center mt-8 gap-2">
                         <a href="/find-your-path"
                             className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                            Free Assessment. Find where you&apos;re at with AI. <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            See Where You Stand With AI <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <p className="text-xs text-lime font-bold font-body">Free assessment · No commitment</p>
+                        <p className="text-xs text-lime font-bold font-body">Takes 2 minutes · No commitment</p>
                     </FadeIn>
                 </div>
             </section>
@@ -450,15 +450,15 @@ export function LandingPageTest() {
                 <div className="container mx-auto px-5 sm:px-6">
 
                     <FadeIn className="text-center mb-10 md:mb-14">
-                        <MicroLabel center>Real People. Real Results.</MicroLabel>
+                        <MicroLabel center>1,000+ Architects & Designers</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
-                            HEAR FROM OUR <span className="text-lime">PARTICIPANTS.</span>
+                            THE RESULTS SPEAK<br /><span className="text-lime">FOR THEMSELVES.</span>
                         </h2>
-                        <p className="text-gray-500 text-base mt-2">This could be you.</p>
+                        <p className="text-gray-500 text-base mt-2">From 30+ studios and firms around the world.</p>
                     </FadeIn>
 
                     {/* Testimonial mashup — 16:9 */}
-                    <FadeIn delay={0.1} className="mb-12 max-w-4xl mx-auto">
+                    <FadeIn delay={0.1} className="max-w-4xl mx-auto">
                         <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black aspect-video shadow-[0_0_60px_rgba(208,255,113,0.05)]">
                             <iframe
                                 src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
@@ -467,17 +467,6 @@ export function LandingPageTest() {
                                 allowFullScreen
                             />
                         </div>
-                    </FadeIn>
-
-                    <FadeIn delay={0.2} className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2">
-                        <a href="/find-your-path"
-                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                            Find Your Path <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
-                        <a href="/case-studies"
-                            className="group flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold transition-all text-sm uppercase tracking-wider font-heading hover:-translate-y-0.5">
-                            See Case Studies <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
                     </FadeIn>
                 </div>
             </section>
@@ -498,7 +487,7 @@ export function LandingPageTest() {
                         </p>
                     </FadeIn>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5" id="case-studies">
                         {CASE_STUDIES.map((cs) => (
                             <FadeIn key={cs.id}>
                                 <motion.div
@@ -546,10 +535,19 @@ export function LandingPageTest() {
                             </FadeIn>
                         ))}
                     </div>
+
+                    <FadeIn delay={0.1} className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-12">
+                        <a href="/find-your-path"
+                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
+                            Find Your Path <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                        <a href="/case-studies"
+                            className="group flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold transition-all text-sm uppercase tracking-wider font-heading hover:-translate-y-0.5">
+                            See All Case Studies <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                    </FadeIn>
                 </div>
             </section>
-
-{/* Data section removed — case studies carry the proof weight */}
 
 
             {/* ── SPRINT WORKSHOP — PRIMARY CTA ───────────────────────── */}
@@ -670,48 +668,78 @@ export function LandingPageTest() {
             </section>
 
             {/* ── SPRINT WORKSHOP — BACK-END OFFER ────────────────────── */}
-            <section id="sprint" className="py-14 md:py-20 border-t border-white/[0.04] bg-[#080808]">
+            <section id="sprint" className="py-16 md:py-24 border-t border-white/[0.04] bg-[#080808]">
                 <div className="container mx-auto px-5 sm:px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <FadeIn>
-                            <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600 mb-5">Not ready for the full program?</p>
+                    <div className="max-w-5xl mx-auto">
+                        <FadeIn className="mb-8">
+                            <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600">Not ready for the full program?</p>
                         </FadeIn>
                         <FadeIn delay={0.05}>
-                            <motion.div
-                                whileHover={{ y: -2 }}
-                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-7 sm:p-8 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:border-white/[0.12] transition-all duration-300"
-                            >
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2.5 mb-3">
-                                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/[0.1] border border-red-500/25">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                            <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · May 13–15 · 7 PM DBT · Zoom</span>
+                            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden">
+                                {/* Top bar */}
+                                <div className="px-7 sm:px-10 pt-8 pb-6 border-b border-white/[0.06]">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/[0.1] border border-red-500/25">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · May 13–15 · 7 PM DBT · Zoom</span>
+                                                </div>
+                                            </div>
+                                            <h3 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,2.5rem)] text-white leading-tight">
+                                                THE SPRINT<br className="sm:hidden" /> WORKSHOP.
+                                            </h3>
+                                        </div>
+                                        <div className="flex gap-5 text-center shrink-0">
+                                            <div>
+                                                <div className="font-heading font-black text-2xl text-white">3</div>
+                                                <div className="text-[0.55rem] uppercase tracking-wider text-gray-600 mt-0.5">Days</div>
+                                            </div>
+                                            <div className="w-px bg-white/[0.06]" />
+                                            <div>
+                                                <div className="font-heading font-black text-2xl text-white">1,000+</div>
+                                                <div className="text-[0.55rem] uppercase tracking-wider text-gray-600 mt-0.5">Graduates</div>
+                                            </div>
+                                            <div className="w-px bg-white/[0.06]" />
+                                            <div>
+                                                <div className="font-heading font-black text-2xl text-white">30+</div>
+                                                <div className="text-[0.55rem] uppercase tracking-wider text-gray-600 mt-0.5">Studios</div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight mb-2">
-                                        Start With<br className="sm:hidden" /> The Sprint.
-                                    </h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
-                                        3 days. Hands-on. Leave with real AI deliverables and the skills to keep producing — open to architects and designers worldwide.
-                                    </p>
                                 </div>
-                                <div className="shrink-0 flex flex-col gap-2.5 w-full sm:w-auto">
-                                    <a href="/find-your-path"
-                                        className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white text-black font-bold text-sm uppercase tracking-wider hover:bg-lime transition-colors duration-200 font-heading whitespace-nowrap">
-                                        Find Your Path <ArrowRight className="w-4 h-4" />
-                                    </a>
-                                    <div className="grid grid-cols-2 gap-2 text-center">
-                                        <div className="px-3 py-2 rounded-lg border border-white/[0.06]">
-                                            <div className="text-sm font-heading font-black text-white">3 Days</div>
-                                            <div className="text-[0.55rem] uppercase tracking-wider text-gray-600">Live & Hands-On</div>
-                                        </div>
-                                        <div className="px-3 py-2 rounded-lg border border-white/[0.06]">
-                                            <div className="text-sm font-heading font-black text-white">1,000+</div>
-                                            <div className="text-[0.55rem] uppercase tracking-wider text-gray-600">Participants</div>
+                                {/* Body */}
+                                <div className="px-7 sm:px-10 py-7 flex flex-col md:flex-row gap-8">
+                                    <div className="flex-1">
+                                        <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                                            A 3-day live Zoom workshop for architects and designers who want to start using AI now. You'll leave with real deliverables — rendered projects, client-ready images, and a repeatable workflow.
+                                        </p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            {[
+                                                'Live sessions on Zoom — join from anywhere',
+                                                'Hands-on exercises every session',
+                                                'Real project outputs, not theory',
+                                                'Access to the AI tools used by top studios',
+                                                'Certificate of completion',
+                                                'Pathway to the full Masterclass',
+                                            ].map((item, i) => (
+                                                <CheckItem key={i} text={item} delay={i * 0.04} />
+                                            ))}
                                         </div>
                                     </div>
+                                    <div className="shrink-0 flex flex-col gap-3 md:w-52">
+                                        <a href="/find-your-path"
+                                            className="group flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-lime text-black font-bold text-sm uppercase tracking-wider hover:opacity-90 hover:shadow-[0_0_20px_rgba(208,255,113,0.35)] transition-all font-heading">
+                                            Join the Sprint <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                        </a>
+                                        <a href="https://calendly.com/zkandar/sprint-questions" target="_blank" rel="noopener noreferrer"
+                                            className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-white/[0.1] text-gray-400 hover:text-white hover:border-white/20 font-bold text-sm uppercase tracking-wider transition-all font-heading">
+                                            Book a Call
+                                        </a>
+                                        <p className="text-[0.6rem] text-gray-700 text-center uppercase tracking-wider">Seats are limited</p>
+                                    </div>
                                 </div>
-                            </motion.div>
+                            </div>
                         </FadeIn>
                     </div>
                 </div>
@@ -749,8 +777,9 @@ export function LandingPageTest() {
 
                         {/* Brand */}
                         <div className="col-span-2 md:col-span-1">
-                            <a href="/test-landingpage" className="flex items-center gap-2.5 mb-4">
+                            <a href="/test-landingpage" className="flex items-center gap-2.5 mb-4 group">
                                 <img src={logoSrc} alt="Zkandar AI" className="h-7 object-contain" />
+                                <span className="font-heading font-black uppercase text-[0.68rem] tracking-[0.2em] text-white/60 group-hover:text-white transition-colors duration-300">Zkandar AI</span>
                             </a>
                             <p className="text-xs text-gray-600 leading-relaxed max-w-[180px]">
                                 AI-directed design education for architects and designers.
@@ -787,9 +816,9 @@ export function LandingPageTest() {
                             <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 mb-4">Resources</p>
                             <ul className="space-y-3">
                                 {[
-                                    { label: 'Case Studies', href: '#case-studies' },
+                                    { label: 'Case Studies', href: '/case-studies' },
                                     { label: 'Find Your Path', href: '/find-your-path' },
-                                    { label: 'Find Your Path', href: '/find-your-path' },
+                                    { label: 'Not Sure?', href: '/not-sure' },
                                     { label: 'Participant Login', href: '/login' },
                                 ].map(l => (
                                     <li key={l.label}><a href={l.href} className="text-sm text-gray-500 hover:text-white transition">{l.label}</a></li>

@@ -48,9 +48,6 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                 >
                     {/* ── Logo + Home ─────────────────────────────────── */}
                     <a href="/test-landingpage" className="flex items-center gap-2 shrink-0 group">
-                        {pathname === '/test-landingpage' && (
-                            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-lime/10 border border-lime/20 text-[0.58rem] font-black uppercase tracking-[0.15em] text-lime mr-1">Home</span>
-                        )}
                         <motion.img
                             src={logoSrc}
                             alt="Zkandar AI"
