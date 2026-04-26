@@ -113,198 +113,187 @@ const VSL_VIDEO_ID = '1186145925'
 const TESTIMONIAL_MASHUP_ID = '1113394028'
 
 const CASE_STUDIES: CaseStudy[] = [
+    // ── 1. NISREEN ───────────────────────────────────────────────────────────
     {
         id: 'nisreen',
         name: 'Nisreen Kayyali',
+        role: 'Founder — Nisreen Kayyali Consulting Engineers',
         projectType: 'Commercial Architecture',
         location: 'Riyadh, Saudi Arabia',
-        tagline: 'An empty desert plot, a brief, and AI. This is what came out the other side.',
+        tagline: 'From a Google Earth satellite image to a fully rendered building. Every step AI-directed.',
+        dp: '/casestudies/nisreen/dp.webp',
         previewImgs: [
-            '/casestudies/nisreen/money-shot-light.jpg',
-            '/casestudies/nisreen/progression-3.jpg',
-            '/casestudies/nisreen/interiors-0.jpg',
-            '/casestudies/nisreen/details-0.jpg',
+            '/casestudies/nisreen/4.png',
+            '/casestudies/nisreen/1.png',
+            '/casestudies/nisreen/11.png',
+            '/casestudies/nisreen/6.png',
         ],
         slides: [
-            // ── Progression ──────────────────────────────────────────
-            { img: '/casestudies/nisreen/progression-1.jpg', stepLabel: '01', category: 'The Site', title: 'The Empty Plot', caption: 'An unmarked piece of desert near King Salman Metro Station, Riyadh. No building. No concept. Just land and a brief.' },
-            { img: '/casestudies/nisreen/progression-2.jpg', stepLabel: '02', category: 'The Site', title: 'Standing on the Land', caption: 'Nisreen visits the actual site. This is the raw material the AI has to work with. A construction zone, desert heat, and a vision.' },
-            { img: '/casestudies/nisreen/progression-4.jpg', stepLabel: '03', category: 'The Design', title: 'Form Mapped Onto Reality', caption: 'The building footprint is drawn directly onto the site photo. AI helps define the organic massing against the real land before any software is opened.' },
-            { img: '/casestudies/nisreen/progression-3.jpg', stepLabel: '04', category: 'The Design', title: 'First AI Render', caption: 'The building materializes. Organic arched canopy, terracotta facade, rooftop gardens, street life. Generated from a prompt in a single session.' },
-            { img: '/casestudies/nisreen/progression-5.jpg', stepLabel: '05', category: 'The Design', title: 'Site in Context', caption: 'Aerial view confirming the design responds to its surroundings. King Salman Park next door. The AI-directed massing reads perfectly at urban scale.' },
-            // ── Hero Renders ─────────────────────────────────────────
-            { img: '/casestudies/nisreen/money-shot-light.jpg', stepLabel: '06', category: 'Hero Renders', title: 'The Entrance — Day', caption: 'The money shot. Photorealistic daylight render of the arched entrance canopy, rooftop palms, and cobblestone approach. Client-ready.' },
-            { img: '/casestudies/nisreen/money-shot-night.jpg', stepLabel: '07', category: 'Hero Renders', title: 'The Entrance — Night', caption: 'Same view after dark. Warm lighting, deep shadows, cinematic mood. Two completely different atmospheres from the same AI workflow.' },
-            // ── Interiors ────────────────────────────────────────────
-            { img: '/casestudies/nisreen/interiors-0.jpg', stepLabel: '08', category: 'Interiors', title: 'Interior 01', caption: 'AI-generated interior perspective. Material choices, lighting logic, and spatial proportion — all directed through prompts.' },
-            { img: '/casestudies/nisreen/interiors-1.jpg', stepLabel: '09', category: 'Interiors', title: 'Interior 02', caption: 'Variation generated in minutes. The same space explored from a different angle and atmosphere.' },
-            { img: '/casestudies/nisreen/interiors-2.jpg', stepLabel: '10', category: 'Interiors', title: 'Interior 03', caption: '' },
-            { img: '/casestudies/nisreen/interiors-3.jpg', stepLabel: '11', category: 'Interiors', title: 'Interior 04', caption: '' },
-            { img: '/casestudies/nisreen/interiors-4.jpg', stepLabel: '12', category: 'Interiors', title: 'Interior 05', caption: '' },
-            { img: '/casestudies/nisreen/interiors-5.jpg', stepLabel: '13', category: 'Interiors', title: 'Interior 06', caption: '' },
-            // ── Details ──────────────────────────────────────────────
-            { img: '/casestudies/nisreen/details-0.jpg', stepLabel: '14', category: 'Details', title: 'Detail 01', caption: 'AI close-up of key architectural detail. Texture, material, and precision that would take weeks to produce traditionally.' },
-            { img: '/casestudies/nisreen/details-1.jpg', stepLabel: '15', category: 'Details', title: 'Detail 02', caption: '' },
-            { img: '/casestudies/nisreen/details-2.jpg', stepLabel: '16', category: 'Details', title: 'Detail 03', caption: '' },
-            { img: '/casestudies/nisreen/details-3.jpg', stepLabel: '17', category: 'Details', title: 'Detail 04', caption: '' },
-            { img: '/casestudies/nisreen/details-4.jpg', stepLabel: '18', category: 'Details', title: 'Detail 05', caption: '' },
-            { img: '/casestudies/nisreen/details-5.jpg', stepLabel: '19', category: 'Details', title: 'Detail 06', caption: '' },
-            { img: '/casestudies/nisreen/details-6.jpg', stepLabel: '20', category: 'Details', title: 'Detail 07', caption: '' },
-            { img: '/casestudies/nisreen/details-7.jpg', stepLabel: '21', category: 'Details', title: 'Detail 08', caption: '' },
-            // ── Side Views ───────────────────────────────────────────
-            { img: '/casestudies/nisreen/villa-side-0.jpg', stepLabel: '22', category: 'Side Views', title: 'Side Elevation 01', caption: 'AI-generated side elevation render. The full depth of the project revealed — every angle explored.' },
-            { img: '/casestudies/nisreen/villa-side-1.jpg', stepLabel: '23', category: 'Side Views', title: 'Side Elevation 02', caption: '' },
-            // ── Wayfinding ───────────────────────────────────────────
-            { img: '/casestudies/nisreen/wayfinding-0.jpg', stepLabel: '24', category: 'Wayfinding', title: 'Signage 01', caption: 'AI-generated wayfinding and signage concepts. Brand-consistent, architecturally integrated.' },
-            { img: '/casestudies/nisreen/wayfinding-1.jpg', stepLabel: '25', category: 'Wayfinding', title: 'Signage 02', caption: '' },
-            // ── Parking ──────────────────────────────────────────────
-            { img: '/casestudies/nisreen/parking-0.jpg', stepLabel: '26', category: 'Parking', title: 'Parking Level', caption: 'Even utility spaces get the full AI treatment. Underground parking visualization for client presentation.' },
+            { img: '/casestudies/nisreen/1.png',  stepLabel: '01', category: 'The Site',    title: 'Marking the Site',          caption: '1st step — Mark the site directly on a Google Earth image. The starting point before any design begins.' },
+            { img: '/casestudies/nisreen/2.png',  stepLabel: '02', category: 'The Design',  title: 'AI Site Axonometric',       caption: '2nd step — Create an axonometric view of the site using AI. The full context mapped in one prompt.' },
+            { img: '/casestudies/nisreen/3.png',  stepLabel: '03', category: 'The Design',  title: 'Eye-Level View',            caption: '3rd step — Bring the view down to eye level using AI. The building begins to feel real.' },
+            { img: '/casestudies/nisreen/4.png',  stepLabel: '04', category: 'Hero Render', title: 'The Money Shot',            caption: '4th step — Prompt with intent to get the money shot. Photorealistic. Client-ready.' },
+            { img: '/casestudies/nisreen/5.png',  stepLabel: '05', category: 'Details',     title: 'Entrance Detail',           caption: 'Generate a detail shot of the entrance. AI zooms in on the exact moment that sells the project.' },
+            { img: '/casestudies/nisreen/6.png',  stepLabel: '06', category: 'Details',     title: 'Facade Material',           caption: 'Generate a detail shot of the facade material. Texture, depth, and surface quality — all AI-directed.' },
+            { img: '/casestudies/nisreen/7.png',  stepLabel: '07', category: 'Wayfinding',  title: 'Wayfinding Design',         caption: 'Generate wayfinding design consistent to the context. Brand-integrated signage in one prompt.' },
+            { img: '/casestudies/nisreen/8.png',  stepLabel: '08', category: 'Context',     title: 'Parking Area',              caption: 'Expose new territory within the image — like the parking area. AI reveals what traditional renders skip.' },
+            { img: '/casestudies/nisreen/9.png',  stepLabel: '09', category: 'Details',     title: 'Lightpost Detail',          caption: 'Demonstrating the ability to show detail shots of lightposts. Every element of the project visualized.' },
+            { img: '/casestudies/nisreen/10.png', stepLabel: '10', category: 'Context',     title: 'The Villa Side',            caption: 'Using the Transcend Method, we travel to the villa side. AI navigates the full perimeter of the project.' },
+            { img: '/casestudies/nisreen/11.png', stepLabel: '11', category: 'Interiors',   title: 'Interior Shots',            caption: 'Finally, generate interior shots of the structure. Every space visualized — without a single model built.' },
         ],
     },
+
+    // ── 2. ALEENA ────────────────────────────────────────────────────────────
     {
         id: 'aleena',
         name: 'Aleena Al Waqas',
+        role: 'Founder — Known Design',
         projectType: 'Hospitality Interior Design',
         location: 'UAE',
-        tagline: 'A complete luxury F&B interior — every perspective generated with AI. Backed by a full video walkthrough.',
+        tagline: 'A full coffee bar concept generated from one single prompt — then explored in every detail.',
+        dp: '/casestudies/aleena/dp.jpeg',
         previewImgs: [
-            '/casestudies/aleena/full-shot.jpg',
-            '/casestudies/aleena/shot-1.jpg',
-            '/casestudies/aleena/shot-4.jpg',
-            '/casestudies/aleena/shot-7.jpg',
+            '/casestudies/aleena/1.jpg',
+            '/casestudies/aleena/4.jpg',
+            '/casestudies/aleena/7.png',
+            '/casestudies/aleena/8.png',
         ],
         slides: [
-            { vimeoId: '1185031477', stepLabel: '▶', category: 'Walkthrough', title: 'Full Video Walkthrough', caption: 'A complete AI-directed video walkthrough of the luxury F&B interior. Every surface, angle, and atmosphere — generated.' },
-            { img: '/casestudies/aleena/full-shot.jpg',  stepLabel: '01', category: 'Overview',      title: 'The Hero Shot',    caption: 'A luxury F&B interior. Warm stone arches, onyx bar counter, soaring ceilings, palm-framed windows. Client-ready on day one.' },
-            { img: '/casestudies/aleena/shot-1.jpg',     stepLabel: '02', category: 'Perspectives',  title: 'Shot 02',          caption: 'AI-generated perspective exploring the spatial sequence from entry to bar.' },
-            { img: '/casestudies/aleena/shot-2.jpg',     stepLabel: '03', category: 'Perspectives',  title: 'Shot 03',          caption: '' },
-            { img: '/casestudies/aleena/shot-3.jpg',     stepLabel: '04', category: 'Perspectives',  title: 'Shot 04',          caption: '' },
-            { img: '/casestudies/aleena/shot-4.jpg',     stepLabel: '05', category: 'Perspectives',  title: 'Shot 05',          caption: '' },
-            { img: '/casestudies/aleena/shot-5.jpg',     stepLabel: '06', category: 'Perspectives',  title: 'Shot 06',          caption: '' },
-            { img: '/casestudies/aleena/shot-6.jpg',     stepLabel: '07', category: 'Perspectives',  title: 'Shot 07',          caption: '' },
-            { img: '/casestudies/aleena/shot-7.jpg',     stepLabel: '08', category: 'Perspectives',  title: 'Shot 08',          caption: '' },
-            { img: '/casestudies/aleena/shot-9.jpg',     stepLabel: '09', category: 'Perspectives',  title: 'Shot 09',          caption: '' },
-            { img: '/casestudies/aleena/shot-10.jpg',    stepLabel: '10', category: 'Perspectives',  title: 'Shot 10',          caption: 'Every angle of the space explored. All generated — no photography, no 3D modeling software.' },
+            { img: '/casestudies/aleena/1.jpg',   stepLabel: '01', category: 'Overview',  title: 'Coffee Bar — One Prompt',       caption: 'Generated a complete coffee bar concept from scratch in one single prompt. Spatial layout, atmosphere, and materiality — all in.' },
+            { img: '/casestudies/aleena/2.png',   stepLabel: '02', category: 'Moments',   title: 'Transcend the Space',           caption: 'Transcend and capture moments on the coffee bar. AI moves through the space, finding the angles that tell the story.' },
+            { img: '/casestudies/aleena/3.jpg',   stepLabel: '03', category: 'Details',   title: 'Pendant Light',                 caption: 'Generate close up shots of the pendant light. Lighting fixtures visualized at photographic quality.' },
+            { img: '/casestudies/aleena/4.jpg',   stepLabel: '04', category: 'Details',   title: 'Seating Area',                  caption: 'Generate close up shots of the seating area. Fabric, form, and spatial feel — all AI-directed.' },
+            { img: '/casestudies/aleena/5.png',   stepLabel: '05', category: 'Details',   title: 'Armchair Close-Up',             caption: 'Generate a close up shot of the armchair. Material accuracy and shadow depth at render quality.' },
+            { img: '/casestudies/aleena/6.jpeg',  stepLabel: '06', category: 'Details',   title: 'Flooring & Terminations',       caption: 'Generate a close up shot of the flooring and terminations. The finishing details that close a design.' },
+            { img: '/casestudies/aleena/7.png',   stepLabel: '07', category: 'Details',   title: 'Bar Counter',                   caption: 'Showcase bar counter details. Edge profiles, material transitions, and surface texture — all in one prompt.' },
+            { img: '/casestudies/aleena/8.png',   stepLabel: '08', category: 'Details',   title: 'Wall Finishing',                caption: 'Expose details of the wall finishing. The full material palette of the project rendered at close range.' },
         ],
     },
+
+    // ── 3. AKSHAY ────────────────────────────────────────────────────────────
     {
         id: 'akshay',
-        name: 'b.form',
-        projectType: 'Product & Furniture Brand',
+        name: 'Akshay',
+        role: 'Founder — b.form',
+        projectType: 'Product & Furniture Design',
         location: 'India',
-        tagline: 'Raw studio product shots fed into AI. What came out the other side is a fully visualized furniture brand.',
+        tagline: 'Every furniture piece was generated by AI — then manufactured and presented at a live design event.',
+        dp: '/casestudies/akshay/dp.jpg',
         previewImgs: [
-            '/casestudies/akshay/after-1.jpg',
-            '/casestudies/akshay/after-3.jpg',
-            '/casestudies/akshay/after-8.jpg',
-            '/casestudies/akshay/before-2.jpg',
+            '/casestudies/akshay/1.jpg',
+            '/casestudies/akshay/3.jpg',
+            '/casestudies/akshay/5.jpg',
+            '/casestudies/akshay/6.jpg',
         ],
         slides: [
-            { vimeoId: '1185031432', stepLabel: '▶', category: 'Walkthrough', title: 'Midjourney to Final — Full Walkthrough', caption: 'The complete journey: from raw Midjourney explorations to client-ready b.form product renders.' },
-            // ── Before ────────────────────────────────────────────
-            { img: '/casestudies/akshay/before-1.jpg',  stepLabel: '01', category: 'Before — Raw Inputs', title: 'Studio Shot 01',  caption: 'The starting point. Raw product photography and early Midjourney explorations — the material AI is directed from.' },
-            { img: '/casestudies/akshay/before-2.jpg',  stepLabel: '02', category: 'Before — Raw Inputs', title: 'Studio Shot 02',  caption: '' },
-            { img: '/casestudies/akshay/before-3.jpg',  stepLabel: '03', category: 'Before — Raw Inputs', title: 'Studio Shot 03',  caption: '' },
-            { img: '/casestudies/akshay/before-4.jpg',  stepLabel: '04', category: 'Before — Raw Inputs', title: 'Studio Shot 04',  caption: '' },
-            { img: '/casestudies/akshay/before-5.jpg',  stepLabel: '05', category: 'Before — Raw Inputs', title: 'Studio Shot 05',  caption: '' },
-            { img: '/casestudies/akshay/before-6.jpg',  stepLabel: '06', category: 'Before — Raw Inputs', title: 'Studio Shot 06',  caption: '' },
-            { img: '/casestudies/akshay/before-7.jpg',  stepLabel: '07', category: 'Before — Raw Inputs', title: 'Studio Shot 07',  caption: '' },
-            { img: '/casestudies/akshay/before-8.jpg',  stepLabel: '08', category: 'Before — Raw Inputs', title: 'Studio Shot 08',  caption: '' },
-            { img: '/casestudies/akshay/before-9.jpg',  stepLabel: '09', category: 'Before — Raw Inputs', title: 'Studio Shot 09',  caption: '' },
-            { img: '/casestudies/akshay/before-10.jpg', stepLabel: '10', category: 'Before — Raw Inputs', title: 'Studio Shot 10',  caption: '' },
-            { img: '/casestudies/akshay/before-11.jpg', stepLabel: '11', category: 'Before — Raw Inputs', title: 'Studio Shot 11',  caption: '' },
-            { img: '/casestudies/akshay/before-12.jpg', stepLabel: '12', category: 'Before — Raw Inputs', title: 'Studio Shot 12',  caption: '' },
-            { img: '/casestudies/akshay/before-13.jpg', stepLabel: '13', category: 'Before — Raw Inputs', title: 'Studio Shot 13',  caption: '' },
-            { img: '/casestudies/akshay/before-14.jpg', stepLabel: '14', category: 'Before — Raw Inputs', title: 'Studio Shot 14',  caption: '' },
-            { img: '/casestudies/akshay/before-15.jpg', stepLabel: '15', category: 'Before — Raw Inputs', title: 'Studio Shot 15',  caption: '' },
-            { img: '/casestudies/akshay/before-16.jpg', stepLabel: '16', category: 'Before — Raw Inputs', title: 'Studio Shot 16',  caption: '' },
-            { img: '/casestudies/akshay/before-17.jpg', stepLabel: '17', category: 'Before — Raw Inputs', title: 'Studio Shot 17',  caption: '' },
-            { img: '/casestudies/akshay/before-18.jpg', stepLabel: '18', category: 'Before — Raw Inputs', title: 'Studio Shot 18',  caption: 'Every piece documented. This is the raw material — before AI touched it.' },
-            // ── After ─────────────────────────────────────────────
-            { img: '/casestudies/akshay/after-1.jpg',   stepLabel: '19', category: 'After — b.form Renders',  title: 'b.form Render 01', caption: 'AI transforms the raw input into a full photorealistic product render. Same object. Entirely different world.' },
-            { img: '/casestudies/akshay/after-2.jpg',   stepLabel: '20', category: 'After — b.form Renders',  title: 'b.form Render 02', caption: '' },
-            { img: '/casestudies/akshay/after-3.jpg',   stepLabel: '21', category: 'After — b.form Renders',  title: 'b.form Render 03', caption: '' },
-            { img: '/casestudies/akshay/after-4.jpg',   stepLabel: '22', category: 'After — b.form Renders',  title: 'b.form Render 04', caption: '' },
-            { img: '/casestudies/akshay/after-5.jpg',   stepLabel: '23', category: 'After — b.form Renders',  title: 'b.form Render 05', caption: '' },
-            { img: '/casestudies/akshay/after-6.jpg',   stepLabel: '24', category: 'After — b.form Renders',  title: 'b.form Render 06', caption: '' },
-            { img: '/casestudies/akshay/after-7.jpg',   stepLabel: '25', category: 'After — b.form Renders',  title: 'b.form Render 07', caption: '' },
-            { img: '/casestudies/akshay/after-8.jpg',   stepLabel: '26', category: 'After — b.form Renders',  title: 'b.form Render 08', caption: '' },
-            { img: '/casestudies/akshay/after-9.jpg',   stepLabel: '27', category: 'After — b.form Renders',  title: 'b.form Render 09', caption: '' },
-            { img: '/casestudies/akshay/after-10.jpg',  stepLabel: '28', category: 'After — b.form Renders',  title: 'b.form Render 10', caption: '' },
-            { img: '/casestudies/akshay/after-11.jpg',  stepLabel: '29', category: 'After — b.form Renders',  title: 'b.form Render 11', caption: '' },
-            { img: '/casestudies/akshay/after-12.jpg',  stepLabel: '30', category: 'After — b.form Renders',  title: 'b.form Render 12', caption: '' },
-            { img: '/casestudies/akshay/after-13.jpg',  stepLabel: '31', category: 'After — b.form Renders',  title: 'b.form Render 13', caption: '' },
-            { img: '/casestudies/akshay/after-14.jpg',  stepLabel: '32', category: 'After — b.form Renders',  title: 'b.form Render 14', caption: 'The full library. Client-ready product imagery — generated entirely with AI.' },
+            { img: '/casestudies/akshay/1.jpg', stepLabel: '01', category: 'b.form Collection', title: 'Piece 01', caption: 'All furniture items were generated via AI and then manufactured and presented at the Design Event.' },
+            { img: '/casestudies/akshay/2.jpg', stepLabel: '02', category: 'b.form Collection', title: 'Piece 02', caption: '' },
+            { img: '/casestudies/akshay/3.jpg', stepLabel: '03', category: 'b.form Collection', title: 'Piece 03', caption: '' },
+            { img: '/casestudies/akshay/4.jpg', stepLabel: '04', category: 'b.form Collection', title: 'Piece 04', caption: '' },
+            { img: '/casestudies/akshay/5.jpg', stepLabel: '05', category: 'b.form Collection', title: 'Piece 05', caption: '' },
+            { img: '/casestudies/akshay/6.jpg', stepLabel: '06', category: 'b.form Collection', title: 'Piece 06', caption: 'The full collection — AI-generated, physically manufactured, publicly exhibited.' },
         ],
     },
+
+    // ── 4. LOGAN ─────────────────────────────────────────────────────────────
     {
-        id: 'evan',
-        name: 'Evan',
-        projectType: 'Hospitality & Restaurant Design',
-        location: 'UAE',
-        tagline: 'A full restaurant concept brought to life — every space, every moment, AI-generated.',
+        id: 'logan',
+        name: 'Logan',
+        role: 'F&B Hospitality Consultant',
+        projectType: 'F&B Branding & Concept',
+        location: 'Europe · Riyadh',
+        tagline: 'Three landmark hospitality projects — from a Mediterranean restaurant to St. Regis Riyadh — all AI-assisted.',
+        dp: '/casestudies/logan/dp.png',
         previewImgs: [
-            '/casestudies/evan/entrance.jpg',
-            '/casestudies/evan/dining.jpg',
-            '/casestudies/evan/bartender.jpg',
-            '/casestudies/evan/chandelier.jpg',
+            '/casestudies/logan/almina/1.jpg',
+            '/casestudies/logan/flamboyant/1.jpg',
+            '/casestudies/logan/st-regis/1.webp',
+            '/casestudies/logan/almina/5.jpg',
         ],
         slides: [
-            { img: '/casestudies/evan/entrance.jpg',  stepLabel: '01', category: 'Arrival',    title: 'Restaurant Entrance',       caption: 'The first impression. AI-generated arrival sequence — lighting, materiality, and spatial welcome.' },
-            { img: '/casestudies/evan/dining.jpg',    stepLabel: '02', category: 'Experience', title: 'Dining Atmosphere',         caption: 'A couple at table. AI generates the full spatial experience — from chair scale to ambient light.' },
-            { img: '/casestudies/evan/interior.jpg',  stepLabel: '03', category: 'Experience', title: 'Interior Overview',         caption: 'Full interior perspective. Every surface, volume, and lighting condition directed by AI prompts.' },
-            { img: '/casestudies/evan/bartender.jpg', stepLabel: '04', category: 'Details',    title: 'Bartender — Martini Pour',  caption: 'A cinematic moment. AI imagines the staff, the gesture, the glass — all in one render.' },
-            { img: '/casestudies/evan/chandelier.jpg',stepLabel: '05', category: 'Details',    title: 'Chandelier Detail',         caption: 'Macro architectural detail. AI produces close-up material studies at photographic quality.' },
-            { img: '/casestudies/evan/bar-macro.jpg', stepLabel: '06', category: 'Details',    title: 'Bar — Statement Ceiling',   caption: 'The bar counter and ceiling composition. AI-directed material palette and lighting.' },
-            { img: '/casestudies/evan/food.jpg',      stepLabel: '07', category: 'Details',    title: 'Food Photography',          caption: 'Even the F&B photography is AI-generated. Full table composition, styled for client presentation.' },
-            { img: '/casestudies/evan/grilling.jpg',  stepLabel: '08', category: 'Details',    title: 'Grilling Station',          caption: 'Back-of-house visualized. The chef, the fire, the station — AI-directed hospitality storytelling.' },
+            // ── ALMINA ──────────────────────────────────────────────────────
+            { img: '/casestudies/logan/almina/1.jpg',   stepLabel: 'A·01', category: 'Almina — Cascais',    title: 'Brand Identity',       caption: 'Almina: a contemporary Levantine–Mediterranean restaurant in Cascais. Branding, naming, and culinary concept — AI-assisted from day one.' },
+            { img: '/casestudies/logan/almina/2.jpg',   stepLabel: 'A·02', category: 'Almina — Cascais',    title: 'Visual Direction',     caption: '' },
+            { img: '/casestudies/logan/almina/3.jpg',   stepLabel: 'A·03', category: 'Almina — Cascais',    title: 'Concept Narrative',    caption: '' },
+            { img: '/casestudies/logan/almina/4.jpg',   stepLabel: 'A·04', category: 'Almina — Cascais',    title: 'Menu Design',          caption: '' },
+            { img: '/casestudies/logan/almina/5.jpg',   stepLabel: 'A·05', category: 'Almina — Cascais',    title: 'Collaterals',          caption: '' },
+            { img: '/casestudies/logan/almina/6.jpg',   stepLabel: 'A·06', category: 'Almina — Cascais',    title: 'Uniforms & Signage',   caption: '' },
+            { img: '/casestudies/logan/almina/7.jpg',   stepLabel: 'A·07', category: 'Almina — Cascais',    title: 'Illustration',         caption: '' },
+            { img: '/casestudies/logan/almina/8.jpg',   stepLabel: 'A·08', category: 'Almina — Cascais',    title: 'Graphic Design',       caption: '' },
+            { img: '/casestudies/logan/almina/9.jpg',   stepLabel: 'A·09', category: 'Almina — Cascais',    title: 'Final Output 01',      caption: '' },
+            { img: '/casestudies/logan/almina/10.jpg',  stepLabel: 'A·10', category: 'Almina — Cascais',    title: 'Final Output 02',      caption: 'Complete brand ecosystem — positioned to stand apart in the Cascais dining landscape.' },
+            // ── FLAMBOYANT ──────────────────────────────────────────────────
+            { img: '/casestudies/logan/flamboyant/1.jpg', stepLabel: 'F·01', category: 'Flamboyant — Pyrenees', title: 'Concept Creation',   caption: 'Flamboyant: a fire-driven dining experience at Casino Capvern — inspired by the rich local products of the Pyrenees. 140 seats, 4 distinct areas.' },
+            { img: '/casestudies/logan/flamboyant/2.jpg', stepLabel: 'F·02', category: 'Flamboyant — Pyrenees', title: 'Naming & Trademark', caption: '' },
+            { img: '/casestudies/logan/flamboyant/3.jpg', stepLabel: 'F·03', category: 'Flamboyant — Pyrenees', title: 'Menu Development',   caption: '' },
+            { img: '/casestudies/logan/flamboyant/4.jpg', stepLabel: 'F·04', category: 'Flamboyant — Pyrenees', title: 'F&B Programming',    caption: '' },
+            { img: '/casestudies/logan/flamboyant/5.jpg', stepLabel: 'F·05', category: 'Flamboyant — Pyrenees', title: 'Copy & Branding',    caption: '' },
+            { img: '/casestudies/logan/flamboyant/6.jpg', stepLabel: 'F·06', category: 'Flamboyant — Pyrenees', title: 'Visual Identity',    caption: '' },
+            { img: '/casestudies/logan/flamboyant/7.jpg', stepLabel: 'F·07', category: 'Flamboyant — Pyrenees', title: 'Final Direction 01', caption: '' },
+            { img: '/casestudies/logan/flamboyant/8.jpg', stepLabel: 'F·08', category: 'Flamboyant — Pyrenees', title: 'Final Direction 02', caption: 'Rustic elegance meets vibrant, smoky flavors — tailor-made braseros at the center.' },
+            // ── ST. REGIS ───────────────────────────────────────────────────
+            { img: '/casestudies/logan/st-regis/1.webp',  stepLabel: 'R·01', category: 'St. Regis — Riyadh', title: 'DINE EXQUISITE',      caption: 'Collaborated with The St. Regis Riyadh on DINE EXQUISITE — a bespoke catering concept extending the hotel\'s universe beyond its walls.' },
+            { img: '/casestudies/logan/st-regis/2.webp',  stepLabel: 'R·02', category: 'St. Regis — Riyadh', title: 'Concept Narrative',   caption: '' },
+            { img: '/casestudies/logan/st-regis/3.webp',  stepLabel: 'R·03', category: 'St. Regis — Riyadh', title: 'Brand Creation',      caption: '' },
+            { img: '/casestudies/logan/st-regis/4.jpeg',  stepLabel: 'R·04', category: 'St. Regis — Riyadh', title: 'Visual Identity',     caption: '' },
+            { img: '/casestudies/logan/st-regis/5.jpeg',  stepLabel: 'R·05', category: 'St. Regis — Riyadh', title: 'Illustration System', caption: '' },
+            { img: '/casestudies/logan/st-regis/6.jpeg',  stepLabel: 'R·06', category: 'St. Regis — Riyadh', title: 'Printed Collaterals', caption: '' },
+            { img: '/casestudies/logan/st-regis/7.webp',  stepLabel: 'R·07', category: 'St. Regis — Riyadh', title: 'Packaging',           caption: '' },
+            { img: '/casestudies/logan/st-regis/8.webp',  stepLabel: 'R·08', category: 'St. Regis — Riyadh', title: 'Merchandising',       caption: 'A visual and experiential language adapted to private events across Riyadh — St. Regis standards, beyond the hotel.' },
         ],
     },
+
+    // ── 5. NANCY ─────────────────────────────────────────────────────────────
     {
-        id: 'ghaith',
-        name: 'Ghaith',
-        projectType: 'Interior & Product Design',
+        id: 'nancy',
+        name: 'Nancy',
+        role: 'Senior Interior Designer — FINASI',
+        projectType: 'Product Design',
         location: 'UAE',
-        tagline: 'High-end furniture and interior AI renders — production-quality output from prompts alone.',
+        tagline: '1st place at the Masterclass prize competition. One armchair. Designed, detailed, and presented entirely with AI.',
+        dp: '/casestudies/nancy/dp.jpg',
         previewImgs: [
-            '/casestudies/ghaith/shot-4.jpg',
-            '/casestudies/ghaith/shot-1.jpg',
-            '/casestudies/ghaith/shot-7.jpg',
-            '/casestudies/ghaith/shot-9.jpg',
+            '/casestudies/nancy/8.png',
+            '/casestudies/nancy/1.png',
+            '/casestudies/nancy/3.png',
+            '/casestudies/nancy/6.png',
         ],
         slides: [
-            { img: '/casestudies/ghaith/shot-1.jpg',  stepLabel: '01', category: 'Renders', title: 'Render 01', caption: 'AI-generated interior and product visualization. Every detail prompted and refined.' },
-            { img: '/casestudies/ghaith/shot-2.jpg',  stepLabel: '02', category: 'Renders', title: 'Render 02', caption: '' },
-            { img: '/casestudies/ghaith/shot-3.jpg',  stepLabel: '03', category: 'Renders', title: 'Render 03', caption: '' },
-            { img: '/casestudies/ghaith/shot-4.jpg',  stepLabel: '04', category: 'Renders', title: 'High-End Armchair', caption: 'Photorealistic armchair product render. Material accuracy, lighting, and shadow — all AI-directed.' },
-            { img: '/casestudies/ghaith/shot-5.jpg',  stepLabel: '05', category: 'Renders', title: 'Render 05', caption: '' },
-            { img: '/casestudies/ghaith/shot-6.jpg',  stepLabel: '06', category: 'Renders', title: 'Render 06', caption: '' },
-            { img: '/casestudies/ghaith/shot-7.jpg',  stepLabel: '07', category: 'Renders', title: 'Render 07', caption: '' },
-            { img: '/casestudies/ghaith/shot-8.jpg',  stepLabel: '08', category: 'Renders', title: 'Render 08', caption: '' },
-            { img: '/casestudies/ghaith/shot-9.jpg',  stepLabel: '09', category: 'Renders', title: 'Render 09', caption: 'The full output library. Every image client-ready. No photography, no 3D software.' },
+            { img: '/casestudies/nancy/1.png',   stepLabel: '01', category: 'The Brief',   title: 'Interior Context',          caption: 'The brief: design an armchair and place it in this AI-generated interior. The starting point.' },
+            { img: '/casestudies/nancy/2.jpeg',  stepLabel: '02', category: 'Generation',  title: 'Armchair from Prompts',     caption: 'Armchair generation based on prompts alone. Form, proportion, and material — all directed through AI.' },
+            { img: '/casestudies/nancy/3.png',   stepLabel: '03', category: 'Exploration', title: 'Multiple Sides',            caption: 'Capturing different sides of the armchair. AI explores every angle of the design in minutes.' },
+            { img: '/casestudies/nancy/4.png',   stepLabel: '04', category: 'Details',     title: 'Steel Leg Detail',          caption: 'Capturing detail shots of the steel legs. Material accuracy and precision at photographic quality.' },
+            { img: '/casestudies/nancy/5.png',   stepLabel: '05', category: 'Details',     title: 'Back Seat & Texture',       caption: 'Back seat details and textures. Every surface studied and rendered through AI prompts.' },
+            { img: '/casestudies/nancy/6.png',   stepLabel: '06', category: 'Moodboard',   title: 'Moodboard Creations',       caption: 'Moodboard creations built around the armchair. Materiality, palette, and context — all composed by AI.' },
+            { img: '/casestudies/nancy/7.png',   stepLabel: '07', category: 'Technical',   title: 'Armchair Diagrams',         caption: 'Generating technical diagrams of the armchair. AI produces the documentation alongside the renders.' },
+            { img: '/casestudies/nancy/8.png',   stepLabel: '08', category: 'Final',       title: 'The Money Shot',            caption: 'The money shot — the armchair placed in context. This image won 1st place at the Masterclass prize competition.' },
         ],
     },
+
+    // ── 6. SULTAN ────────────────────────────────────────────────────────────
     {
         id: 'sultan',
         name: 'Sultan',
-        projectType: 'Architectural Design',
+        role: 'Jr. Interior Designer — Revie Spaces',
+        projectType: 'Interior Design',
         location: 'UAE',
-        tagline: 'Photorealistic architectural renders — an entire project visualized with AI from the first prompt.',
+        tagline: 'From a conceptual armchair to a full interior story — every image AI-generated, end to end.',
+        dp: '/casestudies/sultan/dp.jpeg',
         previewImgs: [
-            '/casestudies/sultan/shot-3.jpg',
-            '/casestudies/sultan/shot-1.jpg',
-            '/casestudies/sultan/shot-5.jpg',
-            '/casestudies/sultan/shot-7.jpg',
+            '/casestudies/sultan/2.png',
+            '/casestudies/sultan/1.png',
+            '/casestudies/sultan/5.png',
+            '/casestudies/sultan/8.png',
         ],
         slides: [
-            { img: '/casestudies/sultan/shot-1.jpg',  stepLabel: '01', category: 'Renders', title: 'Render 01', caption: 'AI-generated architectural render. Full photorealistic output from a design brief.' },
-            { img: '/casestudies/sultan/shot-2.jpg',  stepLabel: '02', category: 'Renders', title: 'Render 02', caption: '' },
-            { img: '/casestudies/sultan/shot-3.jpg',  stepLabel: '03', category: 'Renders', title: 'Render 03', caption: '' },
-            { img: '/casestudies/sultan/shot-4.jpg',  stepLabel: '04', category: 'Renders', title: 'Render 04', caption: '' },
-            { img: '/casestudies/sultan/shot-5.jpg',  stepLabel: '05', category: 'Renders', title: 'Render 05', caption: '' },
-            { img: '/casestudies/sultan/shot-6.jpg',  stepLabel: '06', category: 'Renders', title: 'Render 06', caption: '' },
-            { img: '/casestudies/sultan/shot-7.jpg',  stepLabel: '07', category: 'Renders', title: 'Render 07', caption: '' },
-            { img: '/casestudies/sultan/shot-8.jpg',  stepLabel: '08', category: 'Renders', title: 'Render 08', caption: 'Every angle explored. The complete project visualized before a single wall was built.' },
+            { img: '/casestudies/sultan/1.png', stepLabel: '01', category: 'Generation',  title: 'Conceptual Armchair',       caption: 'Generated an image of a conceptual armchair. The idea formed entirely through AI prompting.' },
+            { img: '/casestudies/sultan/2.png', stepLabel: '02', category: 'Context',     title: 'Real-Life Context',         caption: 'Transformed the armchair into a real life interior context. The piece is now living in a space.' },
+            { img: '/casestudies/sultan/3.png', stepLabel: '03', category: 'Details',     title: 'Armchair Details',          caption: 'Captured details of the armchair. Material quality and surface texture rendered at close range.' },
+            { img: '/casestudies/sultan/4.png', stepLabel: '04', category: 'Exploration', title: 'Transcend the Space',       caption: 'Showcasing the ability to transcend and expose new details in the space. AI navigates the interior freely.' },
+            { img: '/casestudies/sultan/5.png', stepLabel: '05', category: 'Details',     title: 'Floor Lamp',                caption: 'Close up shot of the floor lamp. AI zooms into any element and renders it at photographic quality.' },
+            { img: '/casestudies/sultan/6.png', stepLabel: '06', category: 'Details',     title: 'Sofa & Painting',           caption: 'Close up shot of the sofa with the painting. Every object in the room explored and documented.' },
+            { img: '/casestudies/sultan/7.png', stepLabel: '07', category: 'Details',     title: 'Table Details',             caption: 'Capturing details laid on the table. Styling, material, and light — all AI-directed.' },
+            { img: '/casestudies/sultan/8.png', stepLabel: '08', category: 'Final',       title: 'Moodboard Full Circle',     caption: 'Moodboard full circle. The complete interior story — from one conceptual armchair to a fully realized space.' },
         ],
     },
 ]
@@ -460,9 +449,11 @@ interface CaseStudySlide {
 interface CaseStudy {
     id: string
     name: string
+    role: string
     projectType: string
     location: string
     tagline: string
+    dp: string
     previewImgs: string[]
     slides: CaseStudySlide[]
 }
@@ -921,19 +912,20 @@ export function LandingPageTest() {
                                     </div>
 
                                     {/* Info row */}
-                                    <div className="px-5 sm:px-6 py-5 flex items-center justify-between gap-4">
-                                        <div className="min-w-0">
-                                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 font-bold mb-1.5">
-                                                {cs.projectType} · {cs.location}
-                                            </p>
-                                            <h3 className="font-heading font-black uppercase text-xl sm:text-2xl text-white leading-tight">{cs.name}</h3>
-                                            <p className="text-xs text-gray-500 mt-2 leading-relaxed line-clamp-2 max-w-sm">{cs.tagline}</p>
+                                    <div className="px-5 sm:px-6 py-4 flex items-center gap-4">
+                                        {/* DP */}
+                                        <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-lime/30 transition-colors duration-300">
+                                            <img src={cs.dp} alt={cs.name} className="w-full h-full object-cover" />
                                         </div>
-                                        <div className="shrink-0 flex items-center gap-3">
-                                            <span className="text-[0.6rem] text-gray-600 uppercase tracking-wider hidden sm:block">{cs.slides.length} slides</span>
-                                            <div className="w-9 h-9 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center shrink-0">
-                                                <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-lime transition-colors" />
-                                            </div>
+                                        {/* Text */}
+                                        <div className="min-w-0 flex-1">
+                                            <h3 className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{cs.name}</h3>
+                                            <p className="text-[0.6rem] uppercase tracking-[0.15em] text-gray-600 font-bold mt-0.5">{cs.role}</p>
+                                            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed line-clamp-1 max-w-sm">{cs.tagline}</p>
+                                        </div>
+                                        {/* Arrow */}
+                                        <div className="shrink-0 w-9 h-9 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center">
+                                            <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-lime transition-colors" />
                                         </div>
                                     </div>
                                 </motion.div>
