@@ -4,10 +4,10 @@ import { useLocation } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
 
 const NAV_LINKS = [
-    { label: 'Sprint Workshop', href: '/test-landingpage#sprint' },
-    { label: 'For Studios',     href: '/masterclass-analytics'   },
-    { label: 'Case Studies',    href: '/test-landingpage#case-studies' },
-    { label: 'Find Your Path',  href: '/find-your-path'          },
+    { label: 'Studios',        href: '/masterclass-analytics' },
+    { label: 'Case Studies',   href: '/case-studies'          },
+    { label: 'Find Your Path', href: '/find-your-path'        },
+    { label: 'Not Sure',       href: '/not-sure'              },
 ]
 
 interface PublicNavProps {
@@ -40,14 +40,17 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                     initial={{ y: -80, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    className={`pointer-events-auto w-full max-w-[1100px] px-4 sm:px-6 py-2.5 flex items-center justify-between backdrop-blur-2xl rounded-md border transition-all duration-500 ${
+                    className={`pointer-events-auto w-full max-w-[1320px] px-5 sm:px-8 py-3 flex items-center justify-between backdrop-blur-2xl rounded-md border transition-all duration-500 ${
                         scrolled
                             ? 'bg-black/60 border-white/[0.14] shadow-[0_8px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.06)]'
                             : 'bg-white/[0.05] border-white/[0.09] shadow-[0_4px_24px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.08)]'
                     }`}
                 >
-                    {/* ── Logo + brand name ───────────────────────────── */}
+                    {/* ── Logo + Home ─────────────────────────────────── */}
                     <a href="/test-landingpage" className="flex items-center gap-2 shrink-0 group">
+                        {pathname === '/test-landingpage' && (
+                            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-lime/10 border border-lime/20 text-[0.58rem] font-black uppercase tracking-[0.15em] text-lime mr-1">Home</span>
+                        )}
                         <motion.img
                             src={logoSrc}
                             alt="Zkandar AI"
@@ -134,8 +137,22 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                         exit={{ opacity: 0, y: -8, scale: 0.97 }}
                         transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                         style={{ originY: 0, top: pillTop + 62 }}
-                        className="fixed inset-x-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-[1100px] z-40 rounded-md bg-black/80 backdrop-blur-2xl border border-white/[0.09] px-4 pt-4 pb-5 flex flex-col gap-1 md:hidden shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
+                        className="fixed inset-x-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-[1320px] z-40 rounded-md bg-black/80 backdrop-blur-2xl border border-white/[0.09] px-4 pt-4 pb-5 flex flex-col gap-1 md:hidden shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
                     >
+                        <motion.a
+                            href="/test-landingpage"
+                            onClick={() => setMobileOpen(false)}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
+                            className={`px-4 py-2.5 rounded-md text-sm font-bold uppercase tracking-[0.12em] transition-colors duration-200 ${
+                                pathname === '/test-landingpage'
+                                    ? 'text-lime bg-lime/10 border border-lime/15'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                            Home
+                        </motion.a>
                         {NAV_LINKS.map((link, i) => (
                             <motion.a
                                 key={link.label}
