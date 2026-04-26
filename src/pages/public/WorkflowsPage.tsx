@@ -485,6 +485,24 @@ export function WorkflowsPage() {
                     </div>
                 </Section>
 
+                {/* ─── CTA strip ───────────────────────────────────────────── */}
+                <Section>
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-2xl"
+                        style={{ background: 'linear-gradient(145deg, #111811 0%, #0C130C 100%)', border: '1px solid rgba(208,255,113,0.15)' }}>
+                        <div>
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/60 mb-1">Seen enough?</p>
+                            <p className="font-heading font-black uppercase text-xl text-white leading-tight">Ready to bring AI to your studio?</p>
+                        </div>
+                        <button onClick={() => setModalOpen(true)}
+                            className="group shrink-0 flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5 font-heading">
+                            Book a Discovery Call
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="group-hover:translate-x-1 transition-transform">
+                                <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </Section>
+
                 {/* ─── SECTION 7: Studio Capacity Multiplier ───────────────── */}
                 <Section>
                     <div className="space-y-8">
@@ -545,6 +563,21 @@ export function WorkflowsPage() {
 
                 {/* ─── Productivity Calculator ────────────────────────────────── */}
                 <ProductivityCalculator />
+
+                {/* ─── CTA strip 2 ─────────────────────────────────────────── */}
+                <Section>
+                    <div className="text-center space-y-5">
+                        <p className="text-gray-500 text-sm font-body">Your studio could be operating like this within 15 hours of training.</p>
+                        <button onClick={() => setModalOpen(true)}
+                            className="group inline-flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5 font-heading">
+                            Book a Discovery Call
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="group-hover:translate-x-1 transition-transform">
+                                <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                        <p className="text-xs text-lime font-bold font-body">Free 15-minute call. No commitment.</p>
+                    </div>
+                </Section>
 
                 {/* ─── SECTION 7: MASTERCLASS CARD ─────────────────────────── */}
                 <Section className="pb-12">

@@ -603,8 +603,8 @@ export function LandingPageTest() {
                                 transition={{ delay: 1.1 }}
                                 className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                 <a href="/find-your-path"
-                                    className="px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300 flex items-center gap-2">
-                                    See Where You're At With AI <ArrowRight className="w-3.5 h-3.5" />
+                                    className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
+                                    See Where You're At With AI <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </a>
                             </motion.div>
 
@@ -644,11 +644,12 @@ export function LandingPageTest() {
                             />
                         </div>
                     </FadeIn>
-                    <FadeIn delay={0.35} className="flex justify-center mt-8">
+                    <FadeIn delay={0.35} className="flex flex-col items-center mt-8 gap-2">
                         <a href="/find-your-path"
-                            className="px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300 flex items-center gap-2">
-                            See Where You're At With AI <ArrowRight className="w-3.5 h-3.5" />
+                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
+                            See Where You're At With AI <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
+                        <p className="text-xs text-lime font-bold font-body">Free assessment · No commitment</p>
                     </FadeIn>
                 </div>
             </section>
