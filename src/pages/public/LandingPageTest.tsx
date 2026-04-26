@@ -510,6 +510,24 @@ function CaseStudyPresentation({
     )
 }
 
+function HeroVideo() {
+    const [ready, setReady] = useState(false)
+    return (
+        <div
+            className="absolute inset-0 transition-opacity duration-1000"
+            style={{ opacity: ready ? 1 : 0, filter: 'blur(3px) brightness(0.55)' }}
+        >
+            <iframe
+                src="https://player.vimeo.com/video/1186560999?background=1&autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                style={{ width: '100vw', height: '56.25vw', minHeight: '100%', minWidth: '177.78vh' }}
+                allow="autoplay; fullscreen; picture-in-picture"
+                onLoad={() => setReady(true)}
+            />
+        </div>
+    )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function LandingPageTest() {
@@ -562,15 +580,16 @@ export function LandingPageTest() {
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0 overflow-hidden">
-                    {/* Full-bleed video background */}
-                    <div className="absolute inset-0" style={{ filter: 'blur(3px) brightness(0.55)' }}>
-                        <iframe
-                            src="https://player.vimeo.com/video/1186560999?background=1&autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0"
-                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                            style={{ width: '100vw', height: '56.25vw', minHeight: '100%', minWidth: '177.78vh' }}
-                            allow="autoplay; fullscreen; picture-in-picture"
-                        />
-                    </div>
+                    {/* Poster image — shows instantly while video buffers */}
+                    <img
+                        src="/casestudies/nisreen/money-shot-night.jpg"
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover"
+                        style={{ filter: 'blur(3px) brightness(0.55)' }}
+                        fetchPriority="high"
+                    />
+                    {/* Full-bleed video background — fades in over poster once loaded */}
+                    <HeroVideo />
                     {/* Gradient overlays for text legibility */}
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
