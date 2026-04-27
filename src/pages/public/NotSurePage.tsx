@@ -251,6 +251,119 @@ export function NotSurePage() {
                 </div>
             </div>
 
+            {/* ── MORE WORKS ──────────────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
+                <div className="max-w-5xl mx-auto px-5 sm:px-6">
+                    {/* Header */}
+                    <div className="mb-10 md:mb-14">
+                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">Beyond Architecture</p>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.8rem)] leading-[0.95] text-white">
+                            AI Works in <span className="text-lime">Every Discipline.</span>
+                        </h2>
+                        <p className="text-gray-600 text-sm max-w-lg mt-3">
+                            Fashion. F&B. Product design. Hospitality. This is what our participants built.
+                        </p>
+                    </div>
+
+                    {/* Featured video */}
+                    <div className="relative w-full rounded-2xl overflow-hidden mb-6 bg-[#0a0a0a] border border-white/[0.06]"
+                        style={{ paddingBottom: '56.25%' }}>
+                        <iframe
+                            src="https://player.vimeo.com/video/1187078968?background=0&autoplay=0&title=0&byline=0&portrait=0"
+                            className="absolute inset-0 w-full h-full"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                        />
+                    </div>
+
+                    {/* 4 project grids */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        {/* ATELIER CARROUSEL */}
+                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
+                            <div className="grid grid-cols-3 gap-[3px] h-44">
+                                {[
+                                    '/more-works/atelier-carrousel/opening.png',
+                                    '/more-works/atelier-carrousel/product-1.webp',
+                                    '/more-works/atelier-carrousel/product-2.webp',
+                                ].map((img, i) => (
+                                    <div key={i} className="relative overflow-hidden">
+                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="px-4 py-3">
+                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Luxury Brand</p>
+                                <p className="text-sm font-heading font-black uppercase text-white">Atelier Carrousel</p>
+                                <p className="text-xs text-gray-500 mt-1">Product photography & cinematic brand identity — AI-generated.</p>
+                            </div>
+                        </div>
+
+                        {/* COCO CHANEL */}
+                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
+                            <div className="grid grid-cols-3 gap-[3px] h-44">
+                                {[
+                                    '/more-works/coco-chanel/1.jpg',
+                                    '/more-works/coco-chanel/2.png',
+                                    '/more-works/coco-chanel/3.jpg',
+                                ].map((img, i) => (
+                                    <div key={i} className="relative overflow-hidden">
+                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="px-4 py-3">
+                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Hospitality & Retail</p>
+                                <p className="text-sm font-heading font-black uppercase text-white">Coco Chanel Concept</p>
+                                <p className="text-xs text-gray-500 mt-1">Cinematic hospitality scenes & retail visualization — AI-directed.</p>
+                            </div>
+                        </div>
+
+                        {/* F1 */}
+                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
+                            <div className="grid grid-cols-4 gap-[3px] h-44">
+                                {[
+                                    '/more-works/f1/1.png',
+                                    '/more-works/f1/2.png',
+                                    '/more-works/f1/3.png',
+                                    '/more-works/f1/4.jpeg',
+                                ].map((img, i) => (
+                                    <div key={i} className="relative overflow-hidden">
+                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="px-4 py-3">
+                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Sports & Branding</p>
+                                <p className="text-sm font-heading font-black uppercase text-white">F1 Sprint Workshop</p>
+                                <p className="text-xs text-gray-500 mt-1">Cinematic F1 campaign imagery — entirely AI-generated.</p>
+                            </div>
+                        </div>
+
+                        {/* PRODUCT DESIGN */}
+                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
+                            <div className="grid grid-cols-4 gap-[3px] h-44">
+                                {[
+                                    '/more-works/product-design/1.png',
+                                    '/more-works/product-design/2.png',
+                                    '/more-works/product-design/3.png',
+                                    '/more-works/product-design/4.png',
+                                ].map((img, i) => (
+                                    <div key={i} className="relative overflow-hidden">
+                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="px-4 py-3">
+                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Product Design</p>
+                                <p className="text-sm font-heading font-black uppercase text-white">Furniture Collection</p>
+                                <p className="text-xs text-gray-500 mt-1">From sketch to photorealistic product render — AI-generated, prize-winning.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
             {/* ── FINAL CTA / PPA ─────────────────────────────────────── */}
             <section className="relative overflow-hidden">
                 {/* Ambient background */}
