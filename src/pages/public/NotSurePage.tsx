@@ -1,116 +1,313 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Quote, CheckCircle2, ChevronDown, ChevronUp, Eye } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowRight, ChevronDown, ChevronUp, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useRef } from 'react'
 import { PublicNav } from '../../components/public/PublicNav'
 import { CalendlyModal } from '../../components/public/CalendlyModal'
 import logoSrc from '../../assets/logo.png'
 
-const GALLERY_ITEMS = [
-    { label: 'Night Entrance',  img: '/lander/24.png', cls: 'col-span-2 row-span-2' },
-    { label: 'Arch Detail',     img: '/lander/26.png', cls: '' },
-    { label: 'Reflecting Pool', img: '/lander/27.png', cls: '' },
-    { label: 'Interior Hall',   img: '/lander/30.png', cls: 'row-span-2' },
-    { label: 'Section Cut',     img: '/lander/13.png', cls: '' },
-    { label: 'Wide Entrance',   img: '/lander/4.png',  cls: 'col-span-2' },
-    { label: 'Concept Sketch',  img: '/lander/33.png', cls: '' },
-    { label: 'Materials',       img: '/lander/32.png', cls: '' },
-    { label: 'Construction',    img: '/lander/9.png',  cls: '' },
-    { label: 'Arena',           img: '/lander/1.png',  cls: '' },
-    { label: 'Armor Detail',    img: '/lander/31.png', cls: '' },
-]
+// ── Grain ────────────────────────────────────────────────────────────────
+function GrainOverlay() {
+    return (
+        <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03]">
+            <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <filter id="grain-ns"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" /></filter>
+                <rect width="100%" height="100%" filter="url(#grain-ns)" />
+            </svg>
+        </div>
+    )
+}
+
+function MicroLabel({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
+    return <p className={`text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 ${center ? 'text-center' : ''}`}>{children}</p>
+}
+
+// ── Data ─────────────────────────────────────────────────────────────────
 
 const OUTCOMES = [
-    { metric: '3 Days', label: 'Average time to first client ready render', sub: 'vs 3 to 4 weeks traditional workflow' },
-    { metric: '8×', label: 'Faster concept iteration', sub: 'From sketch to photorealistic in minutes, not weeks' },
-    { metric: '100%', label: 'Of participants used AI on a live project within 30 days', sub: 'Real deliverables, real clients' },
-    { metric: '0', label: 'Prior AI experience required', sub: 'We designed this for architects, not engineers' },
-]
-
-const TESTIMONIALS = [
-    {
-        name: 'Sara Al-Rashid',
-        role: 'Senior Architect, Dubai',
-        initials: 'SA',
-        quote: 'I was skeptical. I\'ve been doing this for 12 years and thought AI was a gimmick. By day two of the Sprint, I had generated a full exterior render of a villa project I was stuck on for weeks. I showed the client on day three. We closed.',
-        highlight: 'Closed a client project on Day 3 of the Sprint.',
-    },
-    {
-        name: 'Mariam Khalil',
-        role: 'Interior Design Studio Owner, Abu Dhabi',
-        initials: 'MK',
-        quote: 'The ROI was immediate. I used to outsource renders for AED 800 to 1,200 each. Now I generate them myself in 20 minutes. The Sprint paid for itself in the first two weeks after I got back.',
-        highlight: 'Recovered cost in under 2 weeks.',
-    },
-    {
-        name: 'Faisal Al-Mutairi',
-        role: 'Urban Planner, Saudi Arabia',
-        initials: 'FM',
-        quote: 'What surprised me most wasn\'t the output quality. It was how it changed how I think about design. AI doesn\'t replace your eye. It amplifies it. I pitch differently now.',
-        highlight: 'Changed how he presents and pitches entirely.',
-    },
+    { metric: '3 Days', label: 'Average time to first client-ready render', sub: 'vs 3–4 weeks traditional' },
+    { metric: '8×', label: 'Faster concept iteration', sub: 'Sketch to photorealistic in minutes' },
+    { metric: '100%', label: 'Used AI on a live project within 30 days', sub: 'Real deliverables, real clients' },
+    { metric: '0', label: 'Prior AI experience required', sub: 'Built for designers, not engineers' },
 ]
 
 const FAQS = [
+    { q: "I'm not technical. Will I keep up?", a: "Every person in every cohort has said some version of this on day one. By day two, they're generating renders. We designed the Sprint specifically for architects and designers. Zero coding, zero machine learning. If you can describe a space, you can direct AI." },
+    { q: "I've tried AI tools before and they weren't accurate enough.", a: "You were probably using generic tools. What we teach are workflows built specifically for architectural output. Correct proportions, material logic, spatial coherence. The gap between \"AI art\" and \"AI directed design\" is enormous. This is the latter." },
+    { q: "What if I fall behind during the Sprint?", a: "The Sprint is intensive by design, but we keep cohorts small enough that no one gets left behind. Every session is recorded. You get async access to all materials." },
+    { q: "I'm worried my clients won't trust AI-generated work.", a: "Your clients care about quality and speed. Not how it was made. The renders in our gallery? Clients approved them without knowing AI was involved. What matters is the output — and it's indistinguishable from traditional renders, often better." },
+    { q: "Can I apply this to my actual projects, or is it all theory?", a: "Zero theory. By the end of day one you're running AI workflows on real briefs. By day three you leave with deliverables you can use immediately." },
+]
+
+// ── Project categories ────────────────────────────────────────────────────
+
+type ProjectCategory = {
+    id: string
+    tag: string
+    title: string
+    description: string
+    images: string[]
+    color?: string
+}
+
+const PROJECTS: ProjectCategory[] = [
     {
-        q: 'I\'m not technical. Will I keep up?',
-        a: 'Every person in every cohort has said some version of this on day one. By day two, they\'re generating renders. We designed the Sprint specifically for architects and designers. Zero coding, zero machine learning. If you can describe a space, you can direct AI.',
+        id: 'f1',
+        tag: 'Sports & Branding',
+        title: 'F1 Sprint Campaign',
+        description: 'Cinematic Formula 1 campaign imagery — entirely AI-generated. From race-day atmosphere to hero shots.',
+        images: [
+            '/more-works/f1/1.jpg',
+            '/more-works/f1/2.jpg',
+            '/more-works/f1/3.jpg',
+            '/more-works/f1/4.jpg',
+        ],
     },
     {
-        q: 'I\'ve tried AI tools before and they weren\'t accurate enough.',
-        a: 'You were probably using generic tools. What we teach are workflows built specifically for architectural output. Correct proportions, material logic, spatial coherence. The gap between "AI art" and "AI directed design" is enormous. This is the latter.',
+        id: 'landscaping',
+        tag: 'Landscape Architecture',
+        title: 'Landscape Design',
+        description: 'From site plans to lush environmental renders — AI-generated landscaping at full client-presentation quality.',
+        images: [
+            '/more-works/landscaping/1.jpg',
+            '/more-works/landscaping/2.jpg',
+            '/more-works/landscaping/3.jpg',
+            '/more-works/landscaping/4.jpg',
+            '/more-works/landscaping/5.jpg',
+            '/more-works/landscaping/6.jpg',
+            '/more-works/landscaping/7.jpg',
+            '/more-works/landscaping/8.jpg',
+            '/more-works/landscaping/9.jpg',
+            '/more-works/landscaping/10.jpg',
+            '/more-works/landscaping/11.jpg',
+        ],
     },
     {
-        q: 'What if I fall behind during the Sprint?',
-        a: 'The Sprint is intensive by design, but we keep cohorts small enough that no one gets left behind. Every session is recorded. You get async access to all materials. If something doesn\'t click live, it\'ll click in the replay.',
+        id: 'atelier',
+        tag: 'Luxury Brand',
+        title: 'Atelier Carrousel',
+        description: 'Product photography and cinematic brand identity — from opening scene to final product shot, no studio required.',
+        images: [
+            '/more-works/atelier-carrousel/opening.jpg',
+            '/more-works/atelier-carrousel/product-1.webp',
+            '/more-works/atelier-carrousel/product-2.webp',
+            '/more-works/atelier-carrousel/product-3.webp',
+            '/more-works/atelier-carrousel/closing.jpg',
+        ],
     },
     {
-        q: 'I\'m worried my clients won\'t trust AI-generated work.',
-        a: 'Your clients care about quality and speed. Not how it was made. The renders in our gallery? Clients approved them without knowing AI was involved. What matters is the output. And the output is indistinguishable from traditional renders — often better.',
+        id: 'coco',
+        tag: 'Hospitality & Retail',
+        title: 'Coco Chanel Concept',
+        description: 'Cinematic hospitality scenes and retail visualization — AI-directed atmospheres at luxury brand standard.',
+        images: [
+            '/more-works/coco-chanel/1.jpg',
+            '/more-works/coco-chanel/2.jpg',
+            '/more-works/coco-chanel/3.jpg',
+        ],
     },
     {
-        q: 'Can I apply this to my actual projects, or is it all theory?',
-        a: 'Zero theory. By the end of day one you\'re running AI workflows on real briefs. By day three you leave with deliverables you can use immediately. We specifically built this to be output-first, not education-first.',
+        id: 'product',
+        tag: 'Product Design',
+        title: 'Furniture Collection',
+        description: 'From rough sketch to photorealistic product render — the full AI workflow, prize-winning output.',
+        images: [
+            '/more-works/product-design/sketch-1.png',
+            '/more-works/product-design/sketch-2.png',
+            '/more-works/product-design/1.jpg',
+            '/more-works/product-design/2.jpg',
+            '/more-works/product-design/3.jpg',
+            '/more-works/product-design/4.jpg',
+        ],
     },
 ]
+
+// ── Lightbox ──────────────────────────────────────────────────────────────
+
+function Lightbox({ images, startIdx, onClose }: { images: string[]; startIdx: number; onClose: () => void }) {
+    const [idx, setIdx] = useState(startIdx)
+    return (
+        <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center"
+            onClick={onClose}
+        >
+            <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full border border-white/15 text-gray-400 hover:text-white hover:border-white/30 transition z-10">
+                <X className="w-4 h-4" />
+            </button>
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 tabular-nums">
+                {idx + 1} / {images.length}
+            </div>
+            <div className="relative w-full h-full flex items-center justify-center p-12" onClick={e => e.stopPropagation()}>
+                <motion.img
+                    key={idx}
+                    src={images[idx]}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="max-h-full max-w-full object-contain rounded-xl"
+                    alt=""
+                />
+                {idx > 0 && (
+                    <button onClick={() => setIdx(i => i - 1)}
+                        className="absolute left-3 sm:left-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm">
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                )}
+                {idx < images.length - 1 && (
+                    <button onClick={() => setIdx(i => i + 1)}
+                        className="absolute right-3 sm:right-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm">
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                )}
+            </div>
+            {/* Filmstrip */}
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4 overflow-x-auto" onClick={e => e.stopPropagation()}>
+                {images.map((img, i) => (
+                    <button key={i} onClick={() => setIdx(i)}
+                        className={`shrink-0 w-12 h-8 rounded overflow-hidden border-2 transition-all ${i === idx ? 'border-lime opacity-100' : 'border-white/10 opacity-40 hover:opacity-70'}`}>
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                    </button>
+                ))}
+            </div>
+        </motion.div>
+    )
+}
+
+// ── Project Section ───────────────────────────────────────────────────────
+
+function ProjectSection({ project, reverse = false }: { project: ProjectCategory; reverse?: boolean }) {
+    const [lightbox, setLightbox] = useState<number | null>(null)
+    const ref = useRef(null)
+
+    // Pick featured image + thumbnails
+    const [featured, ...thumbs] = project.images
+
+    return (
+        <>
+            <AnimatePresence>
+                {lightbox !== null && (
+                    <Lightbox images={project.images} startIdx={lightbox} onClose={() => setLightbox(null)} />
+                )}
+            </AnimatePresence>
+
+            <motion.div
+                ref={ref}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+                className="bg-[#0a0a0a] border border-white/[0.06] hover:border-white/[0.1] rounded-3xl overflow-hidden transition-colors duration-300"
+            >
+                {/* Tag */}
+                <div className="px-6 pt-6 pb-4 flex items-center gap-3">
+                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">{project.tag}</span>
+                </div>
+
+                {/* Main image grid */}
+                <div className={`flex gap-[3px] ${project.images.length >= 4 ? 'h-72 sm:h-80' : 'h-64 sm:h-72'}`}>
+                    {/* Featured (big) */}
+                    <button
+                        onClick={() => setLightbox(0)}
+                        className="relative overflow-hidden flex-[2] group cursor-pointer"
+                    >
+                        <img src={featured} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
+                        <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <span className="text-[0.6rem] uppercase tracking-wider text-white/80 bg-black/60 px-2 py-1 rounded-md backdrop-blur-sm">View Full</span>
+                        </div>
+                    </button>
+
+                    {/* Thumbnail stack */}
+                    {thumbs.length > 0 && (
+                        <div className="flex flex-col flex-1 gap-[3px]">
+                            {thumbs.slice(0, 3).map((img, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setLightbox(i + 1)}
+                                    className="relative flex-1 overflow-hidden group cursor-pointer min-h-0"
+                                >
+                                    <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
+                                    {/* "+N more" badge on last visible thumb if there are hidden ones */}
+                                    {i === 2 && thumbs.length > 3 && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                                            <span className="font-heading font-black text-white text-lg">+{thumbs.length - 3}</span>
+                                        </div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Info */}
+                <div className="px-6 py-5 flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                        <h3 className="font-heading font-black uppercase text-lg text-white leading-tight mb-1">{project.title}</h3>
+                        <p className="text-xs text-gray-500 leading-relaxed max-w-md">{project.description}</p>
+                    </div>
+                    <button
+                        onClick={() => setLightbox(0)}
+                        className="shrink-0 flex items-center gap-2 text-[0.65rem] uppercase tracking-wider text-lime font-bold hover:text-white transition-colors mt-0.5"
+                    >
+                        View All <ArrowRight className="w-3 h-3" />
+                    </button>
+                </div>
+
+                {/* All thumbnails strip if many images */}
+                {project.images.length > 4 && (
+                    <div className="px-6 pb-6 flex gap-2 overflow-x-auto scrollbar-hide">
+                        {project.images.map((img, i) => (
+                            <button key={i} onClick={() => setLightbox(i)}
+                                className="shrink-0 w-16 h-12 rounded-lg overflow-hidden border border-white/[0.06] hover:border-lime/30 transition-colors">
+                                <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </motion.div>
+        </>
+    )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────
 
 export function NotSurePage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null)
     const [modalOpen, setModalOpen] = useState(false)
 
     return (
-        <div className="min-h-screen bg-black text-white font-body">
+        <div className="min-h-screen bg-black text-white font-body overflow-x-hidden selection:bg-lime/30">
+            <GrainOverlay />
             <AnimatePresence>{modalOpen && <CalendlyModal onClose={() => setModalOpen(false)} />}</AnimatePresence>
-            <PublicNav />
+            <PublicNav topOffset={0} />
 
-            {/* Hero */}
-            <div className="max-w-3xl mx-auto px-5 sm:px-6 pt-28 sm:pt-36 pb-12 text-center">
+            {/* ── HERO ──────────────────────────────────────────────────── */}
+            <section className="relative pt-32 sm:pt-44 pb-16 text-center overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[40vh] bg-[radial-gradient(ellipse,rgba(208,255,113,0.06)_0%,transparent_70%)] pointer-events-none" />
                 <motion.div
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative z-10 max-w-3xl mx-auto px-5 sm:px-6"
                 >
-                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">You're not sure yet</p>
-                    <h1 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.2rem)] leading-[0.93] text-white mb-4">
-                        That's fair.<br /><span className="text-lime">Let the results speak.</span>
+                    <motion.div initial={{ width: 0 }} animate={{ width: '3rem' }} transition={{ duration: 0.8 }} className="h-[3px] bg-lime mb-6 mx-auto" />
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Not sure yet</p>
+                    <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.4rem,6vw,4.5rem)] mb-5">
+                        That's fair.<br /><span className="text-lime">Let the work speak.</span>
                     </h1>
                     <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
-                        Every person who enrolled had the same doubts you do right now.
-                        Here's what happened after they went anyway.
+                        Below is a fraction of what's possible. No studio. No 3D software. No outsourcing. Just AI, directed by people who learned in our program.
                     </p>
                 </motion.div>
-            </div>
+            </section>
 
-            {/* Outcomes strip */}
+            {/* ── OUTCOMES STRIP ────────────────────────────────────────── */}
             <div className="border-y border-white/[0.06] bg-white/[0.01]">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-0 sm:divide-x divide-white/[0.06]">
                     {OUTCOMES.map((o, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.08 }}
-                            className="sm:px-6 text-center sm:text-left"
-                        >
+                        <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.08 }} className="sm:px-6 text-center sm:text-left">
                             <div className="font-heading font-black text-3xl text-lime mb-1">{o.metric}</div>
                             <div className="text-sm font-semibold text-white leading-snug mb-1">{o.label}</div>
                             <div className="text-xs text-gray-500">{o.sub}</div>
@@ -119,352 +316,112 @@ export function NotSurePage() {
                 </div>
             </div>
 
-            {/* Gallery — These renders don't exist */}
-            <div className="py-20 md:py-28 border-b border-white/[0.04] bg-black">
+            {/* ── WHAT'S POSSIBLE HEADER ────────────────────────────────── */}
+            <section className="pt-20 md:pt-28 pb-6 bg-black">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6">
-                    <div className="mb-10 md:mb-14">
-                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">What Participants Built</p>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.8rem)] leading-[0.95] text-white">
-                            These Renders Don't Exist in Real Life.<br />
-                            <span className="text-lime">AI Built Them From a Sketch.</span>
+                    <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                        <MicroLabel>What's Possible</MicroLabel>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.93] mt-4 mb-4">
+                            THIS IS WHAT <span className="text-lime">AI-DIRECTED</span><br />DESIGN LOOKS LIKE.
                         </h2>
-                        <p className="text-gray-600 text-sm max-w-lg mt-3">
-                            All outputs AI-generated. No renders were outsourced. No 3D modeling software used.
+                        <p className="text-gray-500 text-sm max-w-lg leading-relaxed">
+                            Every image below was generated by AI. No 3D modeling. No outsourced renders. Click any image to view full resolution.
                         </p>
-                    </div>
-
-                    {/* Desktop editorial grid */}
-                    <div className="hidden sm:grid grid-cols-4 auto-rows-[200px] gap-3 md:gap-4">
-                        {GALLERY_ITEMS.map((item, i) => (
-                            <motion.div
-                                key={i}
-                                whileHover={{ scale: 1.015 }}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: '-40px' }}
-                                transition={{ delay: (i % 4) * 0.06, duration: 0.5 }}
-                                className={`relative rounded-2xl border border-white/[0.05] hover:border-lime/25 overflow-hidden group cursor-default transition-colors duration-300 ${item.cls}`}
-                            >
-                                <img src={item.img} alt={item.label}
-                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 gap-2">
-                                    <Eye className="w-5 h-5 text-white" />
-                                    <span className="text-[0.65rem] uppercase tracking-[0.15em] text-gray-200">{item.label}</span>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-
-                    {/* Mobile: 2-col */}
-                    <div className="sm:hidden grid grid-cols-2 gap-3">
-                        {GALLERY_ITEMS.map((item, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0 }}
-                                whileInView={{ opacity: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.04 }}
-                                className="relative h-36 rounded-xl border border-white/[0.05] overflow-hidden"
-                            >
-                                <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/20" />
-                                <div className="absolute bottom-2 left-2.5 flex items-center gap-1">
-                                    <span className="text-[0.55rem] uppercase tracking-wider text-white/60">{item.label}</span>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                    </motion.div>
                 </div>
-            </div>
+            </section>
 
-            {/* Testimonials */}
-            <div className="bg-white/[0.01] border-b border-white/[0.06] py-16">
-                <div className="max-w-5xl mx-auto px-5 sm:px-6">
-                    <div className="text-center mb-10">
-                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">From Past Participants</p>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] text-white">In Their Own Words</h2>
-                    </div>
-                    <div className="grid sm:grid-cols-3 gap-5">
-                        {TESTIMONIALS.map((t, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 16 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6 flex flex-col"
-                            >
-                                <Quote className="h-5 w-5 text-lime/40 mb-3 shrink-0" />
-                                <p className="text-sm text-gray-300 leading-relaxed flex-1 mb-4">"{t.quote}"</p>
-                                <div className="pt-4 border-t border-white/[0.06]">
-                                    <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-lime bg-lime/10 border border-lime/20 rounded-md px-2 py-1 mb-3">
-                                        <CheckCircle2 className="h-3 w-3" /> {t.highlight}
-                                    </div>
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="h-8 w-8 rounded-full bg-lime/10 border border-lime/20 flex items-center justify-center text-xs font-bold text-lime">
-                                            {t.initials}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-white">{t.name}</p>
-                                            <p className="text-xs text-gray-500">{t.role}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* FAQ */}
-            <div className="max-w-2xl mx-auto px-5 sm:px-6 py-16">
-                <div className="text-center mb-10">
-                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">Still Have Doubts?</p>
-                    <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] text-white">We've Heard All of Them.</h2>
-                </div>
-                <div className="space-y-2">
-                    {FAQS.map((faq, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.06 }}
-                            className="bg-white/[0.02] border border-white/[0.07] rounded-2xl overflow-hidden"
-                        >
-                            <button
-                                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-white/[0.03] transition"
-                            >
-                                <span className="font-medium text-white text-sm leading-snug">{faq.q}</span>
-                                {openFaq === i
-                                    ? <ChevronUp className="h-4 w-4 text-lime shrink-0" />
-                                    : <ChevronDown className="h-4 w-4 text-gray-500 shrink-0" />
-                                }
-                            </button>
-                            {openFaq === i && (
-                                <div className="px-5 pb-5">
-                                    <p className="text-sm text-gray-400 leading-relaxed">{faq.a}</p>
-                                </div>
-                            )}
-                        </motion.div>
+            {/* ── PROJECT GALLERIES ─────────────────────────────────────── */}
+            <section className="py-10 md:py-14 bg-black">
+                <div className="max-w-5xl mx-auto px-5 sm:px-6 space-y-5">
+                    {PROJECTS.map((project, i) => (
+                        <ProjectSection key={project.id} project={project} reverse={i % 2 === 1} />
                     ))}
                 </div>
-            </div>
+            </section>
 
-            {/* ── MORE WORKS ──────────────────────────────────────────── */}
-            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
-                <div className="max-w-5xl mx-auto px-5 sm:px-6">
-                    {/* Header */}
-                    <div className="mb-10 md:mb-14">
-                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">Beyond Architecture</p>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.8rem)] leading-[0.95] text-white">
-                            AI Works in <span className="text-lime">Every Discipline.</span>
-                        </h2>
-                        <p className="text-gray-600 text-sm max-w-lg mt-3">
-                            Fashion. F&B. Product design. Hospitality. This is what our participants built.
-                        </p>
+            {/* ── FAQ ───────────────────────────────────────────────────── */}
+            <section className="py-16 md:py-24 border-t border-white/[0.04] bg-[#050505]">
+                <div className="max-w-2xl mx-auto px-5 sm:px-6">
+                    <div className="text-center mb-10">
+                        <MicroLabel center>Still have doubts?</MicroLabel>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] mt-4">We've Heard All of Them.</h2>
                     </div>
-
-                    {/* Featured video */}
-                    <div className="relative w-full rounded-2xl overflow-hidden mb-6 bg-[#0a0a0a] border border-white/[0.06]"
-                        style={{ paddingBottom: '56.25%' }}>
-                        <iframe
-                            src="https://player.vimeo.com/video/1187078968?background=0&autoplay=0&title=0&byline=0&portrait=0"
-                            className="absolute inset-0 w-full h-full"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                        />
-                    </div>
-
-                    {/* 4 project grids */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                        {/* ATELIER CARROUSEL */}
-                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
-                            <div className="grid grid-cols-3 gap-[3px] h-44">
-                                {[
-                                    '/more-works/atelier-carrousel/opening.png',
-                                    '/more-works/atelier-carrousel/product-1.webp',
-                                    '/more-works/atelier-carrousel/product-2.webp',
-                                ].map((img, i) => (
-                                    <div key={i} className="relative overflow-hidden">
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                    <div className="space-y-2">
+                        {FAQS.map((faq, i) => (
+                            <motion.div key={i} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }} transition={{ delay: i * 0.06 }}
+                                className="bg-white/[0.02] border border-white/[0.07] rounded-2xl overflow-hidden">
+                                <button
+                                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-white/[0.03] transition"
+                                >
+                                    <span className="font-medium text-white text-sm leading-snug">{faq.q}</span>
+                                    {openFaq === i
+                                        ? <ChevronUp className="h-4 w-4 text-lime shrink-0" />
+                                        : <ChevronDown className="h-4 w-4 text-gray-500 shrink-0" />}
+                                </button>
+                                {openFaq === i && (
+                                    <div className="px-5 pb-5">
+                                        <p className="text-sm text-gray-400 leading-relaxed">{faq.a}</p>
                                     </div>
-                                ))}
-                            </div>
-                            <div className="px-4 py-3">
-                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Luxury Brand</p>
-                                <p className="text-sm font-heading font-black uppercase text-white">Atelier Carrousel</p>
-                                <p className="text-xs text-gray-500 mt-1">Product photography & cinematic brand identity — AI-generated.</p>
-                            </div>
-                        </div>
-
-                        {/* COCO CHANEL */}
-                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
-                            <div className="grid grid-cols-3 gap-[3px] h-44">
-                                {[
-                                    '/more-works/coco-chanel/1.jpg',
-                                    '/more-works/coco-chanel/2.png',
-                                    '/more-works/coco-chanel/3.jpg',
-                                ].map((img, i) => (
-                                    <div key={i} className="relative overflow-hidden">
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="px-4 py-3">
-                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Hospitality & Retail</p>
-                                <p className="text-sm font-heading font-black uppercase text-white">Coco Chanel Concept</p>
-                                <p className="text-xs text-gray-500 mt-1">Cinematic hospitality scenes & retail visualization — AI-directed.</p>
-                            </div>
-                        </div>
-
-                        {/* F1 */}
-                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
-                            <div className="grid grid-cols-4 gap-[3px] h-44">
-                                {[
-                                    '/more-works/f1/1.png',
-                                    '/more-works/f1/2.png',
-                                    '/more-works/f1/3.png',
-                                    '/more-works/f1/4.jpeg',
-                                ].map((img, i) => (
-                                    <div key={i} className="relative overflow-hidden">
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="px-4 py-3">
-                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Sports & Branding</p>
-                                <p className="text-sm font-heading font-black uppercase text-white">F1 Sprint Workshop</p>
-                                <p className="text-xs text-gray-500 mt-1">Cinematic F1 campaign imagery — entirely AI-generated.</p>
-                            </div>
-                        </div>
-
-                        {/* PRODUCT DESIGN */}
-                        <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl overflow-hidden">
-                            <div className="grid grid-cols-4 gap-[3px] h-44">
-                                {[
-                                    '/more-works/product-design/1.png',
-                                    '/more-works/product-design/2.png',
-                                    '/more-works/product-design/3.png',
-                                    '/more-works/product-design/4.png',
-                                ].map((img, i) => (
-                                    <div key={i} className="relative overflow-hidden">
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="px-4 py-3">
-                                <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-lime mb-0.5">Product Design</p>
-                                <p className="text-sm font-heading font-black uppercase text-white">Furniture Collection</p>
-                                <p className="text-xs text-gray-500 mt-1">From sketch to photorealistic product render — AI-generated, prize-winning.</p>
-                            </div>
-                        </div>
-
+                                )}
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── FINAL CTA / PPA ─────────────────────────────────────── */}
-            <section className="relative overflow-hidden">
-                {/* Ambient background */}
+            {/* ── FINAL CTA ─────────────────────────────────────────────── */}
+            <section className="relative overflow-hidden py-24 md:py-32">
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-[#050F02] to-black" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,rgba(208,255,113,0.07)_0%,transparent_65%)] pointer-events-none" />
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-lime/30 to-transparent" />
-                <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
-                <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 py-24 md:py-32">
-
-                    {/* Top badge */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="flex justify-center mb-8"
-                    >
+                <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 text-center">
+                    <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }} className="flex justify-center mb-8">
                         <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.22em] text-lime border border-lime/25 bg-lime/[0.06] px-4 py-2 rounded-full">
                             <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
                             Next Cohort Filling Fast
                         </span>
                     </motion.div>
 
-                    {/* Heading */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                        className="text-center mb-6"
-                    >
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.75rem,4.8vw,4rem)] leading-[0.95] text-white">
-                            You've read this far.<br />
-                            <span className="text-lime">You already know.</span>
-                        </h2>
-                    </motion.div>
+                    <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }} transition={{ delay: 0.1 }}
+                        className="font-heading font-black uppercase text-[clamp(1.75rem,4.8vw,4rem)] leading-[0.95] mb-6">
+                        You've seen what's possible.<br /><span className="text-lime">You already know.</span>
+                    </motion.h2>
 
-                    {/* Sub copy */}
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.25 }}
-                        className="text-center text-gray-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-12"
-                    >
+                    <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }} transition={{ delay: 0.25 }}
+                        className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-10">
                         The doubt doesn't go away until you're in the room. Every person who came in unsure left with deliverables they used on a live project within 30 days.
                     </motion.p>
 
-                    {/* Social proof row */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                        className="flex flex-wrap justify-center gap-6 mb-12"
-                    >
-                        {[
-                            { val: '1,000+', label: 'Participants' },
-                            { val: '100%', label: 'Used AI on a live project within 30 days' },
-                            { val: '3 Days', label: 'To your first client-ready render' },
-                        ].map(s => (
-                            <div key={s.label} className="text-center px-6 py-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] min-w-[140px]">
-                                <div className="font-heading font-black text-2xl text-lime leading-none mb-1">{s.val}</div>
-                                <div className="text-[0.65rem] uppercase tracking-wider text-gray-500">{s.label}</div>
-                            </div>
-                        ))}
-                    </motion.div>
-
-                    {/* CTA buttons */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 16 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.55, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                    >
-                        <a
-                            href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
-                            className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 hover:shadow-[0_0_40px_rgba(208,255,113,0.35)] hover:-translate-y-0.5 transition-all duration-300"
-                        >
-                            Direct Checkout
-                            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }} transition={{ delay: 0.35 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
+                            className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 hover:shadow-[0_0_40px_rgba(208,255,113,0.35)] hover:-translate-y-0.5 transition-all duration-300">
+                            Direct Checkout <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </a>
+                        <button onClick={() => setModalOpen(true)}
+                            className="group flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:-translate-y-0.5">
+                            Book a Discovery Call <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
                     </motion.div>
 
-                    {/* Bottom reassurance */}
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.55 }}
-                        className="text-center text-[0.65rem] text-gray-700 uppercase tracking-[0.18em] mt-8"
-                    >
+                    <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }} transition={{ delay: 0.5 }}
+                        className="text-[0.65rem] text-gray-700 uppercase tracking-[0.18em] mt-8">
                         No experience required · Output-first · Cohort spots limited
                     </motion.p>
-
                 </div>
             </section>
 
-            {/* Footer bar */}
+            {/* ── FOOTER ────────────────────────────────────────────────── */}
             <div className="border-t border-white/[0.04] py-6">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6 flex items-center justify-between gap-4">
                     <a href="/main" className="flex items-center gap-2.5 opacity-40 hover:opacity-70 transition-opacity">
@@ -472,7 +429,7 @@ export function NotSurePage() {
                         <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-white">Zkandar LLC</span>
                     </a>
                     <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.12em]">
-                        © {new Date().getFullYear()} Zkandar LLC · Dubai, United Arab Emirates
+                        © {new Date().getFullYear()} Zkandar LLC · Dubai, UAE
                     </p>
                 </div>
             </div>

@@ -276,6 +276,64 @@ export function CaseStudiesPage() {
                 </div>
             </section>
 
+            {/* ── FEATURED AI FILMS ────────────────────────────────────── */}
+            <section className="py-16 md:py-24 border-t border-white/[0.04] bg-black">
+                <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
+                    <FadeIn className="mb-12">
+                        <MicroLabel>Fully AI-Generated</MicroLabel>
+                        <div className="flex flex-wrap items-end gap-4 mt-4">
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                                FEATURED<br /><span className="text-lime">AI FILMS.</span>
+                            </h2>
+                            <LimeBar />
+                        </div>
+                        <p className="text-gray-500 text-sm mt-3">Cinematic short films generated entirely with AI — no traditional production.</p>
+                    </FadeIn>
+
+                    <div className="space-y-6">
+                        {/* F1 Film */}
+                        <FadeIn delay={0.05}>
+                            <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
+                                <div className="aspect-video">
+                                    <iframe
+                                        src="https://player.vimeo.com/video/1187090835?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title="F1 AI Film"
+                                    />
+                                </div>
+                                <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
+                                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Sports & Branding</span>
+                                    <p className="font-heading font-black uppercase text-sm text-white">F1 Sprint — AI Campaign Film</p>
+                                    <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
+                                </div>
+                            </div>
+                        </FadeIn>
+
+                        {/* SOM Film */}
+                        <FadeIn delay={0.1}>
+                            <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
+                                <div className="aspect-video">
+                                    <iframe
+                                        src="https://player.vimeo.com/video/1183148939?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title="SOM AI Film"
+                                    />
+                                </div>
+                                <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
+                                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Architecture</span>
+                                    <p className="font-heading font-black uppercase text-sm text-white">SOM — AI Architecture Film</p>
+                                    <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · Skidmore Owings &amp; Merrill</p>
+                                </div>
+                            </div>
+                        </FadeIn>
+                    </div>
+                </div>
+            </section>
+
             {/* ── CTA ─────────────────────────────────────────────────── */}
             <section className="py-16 md:py-20 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl text-center">
