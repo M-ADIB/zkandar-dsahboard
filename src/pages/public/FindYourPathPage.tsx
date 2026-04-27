@@ -442,7 +442,7 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                         </div>
 
                         {isSprint ? (
-                            <a href="/submit-form"
+                            <a href="/checkout"
                                 className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] hover:-translate-y-0.5 transition-all duration-300"
                             >
                                 Reserve Your Spot in the Sprint

@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion'
-import { ArrowRight, Quote, CheckCircle2, ChevronDown, ChevronUp, Eye, Calendar } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Quote, CheckCircle2, ChevronDown, ChevronUp, Eye } from 'lucide-react'
 import { useState } from 'react'
 import { PublicNav } from '../../components/public/PublicNav'
+import { CalendlyModal } from '../../components/public/CalendlyModal'
 import logoSrc from '../../assets/logo.png'
 
 const GALLERY_ITEMS = [
@@ -74,9 +75,11 @@ const FAQS = [
 
 export function NotSurePage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null)
+    const [modalOpen, setModalOpen] = useState(false)
 
     return (
         <div className="min-h-screen bg-black text-white font-body">
+            <AnimatePresence>{modalOpen && <CalendlyModal onClose={() => setModalOpen(false)} />}</AnimatePresence>
             <PublicNav />
 
             {/* Hero */}
@@ -332,15 +335,12 @@ export function NotSurePage() {
                             See Where You're At With AI
                             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a
-                            href="https://calendly.com/zkandar/sprint-questions"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() => setModalOpen(true)}
                             className="flex items-center gap-2 px-6 py-4 rounded-2xl border border-white/[0.1] text-gray-400 text-sm font-medium hover:border-white/25 hover:text-white transition-all duration-200"
                         >
-                            <Calendar className="h-4 w-4" />
-                            Book a Free Call First
-                        </a>
+                            Book a Discovery Call
+                        </button>
                     </motion.div>
 
                     {/* Bottom reassurance */}
