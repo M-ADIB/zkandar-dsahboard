@@ -3,6 +3,7 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 import logoSrc from '../../assets/logo.png'
 import { ProductivityCalculator } from '../../components/public/ProductivityCalculator'
 import { PublicNav } from '../../components/public/PublicNav'
+import { PublicFooter } from '../../components/public/PublicFooter'
 import { CalendlyModal } from '../../components/public/CalendlyModal'
 
 const masterclassInclusions = [
@@ -664,6 +665,7 @@ export function WorkflowsPage() {
 
             </div>
         </div>
+        <PublicFooter />
         </>
     )
 }

@@ -2,8 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronDown, ChevronUp, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useRef } from 'react'
 import { PublicNav } from '../../components/public/PublicNav'
+import { PublicFooter } from '../../components/public/PublicFooter'
 import { CalendlyModal } from '../../components/public/CalendlyModal'
-import logoSrc from '../../assets/logo.png'
 
 // ── Grain ────────────────────────────────────────────────────────────────
 function GrainOverlay() {
@@ -175,7 +175,7 @@ function Lightbox({ images, startIdx, onClose }: { images: string[]; startIdx: n
 
 // ── Project Section ───────────────────────────────────────────────────────
 
-function ProjectSection({ project, reverse = false }: { project: ProjectCategory; reverse?: boolean }) {
+function ProjectSection({ project, reverse: _reverse = false }: { project: ProjectCategory; reverse?: boolean }) {
     const [lightbox, setLightbox] = useState<number | null>(null)
     const ref = useRef(null)
 
@@ -422,17 +422,7 @@ export function NotSurePage() {
             </section>
 
             {/* ── FOOTER ────────────────────────────────────────────────── */}
-            <div className="border-t border-white/[0.04] py-6">
-                <div className="max-w-5xl mx-auto px-5 sm:px-6 flex items-center justify-between gap-4">
-                    <a href="/main" className="flex items-center gap-2.5 opacity-40 hover:opacity-70 transition-opacity">
-                        <img src={logoSrc} alt="" className="h-5 object-contain grayscale" />
-                        <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-white">Zkandar LLC</span>
-                    </a>
-                    <p className="text-[0.6rem] text-gray-700 uppercase tracking-[0.12em]">
-                        © {new Date().getFullYear()} Zkandar LLC · Dubai, UAE
-                    </p>
-                </div>
-            </div>
+            <PublicFooter />
         </div>
     )
 }

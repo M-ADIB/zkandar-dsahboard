@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { ArrowRight, X, ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import { PublicNav } from '../../components/public/PublicNav'
+import { PublicFooter } from '../../components/public/PublicFooter'
 import { CASE_STUDIES, WORKSHOPS, type CaseStudy } from '../../data/public-data'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -359,6 +360,9 @@ export function CaseStudiesPage() {
                     </FadeIn>
                 </div>
             </section>
+
+            {/* ── FOOTER ──────────────────────────────────────────────── */}
+            <PublicFooter />
 
             {/* ── CASE STUDY MODAL ────────────────────────────────────── */}
             <AnimatePresence>

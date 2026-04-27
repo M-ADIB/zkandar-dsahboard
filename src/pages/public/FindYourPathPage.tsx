@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronLeft, Calendar, Users, Zap, Clock, Target, X } from 'lucide-react'
 import { InlineWidget } from 'react-calendly'
 import { PublicNav } from '../../components/public/PublicNav'
+import { PublicFooter } from '../../components/public/PublicFooter'
 import logoSrc from '../../assets/logo.png'
 
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
@@ -582,6 +583,7 @@ export function FindYourPathPage() {
             <div className="min-h-screen bg-black text-white font-body">
                 <PublicNav />
                 <div className="pt-20"><ResultsScreen answers={answers} /></div>
+                <PublicFooter />
             </div>
         )
     }
@@ -670,16 +672,7 @@ export function FindYourPathPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* Footer */}
-                <div className="border-t border-white/[0.04] py-4 px-5">
-                    <div className="max-w-2xl mx-auto flex items-center justify-between">
-                        <div className="flex items-center gap-2 opacity-30">
-                            <img src={logoSrc} alt="" className="h-4 object-contain grayscale" />
-                            <span className="text-[0.55rem] font-heading font-black uppercase tracking-[0.2em] text-white">Zkandar AI</span>
-                        </div>
-                        <p className="text-[0.55rem] text-gray-700 uppercase tracking-wider">Takes about 2 minutes</p>
-                    </div>
-                </div>
+                <PublicFooter />
             </div>
         </div>
     )
