@@ -329,18 +329,12 @@ export function NotSurePage() {
                         className="flex flex-col sm:flex-row items-center justify-center gap-4"
                     >
                         <a
-                            href="/find-your-path"
+                            href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
                             className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 hover:shadow-[0_0_40px_rgba(208,255,113,0.35)] hover:-translate-y-0.5 transition-all duration-300"
                         >
-                            See Where You're At With AI
+                            Direct Checkout
                             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <button
-                            onClick={() => setModalOpen(true)}
-                            className="flex items-center gap-2 px-6 py-4 rounded-2xl border border-white/[0.1] text-gray-400 text-sm font-medium hover:border-white/25 hover:text-white transition-all duration-200"
-                        >
-                            Book a Discovery Call
-                        </button>
                     </motion.div>
 
                     {/* Bottom reassurance */}

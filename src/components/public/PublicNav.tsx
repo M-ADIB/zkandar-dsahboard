@@ -4,9 +4,8 @@ import { useLocation } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
 
 const NAV_LINKS = [
-    { label: 'Studios',        href: '/masterclass-analytics' },
+    { label: 'AI for Teams',   href: '/masterclass-analytics' },
     { label: 'Case Studies',   href: '/case-studies'          },
-    { label: 'Find Your Path', href: '/find-your-path'        },
     { label: 'Not Sure',       href: '/not-sure'              },
 ]
 
