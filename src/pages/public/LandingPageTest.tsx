@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 import { PublicNav } from '../../components/public/PublicNav'
+import { CalendlyModal } from '../../components/public/CalendlyModal'
 import { CASE_STUDIES, type CaseStudy } from '../../data/public-data'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -316,6 +317,7 @@ export function LandingPageTest() {
     const heroRef = useRef(null)
     const [caseStudyOpen, setCaseStudyOpen] = useState<string | null>(null)
     const [caseSlideIdx, setCaseSlideIdx] = useState(0)
+    const [masterclassModalOpen, setMasterclassModalOpen] = useState(false)
 
     return (
         <div className="min-h-screen bg-black text-white font-body overflow-x-hidden relative selection:bg-lime/30">
@@ -651,13 +653,13 @@ export function LandingPageTest() {
 
                             {/* CTA */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                <a
-                                    href="/masterclass-analytics"
+                                <button
+                                    onClick={() => setMasterclassModalOpen(true)}
                                     className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading"
                                 >
-                                    See the Full Program
+                                    Book a Discovery Call
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </a>
+                                </button>
                                 <p className="text-xs text-lime font-bold font-body">Custom curriculum · Team-wide training · Firm certification</p>
                             </div>
 
@@ -807,6 +809,13 @@ export function LandingPageTest() {
                     </div>
                 </div>
             </footer>
+
+            {/* ── MASTERCLASS BOOKING MODAL ─────────────────────────── */}
+            <AnimatePresence>
+                {masterclassModalOpen && (
+                    <CalendlyModal studioMode onClose={() => setMasterclassModalOpen(false)} />
+                )}
+            </AnimatePresence>
 
             {/* ── CASE STUDY LIGHTBOX ────────────────────────────────── */}
             <AnimatePresence>
