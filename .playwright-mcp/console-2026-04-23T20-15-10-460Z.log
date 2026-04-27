@@ -1,0 +1,1053 @@
+[    1155ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:21608
+[    1260ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[    1262ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[    1262ms] [LOG] [Auth] Auth gates cleared, initializing app. @ http://localhost:5175/src/context/AuthContext.tsx:128
+[    1273ms] [LOG] You're now in debug mode. All calls to PostHog will be logged in your console.
+You can disable this with `posthog.debug(false)`. @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:2880
+[    1274ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:552
+[    1316ms] [LOG] [Auth] onAuthStateChange: INITIAL_SESSION @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1357ms] [LOG] [PostHog.js] [SessionId] new session ID generated {sessionId: 019dbbfb-73c9-7546-bdcc-a701336e0cab, windowId: 019dbbfb-73c9-7546-bdcc-a702d0586ede, changeReason: Object} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1358ms] [LOG] [PostHog.js] send "$pageview" {uuid: 019dbbfb-73b4-7654-b823-359b21092ba6, event: $pageview, properties: Object, timestamp: Fri Apr 24 2026 00:15:11 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1368ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:5175/test-landingpage:0
+[    1720ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config.js:0
+[    1735ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:1270
+[    1736ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1737ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1746ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1829ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1844ms] [LOG] [PostHog.js] [RemoteConfig] No config found after loading remote JS config. Falling back to JSON. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2216ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config?ip=0&_=1776975312304&ver=1.359.1:0
+[    2217ms] [ERROR] [PostHog.js] Bad HTTP status: 404  @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2217ms] [ERROR] [PostHog.js] [RemoteConfig] Failed to fetch remote config from PostHog. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2217ms] [LOG] [PostHog.js] Persistence loaded sessionStorage {$sdk_debug_extensions_init_method: synchronous, $sdk_debug_extensions_init_time_ms: 1, $referrer: $direct, $referring_domain: $direct} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2217ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2217ms] [WARNING] [PostHog.js] [Surveys] Flags not loaded yet. Not loading surveys. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3026ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://eu.posthog.com/flags/?v=2&ip=0&_=1776975312684&ver=1.359.1&compression=base64:0
+[    3027ms] [WARNING] [PostHog.js] [RateLimiter] could not rate limit - continuing. Error: "Unexpected token 'T', "The provid"... is not valid JSON" {text: The provided API key is invalid or has expired. Please check your API key and try again.} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    3027ms] [ERROR] [PostHog.js] Bad HTTP status: 401 The provided API key is invalid or has expired. Please check your API key and try again. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    3027ms] [WARNING] [PostHog.js] [FeatureFlags] Using an older version of the feature flags endpoint. Please upgrade your PostHog server to the latest version @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3546ms] [WARNING] [Cloudflare Turnstile] Turnstile has already been rendered in this container. Did you mean to render it multiple times? @ https://challenges.cloudflare.com/turnstile/v0/api.js?onload=turnstileLoad:0
+[    3547ms] [WARNING] [Cloudflare Turnstile] Turnstile has already been rendered in this container. Did you mean to render it multiple times? @ https://challenges.cloudflare.com/turnstile/v0/api.js?onload=turnstileLoad:0
+[    3547ms] [WARNING] [Cloudflare Turnstile] Turnstile has already been rendered in this container. Did you mean to render it multiple times? @ https://challenges.cloudflare.com/turnstile/v0/api.js?onload=turnstileLoad:0
+[    3548ms] [WARNING] [Cloudflare Turnstile] Turnstile has already been rendered in this container. Did you mean to render it multiple times? @ https://challenges.cloudflare.com/turnstile/v0/api.js?onload=turnstileLoad:0
+[    3548ms] [WARNING] [Cloudflare Turnstile] Turnstile has already been rendered in this container. Did you mean to render it multiple times? @ https://challenges.cloudflare.com/turnstile/v0/api.js?onload=turnstileLoad:0
+[    5105ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    5951ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    5951ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6409ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6482ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6483ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6661ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6662ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6669ms] [LOG] The next request for the Private Access Token challenge may return a 401 and show a warning in console. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6704ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6704ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6705ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9f0f8a001a1eca9c/1776975314806/eabaf939e08423e25db36a5f502fbebf90d2ee68eb3e68142c962bddaade46d3/6_TzFdIgS_Dtlu1:0
+[    6789ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6789ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6789ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6789ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6790ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6790ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6845ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-0AjGwhzrkMpt7uCJbFcOpA' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6845ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-0AjGwhzrkMpt7uCJbFcOpA' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6845ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6845ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6847ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-fm1Cba0mihXwD9tZtGRrGo' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6847ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-fm1Cba0mihXwD9tZtGRrGo' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6848ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6848ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6856ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-teHSKxvR41lZZn6AiU8RLK' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6856ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-teHSKxvR41lZZn6AiU8RLK' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6856ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    6856ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    6856ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6857ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6863ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    6929ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6929ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6929ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6929ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6929ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6930ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6931ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6931ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6931ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6932ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6932ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6932ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6932ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6933ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6933ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6947ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6947ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6948ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6949ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6950ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6950ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6981ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6981ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6981ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6981ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6982ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6983ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7257ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    7258ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    7369ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7428ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7429ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7430ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7430ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7430ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7430ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7430ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7430ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7649ms] [WARNING] [Cloudflare Turnstile] Turnstile has already been rendered in this container. Did you mean to render it multiple times? @ https://challenges.cloudflare.com/turnstile/v0/api.js?onload=turnstileLoad:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7781ms] [LOG] The next request for the Private Access Token challenge may return a 401 and show a warning in console. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7794ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9f0f8a001a38ca9c/1776975314840/000d3c35c5e17839d17d3752b290ea93ec28e87476bde1f738bbfdc5995a1e9b/2vkD43ugXvpHYQ-:0
+[    7836ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7836ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    5105ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    5951ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    5951ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/69ane/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6409ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6482ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6483ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6661ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6662ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6666ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6703ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6704ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6704ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6705ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9f0f8a001a1eca9c/1776975314806/eabaf939e08423e25db36a5f502fbebf90d2ee68eb3e68142c962bddaade46d3/6_TzFdIgS_Dtlu1:0
+[    6789ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6789ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6789ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6789ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6790ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6790ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6845ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-0AjGwhzrkMpt7uCJbFcOpA' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6845ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-0AjGwhzrkMpt7uCJbFcOpA' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6845ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6845ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6847ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-fm1Cba0mihXwD9tZtGRrGo' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6847ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-fm1Cba0mihXwD9tZtGRrGo' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6848ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6848ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/6066y/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6856ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-teHSKxvR41lZZn6AiU8RLK' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6856ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-teHSKxvR41lZZn6AiU8RLK' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    6856ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6857ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    6961ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7340ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-RDFFr6UVu0jM6R8I6C8Q36' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    7341ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-RDFFr6UVu0jM6R8I6C8Q36' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[    7341ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7341ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/ii5fc/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7369ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7794ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9f0f8a001a38ca9c/1776975314840/000d3c35c5e17839d17d3752b290ea93ec28e87476bde1f738bbfdc5995a1e9b/2vkD43ugXvpHYQ-:0
+[    7836ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7836ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/5fkkd/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7997ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    7997ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/lofaa/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9363ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9363ms] [LOG] /.*.*=.*/ @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9364ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9364ms] [LOG] function () { [native code] } @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9364ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9364ms] [LOG] JSHandle@node @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9364ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9364ms] [COUNT]  : 1 @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9365ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9365ms] [DIR]  Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9365ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9365ms] [DIRXML] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9365ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9365ms] [ERROR] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [INFO] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [LOG] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [TABLE] %c%d font-size:0;color:transparent Error @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9366ms] [WARNING] %c%d font-size:0;color:transparent NaN @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9434ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[    9434ms] [ERROR] Permissions policy violation: xr-spatial-tracking is not allowed in this document. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10543ms] [WARNING] Form submission canceled because the form is not connected @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10923ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10924ms] [ERROR] This document requires 'TrustedHTML' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10924ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10924ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10924ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10924ms] [ERROR] This document requires 'TrustedScriptURL' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10929ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-t650YxYpRQlysb0k0fOOcC' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[   10929ms] [ERROR] Executing inline script violates the following Content Security Policy directive 'script-src 'nonce-t650YxYpRQlysb0k0fOOcC' 'unsafe-eval''. Either the 'unsafe-inline' keyword, a hash ('sha256-eJGI0Ik4oYe/PKLDOt4wcN76wYs8h+Ew05pMzdY6xG8='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked. @ about:srcdoc:0
+[   10929ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   10929ms] [ERROR] This document requires 'TrustedScript' assignment. The action has been blocked. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   11481ms] [LOG] The next request for the Private Access Token challenge may return a 401 and show a warning in console. @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile/f/ov2/av0/rch/l8pue/0x4AAAAAAAbaszMygKLnGbeo/auto/fbE/new/normal?lang=auto:0
+[   11493ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/pat/9f0f8a1a9c70ca9c/1776975319661/f0d5b189211b5302fb267a486e48fce1a24a439c83eae32eb2a204ae818ec078/bQZMCOEieuO-9hV:0
+[   11853ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   11854ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   11858ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   12363ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   12364ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   16848ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   16848ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   16849ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   17250ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   17251ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   21847ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   21848ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   21851ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   22250ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   22250ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   26851ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   26856ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   26860ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   27249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   27249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   31851ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   31851ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   31855ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   32249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   32249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   36847ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   36847ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   36848ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   37249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   37249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   41849ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   41850ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   41853ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   42253ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   42253ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   46851ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   46852ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   46854ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   47249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   47250ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   51850ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   51851ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   51856ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   52249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   52249ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   56849ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   56850ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   56853ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   57251ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   57251ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   61849ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   61849ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   61851ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   62250ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   62250ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   66863ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   66863ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   66869ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   67264ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   67264ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   71848ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   71848ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   71850ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   72251ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   72251ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    2395ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394028?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3368ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3372ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1174567061?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3375ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    3381ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394139?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[    7640ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ https://player.vimeo.com/video/1113394104?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[   72564ms] [LOG] [PostHog.js] send "$pageleave" {uuid: 019dbbfc-89eb-7dd2-bbc3-8bb078011dcb, event: $pageleave, properties: Object, timestamp: Fri Apr 24 2026 00:16:23 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   72743ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:21608
+[   72827ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[   72829ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[   72830ms] [LOG] [Auth] Auth gates cleared, initializing app. @ http://localhost:5175/src/context/AuthContext.tsx:128
+[   72832ms] [LOG] You're now in debug mode. All calls to PostHog will be logged in your console.
+You can disable this with `posthog.debug(false)`. @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:2880
+[   72832ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:552
+[   72860ms] [LOG] [Auth] onAuthStateChange: INITIAL_SESSION @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   72864ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config.js:0
+[   72867ms] [LOG] [PostHog.js] send "$pageview" {uuid: 019dbbfc-8b1d-77e3-bdfd-cd849d053bd2, event: $pageview, properties: Object, timestamp: Fri Apr 24 2026 00:16:23 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   72876ms] [LOG] [PostHog.js] [RemoteConfig] No config found after loading remote JS config. Falling back to JSON. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   73768ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config?ip=0&_=1776975383335&ver=1.359.1:0
+[   73778ms] [ERROR] [PostHog.js] Bad HTTP status: 404  @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   73779ms] [ERROR] [PostHog.js] [RemoteConfig] Failed to fetch remote config from PostHog. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   73779ms] [LOG] [PostHog.js] Persistence loaded sessionStorage {$sdk_debug_extensions_init_method: synchronous, $sdk_debug_extensions_init_time_ms: 0, $referrer: $direct, $referring_domain: $direct} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   73780ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   73780ms] [WARNING] [PostHog.js] [Surveys] Flags not loaded yet. Not loading surveys. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   73795ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:5175/masterclass-analytics:0
+[   73953ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://eu.posthog.com/flags/?v=2&ip=0&_=1776975384248&ver=1.359.1&compression=base64:0
+[   74047ms] [WARNING] [PostHog.js] [RateLimiter] could not rate limit - continuing. Error: "Unexpected token 'T', "The provid"... is not valid JSON" {text: The provided API key is invalid or has expired. Please check your API key and try again.} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   74047ms] [ERROR] [PostHog.js] Bad HTTP status: 401 The provided API key is invalid or has expired. Please check your API key and try again. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   74047ms] [WARNING] [PostHog.js] [FeatureFlags] Using an older version of the feature flags endpoint. Please upgrade your PostHog server to the latest version @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   74107ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://grainy-gradients.vercel.app/noise.svg:0
+[   82002ms] [LOG] [PostHog.js] send "$pageleave" {uuid: 019dbbfc-aecd-754d-a6f9-f997cc84dbf7, event: $pageleave, properties: Object, timestamp: Fri Apr 24 2026 00:16:32 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   82092ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:21608
+[   82128ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[   82128ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[   82128ms] [LOG] [Auth] Auth gates cleared, initializing app. @ http://localhost:5175/src/context/AuthContext.tsx:128
+[   82135ms] [LOG] You're now in debug mode. All calls to PostHog will be logged in your console.
+You can disable this with `posthog.debug(false)`. @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:2880
+[   82135ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:552
+[   82148ms] [LOG] [Auth] onAuthStateChange: INITIAL_SESSION @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   82153ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config.js:0
+[   82157ms] [LOG] [PostHog.js] send "$pageview" {uuid: 019dbbfc-af66-7d8e-a86b-2d94d6b89efd, event: $pageview, properties: Object, timestamp: Fri Apr 24 2026 00:16:32 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   82160ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:5175/test-landingpage:0
+[   82816ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:1270
+[   82822ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   82822ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   82831ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   82879ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83060ms] [LOG] [PostHog.js] [RemoteConfig] No config found after loading remote JS config. Falling back to JSON. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83203ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config?ip=0&_=1776975393520&ver=1.359.1:0
+[   83204ms] [ERROR] [PostHog.js] Bad HTTP status: 404  @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83204ms] [ERROR] [PostHog.js] [RemoteConfig] Failed to fetch remote config from PostHog. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83205ms] [LOG] [PostHog.js] Persistence loaded sessionStorage {$sdk_debug_extensions_init_method: synchronous, $sdk_debug_extensions_init_time_ms: 0, $referrer: $direct, $referring_domain: $direct} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83205ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83206ms] [WARNING] [PostHog.js] [Surveys] Flags not loaded yet. Not loading surveys. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83428ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://eu.posthog.com/flags/?v=2&ip=0&_=1776975393672&ver=1.359.1&compression=base64:0
+[   83429ms] [WARNING] [PostHog.js] [RateLimiter] could not rate limit - continuing. Error: "Unexpected token 'T', "The provid"... is not valid JSON" {text: The provided API key is invalid or has expired. Please check your API key and try again.} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83429ms] [ERROR] [PostHog.js] Bad HTTP status: 401 The provided API key is invalid or has expired. Please check your API key and try again. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   83429ms] [WARNING] [PostHog.js] [FeatureFlags] Using an older version of the feature flags endpoint. Please upgrade your PostHog server to the latest version @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   87890ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   87890ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   87892ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   88292ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   88292ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   92894ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   92895ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   92898ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   93291ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   93291ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054

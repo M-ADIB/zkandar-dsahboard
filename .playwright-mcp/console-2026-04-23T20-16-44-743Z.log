@@ -1,0 +1,1157 @@
+[     136ms] [LOG] [PostHog.js] send "$pageleave" {uuid: 019dbbfc-df4d-7876-99e4-cb9ea2815a02, event: $pageleave, properties: Object, timestamp: Fri Apr 24 2026 00:16:44 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     212ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:21608
+[     245ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[     246ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[     246ms] [LOG] [Auth] Auth gates cleared, initializing app. @ http://localhost:5175/src/context/AuthContext.tsx:128
+[     249ms] [LOG] You're now in debug mode. All calls to PostHog will be logged in your console.
+You can disable this with `posthog.debug(false)`. @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:2880
+[     249ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:552
+[     261ms] [LOG] [Auth] onAuthStateChange: INITIAL_SESSION @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     267ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config.js:0
+[     270ms] [LOG] [PostHog.js] send "$pageview" {uuid: 019dbbfc-dfd3-7509-b342-2c52d4e545c6, event: $pageview, properties: Object, timestamp: Fri Apr 24 2026 00:16:45 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     672ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:1270
+[     673ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     674ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     684ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     714ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[     903ms] [LOG] [PostHog.js] [RemoteConfig] No config found after loading remote JS config. Falling back to JSON. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1052ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config?ip=0&_=1776975405646&ver=1.359.1:0
+[    1052ms] [ERROR] [PostHog.js] Bad HTTP status: 404  @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1052ms] [ERROR] [PostHog.js] [RemoteConfig] Failed to fetch remote config from PostHog. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1052ms] [LOG] [PostHog.js] Persistence loaded sessionStorage {$sdk_debug_extensions_init_method: synchronous, $sdk_debug_extensions_init_time_ms: 0, $referrer: $direct, $referring_domain: $direct} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1052ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1052ms] [WARNING] [PostHog.js] [Surveys] Flags not loaded yet. Not loading surveys. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1186ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://eu.posthog.com/flags/?v=2&ip=0&_=1776975405801&ver=1.359.1&compression=base64:0
+[    1187ms] [WARNING] [PostHog.js] [RateLimiter] could not rate limit - continuing. Error: "Unexpected token 'T', "The provid"... is not valid JSON" {text: The provided API key is invalid or has expired. Please check your API key and try again.} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1187ms] [ERROR] [PostHog.js] Bad HTTP status: 401 The provided API key is invalid or has expired. Please check your API key and try again. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1187ms] [WARNING] [PostHog.js] [FeatureFlags] Using an older version of the feature flags endpoint. Please upgrade your PostHog server to the latest version @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    1384ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:5175/test-landingpage:0
+[    5734ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    5735ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    5740ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    6127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[    6128ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   10726ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   10727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   10733ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   11126ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   11126ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   15728ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   15729ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   15731ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   16127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   16127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   20727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   20727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   20735ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   21127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   21127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   25727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   25727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   25734ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   26127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   26127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   30731ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   30731ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   30735ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   31127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   31127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   35739ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   35739ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   35742ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   36127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   36128ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   40729ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   40729ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   40732ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   41127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   41127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   45727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   45727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   45730ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   46127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   46128ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   50742ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   50743ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   50745ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   51126ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   51126ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   55727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   55727ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   55729ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   56127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   56127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   60746ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   60746ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   60750ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   61203ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   61203ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   65734ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   65734ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   65740ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   66127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   66127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   70728ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   70728ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   70731ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   71128ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   71129ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   75729ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   75730ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   75732ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   76127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   76127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   80738ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   80738ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   80740ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   81127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   81127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   81629ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   81630ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   81631ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   86645ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   86646ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   86652ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   87046ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   87046ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   91657ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   91658ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   91660ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   92052ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   92052ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   96638ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   96638ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   96639ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   97040ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[   97040ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  101641ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  101641ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  101644ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  102044ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  102044ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  104824ms] [LOG] [PostHog.js] send "$pageleave" {uuid: 019dbbfe-783a-77e8-a051-f3932e359474, event: $pageleave, properties: Object, timestamp: Fri Apr 24 2026 00:18:29 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105117ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:21608
+[  105161ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[  105163ms] [LOG] [Auth] Initializing... @ http://localhost:5175/src/context/AuthContext.tsx:135
+[  105163ms] [LOG] [Auth] Auth gates cleared, initializing app. @ http://localhost:5175/src/context/AuthContext.tsx:128
+[  105166ms] [LOG] You're now in debug mode. All calls to PostHog will be logged in your console.
+You can disable this with `posthog.debug(false)`. @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:2880
+[  105166ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/posthog-js.js?v=6976fc36:552
+[  105179ms] [LOG] [Auth] onAuthStateChange: INITIAL_SESSION @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105181ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config.js:0
+[  105185ms] [LOG] [PostHog.js] send "$pageview" {uuid: 019dbbfe-79a6-7b51-9feb-7ec6da9232b3, event: $pageview, properties: Object, timestamp: Fri Apr 24 2026 00:18:29 GMT+0400 (Gulf Standard Time)} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105189ms] [LOG] [PostHog.js] [RemoteConfig] No config found after loading remote JS config. Falling back to JSON. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105205ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:5175/test-landingpage:0
+[  105208ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ http://localhost:5175/node_modules/.vite/deps/chunk-SXRIVT2P.js?v=6976fc36:1270
+[  105210ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105211ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105645ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105692ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://eu-assets.i.posthog.com/array/phc_LUT7IC9GM2aRYnjGLMsAons1ofqf4XKOXP5avbQwkxF/config?ip=0&_=1776975509931&ver=1.359.1:0
+[  105699ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105707ms] [ERROR] [PostHog.js] Bad HTTP status: 404  @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105707ms] [ERROR] [PostHog.js] [RemoteConfig] Failed to fetch remote config from PostHog. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105707ms] [LOG] [PostHog.js] Persistence loaded sessionStorage {$sdk_debug_extensions_init_method: synchronous, $sdk_debug_extensions_init_time_ms: 1, $referrer: $direct, $referring_domain: $direct} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105708ms] [LOG] [PostHog.js] set_config {config: Object, oldConfig: Object, newConfig: Object} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  105708ms] [WARNING] [PostHog.js] [Surveys] Flags not loaded yet. Not loading surveys. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  106222ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://eu.posthog.com/flags/?v=2&ip=0&_=1776975510460&ver=1.359.1&compression=base64:0
+[  106222ms] [WARNING] [PostHog.js] [RateLimiter] could not rate limit - continuing. Error: "Unexpected token 'T', "The provid"... is not valid JSON" {text: The provided API key is invalid or has expired. Please check your API key and try again.} @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  106222ms] [ERROR] [PostHog.js] Bad HTTP status: 401 The provided API key is invalid or has expired. Please check your API key and try again. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  106223ms] [WARNING] [PostHog.js] [FeatureFlags] Using an older version of the feature flags endpoint. Please upgrade your PostHog server to the latest version @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  110715ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  110715ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  110718ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  111116ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  111116ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  115710ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  115711ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  115712ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  116113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  116114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  120713ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  120713ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  120716ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  121113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  121113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  125726ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  125726ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  125729ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  126114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  126114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  130721ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  130722ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  130725ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  131113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  131114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  135719ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  135720ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  135722ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  136113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  136114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  140730ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  140733ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  140742ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  141127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  141127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  145712ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  145712ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  145714ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  146114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  146114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  150722ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  150723ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  150727ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  151114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  151114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  155714ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  155715ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  155719ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  156113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  156113ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  160714ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  160714ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  160717ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  161114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  161114ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  165716ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  165717ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  165722ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  166116ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  166116ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  170717ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  170717ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  170719ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  171117ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  171117ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  175723ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  175723ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  175725ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  176127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  176127ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  180716ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  180717ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  180722ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  181120ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  181120ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  185716ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  185716ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  185723ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  186120ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  186120ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  190720ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  190720ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  190722ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  191121ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  191121ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  195721ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  195721ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  195727ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  196124ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  196124ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  200724ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  200724ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  200725ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  201124ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  201124ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  205718ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  205718ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  205721ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  206122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  206122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  210719ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  210719ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  210720ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  211122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  211122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  215723ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  215723ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  215726ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  216121ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  216121ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  220722ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  220723ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  220728ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  221121ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  221121ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225719ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  225719ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  225722ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  226122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  226122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  230722ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  230722ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  230724ms] [ERROR] Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s Find Your Path 
+    at ul
+    at div
+    at div
+    at div
+    at footer
+    at div
+    at LandingPageTest (http://localhost:5175/src/pages/public/LandingPageTest.tsx?t=1776975485922:1000:19)
+    at RenderedRoute (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:6301:26)
+    at Routes (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7150:3)
+    at Suspense
+    at ErrorBoundary (http://localhost:5175/src/components/shared/ErrorBoundary.tsx:9:5)
+    at NotificationProvider (http://localhost:5175/src/context/NotificationContext.tsx:22:40)
+    at ViewModeProvider (http://localhost:5175/src/context/ViewModeContext.tsx:24:36)
+    at AuthProvider (http://localhost:5175/src/context/AuthContext.tsx:32:32)
+    at App
+    at Router (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:7091:13)
+    at BrowserRouter (http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=6976fc36:10287:3)
+    at QueryClientProvider (http://localhost:5175/node_modules/.vite/deps/chunk-INRFYZBO.js?v=6976fc36:3168:3) @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  231122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  231122ms] [WARNING] You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour. @ http://localhost:5175/node_modules/.vite/deps/@sentry_react.js?v=6976fc36:7054
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0
+[  225457ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://player.vimeo.com/video/1183473523?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71:0

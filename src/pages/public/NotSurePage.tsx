@@ -467,7 +467,7 @@ export function NotSurePage() {
             {/* Footer bar */}
             <div className="border-t border-white/[0.04] py-6">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6 flex items-center justify-between gap-4">
-                    <a href="/test-landingpage" className="flex items-center gap-2.5 opacity-40 hover:opacity-70 transition-opacity">
+                    <a href="/main" className="flex items-center gap-2.5 opacity-40 hover:opacity-70 transition-opacity">
                         <img src={logoSrc} alt="" className="h-5 object-contain grayscale" />
                         <span className="text-[0.6rem] font-heading font-black uppercase tracking-[0.2em] text-white">Zkandar LLC</span>
                     </a>

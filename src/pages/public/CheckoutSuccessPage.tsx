@@ -9,10 +9,8 @@ export function CheckoutSuccessPage() {
         <div className="min-h-screen bg-black flex flex-col items-center justify-center px-5 text-white font-body">
             {/* Nav */}
             <div className="absolute top-0 left-0 right-0 border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center">
-                <a href="/test-landingpage" className="flex items-center gap-3">
+                <a href="/main" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
-                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
-                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
             </div>
 
@@ -62,7 +60,7 @@ export function CheckoutSuccessPage() {
                         Book onboarding call
                     </a>
                     <a
-                        href="/test-landingpage"
+                        href="/main"
                         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] text-gray-300 font-medium text-sm hover:border-white/20 hover:text-white transition"
                     >
                         Back to Zkandar AI <ArrowRight className="h-4 w-4" />

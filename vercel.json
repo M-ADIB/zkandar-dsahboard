@@ -2,6 +2,18 @@
     "redirects": [
         {
             "source": "/",
+            "has": [{ "type": "host", "value": "zkandar.com" }],
+            "destination": "/main",
+            "permanent": false
+        },
+        {
+            "source": "/",
+            "has": [{ "type": "host", "value": "www.zkandar.com" }],
+            "destination": "/main",
+            "permanent": false
+        },
+        {
+            "source": "/",
             "has": [{ "type": "host", "value": "app.zkandar.com" }],
             "destination": "/login",
             "permanent": false
@@ -9,7 +21,7 @@
         {
             "source": "/test-landingpage",
             "has": [{ "type": "host", "value": "zkandar.com" }],
-            "destination": "https://zkandar.com/",
+            "destination": "https://zkandar.com/main",
             "permanent": true
         }
     ],

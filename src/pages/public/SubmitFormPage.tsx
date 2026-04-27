@@ -214,7 +214,7 @@ export function SubmitFormPage() {
                         Expect a response within 48 hours.
                     </p>
                     <a
-                        href="/test-landingpage"
+                        href="/main"
                         className="inline-flex items-center gap-2 text-sm text-lime hover:text-lime/80 transition"
                     >
                         ← Back to Zkandar AI
@@ -228,10 +228,8 @@ export function SubmitFormPage() {
         <div className="min-h-screen bg-black text-white font-body">
             {/* Nav strip */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-3.5 flex items-center justify-between">
-                <a href="/test-landingpage" className="flex items-center gap-3">
+                <a href="/main" className="flex items-center gap-3">
                     <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
-                    <div className="w-px h-4 bg-white/[0.12] hidden sm:block" />
-                    <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-gray-600 hidden sm:block">kind of AI</span>
                 </a>
                 <span className="text-[0.6875rem] text-gray-600 hidden sm:block uppercase tracking-[0.15em]">Application Form</span>
             </div>

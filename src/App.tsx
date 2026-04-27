@@ -103,7 +103,8 @@ function App() {
                                 <Route path="/masterclass-analytics" element={<WorkflowsPage />} />
                                 <Route path="/program" element={<ProgramPage />} />
                                 <Route path="/thank-you" element={<ThankYouPage />} />
-                                <Route path="/test-landingpage" element={<LandingPageTest />} />
+                                <Route path="/main" element={<LandingPageTest />} />
+                                <Route path="/test-landingpage" element={<Navigate to="/main" replace />} />
                                 <Route path="/submit-form" element={<SubmitFormPage />} />
                                 <Route path="/not-sure" element={<NotSurePage />} />
                                 <Route path="/case-studies" element={<CaseStudiesPage />} />
@@ -146,12 +147,14 @@ function App() {
                                 />
 
                                 {/* Protected Routes */}
+                                {/* Marketing domain: redirect / → /main */}
+                                {isMarketingDomain && (
+                                    <Route path="/" element={<Navigate to="/main" replace />} />
+                                )}
+
                                 <Route
                                     path="/"
-                                    element={isMarketingDomain
-                                        ? <LandingPageTest />
-                                        : <ProtectedRoute><AppShell /></ProtectedRoute>
-                                    }
+                                    element={<ProtectedRoute><AppShell /></ProtectedRoute>}
                                 >
                                     {/* Dashboard - Role-based redirect */}
                                     <Route index element={<DashboardRedirect />} />

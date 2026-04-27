@@ -57,7 +57,7 @@ const MASTERCLASS_GAINS = [
 
 const VSL_VIDEO_ID = '1187084528'
 // Replace with actual testimonial mashup Vimeo ID when available
-const TESTIMONIAL_MASHUP_ID = '1113394028'
+const TESTIMONIAL_MASHUP_ID = '1187085158'
 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -724,7 +724,7 @@ export function LandingPageTest() {
 
                         {/* Brand */}
                         <div className="col-span-2 md:col-span-1">
-                            <a href="/test-landingpage" className="flex items-center gap-2.5 mb-4 group">
+                            <a href="/main" className="flex items-center gap-2.5 mb-4 group">
                                 <img src={logoSrc} alt="Zkandar AI" className="h-7 object-contain" />
                                 <span className="font-heading font-black uppercase text-[0.68rem] tracking-[0.2em] text-white/60 group-hover:text-white transition-colors duration-300">Zkandar AI</span>
                             </a>
