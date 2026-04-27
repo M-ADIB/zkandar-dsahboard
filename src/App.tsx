@@ -94,11 +94,6 @@ function App() {
                             <UpdatePrompt />
                             {import.meta.env.DEV && <TestingCredentials />}
                             <Routes>
-                                {/* Marketing domain: zkandar.com → landing page at root */}
-                                {isMarketingDomain && (
-                                    <Route path="/" element={<LandingPageTest />} />
-                                )}
-
                                 {/* Public Routes */}
                                 <Route path="/login" element={<LoginPage />} />
                                 <Route path="/signup" element={<SignupPage />} />
@@ -153,10 +148,9 @@ function App() {
                                 {/* Protected Routes */}
                                 <Route
                                     path="/"
-                                    element={
-                                        <ProtectedRoute>
-                                            <AppShell />
-                                        </ProtectedRoute>
+                                    element={isMarketingDomain
+                                        ? <LandingPageTest />
+                                        : <ProtectedRoute><AppShell /></ProtectedRoute>
                                     }
                                 >
                                     {/* Dashboard - Role-based redirect */}

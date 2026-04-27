@@ -55,7 +55,7 @@ const MASTERCLASS_GAINS = [
     { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
 ]
 
-const VSL_VIDEO_ID = '1186145925'
+const VSL_VIDEO_ID = '1187084528'
 // Replace with actual testimonial mashup Vimeo ID when available
 const TESTIMONIAL_MASHUP_ID = '1113394028'
 
