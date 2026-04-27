@@ -73,6 +73,9 @@ const ToolboxDetailPage = lazy(() => import('@/pages/ToolboxDetailPage').then(mo
 const AssignmentsPage = lazy(() => import('@/pages/AssignmentsPage').then(module => ({ default: module.AssignmentsPage })))
 const RecordingsPage = lazy(() => import('@/pages/RecordingsPage').then(module => ({ default: module.RecordingsPage })))
 
+const MARKETING_DOMAIN = ['zkandar.com', 'www.zkandar.com']
+const isMarketingDomain = MARKETING_DOMAIN.includes(window.location.hostname)
+
 function App() {
     return (
         <AuthProvider>
@@ -91,6 +94,11 @@ function App() {
                             <UpdatePrompt />
                             {import.meta.env.DEV && <TestingCredentials />}
                             <Routes>
+                                {/* Marketing domain: zkandar.com → landing page at root */}
+                                {isMarketingDomain && (
+                                    <Route path="/" element={<LandingPageTest />} />
+                                )}
+
                                 {/* Public Routes */}
                                 <Route path="/login" element={<LoginPage />} />
                                 <Route path="/signup" element={<SignupPage />} />
