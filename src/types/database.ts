@@ -334,6 +334,18 @@ export interface EventRequest {
 
 export type ApplicationStatus = 'new' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired'
 
+export interface AssessmentSubmission {
+    id: string
+    created_at: string
+    name: string
+    email: string
+    answers: Record<string, string>
+    readiness_score: number
+    path_result: 'sprint' | 'masterclass'
+    context: string | null
+    team_size: string | null
+}
+
 export interface JobApplication {
     id: string
     position_type: string

@@ -7,12 +7,14 @@ import type { Lead, LeadColumn, LeadColumnOption } from '@/types/database';
 import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
 import { ColumnSettingsPanel } from '@/components/admin/leads/ColumnSettingsPanel';
+import { AssessmentSubmissionsTab } from '@/components/admin/leads/AssessmentSubmissionsTab';
 import { logAudit } from '@/lib/audit';
 
 import { MetricCard } from '@/components/shared/MetricCard';
 
 export function LeadsPage() {
     const supabase = useSupabase();
+    const [activeTab, setActiveTab] = useState<'leads' | 'assessments'>('leads');
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -460,37 +462,66 @@ export function LeadsPage() {
                     <h1 className="text-2xl font-bold text-white">Leads Pipeline</h1>
                     <p className="text-gray-400 mt-1">Manage and track your sales leads</p>
                 </div>
-                <div className="flex gap-3">
-                    <button
-                        onClick={() => setShowHighlightedOnly(!showHighlightedOnly)}
-                        className={`flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors font-medium border ${showHighlightedOnly ? 'bg-lime/20 text-lime border-lime/50' : 'bg-white/[0.025] text-gray-400 border-white/[0.06]'}`}
-                    >
-                        <PaintBucket className="h-5 w-5" />
-                        <span className="hidden sm:inline">Highlighted</span>
-                    </button>
-                    <button
-                        onClick={handleExport}
-                        disabled={isExporting || leads.length === 0}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/[0.025] hover:bg-white/10 text-white rounded-lg transition-colors font-medium border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Download className="h-5 w-5" />
-                        {isExporting ? 'Exporting...' : 'Export'}
-                    </button>
-                    <button
-                        onClick={() => {
-                            setSelectedLead(null);
-                            setIsModalOpen(true);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 gradient-lime hover:opacity-90 text-black rounded-lg transition-colors font-medium"
-                    >
-                        <Plus className="h-5 w-5" />
-                        Add Lead
-                    </button>
-                </div>
+                {activeTab === 'leads' && (
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowHighlightedOnly(!showHighlightedOnly)}
+                            className={`flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-lg transition-colors font-medium border ${showHighlightedOnly ? 'bg-lime/20 text-lime border-lime/50' : 'bg-white/[0.025] text-gray-400 border-white/[0.06]'}`}
+                        >
+                            <PaintBucket className="h-5 w-5" />
+                            <span className="hidden sm:inline">Highlighted</span>
+                        </button>
+                        <button
+                            onClick={handleExport}
+                            disabled={isExporting || leads.length === 0}
+                            className="flex items-center gap-2 px-4 py-2 bg-white/[0.025] hover:bg-white/10 text-white rounded-lg transition-colors font-medium border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Download className="h-5 w-5" />
+                            {isExporting ? 'Exporting...' : 'Export'}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setSelectedLead(null);
+                                setIsModalOpen(true);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 gradient-lime hover:opacity-90 text-black rounded-lg transition-colors font-medium"
+                        >
+                            <Plus className="h-5 w-5" />
+                            Add Lead
+                        </button>
+                    </div>
+                )}
             </div>
 
+            {/* Tab switcher */}
+            <div className="flex gap-1 p-1 bg-white/[0.025] border border-white/[0.06] rounded-xl w-fit">
+                <button
+                    onClick={() => setActiveTab('leads')}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                        activeTab === 'leads'
+                            ? 'bg-white/[0.08] text-white'
+                            : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                >
+                    Leads Pipeline
+                </button>
+                <button
+                    onClick={() => setActiveTab('assessments')}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                        activeTab === 'assessments'
+                            ? 'bg-white/[0.08] text-white'
+                            : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                >
+                    Assessments
+                </button>
+            </div>
+
+            {/* Assessments tab */}
+            {activeTab === 'assessments' && <AssessmentSubmissionsTab />}
+
             {/* Table */}
-            <LeadsTable
+            {activeTab === 'leads' && <LeadsTable
                 data={showHighlightedOnly ? leads.filter(l => l.is_highlighted) : leads}
                 columnsConfig={leadColumns}
                 onUpdateColumn={handleUpdateColumn}
@@ -506,34 +537,37 @@ export function LeadsPage() {
                 onUpdateLead={handleUpdateLead}
                 isUpdating={isUpdating}
                 highlightId={highlightId}
-            />
+            />}
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                <MetricCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
-                <MetricCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
-                <MetricCard 
-                    label="Active Pipeline" 
-                    value={currencyFormatter.format(stats.activePipelineValue)} 
-                    icon={DollarSign} 
-                    limeAccent
-                    sub={<span className="text-gray-500">Total: {currencyFormatter.format(stats.pipelineValue)}</span>}
-                />
-                <MetricCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
-                <MetricCard label="Active"        value={stats.active}                             icon={Target}     />
-            </div>
+            {activeTab === 'leads' && (
+                <>
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <MetricCard label="Total Leads"   value={stats.total}                              icon={Users}      iconColor="text-gray-400" />
+                        <MetricCard label="Lava"          value={stats.lava}                               icon={Flame}      iconColor="text-purple-400" />
+                        <MetricCard
+                            label="Active Pipeline"
+                            value={currencyFormatter.format(stats.activePipelineValue)}
+                            icon={DollarSign}
+                            limeAccent
+                            sub={<span className="text-gray-500">Total: {currencyFormatter.format(stats.pipelineValue)}</span>}
+                        />
+                        <MetricCard label="Follow Up"     value={stats.followUp}                           icon={Phone}      iconColor="text-blue-400" />
+                        <MetricCard label="Active"        value={stats.active}                             icon={Target}     />
+                    </div>
 
-
-            {/* Column Settings Panel */}
-            {isColumnPanelOpen && (
-                <ColumnSettingsPanel
-                    columns={leadColumns}
-                    onClose={() => setIsColumnPanelOpen(false)}
-                    onAddColumn={handleAddColumn}
-                    onUpdateColumn={handleUpdateColumn}
-                    onDeleteColumn={handleDeleteColumn}
-                    onReorderColumn={handleReorderColumn}
-                />
+                    {/* Column Settings Panel */}
+                    {isColumnPanelOpen && (
+                        <ColumnSettingsPanel
+                            columns={leadColumns}
+                            onClose={() => setIsColumnPanelOpen(false)}
+                            onAddColumn={handleAddColumn}
+                            onUpdateColumn={handleUpdateColumn}
+                            onDeleteColumn={handleDeleteColumn}
+                            onReorderColumn={handleReorderColumn}
+                        />
+                    )}
+                </>
             )}
 
             {/* Modal */}
