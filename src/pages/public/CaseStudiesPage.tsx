@@ -188,7 +188,7 @@ export function CaseStudiesPage() {
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
                     <motion.div initial={{ width: 0 }} whileInView={{ width: '3rem' }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="h-[3px] bg-lime mb-5" />
                     <MicroLabel>Real work. Real output.</MicroLabel>
-                    <h1 className="font-heading font-black uppercase text-[clamp(2.6rem,7vw,5.5rem)] leading-[0.92] mt-4">
+                    <h1 className="font-heading font-black uppercase text-[clamp(2.2rem,6vw,4.7rem)] leading-[0.92] mt-4">
                         <span className="block text-white">THIS IS WHAT</span>
                         <span className="block text-lime">AI DIRECTED</span>
                         <span className="block text-white">DESIGN LOOKS LIKE.</span>
@@ -251,7 +251,7 @@ export function CaseStudiesPage() {
                     <FadeIn className="mb-12">
                         <MicroLabel>From the participants</MicroLabel>
                         <div className="flex flex-wrap items-end gap-4 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95]">
                                 HEAR FROM<br /><span className="text-lime">THE PEOPLE.</span>
                             </h2>
                             <LimeBar />
@@ -287,7 +287,7 @@ export function CaseStudiesPage() {
                     <FadeIn className="mb-12">
                         <MicroLabel>Fully AI-Generated</MicroLabel>
                         <div className="flex flex-wrap items-end gap-4 mt-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                            <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95]">
                                 FEATURED<br /><span className="text-lime">AI FILMS.</span>
                             </h2>
                             <LimeBar />
@@ -301,7 +301,7 @@ export function CaseStudiesPage() {
                             <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
                                 <div className="aspect-video">
                                     <iframe
-                                        src="https://player.vimeo.com/video/1187090835?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                        src="https://player.vimeo.com/video/1187078968?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
                                         className="w-full h-full"
                                         allow="autoplay; fullscreen; picture-in-picture"
                                         allowFullScreen
@@ -316,8 +316,28 @@ export function CaseStudiesPage() {
                             </div>
                         </FadeIn>
 
-                        {/* SOM Film */}
+                        {/* Atelier Carrousel Film */}
                         <FadeIn delay={0.1}>
+                            <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
+                                <div className="aspect-video">
+                                    <iframe
+                                        src="https://player.vimeo.com/video/1187090835?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title="Atelier Carrousel AI Film"
+                                    />
+                                </div>
+                                <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
+                                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Luxury Brand</span>
+                                    <p className="font-heading font-black uppercase text-sm text-white">Atelier Carrousel — AI Brand Film</p>
+                                    <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No studio</p>
+                                </div>
+                            </div>
+                        </FadeIn>
+
+                        {/* SOM Film */}
+                        <FadeIn delay={0.15}>
                             <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
                                 <div className="aspect-video">
                                     <iframe

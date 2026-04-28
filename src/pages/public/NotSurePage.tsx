@@ -40,12 +40,14 @@ const FAQS = [
 
 // ── Project categories ────────────────────────────────────────────────────
 
-type ProjectCategory = {
+interface ProjectCategory {
     id: string
     tag: string
     title: string
     description: string
     images: string[]
+    vimeoId?: string
+    filmLabel?: string
     color?: string
 }
 
@@ -61,6 +63,8 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/f1/3.jpg',
             '/more-works/f1/4.jpg',
         ],
+        vimeoId: '1187078968',
+        filmLabel: 'F1 Sprint — AI Campaign Film',
     },
     {
         id: 'landscaping',
@@ -93,6 +97,8 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/atelier-carrousel/product-3.webp',
             '/more-works/atelier-carrousel/closing.jpg',
         ],
+        vimeoId: '1187090835',
+        filmLabel: 'Atelier Carrousel — AI Brand Film',
     },
     {
         id: 'coco',
@@ -265,6 +271,25 @@ function ProjectSection({ project, reverse: _reverse = false }: { project: Proje
                         ))}
                     </div>
                 )}
+
+                {/* AI Film embed — shown at the bottom of the card when a vimeoId exists */}
+                {project.vimeoId && (
+                    <div className="border-t border-white/[0.05] mx-6 mb-6 pt-5">
+                        <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime mb-3">AI Film Output</p>
+                        <div className="rounded-2xl overflow-hidden aspect-video bg-black">
+                            <iframe
+                                src={`https://player.vimeo.com/video/${project.vimeoId}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                className="w-full h-full"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                                title={project.filmLabel ?? 'AI Film'}
+                            />
+                        </div>
+                        {project.filmLabel && (
+                            <p className="text-xs text-gray-500 mt-2">{project.filmLabel} · Fully AI-generated</p>
+                        )}
+                    </div>
+                )}
             </motion.div>
         </>
     )
@@ -293,7 +318,7 @@ export function NotSurePage() {
                 >
                     <motion.div initial={{ width: 0 }} animate={{ width: '3rem' }} transition={{ duration: 0.8 }} className="h-[3px] bg-lime mb-6 mx-auto" />
                     <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Not sure yet</p>
-                    <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.4rem,6vw,4.5rem)] mb-5">
+                    <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2rem,5.2vw,3.8rem)] mb-5">
                         That's fair.<br /><span className="text-lime">Let the work speak.</span>
                     </h1>
                     <p className="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
@@ -322,7 +347,7 @@ export function NotSurePage() {
                     <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ duration: 0.6 }}>
                         <MicroLabel>What's Possible</MicroLabel>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.93] mt-4 mb-4">
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.93] mt-4 mb-4">
                             THIS IS WHAT <span className="text-lime">AI-DIRECTED</span><br />DESIGN LOOKS LIKE.
                         </h2>
                         <p className="text-gray-500 text-sm max-w-lg leading-relaxed">
@@ -346,7 +371,7 @@ export function NotSurePage() {
                 <div className="max-w-2xl mx-auto px-5 sm:px-6">
                     <div className="text-center mb-10">
                         <MicroLabel center>Still have doubts?</MicroLabel>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.5rem)] leading-[0.95] mt-4">We've Heard All of Them.</h2>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.4vw,2.1rem)] leading-[0.95] mt-4">We've Heard All of Them.</h2>
                     </div>
                     <div className="space-y-2">
                         {FAQS.map((faq, i) => (
@@ -390,7 +415,7 @@ export function NotSurePage() {
 
                     <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ delay: 0.1 }}
-                        className="font-heading font-black uppercase text-[clamp(1.75rem,4.8vw,4rem)] leading-[0.95] mb-6">
+                        className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,3.4rem)] leading-[0.95] mb-6">
                         You've seen what's possible.<br /><span className="text-lime">You already know.</span>
                     </motion.h2>
 
