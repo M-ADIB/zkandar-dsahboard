@@ -9,6 +9,7 @@ import { PublicNav } from '../../components/public/PublicNav'
 import { PublicFooter } from '../../components/public/PublicFooter'
 import { CalendlyModal } from '../../components/public/CalendlyModal'
 import { CASE_STUDIES, type CaseStudy } from '../../data/public-data'
+import { supabase } from '@/lib/supabase'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -311,6 +312,23 @@ export function LandingPageTest() {
     const [caseStudyOpen, setCaseStudyOpen] = useState<string | null>(null)
     const [caseSlideIdx, setCaseSlideIdx] = useState(0)
     const [masterclassModalOpen, setMasterclassModalOpen] = useState(false)
+    const [sprintDates, setSprintDates] = useState('June 3–5')
+    const [sprintLocation, setSprintLocation] = useState('Live Zoom')
+
+    // Fetch marketing settings from Supabase CMS
+    useEffect(() => {
+        supabase
+            .from('platform_settings')
+            .select('key, value')
+            .in('key', ['marketing_sprint_dates', 'marketing_sprint_location'])
+            .then(({ data }) => {
+                if (!data) return
+                const map: Record<string, string> = {}
+                data.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
+                if (map.marketing_sprint_dates) setSprintDates(map.marketing_sprint_dates)
+                if (map.marketing_sprint_location !== undefined) setSprintLocation(map.marketing_sprint_location)
+            })
+    }, [])
 
     return (
         <div className="min-h-screen bg-black text-white font-body overflow-x-hidden relative selection:bg-lime/30">
@@ -331,7 +349,7 @@ export function LandingPageTest() {
                     {[...Array(6)].map((_, i) => (
                         <span key={i} className="inline-flex items-center gap-5 px-4 text-[0.6rem] font-black uppercase tracking-[0.2em] text-black">
                             <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
-                            Sprint Workshop · June 3–5
+                            Sprint Workshop · {sprintDates}
                             <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
                             Limited Spots Remaining
                             <span className="w-1 h-1 rounded-full bg-black/30 shrink-0" />
@@ -663,12 +681,14 @@ export function LandingPageTest() {
                             <div className="flex items-center gap-2 mb-6">
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-500/[0.1] border border-red-500/25">
                                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · June 3–5 · 7 PM Dubai Time</span>
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · {sprintDates} · 7 PM Dubai Time</span>
                                 </div>
+                                {sprintLocation && (
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-lime/[0.08] border border-lime/20">
                                     <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-lime">Live Zoom</span>
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-lime">{sprintLocation}</span>
                                 </div>
+                                )}
                             </div>
                             <h3 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.5rem)] leading-[0.93] mb-5">
                                 AI FOR<br /><span className="text-lime">INDIVIDUALS.</span>
