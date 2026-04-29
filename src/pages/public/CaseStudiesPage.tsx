@@ -374,7 +374,7 @@ export function CaseStudiesPage() {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                             <a href="/find-your-path"
                                 className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                                Find Your Path <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                Take the AI Assessment Test <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </a>
                             <a href="/masterclass-analytics"
                                 className="group flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold transition-all text-sm uppercase tracking-wider font-heading hover:-translate-y-0.5">
