@@ -32,28 +32,12 @@ const LOGOS = [
     { name: 'Hawke House',                file: '/logos/hawke-house.avif' },
     { name: 'By IDI',                     file: '/logos/by-idi.png' },
     { name: 'Finasi',                     file: '/logos/finasi.png' },
-    { name: 'Ravi Space',                 file: '/logos/ravi-space.png' },
     { name: 'Non-Designed',               file: '/logos/non-designed.png' },
 ]
 
 
 
-const MASTERCLASS_INCLUSIONS = [
-    'Tailored content & case studies for your studio',
-    'In-session hands-on exercises',
-    'Prize money competition',
-    'Life-time access to all session recordings',
-    'Free access to E-prompt books',
-    'Bonus 2-hr support call post Masterclass',
-    '60-day free access to AI community',
-    'Data-driven analysis of team performance',
-]
 
-const MASTERCLASS_GAINS = [
-    { label: 'Control', body: 'Direct AI output with precision so it fits your visual language every time' },
-    { label: 'Speed', body: 'Compress days of ideation into hours without sacrificing quality' },
-    { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
-]
 
 const VSL_VIDEO_ID = '1187084528'
 // Replace with actual testimonial mashup Vimeo ID when available
@@ -108,25 +92,6 @@ function GrainOverlay() {
 
 function MicroLabel({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
     return <p className={`text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 ${center ? 'text-center' : ''}`}>{children}</p>
-}
-
-function CheckItem({ text, delay = 0 }: { text: string; delay?: number }) {
-    const ref = useRef(null)
-    const inView = useInView(ref, { once: true })
-    return (
-        <motion.div ref={ref}
-            initial={{ opacity: 0, x: -12 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-start gap-3"
-        >
-            <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-lime/10 border border-lime/30 flex items-center justify-center">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M2 5L4 7L8 3" stroke="#D0FF71" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </span>
-            <span className="text-sm text-gray-300 leading-relaxed font-body">{text}</span>
-        </motion.div>
-    )
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -433,7 +398,7 @@ export function LandingPageTest() {
                             Solo Training <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
                         <a href="/masterclass-analytics"
-                            className="group flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold transition-all text-sm uppercase tracking-wider font-heading hover:-translate-y-0.5">
+                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
                             Team Training <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
                     </FadeIn>
@@ -543,129 +508,22 @@ export function LandingPageTest() {
             </section>
 
 
-            {/* ── SPRINT WORKSHOP — PRIMARY CTA ───────────────────────── */}
-            {/* ── AI MASTERCLASS — PRIMARY OFFER ──────────────────────── */}
-            <section id="masterclass" className="py-20 md:py-32 border-t border-white/[0.04] bg-black">
-                <div className="container mx-auto px-5 sm:px-6">
-                    <FadeIn className="mb-12 md:mb-16 text-center">
-                        <MicroLabel center>The Program</MicroLabel>
-                        <h2 className="font-heading font-black uppercase text-[clamp(2rem,5vw,4rem)] leading-[0.93] mt-4">
-                            THIS IS WHAT<br /><span className="text-lime">ZKANDAR AI IS BUILT FOR.</span>
+            {/* ── AI FOR TEAMS ──────────────────────────────────────────── */}
+            <section id="masterclass" className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
+                <div className="container mx-auto px-5 sm:px-6 text-center">
+                    <FadeIn>
+                        <h2 className="font-heading font-black uppercase text-[clamp(2.8rem,8vw,7rem)] leading-[0.9] text-white">
+                            AI FOR <span className="text-lime">TEAMS</span>
                         </h2>
-                        <p className="text-gray-500 text-sm mt-5 max-w-md mx-auto leading-relaxed">
-                            A studio-first AI program. Built for design teams that want to stay ahead.
-                        </p>
                     </FadeIn>
-
-                    {/* Big Masterclass card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: '-60px' }}
-                        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                        className="relative rounded-3xl overflow-hidden max-w-4xl mx-auto"
-                        style={{
-                            background: 'linear-gradient(145deg, #111811 0%, #0C130C 50%, #090D09 100%)',
-                            border: '1px solid rgba(208, 255, 113, 0.15)',
-                            boxShadow: '0 0 0 1px rgba(208,255,113,0.04), 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(208,255,113,0.05) inset',
-                        }}
-                    >
-                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-lime/40 to-transparent" />
-
-                        <div className="p-8 md:p-12 lg:p-16 space-y-10">
-
-                            {/* Badge + title */}
-                            <div className="space-y-6">
-                                <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-lime font-body border border-lime/20 bg-lime/5 px-3 py-1.5 rounded-full">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                                    Exclusive Program
-                                </span>
-                                <h3 className="font-heading font-black text-white uppercase text-[clamp(1.6rem,5vw,4rem)] leading-[1.0] md:leading-[0.93]">
-                                    Zkandar AI<br /><span className="text-lime">Masterclass</span>
-                                </h3>
-                                <p className="text-gray-400 text-base md:text-lg leading-relaxed font-body max-w-xl">
-                                    A hands-on, studio-first AI program that gives your design team a complete operating system for using AI in real work.
-                                </p>
-                            </div>
-
-                            <div className="border-t border-white/5" />
-
-                            {/* Meta tags */}
-                            <div className="flex flex-wrap gap-3">
-                                {[
-                                    { label: 'Duration', value: '15 hours' },
-                                    { label: 'Format', value: 'Live + Async' },
-                                    { label: 'Delivery', value: 'In-Person or Remote' },
-                                    { label: 'Team Size', value: 'Up to 20 designers' },
-                                ].map(m => (
-                                    <div key={m.label} className="flex items-center gap-2 bg-white/5 border border-white/[0.08] rounded-full px-4 py-2">
-                                        <span className="text-[10px] uppercase tracking-widest text-lime/60 font-bold font-heading">{m.label}</span>
-                                        <span className="text-xs text-white font-body">{m.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="border-t border-white/5" />
-
-                            {/* What's included */}
-                            <div className="space-y-5">
-                                <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What's included</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                                    {MASTERCLASS_INCLUSIONS.map((item, i) => (
-                                        <CheckItem key={item} text={item} delay={i * 0.05} />
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="border-t border-white/5" />
-
-                            {/* What you'll gain */}
-                            <div className="space-y-5">
-                                <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {MASTERCLASS_GAINS.map((g, i) => (
-                                        <motion.div
-                                            key={g.label}
-                                            initial={{ opacity: 0, y: 16 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                                            className="rounded-2xl p-5 space-y-2"
-                                            style={{ background: 'rgba(208,255,113,0.03)', border: '1px solid rgba(208,255,113,0.08)' }}
-                                        >
-                                            <span className="font-heading font-black uppercase text-xl text-lime leading-none">{g.label}</span>
-                                            <p className="text-xs text-gray-400 leading-relaxed font-body">{g.body}</p>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="border-t border-white/5" />
-
-                            {/* CTA */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                <button
-                                    onClick={() => setMasterclassModalOpen(true)}
-                                    className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading"
-                                >
-                                    Book a Discovery Call
-                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                                <p className="text-xs text-lime font-bold font-body">Custom curriculum · Team-wide training · Firm certification</p>
-                            </div>
-
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-lime/20 to-transparent" />
-                    </motion.div>
                 </div>
             </section>
 
-            {/* ── SPRINT WORKSHOP — BACK-END OFFER ────────────────────── */}
+            {/* ── AI FOR INDIVIDUALS ─────────────────────────────────────── */}
             <section id="sprint" className="py-16 md:py-24 border-t border-white/[0.04] bg-[#080808]">
                 <div className="container mx-auto px-5 sm:px-6">
                     <div className="max-w-4xl mx-auto">
                         <FadeIn>
-                            <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600 mb-8">Not ready for the full Masterclass yet?</p>
                             <div className="flex items-center gap-2 mb-6">
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-500/[0.1] border border-red-500/25">
                                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -677,10 +535,10 @@ export function LandingPageTest() {
                                 </div>
                             </div>
                             <h3 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.5rem)] leading-[0.93] mb-5">
-                                START WITH<br /><span className="text-lime">THE SPRINT.</span>
+                                AI FOR<br /><span className="text-lime">INDIVIDUALS.</span>
                             </h3>
                             <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg mb-10">
-                                3 live days on Zoom. Hands-on from session one. You leave with real AI-generated deliverables and a workflow you can use immediately — no prior experience needed.
+                                3 live days on Zoom. Hands-on from session one. You leave with real AI-generated deliverables and a workflow you can use immediately. No prior experience needed.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
@@ -714,7 +572,7 @@ export function LandingPageTest() {
                                 key={i}
                                 src={logo.file}
                                 alt={logo.name}
-                                className="h-14 w-auto object-contain flex-shrink-0 opacity-40 hover:opacity-70 transition-opacity duration-300"
+                                className="h-20 w-auto object-contain flex-shrink-0 opacity-40 hover:opacity-70 transition-opacity duration-300"
                                 style={{ filter: 'brightness(0) invert(1)' }}
                             />
                         ))}

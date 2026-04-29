@@ -167,6 +167,18 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                                 {link.label}
                             </motion.a>
                         ))}
+                        <motion.a
+                            href="https://calendly.com/zkandarstudio-info/ai-discovery-call"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setMobileOpen(false)}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.04 + NAV_LINKS.length * 0.055, ease: [0.16, 1, 0.3, 1] }}
+                            className="px-4 py-2.5 rounded-md text-sm font-bold uppercase tracking-[0.12em] transition-colors duration-200 text-gray-400 hover:text-white hover:bg-white/5"
+                        >
+                            Book a Talk
+                        </motion.a>
                         <div className="mt-2 pt-3 border-t border-white/[0.06]">
                             <a
                                 href="/find-your-path"

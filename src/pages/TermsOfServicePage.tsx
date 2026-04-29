@@ -131,6 +131,53 @@ export function TermsOfServicePage() {
                             <a href={`mailto:${CONTACT_EMAIL}`} className="text-lime hover:underline">{CONTACT_EMAIL}</a>
                         </p>
                     </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">13. Masterclass program terms</h2>
+                        <p className="mb-4 text-gray-400 text-sm">The following clauses apply specifically to clients enrolled in the Zkandar AI Masterclass program.</p>
+                        <div className="space-y-5">
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Booking Confirmation</p>
+                                <p>The full course fee must be paid in advance to secure your seat in the masterclass.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">No Refund Policy</p>
+                                <p>Payments are non-refundable once the booking is confirmed.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Payment Validity Window</p>
+                                <p>The quoted fee is valid for 7 days from the date of issue. After this period, availability and pricing may be subject to change.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Rescheduling &amp; Flexibility</p>
+                                <p>We understand that unexpected situations can arise. If a session needs to be rescheduled, whether from your side or ours, we ask that this be communicated at least 48 hours in advance. From our end, there may occasionally be rescheduling due to travel or professional commitments. In such cases, we will provide advance notice and coordinate a mutually suitable alternative date. We are committed to maintaining flexibility while also protecting the structure and flow of the program for both parties.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Intellectual Property</p>
+                                <p>All recorded sessions are for internal team reference only and remain the sole property of the provider. They may not be reused, shared externally, or repurposed in any form.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Team Participation</p>
+                                <p>All enrolled team members are expected to attend scheduled sessions consistently to ensure the effectiveness and continuity of the program, for optimal results.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Communication Channels</p>
+                                <p>All team communication between sessions will take place exclusively via our dashboard. Standard response time of 24 to 48 hours on business days.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Success Disclaimer</p>
+                                <p>While the program provides strategic tools and guidance, results will vary based on the team's implementation and participation, and no specific outcomes are guaranteed.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Media Usage</p>
+                                <p>We may share brief, non-sensitive snippets or behind-the-scenes moments from the Masterclass on our social media platforms to capture and showcase the overall vibe and engagement of the session.</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-white text-sm mb-1">Terms Acceptance</p>
+                                <p>By proceeding with payment, the client acknowledges and agrees to all terms and conditions stated in the invoice and in this document.</p>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
