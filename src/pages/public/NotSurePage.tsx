@@ -62,7 +62,7 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/f1/3.jpg',
             '/more-works/f1/4.jpg',
         ],
-        vimeoId: '1187078968',
+        vimeoId: '1187702968',
         filmLabel: 'F1 Sprint — AI Campaign Film',
     },
     {

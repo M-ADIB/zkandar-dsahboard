@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const LAST_UPDATED = 'March 2026'
-const CONTACT_EMAIL = 'privacy@zkandar.com'
+const CONTACT_EMAIL = 'admin@zkandar.com'
 const COMPANY_NAME = 'Zkandar AI'
 
 export function PrivacyPolicyPage() {

@@ -305,7 +305,7 @@ export function CaseStudiesPage() {
                             <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
                                 <div className="aspect-video">
                                     <iframe
-                                        src="https://player.vimeo.com/video/1187078968?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                        src="https://player.vimeo.com/video/1187702968?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
                                         className="w-full h-full"
                                         allow="autoplay; fullscreen; picture-in-picture"
                                         allowFullScreen
