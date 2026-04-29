@@ -41,7 +41,7 @@ const LOGOS = [
 
 const VSL_VIDEO_ID = '1187084528'
 // Replace with actual testimonial mashup Vimeo ID when available
-const TESTIMONIAL_MASHUP_ID = '1187085158'
+const TESTIMONIAL_MASHUP_ID = '1187721520'
 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
