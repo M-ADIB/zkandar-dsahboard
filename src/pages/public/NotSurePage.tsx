@@ -3,7 +3,6 @@ import { ArrowRight, ChevronDown, ChevronUp, X, ChevronLeft, ChevronRight } from
 import { useState, useRef } from 'react'
 import { PublicNav } from '../../components/public/PublicNav'
 import { PublicFooter } from '../../components/public/PublicFooter'
-import { CalendlyModal } from '../../components/public/CalendlyModal'
 
 // ── Grain ────────────────────────────────────────────────────────────────
 function GrainOverlay() {
@@ -299,12 +298,10 @@ function ProjectSection({ project, reverse: _reverse = false }: { project: Proje
 
 export function NotSurePage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null)
-    const [modalOpen, setModalOpen] = useState(false)
 
     return (
         <div className="min-h-screen bg-black text-white font-body overflow-x-hidden selection:bg-lime/30">
             <GrainOverlay />
-            <AnimatePresence>{modalOpen && <CalendlyModal onClose={() => setModalOpen(false)} />}</AnimatePresence>
             <PublicNav topOffset={0} />
 
             {/* ── HERO ──────────────────────────────────────────────────── */}
@@ -432,10 +429,6 @@ export function NotSurePage() {
                             className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 hover:shadow-[0_0_40px_rgba(208,255,113,0.35)] hover:-translate-y-0.5 transition-all duration-300">
                             Direct Checkout <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <button onClick={() => setModalOpen(true)}
-                            className="group flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:-translate-y-0.5">
-                            Book a Discovery Call <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </button>
                     </motion.div>
 
                     <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
