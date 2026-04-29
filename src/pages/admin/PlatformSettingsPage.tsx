@@ -9,6 +9,8 @@ import {
     Plus,
     Trash2,
     Link2,
+    Megaphone,
+    Calendar,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { PlatformSetting, SubmissionFormat } from '@/types/database'
@@ -24,11 +26,12 @@ type AssignmentTemplate = {
     due_days_after_session: number
 }
 
-type PlatformTab = 'welcome_videos' | 'sprint_workshop'
+type PlatformTab = 'welcome_videos' | 'sprint_workshop' | 'marketing'
 
 const tabs: { id: PlatformTab; label: string; icon: React.ElementType }[] = [
     { id: 'welcome_videos', label: 'Welcome Videos', icon: Video },
     { id: 'sprint_workshop', label: 'Sprint Workshop', icon: GraduationCap },
+    { id: 'marketing', label: 'Marketing', icon: Megaphone },
 ]
 
 const inputClass =
@@ -443,6 +446,136 @@ function SprintWorkshopTab() {
     )
 }
 
+// ─── Marketing CMS Tab ───────────────────────────────────────────────────────
+
+function MarketingTab() {
+    const [sprintDates, setSprintDates] = useState('')
+    const [sprintLocation, setSprintLocation] = useState('')
+    const [loading, setLoading] = useState(true)
+    const [savingDates, setSavingDates] = useState(false)
+    const [savingLocation, setSavingLocation] = useState(false)
+    const [savedDates, setSavedDates] = useState(false)
+    const [savedLocation, setSavedLocation] = useState(false)
+
+    useEffect(() => {
+        async function fetchSettings() {
+            setLoading(true)
+            const { data } = await supabase
+                .from('platform_settings')
+                .select('key, value')
+                .in('key', ['marketing_sprint_dates', 'marketing_sprint_location'])
+                .returns<PlatformSetting[]>()
+            const map: Record<string, string> = {};
+            (data ?? []).forEach((s) => { map[s.key] = s.value })
+            if (map.marketing_sprint_dates) setSprintDates(map.marketing_sprint_dates)
+            if (map.marketing_sprint_location) setSprintLocation(map.marketing_sprint_location)
+            setLoading(false)
+        }
+        fetchSettings()
+    }, [])
+
+    async function saveDates() {
+        setSavingDates(true)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await supabase.from('platform_settings').upsert({ key: 'marketing_sprint_dates', value: sprintDates, updated_at: new Date().toISOString() } as any, { onConflict: 'key' })
+        setSavingDates(false)
+        if (error) { toast.error(error.message) } else { setSavedDates(true); toast.success('Sprint dates updated — banner will reflect this live'); setTimeout(() => setSavedDates(false), 3000) }
+    }
+
+    async function saveLocation() {
+        setSavingLocation(true)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await supabase.from('platform_settings').upsert({ key: 'marketing_sprint_location', value: sprintLocation, updated_at: new Date().toISOString() } as any, { onConflict: 'key' })
+        setSavingLocation(false)
+        if (error) { toast.error(error.message) } else { setSavedLocation(true); toast.success('Sprint location saved'); setTimeout(() => setSavedLocation(false), 2000) }
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-16">
+                <Loader2 className="h-6 w-6 animate-spin text-lime" />
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-6">
+            {/* Sprint Workshop Dates */}
+            <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-border">
+                    <div className="h-9 w-9 rounded-lg bg-lime/10 flex items-center justify-center">
+                        <Calendar className="h-4 w-4 text-lime" />
+                    </div>
+                    <div>
+                        <h2 className="font-heading text-base font-bold">Sprint Workshop Dates</h2>
+                        <p className="text-xs text-gray-500">Updates the announcement banner and Sprint Workshop card across the entire marketing site</p>
+                    </div>
+                </div>
+                <div className="p-6 space-y-5">
+                    <div>
+                        <label className={labelClass}>Date Range</label>
+                        <p className="text-[11px] text-gray-600 mb-2">Format: <span className="text-gray-400 font-mono">June 3–5</span> or <span className="text-gray-400 font-mono">June 3–5, 2025</span> — this appears verbatim in the banner &amp; card</p>
+                        <div className="flex gap-3">
+                            <input
+                                type="text"
+                                value={sprintDates}
+                                onChange={(e) => setSprintDates(e.target.value)}
+                                placeholder="June 3–5"
+                                className={inputClass}
+                            />
+                            <button
+                                onClick={saveDates}
+                                disabled={savingDates}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-lime/10 hover:bg-lime/20 text-lime text-sm font-medium rounded-xl border border-lime/20 transition-colors disabled:opacity-50 shrink-0"
+                            >
+                                {savingDates ? <Loader2 className="h-4 w-4 animate-spin" /> : savedDates ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+                                {savedDates ? 'Saved' : 'Save'}
+                            </button>
+                        </div>
+                        {sprintDates && (
+                            <div className="mt-3 flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                                <p className="text-xs text-gray-400">Banner preview: <span className="text-lime font-medium">Sprint Workshop · {sprintDates}</span></p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="border-t border-border pt-5">
+                        <label className={labelClass}>Location / Format (optional)</label>
+                        <p className="text-[11px] text-gray-600 mb-2">e.g. <span className="text-gray-400 font-mono">Dubai · Live Zoom</span> — shown below the date on the card (leave blank to hide)</p>
+                        <div className="flex gap-3">
+                            <input
+                                type="text"
+                                value={sprintLocation}
+                                onChange={(e) => setSprintLocation(e.target.value)}
+                                placeholder="Dubai · Live Zoom"
+                                className={inputClass}
+                            />
+                            <button
+                                onClick={saveLocation}
+                                disabled={savingLocation}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-lime/10 hover:bg-lime/20 text-lime text-sm font-medium rounded-xl border border-lime/20 transition-colors disabled:opacity-50 shrink-0"
+                            >
+                                {savingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : savedLocation ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+                                {savedLocation ? 'Saved' : 'Save'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Info */}
+            <div className="bg-lime/[0.03] border border-lime/10 rounded-2xl p-5">
+                <p className="text-xs text-lime/80 font-semibold uppercase tracking-wider mb-1">How it works</p>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                    The landing page reads <span className="text-gray-300 font-mono">marketing_sprint_dates</span> from Supabase on load.
+                    Saving here updates the live site banner and Sprint card date in real-time — no code deployment required.
+                </p>
+            </div>
+        </div>
+    )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export function PlatformSettingsPage() {
@@ -490,6 +623,11 @@ export function PlatformSettingsPage() {
             {activeTab === 'sprint_workshop' && (
                 <motion.div key="sprint_workshop" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                     <SprintWorkshopTab />
+                </motion.div>
+            )}
+            {activeTab === 'marketing' && (
+                <motion.div key="marketing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                    <MarketingTab />
                 </motion.div>
             )}
         </div>

@@ -137,20 +137,6 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                         style={{ originY: 0, top: pillTop + 62 }}
                         className="fixed inset-x-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-[1320px] z-40 rounded-md bg-black/80 backdrop-blur-2xl border border-white/[0.09] px-4 pt-4 pb-5 flex flex-col gap-1 md:hidden shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
                     >
-                        <motion.a
-                            href="/main"
-                            onClick={() => setMobileOpen(false)}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
-                            className={`px-4 py-2.5 rounded-md text-sm font-bold uppercase tracking-[0.12em] transition-colors duration-200 ${
-                                pathname === '/main'
-                                    ? 'text-lime bg-lime/10 border border-lime/15'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
-                        >
-                            Home
-                        </motion.a>
                         {NAV_LINKS.map((link, i) => (
                             <motion.a
                                 key={link.label}

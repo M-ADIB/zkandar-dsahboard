@@ -30,7 +30,6 @@ const LOGOS = [
     { name: 'Rolling Stones Korea',       file: '/logos/rolling-stones-korea.avif' },
     { name: 'Zouk',                       file: '/logos/zouk.avif' },
     { name: 'Hawke House',                file: '/logos/hawke-house.avif' },
-    { name: 'By IDI',                     file: '/logos/by-idi.png' },
     { name: 'Finasi',                     file: '/logos/finasi.png' },
     { name: 'Non-Designed',               file: '/logos/non-designed.png' },
 ]
