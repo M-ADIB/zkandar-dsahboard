@@ -90,8 +90,8 @@ function App() {
                             <PageTitleUpdater />
                             <SessionExpiryWarning />
                             <CommandPalette />
-                            <InstallPrompt />
-                            <UpdatePrompt />
+                            {!isMarketingDomain && <InstallPrompt />}
+                            {!isMarketingDomain && <UpdatePrompt />}
                             {import.meta.env.DEV && <TestingCredentials />}
                             <Routes>
                                 {/* Public Routes */}

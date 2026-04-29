@@ -73,10 +73,13 @@ function CaseStudyPresentation({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[200] bg-black flex flex-col"
+            onClick={onClose}
         >
+            {/* Stop propagation on the actual content so only the bare backdrop closes */}
+            <div className="flex flex-col flex-1 min-h-0" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 px-3 sm:px-5 pt-2.5 pb-0 bg-black shrink-0">
                 <button onClick={onClose}
-                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-white/10 hover:border-white/30 text-gray-400 hover:text-white transition">
+                    className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 border border-white/20 hover:bg-white hover:border-white text-white hover:text-black transition-all duration-200">
                     <X className="w-4 h-4" />
                 </button>
                 <div ref={filmstripRef} className="flex items-end gap-2 overflow-x-auto scrollbar-hide flex-1 py-1">
@@ -169,6 +172,7 @@ function CaseStudyPresentation({
                     <ChevronRight className="w-5 h-5" />
                 </button>
             </div>
+            </div>{/* /stopPropagation wrapper */}
         </motion.div>
     )
 }

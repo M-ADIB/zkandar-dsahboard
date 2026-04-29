@@ -4,9 +4,10 @@ import { useLocation } from 'react-router-dom'
 import logoSrc from '../../assets/logo.png'
 
 const NAV_LINKS = [
+    { label: 'Home',           href: '/main'                  },
     { label: 'AI for Teams',   href: '/masterclass-analytics' },
     { label: 'Case Studies',   href: '/case-studies'          },
-    { label: 'Not Sure',       href: '/not-sure'              },
+    { label: 'Not Sure Yet?',  href: '/not-sure'              },
 ]
 
 interface PublicNavProps {
@@ -84,7 +85,7 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                         ))}
                     </div>
 
-                    {/* ── Right: CTA + mobile toggle ───────────────────── */}
+                    {/* ── Right: CTA (desktop only) + mobile toggle ─── */}
                     <div className="flex items-center gap-2.5 shrink-0">
                         <motion.a
                             href="/find-your-path"
@@ -93,9 +94,9 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                             transition={{ duration: 0.45, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.96 }}
-                            className="px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300"
+                            className="hidden md:block px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300"
                         >
-                            See Where You're At
+                            Take the AI Assessment
                         </motion.a>
 
                         {/* Hamburger — mobile only */}
@@ -172,7 +173,7 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                                 onClick={() => setMobileOpen(false)}
                                 className="block w-full text-center px-4 py-3 rounded-md bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-lime transition-colors duration-200"
                             >
-                                See Where You're At
+                                Take the AI Assessment
                             </a>
                         </div>
                     </motion.div>

@@ -410,7 +410,6 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-4xl">
                     <FadeIn className="text-center mb-10">
-                        <MicroLabel center>The Zkandar Method</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4rem)] leading-[0.93] mt-4 mb-4">
                             THIS IS HOW <span className="text-lime">AI IS REDEFINING</span> DESIGN.
                         </h2>
@@ -428,12 +427,15 @@ export function LandingPageTest() {
                             />
                         </div>
                     </FadeIn>
-                    <FadeIn delay={0.35} className="flex flex-col items-center mt-8 gap-2">
+                    <FadeIn delay={0.35} className="flex flex-col sm:flex-row items-center justify-center mt-8 gap-3">
                         <a href="/find-your-path"
                             className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                            See Where You Stand With AI <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            Solo Training <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <p className="text-xs text-lime font-bold font-body">Takes 2 minutes · No commitment</p>
+                        <a href="/masterclass-analytics"
+                            className="group flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold transition-all text-sm uppercase tracking-wider font-heading hover:-translate-y-0.5">
+                            Team Training <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </a>
                     </FadeIn>
                 </div>
             </section>
@@ -443,7 +445,6 @@ export function LandingPageTest() {
                 <div className="container mx-auto px-5 sm:px-6">
 
                     <FadeIn className="text-center mb-10 md:mb-14">
-                        <MicroLabel center>1,000+ Architects & Designers</MicroLabel>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
                             THE RESULTS SPEAK<br /><span className="text-lime">FOR THEMSELVES.</span>
                         </h2>
@@ -668,7 +669,11 @@ export function LandingPageTest() {
                             <div className="flex items-center gap-2 mb-6">
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-500/[0.1] border border-red-500/25">
                                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · May 13–15 · 7 PM Dubai Time · Zoom</span>
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · June 3–5 · 7 PM Dubai Time</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-lime/[0.08] border border-lime/20">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-lime">Live Zoom</span>
                                 </div>
                             </div>
                             <h3 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.5rem)] leading-[0.93] mb-5">
@@ -684,7 +689,7 @@ export function LandingPageTest() {
                                 </a>
                                 <a href="/not-sure"
                                     className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl border border-white/[0.1] text-gray-400 hover:text-white hover:border-white/20 font-bold text-sm uppercase tracking-wider font-heading transition-all">
-                                    Not Sure? <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    Not Sure Yet? <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </a>
                             </div>
                         </FadeIn>

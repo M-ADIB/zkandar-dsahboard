@@ -109,6 +109,8 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/coco-chanel/2.jpg',
             '/more-works/coco-chanel/3.jpg',
         ],
+        vimeoId: '1187667794',
+        filmLabel: 'Coco Chanel Concept — AI Brand Film',
     },
     {
         id: 'product',
