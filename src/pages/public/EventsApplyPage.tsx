@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronRight, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { PublicNav } from '../../components/public/PublicNav';
+import { PublicFooter } from '../../components/public/PublicFooter';
 import logoSrc from '../../assets/logo.png';
 
 // Step 1 Basics
@@ -136,6 +138,8 @@ export const EventsApplyPage = () => {
     const labelCls = "text-sm font-bold text-gray-300";
 
     return (
+        <>
+        <PublicNav />
         <div className="min-h-screen bg-[#0B0B0B] text-white selection:bg-[#D0FF71]/30 selection:text-white relative overflow-hidden">
             {/* Ambient gradient */}
             <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#5A9F2E]/20 blur-[120px] rounded-full pointer-events-none z-0" />
@@ -201,13 +205,8 @@ export const EventsApplyPage = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.25 }}
-                        className="max-w-2xl mx-auto px-6 pt-16 pb-24 relative z-10"
+                        className="max-w-2xl mx-auto px-6 pt-28 pb-24 relative z-10"
                     >
-                {/* Logo */}
-                <div className="flex items-center space-x-3 mb-12">
-                    <img src={logoSrc} alt="Zkandar AI" className="h-14 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-                    <span className="text-xl font-bold font-neue">Zkandar AI</span>
-                </div>
 
                 {/* Title & Breadcrumb */}
                 <div className="mb-8">
@@ -482,5 +481,7 @@ export const EventsApplyPage = () => {
                 )}
             </AnimatePresence>
         </div>
+        <PublicFooter />
+        </>
     );
 };

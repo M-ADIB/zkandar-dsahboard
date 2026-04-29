@@ -2,10 +2,9 @@ import logoSrc from '../../assets/logo.png'
 
 const FOOTER_LINKS = {
     Programs: [
-        { label: 'Sprint Workshop',        href: '/find-your-path' },
-        { label: 'AI Masterclass',         href: '/masterclass-analytics' },
-        { label: 'Studio Discovery Call',  href: 'https://calendly.com/zkandarstudio-info/ai-discovery-call' },
-        { label: 'Enroll Now',             href: '/checkout' },
+        { label: 'Home',               href: '/main' },
+        { label: 'Sprint Workshop',     href: '/find-your-path' },
+        { label: 'AI Masterclass',      href: '/masterclass-analytics' },
     ],
     Resources: [
         { label: 'Case Studies',           href: '/case-studies' },
