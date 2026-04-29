@@ -678,15 +678,21 @@ export function LandingPageTest() {
                 <div className="container mx-auto px-5 sm:px-6">
                     <div className="max-w-4xl mx-auto">
                         <FadeIn>
-                            <div className="flex items-center gap-2 mb-6">
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-500/[0.1] border border-red-500/25">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-red-400">Sprint Workshop · {sprintDates} · 7 PM Dubai Time</span>
+                            <div className="flex flex-wrap items-center gap-2 mb-6">
+                                {/* Date pill */}
+                                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/[0.1] border border-red-500/25 whitespace-nowrap">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.16em] text-red-400">Sprint Workshop · {sprintDates}</span>
                                 </div>
+                                {/* Time pill */}
+                                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/[0.06] border border-red-500/15 whitespace-nowrap">
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.16em] text-red-400/70">7 PM Dubai Time</span>
+                                </div>
+                                {/* Location pill */}
                                 {sprintLocation && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-lime/[0.08] border border-lime/20">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.18em] text-lime">{sprintLocation}</span>
+                                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-lime/[0.08] border border-lime/20 whitespace-nowrap">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse shrink-0" />
+                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.16em] text-lime">{sprintLocation}</span>
                                 </div>
                                 )}
                             </div>
