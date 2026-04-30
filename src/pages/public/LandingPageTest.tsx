@@ -424,6 +424,168 @@ export function LandingPageTest() {
                 <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-black to-transparent pointer-events-none" />
             </section>
 
+            {/* ── SOCIAL PROOF / ABOUT ────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#060606] overflow-hidden">
+                <div className="container mx-auto px-5 sm:px-6">
+
+                    {/* Label */}
+                    <FadeIn className="mb-14">
+                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-500 text-center mb-2">The person behind the work</p>
+                        <div className="h-px w-12 bg-lime/40 mx-auto" />
+                    </FadeIn>
+
+                    {/* Bio layout — asymmetric editorial grid */}
+                    <FadeIn delay={0.1}>
+                        <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr_1.6fr] gap-10 md:gap-16 items-start mb-20">
+
+                            {/* Left — name block + event badges */}
+                            <div>
+                                <h2 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.2rem)] leading-[0.92] text-white mb-5">
+                                    KHALED<br /><span className="text-lime">ISKANDAR.</span>
+                                </h2>
+
+                                {/* Credential pills */}
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    {[
+                                        'Architect & Interior Designer',
+                                        'AI Educator',
+                                        'Workflow Strategist',
+                                        'Formula 1 Abu Dhabi',
+                                        'Formula 1 Jeddah',
+                                    ].map((tag) => (
+                                        <span key={tag} className="text-[0.6rem] font-black uppercase tracking-[0.15em] text-gray-400 border border-white/[0.1] rounded-md px-2.5 py-1 bg-white/[0.03]">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                {/* Headline talks */}
+                                <div className="space-y-2">
+                                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.18em] text-gray-600 mb-3">Headline talks &amp; partnerships</p>
+                                    {[
+                                        { name: 'Skidmore Owings & Merrill', abbr: 'SOM' },
+                                        { name: 'LW Design Group', abbr: 'LW Design' },
+                                        { name: 'Sikka Art & Design Festival', abbr: 'Sikka' },
+                                        { name: 'Dubai Institute of Design & Innovation', abbr: 'DIDI' },
+                                    ].map((item) => (
+                                        <div key={item.name} className="flex items-center gap-3 py-2 border-b border-white/[0.05]">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-lime shrink-0" />
+                                            <span className="text-sm text-gray-300 font-body">{item.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Right — bio text */}
+                            <div className="flex flex-col justify-center">
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
+                                    Khaled Iskandar is an architect and interior designer with over a decade of experience delivering luxury F&amp;B spaces and mega events, including <span className="text-white font-semibold">Formula 1 Abu Dhabi</span> and <span className="text-white font-semibold">Jeddah</span>.
+                                </p>
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
+                                    He turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
+                                </p>
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
+                                    For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI across the GCC, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
+                                </p>
+                                <p className="font-body text-sm leading-relaxed text-gray-500">
+                                    Explore below how this approach is applied through Sprint Workshops for individuals and tailored Masterclasses for teams.
+                                </p>
+                            </div>
+                        </div>
+                    </FadeIn>
+
+                    {/* Stats row */}
+                    <FadeIn delay={0.2}>
+                        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden mb-20">
+                            {[
+                                { value: '10+', label: 'Years of design practice' },
+                                { value: '5+', label: 'Years of AI education' },
+                                { value: '20+', label: 'Studios trained' },
+                                { value: 'GCC', label: 'Thought leader reach' },
+                            ].map((stat) => (
+                                <div key={stat.label} className="bg-[#060606] px-6 py-7 text-center">
+                                    <p className="font-heading font-black text-[2.2rem] text-lime leading-none mb-1">{stat.value}</p>
+                                    <p className="text-xs text-gray-500 uppercase tracking-[0.12em] font-body">{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </FadeIn>
+
+                    {/* Logo ticker */}
+                    <FadeIn delay={0.25}>
+                        <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">Studios &amp; firms already in</p>
+                    </FadeIn>
+                </div>
+
+                {/* Full-bleed infinite ticker */}
+                <div className="relative">
+                    <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060606] to-transparent z-10 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060606] to-transparent z-10 pointer-events-none" />
+                    <div className="flex overflow-hidden">
+                        <div
+                            className="flex gap-12 items-center shrink-0 animate-[ticker_30s_linear_infinite]"
+                            style={{ paddingRight: '3rem' }}
+                        >
+                            {[
+                                { src: '/collabs/Skidmore, Owings and Merrill company logo Background Removed.png', alt: 'Skidmore Owings & Merrill' },
+                                { src: '/collabs/KCA INTERNATIONAL.avif', alt: 'KCA International' },
+                                { src: '/collabs/EHN INTERIORS company logo.avif', alt: 'EHN Interiors' },
+                                { src: '/collabs/studio echelle company logo.avif', alt: 'Studio Echelle' },
+                                { src: '/collabs/POINCARE STUDIO.avif', alt: 'Poincare Studio' },
+                                { src: '/collabs/SBE company logo.avif', alt: 'SBE' },
+                                { src: '/collabs/Zouk company logo.avif', alt: 'Zouk' },
+                                { src: '/collabs/genting Company Logo.avif', alt: 'Genting' },
+                                { src: '/collabs/hawke house LOGO.avif', alt: 'Hawke House' },
+                                { src: '/collabs/Beyond Dreams Company logo.avif', alt: 'Beyond Dreams' },
+                                { src: '/collabs/GGB COMAPNY LOGO.avif', alt: 'GGB' },
+                                { src: '/collabs/JT CPL DESIGNS COMPANY LOGO.avif', alt: 'JT CPL Designs' },
+                                { src: '/collabs/Al Bayan architecture and Engineers company logo .avif', alt: 'Al Bayan Architecture' },
+                                { src: '/collabs/By Institute of Design and Innovation logo  Background Removed.png', alt: 'DIDI' },
+                                { src: '/collabs/Rolling Stones Korea company logo.avif', alt: 'Rolling Stones Korea' },
+                                { src: '/collabs/Vitra Company logo Background Removed.png', alt: 'Vitra' },
+                            ].map((logo, i) => (
+                                <div key={i} className="shrink-0 h-10 flex items-center justify-center">
+                                    <img
+                                        src={logo.src}
+                                        alt={logo.alt}
+                                        className="h-7 max-w-[120px] object-contain opacity-40 hover:opacity-80 transition-opacity duration-300"
+                                        style={{ filter: 'invert(1) brightness(10) grayscale(1)' }}
+                                    />
+                                </div>
+                            ))}
+                            {/* Duplicate for seamless loop */}
+                            {[
+                                { src: '/collabs/Skidmore, Owings and Merrill company logo Background Removed.png', alt: 'Skidmore Owings & Merrill' },
+                                { src: '/collabs/KCA INTERNATIONAL.avif', alt: 'KCA International' },
+                                { src: '/collabs/EHN INTERIORS company logo.avif', alt: 'EHN Interiors' },
+                                { src: '/collabs/studio echelle company logo.avif', alt: 'Studio Echelle' },
+                                { src: '/collabs/POINCARE STUDIO.avif', alt: 'Poincare Studio' },
+                                { src: '/collabs/SBE company logo.avif', alt: 'SBE' },
+                                { src: '/collabs/Zouk company logo.avif', alt: 'Zouk' },
+                                { src: '/collabs/genting Company Logo.avif', alt: 'Genting' },
+                                { src: '/collabs/hawke house LOGO.avif', alt: 'Hawke House' },
+                                { src: '/collabs/Beyond Dreams Company logo.avif', alt: 'Beyond Dreams' },
+                                { src: '/collabs/GGB COMAPNY LOGO.avif', alt: 'GGB' },
+                                { src: '/collabs/JT CPL DESIGNS COMPANY LOGO.avif', alt: 'JT CPL Designs' },
+                                { src: '/collabs/Al Bayan architecture and Engineers company logo .avif', alt: 'Al Bayan Architecture' },
+                                { src: '/collabs/By Institute of Design and Innovation logo  Background Removed.png', alt: 'DIDI' },
+                                { src: '/collabs/Rolling Stones Korea company logo.avif', alt: 'Rolling Stones Korea' },
+                                { src: '/collabs/Vitra Company logo Background Removed.png', alt: 'Vitra' },
+                            ].map((logo, i) => (
+                                <div key={`dup-${i}`} className="shrink-0 h-10 flex items-center justify-center">
+                                    <img
+                                        src={logo.src}
+                                        alt={logo.alt}
+                                        className="h-7 max-w-[120px] object-contain opacity-40 hover:opacity-80 transition-opacity duration-300"
+                                        style={{ filter: 'invert(1) brightness(10) grayscale(1)' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* ── VSL ────────────────────────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-4xl">

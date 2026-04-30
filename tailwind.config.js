@@ -64,6 +64,20 @@ export default {
                 'glow': '0 0 20px rgba(208, 255, 113, 0.15)',
                 'glow-lg': '0 0 40px rgba(208, 255, 113, 0.2)',
             },
+            keyframes: {
+                ticker: {
+                    '0%': { transform: 'translateX(0)' },
+                    '100%': { transform: 'translateX(-50%)' },
+                },
+                'fade-in': {
+                    '0%': { opacity: '0', transform: 'translateY(8px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+            },
+            animation: {
+                ticker: 'ticker 30s linear infinite',
+                'fade-in': 'fade-in 0.5s ease forwards',
+            },
         },
     },
     plugins: [],
