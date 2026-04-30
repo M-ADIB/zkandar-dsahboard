@@ -450,8 +450,6 @@ export function LandingPageTest() {
                                         'Architect & Interior Designer',
                                         'AI Educator',
                                         'Workflow Strategist',
-                                        'Formula 1 Abu Dhabi',
-                                        'Formula 1 Jeddah',
                                     ].map((tag) => (
                                         <span key={tag} className="text-[0.6rem] font-black uppercase tracking-[0.15em] text-gray-400 border border-white/[0.1] rounded-md px-2.5 py-1 bg-white/[0.03]">
                                             {tag}
@@ -479,7 +477,7 @@ export function LandingPageTest() {
                             {/* Right — bio text */}
                             <div className="flex flex-col justify-center">
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                    Khaled Iskandar is an architect and interior designer with over a decade of experience delivering luxury F&amp;B spaces and mega events, including <span className="text-white font-semibold">Formula 1 Abu Dhabi</span> and <span className="text-white font-semibold">Jeddah</span>.
+                                    Khaled Iskandar is an architect and interior designer with over a decade of experience delivering luxury F&amp;B spaces and mega events across the region.
                                 </p>
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
                                     He turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
@@ -511,73 +509,40 @@ export function LandingPageTest() {
                         </div>
                     </FadeIn>
 
-                    {/* Logo ticker */}
+                    {/* Photo strip label */}
                     <FadeIn delay={0.25}>
-                        <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">Studios &amp; firms already in</p>
+                        <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">In the room with the best</p>
                     </FadeIn>
                 </div>
 
-                {/* Full-bleed infinite ticker */}
+                {/* Full-bleed infinite photo strip */}
                 <div className="relative">
                     <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060606] to-transparent z-10 pointer-events-none" />
                     <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060606] to-transparent z-10 pointer-events-none" />
                     <div className="flex overflow-hidden">
                         <div
-                            className="flex gap-12 items-center shrink-0 animate-[ticker_30s_linear_infinite]"
-                            style={{ paddingRight: '3rem' }}
+                            className="flex gap-3 shrink-0 animate-[ticker_35s_linear_infinite]"
+                            style={{ paddingRight: '0.75rem' }}
                         >
                             {[
-                                { src: '/collabs/Skidmore, Owings and Merrill company logo Background Removed.png', alt: 'Skidmore Owings & Merrill' },
-                                { src: '/collabs/KCA INTERNATIONAL.avif', alt: 'KCA International' },
-                                { src: '/collabs/EHN INTERIORS company logo.avif', alt: 'EHN Interiors' },
-                                { src: '/collabs/studio echelle company logo.avif', alt: 'Studio Echelle' },
-                                { src: '/collabs/POINCARE STUDIO.avif', alt: 'Poincare Studio' },
-                                { src: '/collabs/SBE company logo.avif', alt: 'SBE' },
-                                { src: '/collabs/Zouk company logo.avif', alt: 'Zouk' },
-                                { src: '/collabs/genting Company Logo.avif', alt: 'Genting' },
-                                { src: '/collabs/hawke house LOGO.avif', alt: 'Hawke House' },
-                                { src: '/collabs/Beyond Dreams Company logo.avif', alt: 'Beyond Dreams' },
-                                { src: '/collabs/GGB COMAPNY LOGO.avif', alt: 'GGB' },
-                                { src: '/collabs/JT CPL DESIGNS COMPANY LOGO.avif', alt: 'JT CPL Designs' },
-                                { src: '/collabs/Al Bayan architecture and Engineers company logo .avif', alt: 'Al Bayan Architecture' },
-                                { src: '/collabs/By Institute of Design and Innovation logo  Background Removed.png', alt: 'DIDI' },
-                                { src: '/collabs/Rolling Stones Korea company logo.avif', alt: 'Rolling Stones Korea' },
-                                { src: '/collabs/Vitra Company logo Background Removed.png', alt: 'Vitra' },
-                            ].map((logo, i) => (
-                                <div key={i} className="shrink-0 h-10 flex items-center justify-center">
+                                { src: '/collabs/collab-apr29.jpg', alt: 'Masterclass event' },
+                                { src: '/collabs/collab-apr29-image.jpg', alt: 'Workshop session' },
+                                { src: '/collabs/collab-dsc01295.jpg', alt: 'Studio collaboration' },
+                                { src: '/collabs/collab-img-apr29.jpg', alt: 'AI design talk' },
+                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
+                                { src: '/collabs/collab-frameio.png', alt: 'Frame.io collaboration' },
+                                { src: '/collabs/collab-apr29.jpg', alt: 'Masterclass event' },
+                                { src: '/collabs/collab-apr29-image.jpg', alt: 'Workshop session' },
+                                { src: '/collabs/collab-dsc01295.jpg', alt: 'Studio collaboration' },
+                                { src: '/collabs/collab-img-apr29.jpg', alt: 'AI design talk' },
+                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
+                                { src: '/collabs/collab-frameio.png', alt: 'Frame.io collaboration' },
+                            ].map((photo, i) => (
+                                <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden">
                                     <img
-                                        src={logo.src}
-                                        alt={logo.alt}
-                                        className="h-7 max-w-[120px] object-contain opacity-40 hover:opacity-80 transition-opacity duration-300"
-                                        style={{ filter: 'invert(1) brightness(10) grayscale(1)' }}
-                                    />
-                                </div>
-                            ))}
-                            {/* Duplicate for seamless loop */}
-                            {[
-                                { src: '/collabs/Skidmore, Owings and Merrill company logo Background Removed.png', alt: 'Skidmore Owings & Merrill' },
-                                { src: '/collabs/KCA INTERNATIONAL.avif', alt: 'KCA International' },
-                                { src: '/collabs/EHN INTERIORS company logo.avif', alt: 'EHN Interiors' },
-                                { src: '/collabs/studio echelle company logo.avif', alt: 'Studio Echelle' },
-                                { src: '/collabs/POINCARE STUDIO.avif', alt: 'Poincare Studio' },
-                                { src: '/collabs/SBE company logo.avif', alt: 'SBE' },
-                                { src: '/collabs/Zouk company logo.avif', alt: 'Zouk' },
-                                { src: '/collabs/genting Company Logo.avif', alt: 'Genting' },
-                                { src: '/collabs/hawke house LOGO.avif', alt: 'Hawke House' },
-                                { src: '/collabs/Beyond Dreams Company logo.avif', alt: 'Beyond Dreams' },
-                                { src: '/collabs/GGB COMAPNY LOGO.avif', alt: 'GGB' },
-                                { src: '/collabs/JT CPL DESIGNS COMPANY LOGO.avif', alt: 'JT CPL Designs' },
-                                { src: '/collabs/Al Bayan architecture and Engineers company logo .avif', alt: 'Al Bayan Architecture' },
-                                { src: '/collabs/By Institute of Design and Innovation logo  Background Removed.png', alt: 'DIDI' },
-                                { src: '/collabs/Rolling Stones Korea company logo.avif', alt: 'Rolling Stones Korea' },
-                                { src: '/collabs/Vitra Company logo Background Removed.png', alt: 'Vitra' },
-                            ].map((logo, i) => (
-                                <div key={`dup-${i}`} className="shrink-0 h-10 flex items-center justify-center">
-                                    <img
-                                        src={logo.src}
-                                        alt={logo.alt}
-                                        className="h-7 max-w-[120px] object-contain opacity-40 hover:opacity-80 transition-opacity duration-300"
-                                        style={{ filter: 'invert(1) brightness(10) grayscale(1)' }}
+                                        src={photo.src}
+                                        alt={photo.alt}
+                                        className="h-full w-full object-cover opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-500"
                                     />
                                 </div>
                             ))}
