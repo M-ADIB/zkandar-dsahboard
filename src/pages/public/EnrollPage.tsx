@@ -12,7 +12,7 @@ const ENROLLMENT_DEADLINE = new Date('2026-05-13T23:59:59')
 const SPOTS_REMAINING = 4
 
 const VALUE_STACK = [
-    { item: '3 Day Live Sprint Workshop', value: '8,500 AED', included: true },
+    { item: '3 Day Live Sprint Workshop', value: '12,500 AED', included: true },
     { item: 'Lifetime access to all session recordings', value: '1,200 AED', included: true },
     { item: 'AI Prompt Library (200+ architecture-specific prompts)', value: '800 AED', included: true },
     { item: 'Private cohort community (Slack)', value: '400 AED', included: true },
@@ -272,12 +272,12 @@ export function EnrollPage() {
                         ))}
                         <div className="flex items-center justify-between gap-4 pt-3">
                             <span className="text-sm font-bold text-white">Total value</span>
-                            <span className="text-sm font-bold text-gray-400 line-through">11,500+ AED</span>
+                            <span className="text-sm font-bold text-gray-400 line-through">16,500+ AED</span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                             <span className="font-heading font-black uppercase text-base text-white">Your investment</span>
                             <div className="text-right">
-                                <span className="font-heading font-black text-2xl text-lime">8,500 AED</span>
+                                <span className="font-heading font-black text-2xl text-lime">12,500 AED</span>
                             </div>
                         </div>
                     </div>
@@ -337,13 +337,13 @@ export function EnrollPage() {
                             <div>
                                 <p className="text-xs text-gray-500">One-time payment</p>
                                 <div className="flex items-baseline gap-1 mt-0.5">
-                                    <span className="font-heading font-black text-3xl text-white">8,500</span>
+                                    <span className="font-heading font-black text-3xl text-white">12,500</span>
                                     <span className="text-sm text-gray-400 font-semibold">AED</span>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs text-gray-600 line-through">11,500 AED</p>
-                                <p className="text-xs font-bold text-lime">Save 3,000 AED</p>
+                                <p className="text-xs text-gray-600 line-through">16,500 AED</p>
+                                <p className="text-xs font-bold text-lime">Save 4,000 AED</p>
                             </div>
                         </div>
                     </div>
@@ -360,7 +360,7 @@ export function EnrollPage() {
                         {loading ? (
                             <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
                         ) : (
-                            <>Secure my spot — 8,500 AED <ArrowRight className="h-5 w-5" /></>
+                            <>Secure my spot — 12,500 AED <ArrowRight className="h-5 w-5" /></>
                         )}
                     </button>
 

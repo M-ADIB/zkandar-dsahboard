@@ -130,7 +130,7 @@ export function CheckoutPage() {
                         <div>
                             <p className="text-xs text-gray-500">Total (one-time payment)</p>
                             <div className="flex items-baseline gap-1.5 mt-0.5">
-                                <span className="font-heading font-black text-2xl text-white">8,500</span>
+                                <span className="font-heading font-black text-2xl text-white">12,500</span>
                                 <span className="text-sm font-semibold text-gray-400">AED</span>
                             </div>
                         </div>
@@ -158,7 +158,7 @@ export function CheckoutPage() {
                         {loading ? (
                             <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
                         ) : (
-                            <>Pay 8,500 AED <ArrowRight className="h-5 w-5" /></>
+                            <>Pay 12,500 AED <ArrowRight className="h-5 w-5" /></>
                         )}
                     </button>
                     <div className="flex items-center justify-center gap-2 mt-3">
