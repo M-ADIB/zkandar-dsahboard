@@ -524,20 +524,18 @@ export function LandingPageTest() {
                             style={{ paddingRight: '0.75rem' }}
                         >
                             {[
-                                { src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
-                                { src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
+                                { src: '/collabs/collab-1.jpg', alt: 'Vitra showroom talk' },
+                                { src: '/collabs/collab-2.jpg', alt: 'Lighting Institute panel' },
                                 { src: '/collabs/collab-3.jpg', alt: 'Studio training' },
-                                { src: '/collabs/collab-4.jpg', alt: 'Design talk' },
-                                { src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
+                                { src: '/collabs/collab-4.jpg', alt: 'Design workshop' },
+                                { src: '/collabs/collab-5.jpg', alt: 'Team masterclass' },
                                 { src: '/collabs/collab-7.jpg', alt: 'Partner event' },
-                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
-                                { src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
-                                { src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
+                                { src: '/collabs/collab-1.jpg', alt: 'Vitra showroom talk' },
+                                { src: '/collabs/collab-2.jpg', alt: 'Lighting Institute panel' },
                                 { src: '/collabs/collab-3.jpg', alt: 'Studio training' },
-                                { src: '/collabs/collab-4.jpg', alt: 'Design talk' },
-                                { src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
+                                { src: '/collabs/collab-4.jpg', alt: 'Design workshop' },
+                                { src: '/collabs/collab-5.jpg', alt: 'Team masterclass' },
                                 { src: '/collabs/collab-7.jpg', alt: 'Partner event' },
-                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
                             ].map((photo, i) => (
                                 <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden">
                                     <img
