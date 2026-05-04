@@ -373,8 +373,8 @@ export function CaseStudiesPage() {
                                     />
                                 </div>
                                 <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
-                                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">AI Film</span>
-                                    <p className="font-heading font-black uppercase text-sm text-white">AI Directed Film</p>
+                                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Interior Design</span>
+                                    <p className="font-heading font-black uppercase text-sm text-white">Vitra Showroom — AI Film</p>
                                     <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
                                 </div>
                             </div>
