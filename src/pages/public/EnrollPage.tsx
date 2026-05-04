@@ -5,6 +5,7 @@ import {
     Zap, Users, Star, AlertTriangle, Calendar
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
 // ── Configuration ─────────────────────────────────────────────────────────────
@@ -92,6 +93,7 @@ export function EnrollPage() {
     const handleCheckout = async () => {
         setLoading(true)
         setError(null)
+        trackFBEvent('InitiateCheckout', { content_name: 'sprint_enroll', value: 0, currency: 'USD' })
 
         const origin = window.location.origin
         const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {

@@ -1,10 +1,16 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ArrowRight, Calendar } from 'lucide-react'
+import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
 const ONBOARDING_URL = 'https://calendly.com/zkandar/sprint-onboarding'
 
 export function CheckoutSuccessPage() {
+    useEffect(() => {
+        trackFBEvent('Purchase', { content_name: 'sprint_workshop', value: 0, currency: 'USD' })
+    }, [])
+
     return (
         <div className="min-h-screen bg-black flex flex-col items-center justify-center px-5 text-white font-body">
             {/* Nav */}

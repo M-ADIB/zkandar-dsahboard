@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { InlineWidget } from 'react-calendly'
 import { ArrowRight } from 'lucide-react'
+import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
 const CALENDLY_URL = 'https://calendly.com/zkandarstudio-info/ai-discovery-call'
@@ -11,6 +13,10 @@ interface CalendlyModalProps {
 }
 
 export function CalendlyModal({ onClose, studioMode = false }: CalendlyModalProps) {
+    useEffect(() => {
+        trackFBEvent('Lead', { content_name: studioMode ? 'masterclass_booking' : 'discovery_call' })
+    }, [studioMode])
+
     return (
         <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}

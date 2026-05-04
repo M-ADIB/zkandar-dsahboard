@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ArrowRight, Loader2, Phone, Calendar, Shield, Clock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
 const WHAT_YOU_GET = [
@@ -24,6 +25,7 @@ export function CheckoutPage() {
     const handleCheckout = async () => {
         setLoading(true)
         setError(null)
+        trackFBEvent('InitiateCheckout', { content_name: 'sprint_workshop', value: 0, currency: 'USD' })
 
         const origin = window.location.origin
         const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Loader2, ChevronDown, Instagram, AlertCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
 type Interest = 'masterclass' | 'sprint' | 'other' | null
@@ -177,6 +178,9 @@ export function SubmitFormPage() {
             setSubmitting(false)
             return
         }
+
+        // Fire FB pixel Lead event on successful submission
+        trackFBEvent('Lead', { content_name: interest ?? 'unknown', content_category: commitment ?? 'unknown' })
 
         // Route based on interest + commitment
         if (interest === 'masterclass') {
