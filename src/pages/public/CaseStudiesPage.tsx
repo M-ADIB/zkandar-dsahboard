@@ -359,6 +359,26 @@ export function CaseStudiesPage() {
                                 </div>
                             </div>
                         </FadeIn>
+
+                        {/* Latest AI Film */}
+                        <FadeIn delay={0.2}>
+                            <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300">
+                                <div className="aspect-video">
+                                    <iframe
+                                        src="https://player.vimeo.com/video/1188971702?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title="AI Film"
+                                    />
+                                </div>
+                                <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
+                                    <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">AI Film</span>
+                                    <p className="font-heading font-black uppercase text-sm text-white">AI Directed Film</p>
+                                    <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
+                                </div>
+                            </div>
+                        </FadeIn>
                     </div>
                 </div>
             </section>
