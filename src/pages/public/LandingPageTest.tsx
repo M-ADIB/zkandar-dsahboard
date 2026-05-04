@@ -32,7 +32,6 @@ const LOGOS = [
     { name: 'Zouk',                       file: '/logos/zouk.avif' },
     { name: 'Hawke House',                file: '/logos/hawke-house.avif' },
     { name: 'Finasi',                     file: '/logos/finasi.png' },
-    { name: 'Non-Designed',               file: '/logos/non-designed.png' },
 ]
 
 
@@ -485,8 +484,8 @@ export function LandingPageTest() {
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
                                     For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI across the GCC, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
                                 </p>
-                                <p className="font-body text-sm leading-relaxed text-gray-500">
-                                    Explore below how this approach is applied through Sprint Workshops for individuals and tailored Masterclasses for teams.
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300">
+                                    Explore below how this approach is applied through <span className="text-lime font-semibold">Sprint Workshops</span> for individuals and tailored <span className="text-lime font-semibold">Masterclasses</span> for teams.
                                 </p>
                             </div>
                         </div>
@@ -525,25 +524,38 @@ export function LandingPageTest() {
                             style={{ paddingRight: '0.75rem' }}
                         >
                             {[
-                                { src: '/collabs/collab-apr29.jpg', alt: 'Masterclass event' },
-                                { src: '/collabs/collab-apr29-image.jpg', alt: 'Workshop session' },
-                                { src: '/collabs/collab-dsc01295.jpg', alt: 'Studio collaboration' },
-                                { src: '/collabs/collab-img-apr29.jpg', alt: 'AI design talk' },
-                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
-                                { src: '/collabs/collab-frameio.png', alt: 'Frame.io collaboration' },
-                                { src: '/collabs/collab-apr29.jpg', alt: 'Masterclass event' },
-                                { src: '/collabs/collab-apr29-image.jpg', alt: 'Workshop session' },
-                                { src: '/collabs/collab-dsc01295.jpg', alt: 'Studio collaboration' },
-                                { src: '/collabs/collab-img-apr29.jpg', alt: 'AI design talk' },
-                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
-                                { src: '/collabs/collab-frameio.png', alt: 'Frame.io collaboration' },
-                            ].map((photo, i) => (
-                                <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden">
-                                    <img
-                                        src={photo.src}
-                                        alt={photo.alt}
-                                        className="h-full w-full object-cover opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-500"
-                                    />
+                                { type: 'img', src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
+                                { type: 'img', src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
+                                { type: 'video', vimeoId: '1188921309', alt: 'Live session reel' },
+                                { type: 'img', src: '/collabs/collab-3.jpg', alt: 'Studio training' },
+                                { type: 'img', src: '/collabs/collab-4.jpg', alt: 'Design talk' },
+                                { type: 'img', src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
+                                { type: 'img', src: '/collabs/collab-7.jpg', alt: 'Partner event' },
+                                { type: 'img', src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
+                                { type: 'img', src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
+                                { type: 'img', src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
+                                { type: 'video', vimeoId: '1188921309', alt: 'Live session reel' },
+                                { type: 'img', src: '/collabs/collab-3.jpg', alt: 'Studio training' },
+                                { type: 'img', src: '/collabs/collab-4.jpg', alt: 'Design talk' },
+                                { type: 'img', src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
+                                { type: 'img', src: '/collabs/collab-7.jpg', alt: 'Partner event' },
+                                { type: 'img', src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
+                            ].map((item, i) => (
+                                <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden bg-[#111]">
+                                    {item.type === 'video' ? (
+                                        <iframe
+                                            src={`https://player.vimeo.com/video/${item.vimeoId}?autoplay=0&muted=1&loop=1&title=0&byline=0&portrait=0&color=d0ff71`}
+                                            className="w-full h-full"
+                                            allow="autoplay; fullscreen; picture-in-picture"
+                                            title={item.alt}
+                                        />
+                                    ) : (
+                                        <img
+                                            src={item.src}
+                                            alt={item.alt}
+                                            className="h-full w-full object-cover opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-500"
+                                        />
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -691,11 +703,6 @@ export function LandingPageTest() {
             {/* ── AI FOR TEAMS ──────────────────────────────────────────── */}
             <section id="masterclass" className="py-20 md:py-32 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
-                    <FadeIn className="mb-12 md:mb-16 text-center">
-                        <h2 className="font-heading font-black uppercase text-[clamp(2.8rem,8vw,7rem)] leading-[0.9] text-white">
-                            AI FOR <span className="text-lime">TEAMS</span>
-                        </h2>
-                    </FadeIn>
 
                     {/* Big Masterclass card */}
                     <motion.div
@@ -721,7 +728,7 @@ export function LandingPageTest() {
                                     Exclusive Program
                                 </span>
                                 <h3 className="font-heading font-black text-white uppercase text-[clamp(1.6rem,5vw,4rem)] leading-[1.0] md:leading-[0.93]">
-                                    Zkandar AI<br /><span className="text-lime">Masterclass</span>
+                                    AI Masterclass <span className="text-lime">for Teams</span>
                                 </h3>
                                 <p className="text-gray-400 text-base md:text-lg leading-relaxed font-body max-w-xl">
                                     A hands-on, studio-first AI program that gives your design team a complete operating system for using AI in real work.
@@ -734,7 +741,7 @@ export function LandingPageTest() {
                             <div className="flex flex-wrap gap-3">
                                 {[
                                     { label: 'Duration', value: '15 hours' },
-                                    { label: 'Format', value: 'Live + Async' },
+                                    { label: 'Format', value: 'Hands-On' },
                                     { label: 'Delivery', value: 'In-Person or Remote' },
                                     { label: 'Team Size', value: 'Up to 20 designers' },
                                 ].map(m => (
@@ -861,7 +868,7 @@ export function LandingPageTest() {
                                 key={i}
                                 src={logo.file}
                                 alt={logo.name}
-                                className="h-20 w-auto object-contain flex-shrink-0 opacity-40 hover:opacity-70 transition-opacity duration-300"
+                                className="h-28 w-auto object-contain flex-shrink-0 opacity-65 hover:opacity-90 transition-opacity duration-300"
                                 style={{ filter: 'brightness(0) invert(1)' }}
                             />
                         ))}

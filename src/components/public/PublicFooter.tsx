@@ -13,6 +13,7 @@ const FOOTER_LINKS = {
         { label: 'Participant Login',       href: '/login' },
     ],
     Contact: [
+        { label: 'Book a Talk',            href: '/events-apply' },
         { label: 'Privacy Policy',         href: '/privacy' },
         { label: 'Terms of Service',       href: '/terms' },
     ],
