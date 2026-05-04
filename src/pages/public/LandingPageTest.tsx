@@ -596,9 +596,9 @@ export function LandingPageTest() {
                         <p className="text-gray-500 text-base mt-2">From 30+ studios and firms around the world.</p>
                     </FadeIn>
 
-                    {/* Testimonial mashup — 16:9 */}
-                    <FadeIn delay={0.1} className="max-w-4xl mx-auto">
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black aspect-video shadow-[0_0_60px_rgba(208,255,113,0.05)]">
+                    {/* Testimonial mashup — 9:16 portrait */}
+                    <FadeIn delay={0.1} className="flex justify-center">
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black shadow-[0_0_60px_rgba(208,255,113,0.05)] w-full max-w-sm" style={{ aspectRatio: '9/16' }}>
                             <iframe
                                 src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
                                 className="w-full h-full"
@@ -716,7 +716,7 @@ export function LandingPageTest() {
                                     Exclusive Program
                                 </span>
                                 <h3 className="font-heading font-black text-white uppercase text-[clamp(1.6rem,5vw,4rem)] leading-[1.0] md:leading-[0.93]">
-                                    AI Masterclass <span className="text-lime">for Teams</span>
+                                    AI Masterclass<br /><span className="text-lime">for Teams</span>
                                 </h3>
                                 <p className="text-gray-400 text-base md:text-lg leading-relaxed font-body max-w-xl">
                                     A hands-on, studio-first AI program that gives your design team a complete operating system for using AI in real work.

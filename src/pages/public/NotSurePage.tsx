@@ -415,7 +415,7 @@ export function NotSurePage() {
                     <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ delay: 0.1 }}
                         className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,3.4rem)] leading-[0.95] mb-6">
-                        You've seen what's possible.<br /><span className="text-lime">You already know.</span>
+                        You've seen the proof.<br /><span className="text-lime">You already know.</span>
                     </motion.h2>
 
                     <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
