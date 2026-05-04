@@ -524,38 +524,28 @@ export function LandingPageTest() {
                             style={{ paddingRight: '0.75rem' }}
                         >
                             {[
-                                { type: 'img', src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
-                                { type: 'img', src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
-                                { type: 'video', vimeoId: '1188921309', alt: 'Live session reel' },
-                                { type: 'img', src: '/collabs/collab-3.jpg', alt: 'Studio training' },
-                                { type: 'img', src: '/collabs/collab-4.jpg', alt: 'Design talk' },
-                                { type: 'img', src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
-                                { type: 'img', src: '/collabs/collab-7.jpg', alt: 'Partner event' },
-                                { type: 'img', src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
-                                { type: 'img', src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
-                                { type: 'img', src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
-                                { type: 'video', vimeoId: '1188921309', alt: 'Live session reel' },
-                                { type: 'img', src: '/collabs/collab-3.jpg', alt: 'Studio training' },
-                                { type: 'img', src: '/collabs/collab-4.jpg', alt: 'Design talk' },
-                                { type: 'img', src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
-                                { type: 'img', src: '/collabs/collab-7.jpg', alt: 'Partner event' },
-                                { type: 'img', src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
-                            ].map((item, i) => (
-                                <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden bg-[#111]">
-                                    {item.type === 'video' ? (
-                                        <iframe
-                                            src={`https://player.vimeo.com/video/${item.vimeoId}?autoplay=0&muted=1&loop=1&title=0&byline=0&portrait=0&color=d0ff71`}
-                                            className="w-full h-full"
-                                            allow="autoplay; fullscreen; picture-in-picture"
-                                            title={item.alt}
-                                        />
-                                    ) : (
-                                        <img
-                                            src={item.src}
-                                            alt={item.alt}
-                                            className="h-full w-full object-cover opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-500"
-                                        />
-                                    )}
+                                { src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
+                                { src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
+                                { src: '/collabs/collab-3.jpg', alt: 'Studio training' },
+                                { src: '/collabs/collab-4.jpg', alt: 'Design talk' },
+                                { src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
+                                { src: '/collabs/collab-7.jpg', alt: 'Partner event' },
+                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
+                                { src: '/collabs/collab-1.jpg', alt: 'Masterclass session' },
+                                { src: '/collabs/collab-2.jpg', alt: 'Workshop collaboration' },
+                                { src: '/collabs/collab-3.jpg', alt: 'Studio training' },
+                                { src: '/collabs/collab-4.jpg', alt: 'Design talk' },
+                                { src: '/collabs/collab-5.jpg', alt: 'Team workshop' },
+                                { src: '/collabs/collab-7.jpg', alt: 'Partner event' },
+                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra partnership' },
+                            ].map((photo, i) => (
+                                <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden">
+                                    <img
+                                        src={photo.src}
+                                        alt={photo.alt}
+                                        loading="lazy"
+                                        className="h-full w-full object-cover opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-500"
+                                    />
                                 </div>
                             ))}
                         </div>
