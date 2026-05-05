@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { ArrowRight, X, ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import { PublicNav } from '../../components/public/PublicNav'
@@ -48,47 +48,6 @@ interface ProjectCategory {
 
 const PROJECTS: ProjectCategory[] = [
     {
-        id: 'f1',
-        tag: 'Sports & Branding',
-        title: 'F1 Sprint Campaign',
-        description: 'Cinematic Formula 1 campaign imagery — entirely AI-generated. From race-day atmosphere to hero shots.',
-        images: ['/more-works/f1/1.jpg','/more-works/f1/2.jpg','/more-works/f1/3.jpg','/more-works/f1/4.jpg'],
-        vimeoId: '1187702968',
-        filmLabel: 'F1 Sprint — AI Campaign Film',
-    },
-    {
-        id: 'landscaping',
-        tag: 'Landscape Architecture',
-        title: 'Landscape Design',
-        description: 'From site plans to lush environmental renders — AI-generated landscaping at full client-presentation quality.',
-        images: ['/more-works/landscaping/1.jpg','/more-works/landscaping/2.jpg','/more-works/landscaping/3.jpg','/more-works/landscaping/4.jpg','/more-works/landscaping/5.jpg','/more-works/landscaping/6.jpg','/more-works/landscaping/7.jpg','/more-works/landscaping/8.jpg','/more-works/landscaping/9.jpg','/more-works/landscaping/10.jpg','/more-works/landscaping/11.jpg'],
-    },
-    {
-        id: 'atelier',
-        tag: 'Luxury Brand',
-        title: 'Atelier Carrousel',
-        description: 'Product photography and cinematic brand identity — from opening scene to final product shot, no studio required.',
-        images: ['/more-works/atelier-carrousel/opening.jpg','/more-works/atelier-carrousel/product-1.webp','/more-works/atelier-carrousel/product-2.webp','/more-works/atelier-carrousel/product-3.webp','/more-works/atelier-carrousel/closing.jpg'],
-        vimeoId: '1187090835',
-        filmLabel: 'Atelier Carrousel — AI Brand Film',
-    },
-    {
-        id: 'coco',
-        tag: 'Hospitality & Retail',
-        title: 'Coco Chanel Concept',
-        description: 'Cinematic hospitality scenes and retail visualization — AI-directed atmospheres at luxury brand standard.',
-        images: ['/more-works/coco-chanel/1.jpg','/more-works/coco-chanel/2.jpg','/more-works/coco-chanel/3.jpg'],
-        vimeoId: '1187667794',
-        filmLabel: 'Coco Chanel Concept — AI Brand Film',
-    },
-    {
-        id: 'product',
-        tag: 'Product Design',
-        title: 'Furniture Collection',
-        description: 'From rough sketch to photorealistic product render — the full AI workflow, prize-winning output.',
-        images: ['/more-works/product-design/sketch-1.png','/more-works/product-design/sketch-2.png','/more-works/product-design/1.jpg','/more-works/product-design/2.jpg','/more-works/product-design/3.jpg','/more-works/product-design/4.jpg'],
-    },
-    {
         id: 'som',
         tag: 'Architecture',
         title: 'SOM — Skidmore Owings & Merrill',
@@ -112,34 +71,216 @@ const PROJECTS: ProjectCategory[] = [
         vimeoId: '1183148939',
         filmLabel: 'SOM — AI Architecture Film',
     },
+    {
+        id: 'f1',
+        tag: 'Sports & Branding',
+        title: 'F1 Sprint Campaign',
+        description: 'Cinematic Formula 1 campaign imagery — entirely AI-generated. From race-day atmosphere to hero shots.',
+        images: ['/more-works/f1/1.jpg','/more-works/f1/2.jpg','/more-works/f1/3.jpg','/more-works/f1/4.jpg'],
+        vimeoId: '1187078968',
+        filmLabel: 'F1 Sprint — AI Campaign Film',
+    },
+    {
+        id: 'atelier',
+        tag: 'Luxury Brand',
+        title: 'Atelier Carrousel',
+        description: 'Product photography and cinematic brand identity — from opening scene to final product shot, no studio required.',
+        images: ['/more-works/atelier-carrousel/opening.jpg','/more-works/atelier-carrousel/product-1.webp','/more-works/atelier-carrousel/product-2.webp','/more-works/atelier-carrousel/product-3.webp','/more-works/atelier-carrousel/closing.jpg'],
+        vimeoId: '1187090835',
+        filmLabel: 'Atelier Carrousel — AI Brand Film',
+    },
+    {
+        id: 'product',
+        tag: 'Product Design',
+        title: 'Furniture Collection',
+        description: 'From rough sketch to photorealistic product render — the full AI workflow, prize-winning output.',
+        images: ['/more-works/product-design/sketch-1.png','/more-works/product-design/sketch-2.png','/more-works/product-design/1.jpg','/more-works/product-design/2.jpg','/more-works/product-design/3.jpg','/more-works/product-design/4.jpg'],
+    },
+    {
+        id: 'coco',
+        tag: 'Hospitality & Retail',
+        title: 'Coco Chanel Concept',
+        description: 'Cinematic hospitality scenes and retail visualization — AI-directed atmospheres at luxury brand standard.',
+        images: ['/more-works/coco-chanel/1.jpg','/more-works/coco-chanel/2.jpg','/more-works/coco-chanel/3.jpg'],
+        vimeoId: '1187667794',
+        filmLabel: 'Coco Chanel Concept — AI Brand Film',
+    },
 ]
 
 // ── Project Lightbox ────────────────────────────────────────────────────────
 
-function ProjectLightbox({ images, startIdx, onClose }: { images: string[]; startIdx: number; onClose: () => void }) {
+function ProjectPresentation({
+    project, startIdx, onClose,
+}: {
+    project: ProjectCategory
+    startIdx: number
+    onClose: () => void
+}) {
+    // Build slides: all images first, then optional film at the end
+    const slides = useMemo(() => {
+        const s = project.images.map((img, i) => ({
+            type: 'image' as const,
+            img,
+            label: `Image ${i + 1}`,
+        }))
+        if (project.vimeoId) {
+            s.push({
+                type: 'video' as const,
+                img: '', // no thumbnail for video slide
+                label: project.filmLabel ?? 'AI Film',
+            })
+        }
+        return s
+    }, [project])
+
     const [idx, setIdx] = useState(startIdx)
+    const filmstripRef = useRef<HTMLDivElement>(null)
+    const slide = slides[idx]
+    const prevSlide = idx > 0 ? slides[idx - 1] : null
+    const nextSlide = idx < slides.length - 1 ? slides[idx + 1] : null
+
+    const goNext = useCallback(() => setIdx(i => Math.min(i + 1, slides.length - 1)), [slides.length])
+    const goPrev = useCallback(() => setIdx(i => Math.max(i - 1, 0)), [])
+
+    useEffect(() => {
+        const el = filmstripRef.current?.children[idx] as HTMLElement
+        el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }, [idx])
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight') goNext()
+            if (e.key === 'ArrowLeft') goPrev()
+            if (e.key === 'Escape') onClose()
+        }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [goNext, goPrev, onClose])
+
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center" onClick={onClose}>
-            <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full border border-white/15 text-gray-400 hover:text-white hover:border-white/30 transition z-10">
-                <X className="w-4 h-4" />
-            </button>
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[0.6rem] uppercase tracking-[0.2em] text-gray-600 tabular-nums">{idx + 1} / {images.length}</div>
-            <div className="relative w-full h-full flex items-center justify-center p-12" onClick={e => e.stopPropagation()}>
-                <motion.img key={idx} src={images[idx]} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }} className="max-h-full max-w-full object-contain rounded-xl" alt="" />
-                {idx > 0 && (
-                    <button onClick={() => setIdx(i => i - 1)} className="absolute left-3 sm:left-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm"><ChevronLeft className="w-5 h-5" /></button>
-                )}
-                {idx < images.length - 1 && (
-                    <button onClick={() => setIdx(i => i + 1)} className="absolute right-3 sm:right-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm"><ChevronRight className="w-5 h-5" /></button>
-                )}
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-sm flex flex-col"
+            onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+        >
+            {/* ── Top bar ── */}
+            <div className="px-4 sm:px-8 py-3 border-b border-white/[0.07] bg-black/80 backdrop-blur shrink-0">
+                <div className="max-w-5xl mx-auto flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{project.tag}</p>
+                        <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{project.title}</p>
+                        <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{project.description}</p>
+                    </div>
+                    <div className="shrink-0 flex items-center gap-3">
+                        <p className="text-[0.65rem] text-gray-600 tabular-nums hidden sm:block">{idx + 1} / {slides.length}</p>
+                        <button onClick={onClose}
+                            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/15 hover:border-lime/40 hover:bg-lime/10 text-gray-300 hover:text-lime transition-all">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4 overflow-x-auto" onClick={e => e.stopPropagation()}>
-                {images.map((img, i) => (
-                    <button key={i} onClick={() => setIdx(i)} className={`shrink-0 w-12 h-8 rounded overflow-hidden border-2 transition-all ${i === idx ? 'border-lime opacity-100' : 'border-white/10 opacity-40 hover:opacity-70'}`}>
-                        <img src={img} alt="" className="w-full h-full object-cover" />
-                    </button>
-                ))}
+
+            {/* ── Main content area ── */}
+            <div
+                className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#040404]"
+                onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+            >
+                {/* Blurred previous (left edge) */}
+                {prevSlide && prevSlide.img && (
+                    <div className="absolute left-0 top-0 bottom-0 w-32 sm:w-48 z-[1] pointer-events-none hidden md:block">
+                        <img src={prevSlide.img} alt="" className="w-full h-full object-cover opacity-20 blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#040404] via-[#040404]/60 to-transparent" />
+                    </div>
+                )}
+
+                {/* Blurred next (right edge) */}
+                {nextSlide && nextSlide.img && (
+                    <div className="absolute right-0 top-0 bottom-0 w-32 sm:w-48 z-[1] pointer-events-none hidden md:block">
+                        <img src={nextSlide.img} alt="" className="w-full h-full object-cover opacity-20 blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-l from-[#040404] via-[#040404]/60 to-transparent" />
+                    </div>
+                )}
+
+                {/* Central content */}
+                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52">
+                    <AnimatePresence mode="wait">
+                        {slide.type === 'video' ? (
+                            <motion.div
+                                key={`video-${idx}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="w-full h-full flex items-center justify-center"
+                            >
+                                <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                                    <iframe
+                                        src={`https://player.vimeo.com/video/${project.vimeoId}?autoplay=1&loop=0&title=0&byline=0&portrait=0&color=c8f542`}
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title={project.filmLabel ?? 'AI Film'}
+                                    />
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.img
+                                key={idx}
+                                src={slide.img}
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.18 }}
+                                className="max-h-full max-w-full object-contain rounded-lg"
+                                alt={slide.label}
+                            />
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Prev arrow */}
+                <button onClick={goPrev}
+                    className={`absolute left-3 sm:left-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${idx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                {/* Next arrow */}
+                <button onClick={goNext}
+                    className={`absolute right-3 sm:right-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${idx === slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+
+            {/* ── Bottom filmstrip ── */}
+            <div className="shrink-0 border-t border-white/[0.07] bg-black/80 backdrop-blur px-3 sm:px-5 py-3">
+                <div ref={filmstripRef} className="flex items-center gap-2 overflow-x-auto scrollbar-hide mx-auto max-w-5xl py-1">
+                    {slides.map((s, i) => {
+                        const isActive = i === idx
+                        return (
+                            <button
+                                key={i}
+                                onClick={() => setIdx(i)}
+                                className={`shrink-0 flex flex-col items-center gap-1 transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
+                            >
+                                <div className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-colors duration-200 flex items-center justify-center bg-white/[0.04] ${isActive ? 'border-lime' : 'border-white/[0.06]'}`}>
+                                    {s.type === 'video' ? (
+                                        <Play className="w-3.5 h-3.5 text-lime/80" />
+                                    ) : (
+                                        <img src={s.img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                                    )}
+                                </div>
+                                <span className={`text-[0.5rem] uppercase tracking-wider font-bold tabular-nums ${isActive ? 'text-lime' : 'text-gray-600'}`}>
+                                    {s.type === 'video' ? 'Film' : `${i + 1}`}
+                                </span>
+                            </button>
+                        )
+                    })}
+                </div>
+                <p className="text-center text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mt-2">{project.title} · {project.tag}</p>
             </div>
         </motion.div>
     )
@@ -156,7 +297,7 @@ function ProjectSection({ project }: { project: ProjectCategory }) {
         <>
             <AnimatePresence>
                 {lightbox !== null && (
-                    <ProjectLightbox images={project.images} startIdx={lightbox} onClose={() => setLightbox(null)} />
+                    <ProjectPresentation project={project} startIdx={lightbox} onClose={() => setLightbox(null)} />
                 )}
             </AnimatePresence>
 
@@ -417,6 +558,30 @@ export function CaseStudiesPage() {
                 </div>
             </section>
 
+            {/* ── STANDALONE AI FILM ──────────────────────────────── */}
+            <section className="py-10 md:py-14 bg-black">
+                <div className="max-w-5xl mx-auto px-5 sm:px-6">
+                    <FadeIn>
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300 max-w-3xl">
+                            <div className="aspect-video">
+                                <iframe
+                                    src="https://player.vimeo.com/video/1188971702?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
+                                    className="w-full h-full"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    title="Vitra Showroom — AI Film"
+                                />
+                            </div>
+                            <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
+                                <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Interior Design</span>
+                                <p className="font-heading font-black uppercase text-sm text-white">Vitra Showroom — AI Film</p>
+                                <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
+                            </div>
+                        </div>
+                    </FadeIn>
+                </div>
+            </section>
+
             {/* ── CASE STUDIES GRID ───────────────────────────────────── */}
             <section className="py-16 md:py-24 bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
@@ -444,8 +609,8 @@ export function CaseStudiesPage() {
                                         </div>
                                     </div>
                                     <div className="px-5 sm:px-6 py-4 flex items-center gap-4">
-                                        <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-lime/30 transition-colors duration-300">
-                                            <img src={cs.dp} alt={cs.name} className="w-full h-full object-cover" />
+                                        <div className="shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-white/10 group-hover:border-lime/30 transition-colors duration-300">
+                                            <img src={cs.dp} alt={cs.name} className="w-full h-full object-cover object-top" />
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <h3 className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{cs.name}</h3>
@@ -499,35 +664,7 @@ export function CaseStudiesPage() {
                 </div>
             </section>
 
-            {/* ── STANDALONE AI FILM ──────────────────────────────── */}
-            <section className="py-16 md:py-24 border-t border-white/[0.04] bg-black">
-                <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
-                    <FadeIn className="mb-10">
-                        <MicroLabel>Fully AI-Generated</MicroLabel>
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95] mt-4">
-                            AI <span className="text-lime">FILM.</span>
-                        </h2>
-                    </FadeIn>
-                    <FadeIn>
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300 max-w-3xl">
-                            <div className="aspect-video">
-                                <iframe
-                                    src="https://player.vimeo.com/video/1188971702?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
-                                    className="w-full h-full"
-                                    allow="autoplay; fullscreen; picture-in-picture"
-                                    allowFullScreen
-                                    title="Vitra Showroom — AI Film"
-                                />
-                            </div>
-                            <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
-                                <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Interior Design</span>
-                                <p className="font-heading font-black uppercase text-sm text-white">Vitra Showroom — AI Film</p>
-                                <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
-                            </div>
-                        </div>
-                    </FadeIn>
-                </div>
-            </section>
+
 
             {/* ── FINAL CTA ────────────────────────────────────────── */}
             <section className="relative overflow-hidden py-24 md:py-32">
@@ -536,13 +673,6 @@ export function CaseStudiesPage() {
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-lime/30 to-transparent" />
 
                 <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 text-center">
-                    <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }} className="flex justify-center mb-8">
-                        <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.22em] text-lime border border-lime/25 bg-lime/[0.06] px-4 py-2 rounded-full">
-                            <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                            Next Cohort Filling Fast
-                        </span>
-                    </motion.div>
                     <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ delay: 0.1 }}
                         className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,3.4rem)] leading-[0.95] mb-6">
@@ -551,7 +681,7 @@ export function CaseStudiesPage() {
                     <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
                         viewport={{ once: true }} transition={{ delay: 0.25 }}
                         className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-10">
-                        The doubt doesn't go away until you're in the room. Every person who came in unsure left with deliverables they used on a live project within 30 days.
+                        The doubt doesn't go away until you're in the room. Every person who came in unsure left with deliverables they used on a live project within minutes.
                     </motion.p>
                     <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ delay: 0.35 }}
@@ -563,8 +693,8 @@ export function CaseStudiesPage() {
                     </motion.div>
                     <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
                         viewport={{ once: true }} transition={{ delay: 0.5 }}
-                        className="text-[0.65rem] text-gray-700 uppercase tracking-[0.18em] mt-8">
-                        Learn how to master AI tools to have an unfair advantage over your competitors
+                        className="text-[0.65rem] text-gray-700 uppercase tracking-[0.18em] mt-8 leading-[1.8]">
+                        Learn how to master AI tools to have<br />an unfair advantage over your competitors
                     </motion.p>
                 </div>
             </section>

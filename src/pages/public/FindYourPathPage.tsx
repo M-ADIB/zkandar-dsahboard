@@ -300,7 +300,7 @@ function OptionCard({ label, sub, selected, onClick }: {
 
 // ─── Results screen ───────────────────────────────────────────────────────────
 
-function ResultsScreen({ answers }: { answers: Answers }) {
+function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: string }) {
     const [modalOpen, setModalOpen] = useState(false)
     const path = computePath(answers)
     const score = computeReadinessScore(answers)
@@ -334,7 +334,7 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                 className="max-w-2xl mx-auto px-5 sm:px-6 py-8 space-y-8"
             >
                 {/* Top badge — color matches score */}
-                <div className="text-center">
+                <div className="text-center space-y-3">
                     <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-full"
                         style={{
                             color: scoreColor(score),
@@ -345,6 +345,11 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                         <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: scoreColor(score) }} />
                         Your AI Readiness Assessment
                     </span>
+                    {firstName && (
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,4vw,2rem)] text-white leading-tight">
+                            Hey {firstName}, here's where you stand.
+                        </h2>
+                    )}
                 </div>
 
                 {/* Score ring + productivity gap */}
@@ -694,18 +699,21 @@ function ResultsScreen({ answers }: { answers: Answers }) {
 
 // ─── Lead capture gate ────────────────────────────────────────────────────────
 
-function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string, phone: string) => void }) {
-    const [name, setName] = useState('')
+function GateScreen({ onSubmit }: { onSubmit: (firstName: string, lastName: string, email: string, phone: string) => void }) {
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [error, setError] = useState('')
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        const trimmedName = name.trim()
+        const trimmedFirst = firstName.trim()
+        const trimmedLast = lastName.trim()
         const trimmedEmail = email.trim()
         const trimmedPhone = phone.trim()
-        if (!trimmedName) { setError('Please enter your full name.'); return }
+        if (!trimmedFirst) { setError('Please enter your first name.'); return }
+        if (!trimmedLast) { setError('Please enter your last name.'); return }
         if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
             setError('Please enter a valid email address.')
             return
@@ -715,7 +723,7 @@ function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string, phon
             return
         }
         setError('')
-        onSubmit(trimmedName, trimmedEmail, trimmedPhone)
+        onSubmit(trimmedFirst, trimmedLast, trimmedEmail, trimmedPhone)
     }
 
     return (
@@ -739,14 +747,24 @@ function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string, phon
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-                <input
-                    type="text"
-                    placeholder="Full name *"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    required
-                    className="w-full px-4 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.06] transition-all"
-                />
+                <div className="grid grid-cols-2 gap-3">
+                    <input
+                        type="text"
+                        placeholder="First name *"
+                        value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
+                        required
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.06] transition-all"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Last name *"
+                        value={lastName}
+                        onChange={e => setLastName(e.target.value)}
+                        required
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.06] transition-all"
+                    />
+                </div>
                 <input
                     type="email"
                     placeholder="Email address *"
@@ -844,6 +862,7 @@ export function FindYourPathPage() {
     const [answers, setAnswers] = useState<Answers>({})
     const [showGate, setShowGate] = useState(false)
     const [showResults, setShowResults] = useState(false)
+    const [submitterFirstName, setSubmitterFirstName] = useState('')
 
     if (!started) return <IntroScreen onStart={() => setStarted(true)} />
 
@@ -872,15 +891,20 @@ export function FindYourPathPage() {
         if (globalIdx > 0) setGlobalIdx(i => i - 1)
     }
 
-    const handleGateSubmit = (name: string, email: string, phone: string) => {
+    const handleGateSubmit = (firstName: string, lastName: string, email: string, phone: string) => {
+        // Save first name for personalization
+        setSubmitterFirstName(firstName)
         // Show results INSTANTLY — no waiting
         setShowResults(true)
 
         // Fire DB insert in background (fire-and-forget)
+        const fullName = `${firstName} ${lastName}`.trim()
         const path = computePath(answers)
         const score = computeReadinessScore(answers)
         ;(supabase.from('assessment_submissions') as any).insert({
-            name,
+            name: fullName,
+            first_name: firstName,
+            last_name: lastName,
             email,
             phone,
             answers,
@@ -909,7 +933,7 @@ export function FindYourPathPage() {
         return (
             <div className="min-h-screen bg-black text-white font-body">
                 <PublicNav />
-                <div className="pt-28"><ResultsScreen answers={answers} /></div>
+                <div className="pt-28"><ResultsScreen answers={answers} firstName={submitterFirstName} /></div>
                 <PublicFooter />
             </div>
         )
