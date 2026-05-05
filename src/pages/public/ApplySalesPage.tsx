@@ -179,7 +179,7 @@ export const ApplySalesPage = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.25 }}
-                        className="max-w-2xl mx-auto px-6 pt-16 pb-24 relative z-10"
+                        className="max-w-2xl mx-auto px-6 pt-28 pb-24 relative z-10"
                     >
                 {/* Logo */}
                 <div className="flex items-center space-x-3 mb-12">

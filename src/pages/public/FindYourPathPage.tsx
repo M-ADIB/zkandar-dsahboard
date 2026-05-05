@@ -692,7 +692,7 @@ export function FindYourPathPage() {
         return (
             <div className="min-h-screen bg-black text-white font-body">
                 <PublicNav />
-                <div className="pt-20">
+                <div className="pt-28">
                     <GateScreen onSubmit={handleGateSubmit} />
                 </div>
                 <PublicFooter />
@@ -704,7 +704,7 @@ export function FindYourPathPage() {
         return (
             <div className="min-h-screen bg-black text-white font-body">
                 <PublicNav />
-                <div className="pt-20"><ResultsScreen answers={answers} /></div>
+                <div className="pt-28"><ResultsScreen answers={answers} /></div>
                 <PublicFooter />
             </div>
         )
@@ -714,7 +714,7 @@ export function FindYourPathPage() {
         <div className="min-h-screen bg-black text-white font-body flex flex-col">
             <PublicNav />
 
-            <div className="flex-1 flex flex-col pt-16">
+            <div className="flex-1 flex flex-col pt-28">
                 {/* Progress + section label */}
                 <div className="px-5 sm:px-10 pt-6 pb-0 max-w-2xl mx-auto w-full">
                     <div className="flex items-center justify-between mb-2">
