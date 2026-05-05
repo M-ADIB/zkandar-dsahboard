@@ -39,3 +39,8 @@ lerna-debug.log*
 # Claude Code worktrees
 .claude/worktrees/
 .vercel
+
+# Large binary assets
+*.mov
+*.ARW
+*.arw

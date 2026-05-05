@@ -686,12 +686,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                     />
                 </div>
 
-                <p className="text-center text-xs text-gray-700">
-                    Want to explore both?{' '}
-                    <a href="/ai-masterclass" className="text-gray-500 hover:text-white underline underline-offset-2 transition-colors">
-                        See the full program overview
-                    </a>
-                </p>
+
             </motion.div>
         </>
     )
