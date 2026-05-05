@@ -489,25 +489,28 @@ function ResultsScreen({ answers }: { answers: Answers }) {
 
 // ─── Lead capture gate ────────────────────────────────────────────────────────
 
-function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string) => Promise<void> }) {
+function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string, phone: string) => void }) {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
-    const [submitting, setSubmitting] = useState(false)
+    const [phone, setPhone] = useState('')
     const [error, setError] = useState('')
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         const trimmedName = name.trim()
         const trimmedEmail = email.trim()
-        if (!trimmedName) { setError('Please enter your name.'); return }
+        const trimmedPhone = phone.trim()
+        if (!trimmedName) { setError('Please enter your full name.'); return }
         if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
             setError('Please enter a valid email address.')
             return
         }
+        if (!trimmedPhone || trimmedPhone.length < 7) {
+            setError('Please enter a valid phone number.')
+            return
+        }
         setError('')
-        setSubmitting(true)
-        await onSubmit(trimmedName, trimmedEmail)
-        setSubmitting(false)
+        onSubmit(trimmedName, trimmedEmail, trimmedPhone)
     }
 
     return (
@@ -526,23 +529,33 @@ function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string) => P
                     Your AI Readiness Score is Ready.
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                    Enter your name and email to see your results and recommended path.
+                    Enter your details to see your results and recommended path.
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
                 <input
                     type="text"
-                    placeholder="Your name"
+                    placeholder="Full name *"
                     value={name}
                     onChange={e => setName(e.target.value)}
+                    required
                     className="w-full px-4 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.06] transition-all"
                 />
                 <input
                     type="email"
-                    placeholder="Your email address"
+                    placeholder="Email address *"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
+                    required
+                    className="w-full px-4 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.06] transition-all"
+                />
+                <input
+                    type="tel"
+                    placeholder="Phone number *"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    required
                     className="w-full px-4 py-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-lime/40 focus:bg-white/[0.06] transition-all"
                 />
                 {error && (
@@ -550,13 +563,12 @@ function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string) => P
                 )}
                 <motion.button
                     type="submit"
-                    disabled={submitting}
-                    whileHover={!submitting ? { scale: 1.02 } : {}}
-                    whileTap={!submitting ? { scale: 0.98 } : {}}
-                    className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all duration-300 mt-1"
                 >
-                    {submitting ? 'Loading...' : 'See My Results'}
-                    {!submitting && <ArrowRight className="w-4 h-4" />}
+                    See My Results
+                    <ArrowRight className="w-4 h-4" />
                 </motion.button>
             </form>
 
@@ -655,23 +667,25 @@ export function FindYourPathPage() {
         if (globalIdx > 0) setGlobalIdx(i => i - 1)
     }
 
-    const handleGateSubmit = async (name: string, email: string) => {
+    const handleGateSubmit = (name: string, email: string, phone: string) => {
+        // Show results INSTANTLY — no waiting
+        setShowResults(true)
+
+        // Fire DB insert in background (fire-and-forget)
         const path = computePath(answers)
         const score = computeReadinessScore(answers)
-        try {
-            await (supabase.from('assessment_submissions') as any).insert({
-                name,
-                email,
-                answers,
-                readiness_score: score,
-                path_result: path,
-                context: answers.context ?? null,
-                team_size: answers.team_size ?? null,
-            })
-        } catch (err) {
+        ;(supabase.from('assessment_submissions') as any).insert({
+            name,
+            email,
+            phone,
+            answers,
+            readiness_score: score,
+            path_result: path,
+            context: answers.context ?? null,
+            team_size: answers.team_size ?? null,
+        }).then(() => {}).catch((err: unknown) => {
             console.error('Assessment submission failed:', err)
-        }
-        setShowResults(true)
+        })
     }
 
     if (showGate && !showResults) {
