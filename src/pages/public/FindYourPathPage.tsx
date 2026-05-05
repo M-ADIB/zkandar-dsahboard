@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, ChevronLeft, Calendar, Users, Zap, Clock, Target, X } from 'lucide-react'
+import { ArrowRight, ChevronLeft, X } from 'lucide-react'
 import { InlineWidget } from 'react-calendly'
 import { supabase } from '@/lib/supabase'
 import { PublicNav } from '../../components/public/PublicNav'
@@ -395,73 +395,163 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                     </div>
                 </div>
 
-                {/* Recommendation card */}
-                <div className="rounded-3xl overflow-hidden border"
+                {/* Recommendation card — unified detailed format */}
+                <div className="rounded-3xl overflow-hidden relative"
                     style={{
-                        background: isSprint ? 'linear-gradient(145deg,#0d1a0d,#080f08)' : 'linear-gradient(145deg,#0f0f1a,#08080f)',
-                        borderColor: isSprint ? 'rgba(208,255,113,0.2)' : 'rgba(139,92,246,0.25)',
-                        boxShadow: isSprint ? '0 0 60px -20px rgba(208,255,113,0.15)' : '0 0 60px -20px rgba(139,92,246,0.15)',
+                        background: isSprint
+                            ? 'linear-gradient(145deg, #12101a 0%, #0d0b14 50%, #09080f 100%)'
+                            : 'linear-gradient(145deg, #111811 0%, #0C130C 50%, #090D09 100%)',
+                        border: isSprint
+                            ? '1px solid rgba(139, 92, 246, 0.15)'
+                            : '1px solid rgba(208, 255, 113, 0.15)',
+                        boxShadow: isSprint
+                            ? '0 0 0 1px rgba(139,92,246,0.04), 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(139,92,246,0.05) inset'
+                            : '0 0 0 1px rgba(208,255,113,0.04), 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(208,255,113,0.05) inset',
                     }}
                 >
-                    <div className="px-6 sm:px-8 py-6 sm:py-8">
-                        <div className="flex items-start justify-between gap-4 mb-4">
-                            <div>
-                                <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] mb-1"
-                                    style={{ color: isSprint ? '#D0FF71' : '#a78bfa' }}>
-                                    Your Recommended Path
-                                </p>
-                                <h3 className="font-heading font-black uppercase text-2xl sm:text-3xl text-white leading-tight">
-                                    {isSprint ? 'Sprint Workshop' : 'AI Masterclass'}
-                                </h3>
-                            </div>
-                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                                style={{ background: isSprint ? 'rgba(208,255,113,0.1)' : 'rgba(139,92,246,0.1)' }}>
+                    {/* Top gradient line */}
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent"
+                        style={{ backgroundImage: isSprint
+                            ? 'linear-gradient(to right, transparent, rgba(139,92,246,0.4), transparent)'
+                            : 'linear-gradient(to right, transparent, rgba(208,255,113,0.4), transparent)'
+                        }}
+                    />
+
+                    <div className="px-6 sm:px-8 py-6 sm:py-8 space-y-6">
+
+                        {/* Badge + title */}
+                        <div className="space-y-4">
+                            <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] font-body px-3 py-1.5 rounded-full"
+                                style={{
+                                    color: isSprint ? '#c4b5fd' : '#D0FF71',
+                                    border: isSprint ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(208,255,113,0.2)',
+                                    background: isSprint ? 'rgba(139,92,246,0.05)' : 'rgba(208,255,113,0.05)',
+                                }}
+                            >
+                                <span className="w-1.5 h-1.5 rounded-full animate-pulse"
+                                    style={{ background: isSprint ? '#a78bfa' : '#D0FF71' }}
+                                />
+                                Your Recommended Path
+                            </span>
+                            <h3 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.4rem)] text-white leading-[0.95]">
+                                {isSprint ? (
+                                    <>Sprint<br /><span style={{ color: '#a78bfa' }}>Workshop</span></>
+                                ) : (
+                                    <>AI Masterclass<br /><span className="text-lime">for Teams</span></>
+                                )}
+                            </h3>
+                            <p className="text-sm text-gray-400 leading-relaxed max-w-lg">
                                 {isSprint
-                                    ? <Zap className="w-5 h-5" style={{ color: '#D0FF71' }} />
-                                    : <Users className="w-5 h-5" style={{ color: '#a78bfa' }} />
-                                }
-                            </div>
+                                    ? 'Your profile points to a fast, hands-on intensive that gets you producing real AI output immediately. 3 days. Real deliverables. You leave with a workflow that works on your next client project.'
+                                    : 'Your profile shows this isn\'t just about one person upskilling — it\'s about transforming how your operation works. The AI Masterclass is built for firms. We come in, build the system, and leave your team certified and producing.'}
+                            </p>
                         </div>
 
-                        <p className="text-sm text-gray-400 leading-relaxed mb-5">
-                            {isSprint
-                                ? 'Your profile points to a fast, hands-on intensive that gets you producing real AI output immediately. 3 days. Real deliverables. You leave with a workflow that works on your next client project.'
-                                : 'Your profile shows this isn\'t just about one person upskilling — it\'s about transforming how your operation works. The AI Masterclass is built for firms. We come in, build the system, and leave your team certified and producing.'}
-                        </p>
+                        <div className="border-t border-white/5" />
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
+                        {/* Meta tags */}
+                        <div className="flex flex-wrap gap-2">
                             {(isSprint
                                 ? [
-                                    { icon: Clock, label: '3 Days', sub: 'Intensive sprint' },
-                                    { icon: Target, label: 'Output-First', sub: 'Real deliverables' },
-                                    { icon: Zap, label: 'Day 3', sub: 'Client-ready render' },
+                                    { label: 'Duration', value: '3 Days' },
+                                    { label: 'Format', value: 'Hands-On' },
+                                    { label: 'Delivery', value: 'Live Zoom' },
                                 ]
                                 : [
-                                    { icon: Users, label: 'Team-Wide', sub: 'Everyone trained' },
-                                    { icon: Target, label: '15 Hours', sub: 'Live + async' },
-                                    { icon: Calendar, label: 'Custom', sub: 'Your schedule' },
+                                    { label: 'Duration', value: '15 Hours' },
+                                    { label: 'Format', value: 'Hands-On' },
+                                    { label: 'Delivery', value: 'In-Person or Remote' },
+                                    { label: 'Team Size', value: 'Up to 20 designers' },
                                 ]
-                            ).map(f => (
-                                <div key={f.label} className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                                    <f.icon className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: isSprint ? '#D0FF71' : '#a78bfa' }} />
-                                    <div>
-                                        <p className="text-xs font-bold text-white">{f.label}</p>
-                                        <p className="text-[0.6rem] text-gray-600">{f.sub}</p>
-                                    </div>
+                            ).map(m => (
+                                <div key={m.label} className="flex items-center gap-2 bg-white/5 border border-white/[0.08] rounded-full px-3 py-1.5">
+                                    <span className="text-[10px] uppercase tracking-widest font-bold font-heading"
+                                        style={{ color: isSprint ? 'rgba(167,139,250,0.6)' : 'rgba(208,255,113,0.6)' }}
+                                    >{m.label}</span>
+                                    <span className="text-xs text-white font-body">{m.value}</span>
                                 </div>
                             ))}
                         </div>
 
+                        <div className="border-t border-white/5" />
+
+                        {/* What's included */}
+                        <div className="space-y-4">
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What's included</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+                                {(isSprint
+                                    ? [
+                                        '3 live days of hands-on AI training',
+                                        'Real client-ready deliverables by Day 3',
+                                        'Full Midjourney + AI rendering workflow',
+                                        'Access to session recordings',
+                                        'Free access to E-prompt books',
+                                    ]
+                                    : [
+                                        'Tailored content & case studies for your studio',
+                                        'In-session hands-on exercises',
+                                        'Prize money competition',
+                                        'Life-time access to all session recordings',
+                                        'Free access to E-prompt books',
+                                        'Bonus 2-hr support call post Masterclass',
+                                        '60-day free access to AI community',
+                                        'Data-driven analysis of team performance',
+                                    ]
+                                ).map((item) => (
+                                    <div key={item} className="flex items-start gap-2.5">
+                                        <span className="shrink-0 mt-0.5 w-4 h-4 rounded-full flex items-center justify-center"
+                                            style={{
+                                                background: isSprint ? 'rgba(139,92,246,0.1)' : 'rgba(208,255,113,0.1)',
+                                                border: isSprint ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(208,255,113,0.3)',
+                                            }}
+                                        >
+                                            <svg width="8" height="8" viewBox="0 0 10 10" fill="none">
+                                                <path d="M2 5L4 7L8 3" stroke={isSprint ? '#a78bfa' : '#D0FF71'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
+                                        <span className="text-xs text-gray-300 leading-relaxed font-body">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="border-t border-white/5" />
+
+                        {/* What you'll gain */}
+                        <div className="space-y-4">
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</p>
+                            <div className={`grid grid-cols-1 ${isSprint ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3`}>
+                                {(isSprint
+                                    ? [
+                                        { label: 'Speed', body: 'Go from sketch to photorealistic render in under 30 minutes' },
+                                        { label: 'Output', body: 'Leave with real deliverables you can present to clients immediately' },
+                                    ]
+                                    : [
+                                        { label: 'Control', body: 'Direct AI output with precision so it fits your visual language every time' },
+                                        { label: 'Speed', body: 'Compress days of ideation into hours without sacrificing quality' },
+                                        { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
+                                    ]
+                                ).map(g => (
+                                    <div key={g.label} className="rounded-xl p-4 space-y-1.5"
+                                        style={{
+                                            background: isSprint ? 'rgba(139,92,246,0.03)' : 'rgba(208,255,113,0.03)',
+                                            border: isSprint ? '1px solid rgba(139,92,246,0.08)' : '1px solid rgba(208,255,113,0.08)',
+                                        }}
+                                    >
+                                        <span className="font-heading font-black uppercase text-base leading-none"
+                                            style={{ color: isSprint ? '#a78bfa' : '#D0FF71' }}
+                                        >{g.label}</span>
+                                        <p className="text-[0.65rem] text-gray-400 leading-relaxed font-body">{g.body}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="border-t border-white/5" />
+
+                        {/* CTA */}
                         {isSprint ? (
                             <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
-                                className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] hover:-translate-y-0.5 transition-all duration-300"
-                            >
-                                Direct Checkout — Sprint Workshop
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </a>
-                        ) : (
-                            <button
-                                onClick={() => setModalOpen(true)}
                                 className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:-translate-y-0.5"
                                 style={{
                                     background: 'rgba(139,92,246,0.12)',
@@ -469,11 +559,27 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                                     border: '1px solid rgba(139,92,246,0.3)',
                                 }}
                             >
-                                <Calendar className="w-4 h-4" />
+                                Direct Checkout — Sprint Workshop
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </a>
+                        ) : (
+                            <button
+                                onClick={() => setModalOpen(true)}
+                                className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] hover:-translate-y-0.5 transition-all duration-300"
+                            >
                                 Book a Discovery Call with Khaled
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
                         )}
                     </div>
+
+                    {/* Bottom gradient line */}
+                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent"
+                        style={{ backgroundImage: isSprint
+                            ? 'linear-gradient(to right, transparent, rgba(139,92,246,0.2), transparent)'
+                            : 'linear-gradient(to right, transparent, rgba(208,255,113,0.2), transparent)'
+                        }}
+                    />
                 </div>
 
                 <p className="text-center text-xs text-gray-700">

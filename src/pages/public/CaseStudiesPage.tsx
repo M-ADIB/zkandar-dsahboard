@@ -48,6 +48,8 @@ function CaseStudyPresentation({
 }) {
     const filmstripRef = useRef<HTMLDivElement>(null)
     const slide = cs.slides[slideIdx]
+    const prevSlide = slideIdx > 0 ? cs.slides[slideIdx - 1] : null
+    const nextSlide = slideIdx < cs.slides.length - 1 ? cs.slides[slideIdx + 1] : null
 
     useEffect(() => {
         const el = filmstripRef.current?.children[slideIdx] as HTMLElement
@@ -72,25 +74,113 @@ function CaseStudyPresentation({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[200] bg-black flex flex-col"
-            onClick={onClose}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-sm flex flex-col"
+            onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
-            {/* Stop propagation on the actual content so only the bare backdrop closes */}
-            <div className="flex flex-col flex-1 min-h-0" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center gap-3 px-3 sm:px-5 pt-2.5 pb-0 bg-black shrink-0">
-                <button onClick={onClose}
-                    className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 border border-white/20 hover:bg-white hover:border-white text-white hover:text-black transition-all duration-200">
-                    <X className="w-4 h-4" />
+            {/* ── Top bar: caption + close ── */}
+            <div className="px-4 sm:px-8 py-3 border-b border-white/[0.07] bg-black/80 backdrop-blur shrink-0">
+                <div className="max-w-5xl mx-auto flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
+                        <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
+                        {slide.caption && (
+                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
+                        )}
+                    </div>
+                    <div className="shrink-0 flex items-center gap-3">
+                        <p className="text-[0.65rem] text-gray-600 tabular-nums hidden sm:block">{slideIdx + 1} / {cs.slides.length}</p>
+                        <button onClick={onClose}
+                            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/15 hover:border-lime/40 hover:bg-lime/10 text-gray-300 hover:text-lime transition-all">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── Main image area with blurred prev/next ── */}
+            <div
+                className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#040404]"
+                onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+            >
+                {/* Blurred previous image (left edge) */}
+                {prevSlide && prevSlide.img && (
+                    <div className="absolute left-0 top-0 bottom-0 w-32 sm:w-48 z-[1] pointer-events-none hidden md:block">
+                        <img src={prevSlide.img} alt="" className="w-full h-full object-cover opacity-20 blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#040404] via-[#040404]/60 to-transparent" />
+                    </div>
+                )}
+
+                {/* Blurred next image (right edge) */}
+                {nextSlide && nextSlide.img && (
+                    <div className="absolute right-0 top-0 bottom-0 w-32 sm:w-48 z-[1] pointer-events-none hidden md:block">
+                        <img src={nextSlide.img} alt="" className="w-full h-full object-cover opacity-20 blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-l from-[#040404] via-[#040404]/60 to-transparent" />
+                    </div>
+                )}
+
+                {/* Main content */}
+                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52">
+                    <AnimatePresence mode="wait">
+                        {slide.vimeoId ? (
+                            <motion.div
+                                key={`video-${slideIdx}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="w-full h-full flex items-center justify-center"
+                            >
+                                <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                                    <iframe
+                                        src={`https://player.vimeo.com/video/${slide.vimeoId}?autoplay=1&loop=0&title=0&byline=0&portrait=0&color=c8f542`}
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title={slide.title}
+                                    />
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.img
+                                key={slideIdx}
+                                src={slide.img}
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.18 }}
+                                className="max-h-full max-w-full object-contain rounded-lg"
+                                alt={slide.title}
+                            />
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Prev arrow */}
+                <button onClick={onPrev}
+                    className={`absolute left-3 sm:left-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-5 h-5" />
                 </button>
-                <div ref={filmstripRef} className="flex items-end gap-2 overflow-x-auto scrollbar-hide flex-1 py-1">
+
+                {/* Next arrow */}
+                <button onClick={onNext}
+                    className={`absolute right-3 sm:right-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+
+            {/* ── Timeline filmstrip (BELOW image) ── */}
+            <div className="shrink-0 border-t border-white/[0.07] bg-black/80 backdrop-blur px-3 sm:px-5 py-3">
+                <div ref={filmstripRef} className="flex items-center gap-2 overflow-x-auto scrollbar-hide mx-auto max-w-5xl py-1">
                     {cs.slides.map((s, i) => {
                         const isActive = i === slideIdx
                         const showDivider = s.category !== lastCategory && i > 0
                         const currentCategory = s.category
                         if (s.category !== lastCategory) lastCategory = s.category
                         return (
-                            <div key={i} className="shrink-0 flex items-end gap-2">
-                                {showDivider && <div className="w-px h-10 bg-white/[0.08] shrink-0" />}
+                            <div key={i} className="shrink-0 flex items-center gap-2">
+                                {showDivider && (
+                                    <div className="w-px h-10 bg-white/[0.08] shrink-0" />
+                                )}
                                 <button
                                     onClick={() => onJump(i)}
                                     className={`shrink-0 flex flex-col items-center gap-1 transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
@@ -109,70 +199,9 @@ function CaseStudyPresentation({
                         )
                     })}
                 </div>
-                <div className="shrink-0 text-right hidden sm:block">
-                    <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
-                    <p className="text-[0.6rem] uppercase tracking-[0.15em] text-gray-700">{cs.name}</p>
-                </div>
+                <p className="text-center text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mt-2">{cs.name} · {cs.projectType}</p>
             </div>
 
-            <div className="px-4 sm:px-8 py-3 border-b border-white/[0.07] bg-black shrink-0">
-                <div className="max-w-4xl mx-auto flex items-start justify-between gap-6">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
-                        <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
-                        {slide.caption && (
-                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
-                        )}
-                    </div>
-                    <div className="shrink-0 text-right hidden sm:block">
-                        <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#060606] p-6 sm:p-10">
-                <AnimatePresence mode="wait">
-                    {slide.vimeoId ? (
-                        <motion.div
-                            key={`video-${slideIdx}`}
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            transition={{ duration: 0.25 }}
-                            className="w-full h-full flex items-center justify-center"
-                        >
-                            <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
-                                <iframe
-                                    src={`https://player.vimeo.com/video/${slide.vimeoId}?autoplay=1&loop=0&title=0&byline=0&portrait=0&color=c8f542`}
-                                    className="w-full h-full"
-                                    allow="autoplay; fullscreen; picture-in-picture"
-                                    allowFullScreen
-                                    title={slide.title}
-                                />
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.img
-                            key={slideIdx}
-                            src={slide.img}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.18 }}
-                            className="max-h-full max-w-full object-contain"
-                            alt={slide.title}
-                        />
-                    )}
-                </AnimatePresence>
-
-                <button onClick={onPrev}
-                    className={`absolute left-3 sm:left-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button onClick={onNext}
-                    className={`absolute right-3 sm:right-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronRight className="w-5 h-5" />
-                </button>
-            </div>
-            </div>{/* /stopPropagation wrapper */}
         </motion.div>
     )
 }

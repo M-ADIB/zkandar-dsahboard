@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
-    ArrowRight,
+    ArrowRight, ArrowDown,
     X,
     ChevronLeft, ChevronRight, Play,
 } from 'lucide-react'
@@ -53,6 +53,19 @@ const MASTERCLASS_GAINS = [
     { label: 'Control', body: 'Direct AI output with precision so it fits your visual language every time' },
     { label: 'Speed', body: 'Compress days of ideation into hours without sacrificing quality' },
     { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
+]
+
+const SPRINT_INCLUSIONS = [
+    '3 live days of hands-on AI training',
+    'Real client-ready deliverables by Day 3',
+    'Full Midjourney + AI rendering workflow',
+    'Access to session recordings',
+    'Free access to E-prompt books',
+]
+
+const SPRINT_GAINS = [
+    { label: 'Speed', body: 'Go from sketch to photorealistic render in under 30 minutes' },
+    { label: 'Output', body: 'Leave with real deliverables you can present to clients immediately' },
 ]
 
 const VSL_VIDEO_ID = '1187084528'
@@ -129,6 +142,25 @@ function CheckItem({ text, delay = 0 }: { text: string; delay?: number }) {
     )
 }
 
+function PurpleCheckItem({ text, delay = 0 }: { text: string; delay?: number }) {
+    const ref = useRef(null)
+    const inView = useInView(ref, { once: true })
+    return (
+        <motion.div ref={ref}
+            initial={{ opacity: 0, x: -12 }} animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-start gap-3"
+        >
+            <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-purple-400/10 border border-purple-400/30 flex items-center justify-center">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M2 5L4 7L8 3" stroke="#a78bfa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            </span>
+            <span className="text-sm text-gray-300 leading-relaxed font-body">{text}</span>
+        </motion.div>
+    )
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 // ─── Case Study Presentation ──────────────────────────────────────────────────
@@ -145,6 +177,8 @@ function CaseStudyPresentation({
 }) {
     const filmstripRef = useRef<HTMLDivElement>(null)
     const slide = cs.slides[slideIdx]
+    const prevSlide = slideIdx > 0 ? cs.slides[slideIdx - 1] : null
+    const nextSlide = slideIdx < cs.slides.length - 1 ? cs.slides[slideIdx + 1] : null
 
     useEffect(() => {
         const el = filmstripRef.current?.children[slideIdx] as HTMLElement
@@ -170,24 +204,110 @@ function CaseStudyPresentation({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[200] bg-black flex flex-col"
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-sm flex flex-col"
+            onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
-            {/* ── Top bar: close + filmstrip ── */}
-            <div className="flex items-center gap-3 px-3 sm:px-5 pt-2.5 pb-0 bg-black shrink-0">
-                <button onClick={onClose}
-                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-white/10 hover:border-white/30 text-gray-400 hover:text-white transition">
-                    <X className="w-4 h-4" />
+            {/* ── Top bar: caption + close ── */}
+            <div className="px-4 sm:px-8 py-3 border-b border-white/[0.07] bg-black/80 backdrop-blur shrink-0">
+                <div className="max-w-5xl mx-auto flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
+                        <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
+                        {slide.caption && (
+                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
+                        )}
+                    </div>
+                    <div className="shrink-0 flex items-center gap-3">
+                        <p className="text-[0.65rem] text-gray-600 tabular-nums hidden sm:block">{slideIdx + 1} / {cs.slides.length}</p>
+                        <button onClick={onClose}
+                            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/15 hover:border-lime/40 hover:bg-lime/10 text-gray-300 hover:text-lime transition-all">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── Main image area with blurred prev/next ── */}
+            <div
+                className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#040404]"
+                onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+            >
+                {/* Blurred previous image (left edge) */}
+                {prevSlide && prevSlide.img && (
+                    <div className="absolute left-0 top-0 bottom-0 w-32 sm:w-48 z-[1] pointer-events-none hidden md:block">
+                        <img src={prevSlide.img} alt="" className="w-full h-full object-cover opacity-20 blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#040404] via-[#040404]/60 to-transparent" />
+                    </div>
+                )}
+
+                {/* Blurred next image (right edge) */}
+                {nextSlide && nextSlide.img && (
+                    <div className="absolute right-0 top-0 bottom-0 w-32 sm:w-48 z-[1] pointer-events-none hidden md:block">
+                        <img src={nextSlide.img} alt="" className="w-full h-full object-cover opacity-20 blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-l from-[#040404] via-[#040404]/60 to-transparent" />
+                    </div>
+                )}
+
+                {/* Main content */}
+                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52">
+                    <AnimatePresence mode="wait">
+                        {slide.vimeoId ? (
+                            <motion.div
+                                key={`video-${slideIdx}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="w-full h-full flex items-center justify-center"
+                            >
+                                <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                                    <iframe
+                                        src={`https://player.vimeo.com/video/${slide.vimeoId}?autoplay=1&loop=0&title=0&byline=0&portrait=0&color=c8f542`}
+                                        className="w-full h-full"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title={slide.title}
+                                    />
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.img
+                                key={slideIdx}
+                                src={slide.img}
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.18 }}
+                                className="max-h-full max-w-full object-contain rounded-lg"
+                                alt={slide.title}
+                            />
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Prev arrow */}
+                <button onClick={onPrev}
+                    className={`absolute left-3 sm:left-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-5 h-5" />
                 </button>
 
-                {/* Filmstrip */}
-                <div ref={filmstripRef} className="flex items-end gap-2 overflow-x-auto scrollbar-hide flex-1 py-1">
+                {/* Next arrow */}
+                <button onClick={onNext}
+                    className={`absolute right-3 sm:right-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+
+            {/* ── Timeline filmstrip (BELOW image) ── */}
+            <div className="shrink-0 border-t border-white/[0.07] bg-black/80 backdrop-blur px-3 sm:px-5 py-3">
+                <div ref={filmstripRef} className="flex items-center gap-2 overflow-x-auto scrollbar-hide mx-auto max-w-5xl py-1">
                     {cs.slides.map((s, i) => {
                         const isActive = i === slideIdx
                         const showDivider = s.category !== lastCategory && i > 0
                         const currentCategory = s.category
                         if (s.category !== lastCategory) lastCategory = s.category
                         return (
-                            <div key={i} className="shrink-0 flex items-end gap-2">
+                            <div key={i} className="shrink-0 flex items-center gap-2">
                                 {showDivider && (
                                     <div className="w-px h-10 bg-white/[0.08] shrink-0" />
                                 )}
@@ -209,77 +329,8 @@ function CaseStudyPresentation({
                         )
                     })}
                 </div>
-
-                {/* Counter + project name */}
-                <div className="shrink-0 text-right hidden sm:block">
-                    <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
-                    <p className="text-[0.6rem] uppercase tracking-[0.15em] text-gray-700">{cs.name}</p>
-                </div>
-            </div>
-
-            {/* ── Slide info — below filmstrip ── */}
-            <div className="px-4 sm:px-8 py-3 border-b border-white/[0.07] bg-black shrink-0">
-                <div className="max-w-4xl mx-auto flex items-start justify-between gap-6">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
-                        <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
-                        {slide.caption && (
-                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
-                        )}
-                    </div>
-                    <div className="shrink-0 text-right hidden sm:block">
-                        <p className="text-[0.65rem] text-gray-600 tabular-nums">{slideIdx + 1} / {cs.slides.length}</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Main image / video ── */}
-            <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0 bg-[#060606] p-6 sm:p-10">
-                <AnimatePresence mode="wait">
-                    {slide.vimeoId ? (
-                        <motion.div
-                            key={`video-${slideIdx}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.25 }}
-                            className="w-full h-full flex items-center justify-center"
-                        >
-                            <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
-                                <iframe
-                                    src={`https://player.vimeo.com/video/${slide.vimeoId}?autoplay=1&loop=0&title=0&byline=0&portrait=0&color=c8f542`}
-                                    className="w-full h-full"
-                                    allow="autoplay; fullscreen; picture-in-picture"
-                                    allowFullScreen
-                                    title={slide.title}
-                                />
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.img
-                            key={slideIdx}
-                            src={slide.img}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.18 }}
-                            className="max-h-full max-w-full object-contain"
-                            alt={slide.title}
-                        />
-                    )}
-                </AnimatePresence>
-
-                {/* Prev arrow */}
-                <button onClick={onPrev}
-                    className={`absolute left-3 sm:left-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronLeft className="w-5 h-5" />
-                </button>
-
-                {/* Next arrow */}
-                <button onClick={onNext}
-                    className={`absolute right-3 sm:right-5 p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronRight className="w-5 h-5" />
-                </button>
+                {/* Project name under timeline */}
+                <p className="text-center text-[0.6rem] uppercase tracking-[0.18em] text-gray-700 mt-2">{cs.name} · {cs.projectType}</p>
             </div>
 
         </motion.div>
@@ -380,20 +431,12 @@ export function LandingPageTest() {
                 </div>
 
                 <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
-                    <div className="max-w-3xl">
-                            <motion.div initial={{ width: 0 }} animate={{ width: '3rem' }}
-                                transition={{ duration: 0.8 }} className="h-[3px] bg-lime mb-5" />
+                    <div className="max-w-4xl mx-auto text-center">
 
-                            <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-400 mb-5">
-                                AI for Architects, Interior Designers, and Marketers.
-                            </motion.p>
-
-                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.6rem,7vw,5.5rem)] mb-6">
-                                <span className="block text-white whitespace-nowrap"><SplitText text="THIS IS WHAT" baseDelay={0.1} /></span>
-                                <span className="block text-lime whitespace-nowrap"><SplitText text="AI DIRECTED" baseDelay={0.28} /></span>
-                                <span className="block text-white whitespace-nowrap"><SplitText text="DESIGN LOOKS LIKE." baseDelay={0.52} /></span>
+                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.2rem,6vw,4.8rem)] mb-6">
+                                <span className="block text-white"><SplitText text="WE TEACH ARCHITECTS," baseDelay={0.1} /></span>
+                                <span className="block text-lime"><SplitText text="INTERIOR DESIGNERS & MARKETERS" baseDelay={0.32} /></span>
+                                <span className="block text-white"><SplitText text="HOW TO USE AI." baseDelay={0.58} /></span>
                             </h1>
 
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -404,18 +447,12 @@ export function LandingPageTest() {
 
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 1.1 }}
-                                className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                                <a href="/find-your-path"
+                                className="flex justify-center">
+                                <button
+                                    onClick={() => document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth' })}
                                     className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                                    See Where You're At With AI <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </a>
-                            </motion.div>
-
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
-                                className="flex flex-wrap items-center gap-3 sm:gap-4 mt-10 text-[0.6rem] sm:text-[0.6875rem] text-gray-600 uppercase tracking-[0.15em]">
-                                <span>1,000+ Participants</span>
-                                <span className="w-1 h-1 rounded-full bg-gray-700" />
-                                <span>30+ Studios</span>
+                                    See How It's Done <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+                                </button>
                             </motion.div>
                         </div>
                 </div>
@@ -423,41 +460,70 @@ export function LandingPageTest() {
                 <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-black to-transparent pointer-events-none" />
             </section>
 
+            {/* ── PARTNERS LOGO TICKER ─────────────────────────────── */}
+            <section id="partners" className="border-t border-white/[0.05] bg-black py-14">
+                <style>{`
+                    @keyframes ticker { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
+                    .logo-ticker { animation: ticker 35s linear infinite; }
+                    .logo-ticker:hover { animation-play-state: paused; }
+                `}</style>
+                <FadeIn className="text-center mb-8">
+                    <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600">OUR PARTNERS</p>
+                </FadeIn>
+                <div className="overflow-hidden">
+                    <div className="flex items-center gap-16 logo-ticker whitespace-nowrap w-max">
+                        {[...LOGOS, ...LOGOS].map((logo, i) => (
+                            <img
+                                key={i}
+                                src={logo.file}
+                                alt={logo.name}
+                                className="h-28 w-auto object-contain flex-shrink-0 opacity-65 hover:opacity-90 transition-opacity duration-300"
+                                style={{ filter: 'brightness(0) invert(1)' }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* ── SOCIAL PROOF / ABOUT ────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#060606] overflow-hidden">
                 <div className="container mx-auto px-5 sm:px-6">
 
-                    {/* Label */}
-                    <FadeIn className="mb-14">
-                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-500 text-center mb-2">The person behind the work</p>
-                        <div className="h-px w-12 bg-lime/40 mx-auto" />
-                    </FadeIn>
-
-                    {/* Bio layout — asymmetric editorial grid */}
+                    {/* Bio layout — portrait photo + text */}
                     <FadeIn delay={0.1}>
-                        <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr_1.6fr] gap-10 md:gap-16 items-start mb-20">
+                        <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1.6fr] gap-10 md:gap-16 items-start mb-20">
 
-                            {/* Left — name block + event badges */}
-                            <div>
-                                <h2 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.2rem)] leading-[0.92] text-white mb-5">
-                                    KHALED<br /><span className="text-lime">ISKANDAR.</span>
-                                </h2>
-
-                                {/* Credential pills */}
-                                <div className="flex flex-wrap gap-2 mb-8">
-                                    {[
-                                        'Architect & Interior Designer',
-                                        'AI Educator',
-                                        'Workflow Strategist',
-                                    ].map((tag) => (
-                                        <span key={tag} className="text-[0.6rem] font-black uppercase tracking-[0.15em] text-gray-400 border border-white/[0.1] rounded-md px-2.5 py-1 bg-white/[0.03]">
-                                            {tag}
-                                        </span>
-                                    ))}
+                            {/* Left — portrait photo with name overlay */}
+                            <div className="flex flex-col items-center md:items-start">
+                                <div className="relative w-64 md:w-72 rounded-2xl overflow-hidden border border-white/[0.08]" style={{ aspectRatio: '9/16' }}>
+                                    <img
+                                        src="/bio-khaled-portrait.jpg"
+                                        alt="Khaled Iskandar"
+                                        className="w-full h-full object-cover object-top"
+                                    />
+                                    {/* Name overlay at bottom */}
+                                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-16 pb-5 px-5">
+                                        <h2 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,2.4rem)] leading-[0.92] text-white">
+                                            KHALED<br /><span className="text-lime">ISKANDAR.</span>
+                                        </h2>
+                                    </div>
                                 </div>
+                            </div>
+
+                            {/* Right — bio text */}
+                            <div className="flex flex-col justify-center">
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
+                                    Interior designer turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
+                                </p>
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
+                                    For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI globally, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
+                                </p>
+                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300">
+                                    Explore below how this approach is applied through <span className="text-lime font-semibold">Sprint Workshops</span> for individuals and tailored <span className="text-lime font-semibold">Masterclasses</span> for teams.
+                                </p>
 
                                 {/* Headline talks */}
-                                <div className="space-y-2">
+                                <div className="space-y-2 mt-10">
                                     <p className="text-[0.6875rem] font-body uppercase tracking-[0.18em] text-gray-600 mb-3">Headline talks &amp; partnerships</p>
                                     {[
                                         { name: 'Skidmore Owings & Merrill', abbr: 'SOM' },
@@ -472,39 +538,6 @@ export function LandingPageTest() {
                                     ))}
                                 </div>
                             </div>
-
-                            {/* Right — bio text */}
-                            <div className="flex flex-col justify-center">
-                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                    Khaled Iskandar is an architect and interior designer with over a decade of experience delivering luxury F&amp;B spaces and mega events across the region.
-                                </p>
-                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                    He turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
-                                </p>
-                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
-                                    For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI across the GCC, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
-                                </p>
-                                <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300">
-                                    Explore below how this approach is applied through <span className="text-lime font-semibold">Sprint Workshops</span> for individuals and tailored <span className="text-lime font-semibold">Masterclasses</span> for teams.
-                                </p>
-                            </div>
-                        </div>
-                    </FadeIn>
-
-                    {/* Stats row */}
-                    <FadeIn delay={0.2}>
-                        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden mb-20">
-                            {[
-                                { value: '10+', label: 'Years of design practice' },
-                                { value: '5+', label: 'Years of AI education' },
-                                { value: '20+', label: 'Studios trained' },
-                                { value: 'GCC', label: 'Thought leader reach' },
-                            ].map((stat) => (
-                                <div key={stat.label} className="bg-[#060606] px-6 py-7 text-center">
-                                    <p className="font-heading font-black text-[2.2rem] text-lime leading-none mb-1">{stat.value}</p>
-                                    <p className="text-xs text-gray-500 uppercase tracking-[0.12em] font-body">{stat.label}</p>
-                                </div>
-                            ))}
                         </div>
                     </FadeIn>
 
@@ -555,31 +588,29 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-4xl">
                     <FadeIn className="text-center mb-10">
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4rem)] leading-[0.93] mt-4 mb-4">
-                            THIS IS HOW <span className="text-lime">AI IS REDEFINING</span> DESIGN.
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4rem)] leading-[0.93] mb-4">
+                            Watch a complete AI design workflow<br /><span className="text-lime">from sketch to full client presentation.</span>
                         </h2>
-                        <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-                            Watch a complete AI design workflow from sketch to full client presentation.
-                        </p>
                     </FadeIn>
                     <FadeIn delay={0.2}>
                         <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] aspect-video shadow-[0_0_80px_rgba(208,255,113,0.06)]">
                             <iframe
-                                src={`https://player.vimeo.com/video/${VSL_VIDEO_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                src={`https://player.vimeo.com/video/${VSL_VIDEO_ID}?autoplay=1&muted=1&title=0&byline=0&portrait=0&color=d0ff71`}
                                 className="w-full h-full"
                                 allow="autoplay; fullscreen; picture-in-picture"
                                 allowFullScreen
                             />
                         </div>
                     </FadeIn>
-                    <FadeIn delay={0.35} className="flex flex-col sm:flex-row items-center justify-center mt-8 gap-3">
+                    <FadeIn delay={0.35} className="flex flex-col items-center justify-center mt-8 gap-4">
+                        <button
+                            onClick={() => document.getElementById('case-studies')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
+                            See Case Studies <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+                        </button>
                         <a href="/find-your-path"
-                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                            Solo Training <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
-                        <a href="/masterclass-analytics"
-                            className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                            Team Training <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            className="text-[0.7rem] uppercase tracking-[0.15em] text-gray-500 hover:text-lime transition-colors font-body">
+                            or take the AI readiness assessment →
                         </a>
                     </FadeIn>
                 </div>
@@ -611,11 +642,10 @@ export function LandingPageTest() {
             </section>
 
             {/* ── CASE STUDIES ───────────────────────────────────────── */}
-            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
+            <section id="case-studies" className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6">
                     <FadeIn className="mb-12 md:mb-16">
-                        <MicroLabel>Real Work</MicroLabel>
-                        <div className="flex flex-wrap items-end gap-4 mt-4">
+                        <div className="flex flex-wrap items-end gap-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
                                 CASE STUDIES FROM<br /><span className="text-lime">OUR PARTICIPANTS.</span>
                             </h2>
@@ -625,7 +655,7 @@ export function LandingPageTest() {
                         </p>
                     </FadeIn>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5" id="case-studies">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         {CASE_STUDIES.map((cs) => (
                             <FadeIn key={cs.id}>
                                 <motion.div
@@ -798,69 +828,116 @@ export function LandingPageTest() {
             {/* ── AI FOR INDIVIDUALS ─────────────────────────────────────── */}
             <section id="sprint" className="py-16 md:py-24 border-t border-white/[0.04] bg-[#080808]">
                 <div className="container mx-auto px-5 sm:px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <FadeIn>
-                            <div className="flex flex-wrap items-center gap-2 mb-6">
-                                {/* Date pill */}
-                                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/[0.1] border border-red-500/25 whitespace-nowrap">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.16em] text-red-400">Sprint Workshop · {sprintDates}</span>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-60px' }}
+                        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                        className="relative rounded-3xl overflow-hidden max-w-3xl mx-auto"
+                        style={{
+                            background: 'linear-gradient(145deg, #12101a 0%, #0d0b14 50%, #09080f 100%)',
+                            border: '1px solid rgba(139, 92, 246, 0.15)',
+                            boxShadow: '0 0 0 1px rgba(139,92,246,0.04), 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(139,92,246,0.05) inset',
+                        }}
+                    >
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent" />
+
+                        <div className="p-8 md:p-12 space-y-8">
+
+                            {/* Badge + title */}
+                            <div className="space-y-5">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-purple-300 font-body border border-purple-400/20 bg-purple-400/5 px-3 py-1.5 rounded-full">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                                        Sprint Workshop · {sprintDates}
+                                    </span>
+                                    {sprintLocation && (
+                                        <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-purple-300/60 font-body border border-purple-400/10 bg-purple-400/[0.03] px-3 py-1.5 rounded-full">
+                                            {sprintLocation}
+                                        </span>
+                                    )}
                                 </div>
-                                {/* Time pill */}
-                                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/[0.06] border border-red-500/15 whitespace-nowrap">
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.16em] text-red-400/70">7 PM Dubai Time</span>
-                                </div>
-                                {/* Location pill */}
-                                {sprintLocation && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-lime/[0.08] border border-lime/20 whitespace-nowrap">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse shrink-0" />
-                                    <span className="text-[0.58rem] font-black uppercase tracking-[0.16em] text-lime">{sprintLocation}</span>
-                                </div>
-                                )}
+                                <h3 className="font-heading font-black text-white uppercase text-[clamp(1.6rem,5vw,3.2rem)] leading-[1.0] md:leading-[0.93]">
+                                    AI for<br /><span className="text-purple-300">Individuals</span>
+                                </h3>
+                                <p className="text-gray-400 text-base leading-relaxed font-body max-w-xl">
+                                    3 live days on Zoom. Hands-on from session one. You leave with real AI-generated deliverables and a workflow you can use immediately. No prior experience needed.
+                                </p>
                             </div>
-                            <h3 className="font-heading font-black uppercase text-[clamp(2rem,5vw,3.5rem)] leading-[0.93] mb-5">
-                                AI FOR<br /><span className="text-lime">INDIVIDUALS.</span>
-                            </h3>
-                            <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg mb-10">
-                                3 live days on Zoom. Hands-on from session one. You leave with real AI-generated deliverables and a workflow you can use immediately. No prior experience needed.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-3">
+
+                            <div className="border-t border-white/5" />
+
+                            {/* Meta tags */}
+                            <div className="flex flex-wrap gap-3">
+                                {[
+                                    { label: 'Duration', value: '3 Days' },
+                                    { label: 'Format', value: 'Hands-On' },
+                                    { label: 'Delivery', value: 'Live Zoom' },
+                                    { label: 'Time', value: '7 PM Dubai' },
+                                ].map(m => (
+                                    <div key={m.label} className="flex items-center gap-2 bg-white/5 border border-white/[0.08] rounded-full px-4 py-2">
+                                        <span className="text-[10px] uppercase tracking-widest text-purple-300/60 font-bold font-heading">{m.label}</span>
+                                        <span className="text-xs text-white font-body">{m.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="border-t border-white/5" />
+
+                            {/* What's included */}
+                            <div className="space-y-5">
+                                <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What's included</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                                    {SPRINT_INCLUSIONS.map((item, i) => (
+                                        <PurpleCheckItem key={item} text={item} delay={i * 0.05} />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="border-t border-white/5" />
+
+                            {/* What you'll gain */}
+                            <div className="space-y-5">
+                                <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {SPRINT_GAINS.map((g, i) => (
+                                        <motion.div
+                                            key={g.label}
+                                            initial={{ opacity: 0, y: 16 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                                            className="rounded-2xl p-5 space-y-2"
+                                            style={{ background: 'rgba(139,92,246,0.03)', border: '1px solid rgba(139,92,246,0.08)' }}
+                                        >
+                                            <span className="font-heading font-black uppercase text-xl text-purple-300 leading-none">{g.label}</span>
+                                            <p className="text-xs text-gray-400 leading-relaxed font-body">{g.body}</p>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="border-t border-white/5" />
+
+                            {/* CTA */}
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                 <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
-                                    className="group flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-lime transition-colors duration-200 text-sm uppercase tracking-wider font-heading">
-                                    Direct Checkout <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    className="group flex items-center gap-3 px-8 py-4 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading"
+                                    style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
+                                >
+                                    Direct Checkout
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </a>
                                 <a href="/not-sure"
-                                    className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl border border-white/[0.1] text-gray-400 hover:text-white hover:border-white/20 font-bold text-sm uppercase tracking-wider font-heading transition-all">
+                                    className="group flex items-center gap-3 px-6 py-3 rounded-xl border border-white/[0.1] text-gray-400 hover:text-white hover:border-white/20 font-bold text-sm uppercase tracking-wider font-heading transition-all">
                                     Not Sure Yet? <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </a>
                             </div>
-                        </FadeIn>
-                    </div>
-                </div>
-            </section>
 
-            {/* ── LOGO TICKER ─────────────────────────────────────────── */}
-            <section className="border-t border-white/[0.05] bg-black py-14">
-                <style>{`
-                    @keyframes ticker { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
-                    .logo-ticker { animation: ticker 35s linear infinite; }
-                    .logo-ticker:hover { animation-play-state: paused; }
-                `}</style>
-                <FadeIn className="text-center mb-8">
-                    <p className="text-[0.6rem] font-black uppercase tracking-[0.22em] text-gray-600">Studios &amp; Firms Already In</p>
-                </FadeIn>
-                <div className="overflow-hidden">
-                    <div className="flex items-center gap-16 logo-ticker whitespace-nowrap w-max">
-                        {[...LOGOS, ...LOGOS].map((logo, i) => (
-                            <img
-                                key={i}
-                                src={logo.file}
-                                alt={logo.name}
-                                className="h-28 w-auto object-contain flex-shrink-0 opacity-65 hover:opacity-90 transition-opacity duration-300"
-                                style={{ filter: 'brightness(0) invert(1)' }}
-                            />
-                        ))}
-                    </div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/20 to-transparent" />
+                    </motion.div>
                 </div>
             </section>
 
