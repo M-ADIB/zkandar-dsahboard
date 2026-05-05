@@ -5,9 +5,8 @@ import logoSrc from '../../assets/logo.png'
 
 const NAV_LINKS = [
     { label: 'Home',           href: '/main'                  },
-    { label: 'AI for Teams',   href: '/masterclass-analytics' },
+    { label: 'AI for Teams',   href: '/ai-masterclass' },
     { label: 'Case Studies',   href: '/case-studies'          },
-    { label: 'Not Sure Yet?',  href: '/not-sure'              },
     { label: 'Book a Talk',    href: '/events-apply'          },
 ]
 

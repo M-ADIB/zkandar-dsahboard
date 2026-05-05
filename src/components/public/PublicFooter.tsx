@@ -4,12 +4,11 @@ const FOOTER_LINKS = {
     Programs: [
         { label: 'Home',               href: '/main' },
         { label: 'Sprint Workshop',     href: '/find-your-path' },
-        { label: 'AI Masterclass',      href: '/masterclass-analytics' },
+        { label: 'AI Masterclass',      href: '/ai-masterclass' },
     ],
     Resources: [
         { label: 'Case Studies',           href: '/case-studies' },
         { label: 'AI Assessment',          href: '/find-your-path' },
-        { label: 'Not Sure?',              href: '/not-sure' },
         { label: 'Participant Login',       href: '/login' },
     ],
     Contact: [

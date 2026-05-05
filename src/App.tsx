@@ -24,7 +24,7 @@ const ProgramPage = lazy(() => import('@/pages/public/ProgramPage').then(module 
 const ThankYouPage = lazy(() => import('@/pages/public/ThankYouPage').then(module => ({ default: module.ThankYouPage })))
 const LandingPageTest = lazy(() => import('@/pages/public/LandingPageTest').then(module => ({ default: module.LandingPageTest })))
 const SubmitFormPage = lazy(() => import('@/pages/public/SubmitFormPage').then(module => ({ default: module.SubmitFormPage })))
-const NotSurePage = lazy(() => import('@/pages/public/NotSurePage').then(module => ({ default: module.NotSurePage })))
+// Archived: const NotSurePage = lazy(() => import('@/pages/public/NotSurePage').then(module => ({ default: module.NotSurePage })))
 const FindYourPathPage = lazy(() => import('@/pages/public/FindYourPathPage').then(module => ({ default: module.FindYourPathPage })))
 const CheckoutPage = lazy(() => import('@/pages/public/CheckoutPage').then(module => ({ default: module.CheckoutPage })))
 const EnrollPage = lazy(() => import('@/pages/public/EnrollPage').then(module => ({ default: module.EnrollPage })))
@@ -100,13 +100,14 @@ function App() {
                                 <Route path="/signup/:token" element={<SignupPage />} />
                                 <Route path="/events-apply" element={<EventsApplyPage />} />
                                 <Route path="/apply/sales" element={<ApplySalesPage />} />
-                                <Route path="/masterclass-analytics" element={<WorkflowsPage />} />
+                                <Route path="/ai-masterclass" element={<WorkflowsPage />} />
+                                <Route path="/masterclass-analytics" element={<Navigate to="/ai-masterclass" replace />} />
                                 <Route path="/program" element={<ProgramPage />} />
                                 <Route path="/thank-you" element={<ThankYouPage />} />
                                 <Route path="/main" element={<LandingPageTest />} />
                                 <Route path="/test-landingpage" element={<Navigate to="/main" replace />} />
                                 <Route path="/submit-form" element={<SubmitFormPage />} />
-                                <Route path="/not-sure" element={<NotSurePage />} />
+                                <Route path="/not-sure" element={<Navigate to="/case-studies" replace />} />
                                 <Route path="/case-studies" element={<CaseStudiesPage />} />
                                 <Route path="/find-your-path" element={<FindYourPathPage />} />
                                 <Route path="/checkout" element={<CheckoutPage />} />

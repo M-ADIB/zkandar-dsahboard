@@ -160,7 +160,7 @@ export function ProgramPage() {
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
                             <Link
-                                to="/masterclass-analytics"
+                                to="/ai-masterclass"
                                 className="group inline-flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/5 border border-white/10 rounded-full backdrop-blur-md transition-all text-sm font-medium text-gray-400 hover:text-white"
                             >
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:-translate-x-1">

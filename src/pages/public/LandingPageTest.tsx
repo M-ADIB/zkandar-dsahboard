@@ -431,12 +431,13 @@ export function LandingPageTest() {
                 </div>
 
                 <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
-                    <div className="max-w-4xl mx-auto text-center">
+                    <div className="max-w-5xl mx-auto text-center">
 
-                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(2.2rem,6vw,4.8rem)] mb-6">
-                                <span className="block text-white"><SplitText text="WE TEACH ARCHITECTS," baseDelay={0.1} /></span>
-                                <span className="block text-lime"><SplitText text="INTERIOR DESIGNERS & MARKETERS" baseDelay={0.32} /></span>
-                                <span className="block text-white"><SplitText text="HOW TO USE AI." baseDelay={0.58} /></span>
+                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(1.8rem,4.6vw,4rem)] mb-6">
+                                <span className="block text-white"><SplitText text="WE TEACH" baseDelay={0.1} /></span>
+                                <span className="block text-lime"><SplitText text="ARCHITECTS MARKETERS AND" baseDelay={0.25} /></span>
+                                <span className="block text-lime"><SplitText text="INTERIOR DESIGNERS" baseDelay={0.45} /></span>
+                                <span className="block text-white"><SplitText text="HOW TO USE AI." baseDelay={0.62} /></span>
                             </h1>
 
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -719,8 +720,10 @@ export function LandingPageTest() {
 
 
             {/* ── AI FOR TEAMS ──────────────────────────────────────────── */}
-            <section id="masterclass" className="py-20 md:py-32 border-t border-white/[0.04] bg-black">
-                <div className="container mx-auto px-5 sm:px-6">
+            <section id="masterclass" className="relative py-20 md:py-32 border-t border-white/[0.04] bg-black overflow-hidden">
+                {/* Lime gradient orb atmosphere */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full opacity-[0.07] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #D0FF71 0%, #5A9F2E 40%, transparent 70%)', filter: 'blur(80px)' }} />
+                <div className="relative z-10 container mx-auto px-5 sm:px-6">
 
                     {/* Big Masterclass card */}
                     <motion.div
@@ -822,12 +825,14 @@ export function LandingPageTest() {
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-lime/20 to-transparent" />
                     </motion.div>
-                </div>
+                </div> {/* /z-10 container */}
             </section>
 
             {/* ── AI FOR INDIVIDUALS ─────────────────────────────────────── */}
-            <section id="sprint" className="py-16 md:py-24 border-t border-white/[0.04] bg-[#080808]">
-                <div className="container mx-auto px-5 sm:px-6">
+            <section id="sprint" className="relative py-16 md:py-24 border-t border-white/[0.04] bg-black overflow-hidden">
+                {/* Purple gradient orb atmosphere */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full opacity-[0.06] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #8B5CF6 0%, #6D28D9 40%, transparent 70%)', filter: 'blur(80px)' }} />
+                <div className="relative z-10 container mx-auto px-5 sm:px-6">
 
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
@@ -938,7 +943,7 @@ export function LandingPageTest() {
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/20 to-transparent" />
                     </motion.div>
-                </div>
+                </div> {/* /z-10 container */}
             </section>
 
             <PublicFooter />

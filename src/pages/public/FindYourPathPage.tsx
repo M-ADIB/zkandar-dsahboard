@@ -333,10 +333,16 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="max-w-2xl mx-auto px-5 sm:px-6 py-8 space-y-8"
             >
-                {/* Top badge */}
+                {/* Top badge — color matches score */}
                 <div className="text-center">
-                    <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-lime border border-lime/25 bg-lime/[0.06] px-3 py-1.5 rounded-full">
-                        <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
+                    <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-full"
+                        style={{
+                            color: scoreColor(score),
+                            border: `1px solid ${scoreColor(score)}40`,
+                            background: `${scoreColor(score)}0F`,
+                        }}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: scoreColor(score) }} />
                         Your AI Readiness Assessment
                     </span>
                 </div>
@@ -382,15 +388,108 @@ function ResultsScreen({ answers }: { answers: Answers }) {
                                 <div key={b.label} className="space-y-1">
                                     <div className="flex justify-between">
                                         <span className="text-[0.6rem] text-gray-600 uppercase tracking-wider">{b.label}</span>
-                                        <span className="text-[0.6rem] text-lime/60">{b.pct}% reducible</span>
+                                        <span className="text-[0.6rem]" style={{ color: `${scoreColor(score)}99` }}>{b.pct}% reducible</span>
                                     </div>
                                     <div className="h-1 bg-white/[0.05] rounded-full overflow-hidden">
-                                        <motion.div className="h-full bg-lime/50 rounded-full" initial={{ width: 0 }}
+                                        <motion.div className="h-full rounded-full" style={{ background: `${scoreColor(score)}80` }} initial={{ width: 0 }}
                                             animate={{ width: `${b.pct}%` }}
                                             transition={{ duration: 1, delay: 0.5 + i * 0.15, ease: 'easeOut' }} />
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ─── Personalized Insights ──────────────────────────────── */}
+                <div className="space-y-4">
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">Your Personalized Insights</p>
+
+                    {/* Where you stand vs industry */}
+                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 space-y-4">
+                        <p className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400">Where You Stand vs. Industry</p>
+                        <div className="space-y-3">
+                            {[
+                                { label: 'Your AI readiness', pct: score, yours: true },
+                                { label: 'Industry average', pct: 31, yours: false },
+                                { label: 'Top-performing studios', pct: 78, yours: false },
+                            ].map((bar) => (
+                                <div key={bar.label} className="space-y-1">
+                                    <div className="flex justify-between items-baseline">
+                                        <span className={`text-[0.65rem] ${bar.yours ? 'text-white font-bold' : 'text-gray-500'} uppercase tracking-wider`}>{bar.label}</span>
+                                        <span className="text-[0.65rem] font-bold" style={{ color: bar.yours ? scoreColor(score) : '#6B7280' }}>{bar.pct}%</span>
+                                    </div>
+                                    <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                                        <motion.div className="h-full rounded-full" initial={{ width: 0 }}
+                                            animate={{ width: `${bar.pct}%` }}
+                                            style={{ background: bar.yours ? scoreColor(score) : bar.pct > score ? '#4ADE80' : '#6B7280' }}
+                                            transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Process time savings */}
+                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 space-y-4">
+                        <p className="text-xs font-bold uppercase tracking-[0.15em] text-gray-400">AI Could Transform These Workflows</p>
+                        <div className="space-y-3">
+                            {[
+                                { label: 'Research & moodboarding', before: '1–3 days', after: '10–20 min', pct: 90 },
+                                { label: 'Concept development', before: '3–7 days', after: 'Under 1 hour', pct: 80 },
+                                { label: 'Visualization turnaround', before: 'Days/weeks', after: 'Minutes', pct: 70 },
+                                { label: 'Client presentation prep', before: 'Full day', after: 'Hours', pct: 80 },
+                            ].map((item, i) => (
+                                <div key={item.label} className="space-y-1.5">
+                                    <div className="flex justify-between items-baseline">
+                                        <span className="text-xs text-gray-300">{item.label}</span>
+                                        <span className="text-[0.6rem] text-gray-500">{item.before} → <span className="text-lime font-bold">{item.after}</span></span>
+                                    </div>
+                                    <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                                        <motion.div className="h-full rounded-full bg-lime/40" initial={{ width: 0 }}
+                                            animate={{ width: `${item.pct}%` }}
+                                            transition={{ duration: 1, delay: 0.4 + i * 0.1, ease: 'easeOut' }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Risk vs Opportunity grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Risks */}
+                        <div className="rounded-2xl border border-red-500/10 bg-red-500/[0.02] p-5 space-y-3">
+                            <p className="text-xs font-bold uppercase tracking-[0.15em] text-red-400">Risks of Staying Here</p>
+                            <div className="space-y-2">
+                                {[
+                                    'Falling behind competitors adopting AI',
+                                    'Slower delivery, higher operating costs',
+                                    'Losing creative talent to AI-forward firms',
+                                ].map(r => (
+                                    <div key={r} className="flex items-start gap-2">
+                                        <span className="shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full bg-red-400/60" />
+                                        <span className="text-[0.65rem] text-gray-400 leading-relaxed">{r}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {/* Opportunities */}
+                        <div className="rounded-2xl border border-lime/10 bg-lime/[0.02] p-5 space-y-3">
+                            <p className="text-xs font-bold uppercase tracking-[0.15em] text-lime">What You Could Unlock</p>
+                            <div className="space-y-2">
+                                {[
+                                    '75% more creative output per month',
+                                    '50% faster client approvals',
+                                    '10× more visual content produced',
+                                ].map(o => (
+                                    <div key={o} className="flex items-start gap-2">
+                                        <span className="shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full bg-lime/60" />
+                                        <span className="text-[0.65rem] text-gray-400 leading-relaxed">{o}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -584,7 +683,7 @@ function ResultsScreen({ answers }: { answers: Answers }) {
 
                 <p className="text-center text-xs text-gray-700">
                     Want to explore both?{' '}
-                    <a href="/masterclass-analytics" className="text-gray-500 hover:text-white underline underline-offset-2 transition-colors">
+                    <a href="/ai-masterclass" className="text-gray-500 hover:text-white underline underline-offset-2 transition-colors">
                         See the full program overview
                     </a>
                 </p>
@@ -629,13 +728,13 @@ function GateScreen({ onSubmit }: { onSubmit: (name: string, email: string, phon
             <div className="text-center mb-8">
                 <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-lime border border-lime/25 bg-lime/[0.06] px-3 py-1.5 rounded-full mb-4">
                     <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-                    Assessment Complete
+                    Almost There
                 </span>
                 <h2 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,2.2rem)] text-white leading-tight mt-4 mb-3">
-                    Your AI Readiness Score is Ready.
+                    Final Step to See Your Results!
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                    Enter your details to see your results and recommended path.
+                    Enter your details below — your personalized AI readiness report is ready.
                 </p>
             </div>
 

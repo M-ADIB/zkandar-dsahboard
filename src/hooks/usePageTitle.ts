@@ -25,7 +25,7 @@ export const TITLE_MAP: Record<string, string> = {
     '/signup': 'Sign Up',
     '/events-apply': 'Apply',
     '/apply/sales': 'Apply',
-    '/masterclass-analytics': 'Workflows',
+    '/ai-masterclass': 'AI Masterclass',
     '/program': 'Program',
     '/thank-you': 'Thank You',
     '/survey/post-completion': 'Survey',
