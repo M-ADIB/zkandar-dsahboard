@@ -433,10 +433,26 @@ export function LandingPageTest() {
                 <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
                     <div className="max-w-5xl mx-auto text-center">
 
-                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(1.4rem,3.4vw,3rem)] mb-6">
-                                <span className="block text-white"><SplitText text="WE TEACH ARCHITECTS, MARKETERS &" baseDelay={0.1} /></span>
-                                <span className="block text-lime"><SplitText text="INTERIOR DESIGNERS HOW TO USE AI." baseDelay={0.35} /></span>
-                            </h1>
+                            <div className="space-y-3 mb-6">
+                                <motion.span
+                                    initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                                    className="block text-[0.7rem] sm:text-[0.8rem] font-bold uppercase tracking-[0.3em] text-white/40 font-body"
+                                >
+                                    We Teach
+                                </motion.span>
+                                <h1 className="font-heading font-black uppercase leading-[0.92]">
+                                    <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
+                                        <SplitText text="ARCHITECTS &" baseDelay={0.15} />
+                                    </span>
+                                    <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
+                                        <SplitText text="INTERIOR DESIGNERS" baseDelay={0.3} />
+                                    </span>
+                                    <span className="block text-lime text-[clamp(1.3rem,3.2vw,2.6rem)] mt-2">
+                                        <SplitText text="HOW TO USE AI." baseDelay={0.5} />
+                                    </span>
+                                </h1>
+                            </div>
 
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.95 }}
@@ -587,9 +603,13 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-4xl">
                     <FadeIn className="text-center mb-10">
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,3.6vw,2.6rem)] leading-[0.95] mb-4">
-                            Watch a complete AI design workflow<br /><span className="text-lime">from sketch to full client presentation.</span>
-                        </h2>
+                        <div className="space-y-2">
+                            <p className="text-[0.65rem] sm:text-[0.75rem] font-bold uppercase tracking-[0.3em] text-white/30 font-body">Full Workflow</p>
+                            <h2 className="font-heading font-black uppercase leading-[0.93]">
+                                <span className="block text-white text-[clamp(1.5rem,4vw,3rem)]">AI Design Workflow</span>
+                                <span className="block text-lime text-[clamp(1rem,2.4vw,1.8rem)] mt-1">From Sketch to Client Presentation.</span>
+                            </h2>
+                        </div>
                     </FadeIn>
                     <FadeIn delay={0.2}>
                         <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] aspect-video shadow-[0_0_80px_rgba(208,255,113,0.06)]">
