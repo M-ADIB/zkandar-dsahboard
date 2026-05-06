@@ -433,11 +433,9 @@ export function LandingPageTest() {
                 <div className="relative z-10 container mx-auto px-5 sm:px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
                     <div className="max-w-5xl mx-auto text-center">
 
-                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(1.8rem,4.6vw,4rem)] mb-6">
-                                <span className="block text-white"><SplitText text="WE TEACH" baseDelay={0.1} /></span>
-                                <span className="block text-lime"><SplitText text="ARCHITECTS MARKETERS AND" baseDelay={0.25} /></span>
-                                <span className="block text-lime"><SplitText text="INTERIOR DESIGNERS" baseDelay={0.45} /></span>
-                                <span className="block text-white"><SplitText text="HOW TO USE AI." baseDelay={0.62} /></span>
+                            <h1 className="font-heading font-black uppercase leading-[0.92] text-[clamp(1.4rem,3.4vw,3rem)] mb-6">
+                                <span className="block text-white"><SplitText text="WE TEACH ARCHITECTS, MARKETERS &" baseDelay={0.1} /></span>
+                                <span className="block text-lime"><SplitText text="INTERIOR DESIGNERS HOW TO USE AI." baseDelay={0.35} /></span>
                             </h1>
 
                             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -589,7 +587,7 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-4xl">
                     <FadeIn className="text-center mb-10">
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.9rem,5.5vw,4rem)] leading-[0.93] mb-4">
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.4rem,3.6vw,2.6rem)] leading-[0.95] mb-4">
                             Watch a complete AI design workflow<br /><span className="text-lime">from sketch to full client presentation.</span>
                         </h2>
                     </FadeIn>
@@ -705,15 +703,12 @@ export function LandingPageTest() {
                         ))}
                     </div>
 
-                    <FadeIn delay={0.1} className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-12">
-                        <a href="/find-your-path"
+                    <FadeIn delay={0.1} className="flex items-center justify-center mt-12">
+                        <button
+                            onClick={() => document.getElementById('masterclass')?.scrollIntoView({ behavior: 'smooth' })}
                             className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
-                            Take the AI Assessment Test <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
-                        <a href="/case-studies"
-                            className="group flex items-center gap-3 px-8 py-4 rounded-xl border border-white/10 text-white/70 hover:text-white hover:border-white/25 font-bold transition-all text-sm uppercase tracking-wider font-heading hover:-translate-y-0.5">
-                            See All Case Studies <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
+                            See Our Programs <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+                        </button>
                     </FadeIn>
                 </div>
             </section>
@@ -819,7 +814,14 @@ export function LandingPageTest() {
                                     Book a Discovery Call
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </button>
-                                <p className="text-xs text-lime font-bold font-body">Custom curriculum · Team-wide training · Firm certification</p>
+                                <button
+                                    onClick={() => document.getElementById('sprint')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="group flex items-center gap-2 px-5 py-2.5 rounded-full text-[0.7rem] font-bold uppercase tracking-wider font-body transition-all hover:-translate-y-0.5"
+                                    style={{ background: 'rgba(139,92,246,0.12)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.25)' }}
+                                >
+                                    Not a team? See individual training
+                                    <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
+                                </button>
                             </div>
 
                         </div>
@@ -933,10 +935,6 @@ export function LandingPageTest() {
                                 >
                                     Direct Checkout
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </a>
-                                <a href="/not-sure"
-                                    className="group flex items-center gap-3 px-6 py-3 rounded-xl border border-white/[0.1] text-gray-400 hover:text-white hover:border-white/20 font-bold text-sm uppercase tracking-wider font-heading transition-all">
-                                    Not Sure Yet? <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </a>
                             </div>
 
