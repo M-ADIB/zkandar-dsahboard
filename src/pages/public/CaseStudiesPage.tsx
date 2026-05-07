@@ -549,6 +549,20 @@ export function CaseStudiesPage() {
             {/* Nav spacing */}
             <div className="pt-28" />
 
+            {/* ── PAGE HEADING ─────────────────────────────────────── */}
+            <section className="pt-6 pb-10 md:pb-14 bg-black">
+                <div className="max-w-5xl mx-auto px-5 sm:px-6">
+                    <FadeIn>
+                        <h1 className="font-heading font-black uppercase text-[clamp(2rem,5vw,4rem)] leading-[0.95] text-white">
+                            Our <span className="text-lime">Work.</span>
+                        </h1>
+                        <p className="text-gray-500 text-sm mt-3 max-w-lg">
+                            Every image and film below was generated entirely with AI.
+                        </p>
+                    </FadeIn>
+                </div>
+            </section>
+
             {/* ── PROJECT GALLERIES (from NotSurePage) ─────────────── */}
             <section className="py-10 md:py-14 bg-black">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6 space-y-5">

@@ -552,13 +552,21 @@ export function LandingPageTest() {
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#060606] overflow-hidden">
                 <div className="container mx-auto px-5 sm:px-6">
 
+                    {/* Section heading */}
+                    <FadeIn className="max-w-5xl mx-auto mb-12">
+                        <p className="text-[0.65rem] font-bold uppercase tracking-[0.3em] text-white/30 font-body mb-3">About</p>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,3rem)] leading-[0.95] text-white">
+                            Meet Your <span className="text-lime">Instructor.</span>
+                        </h2>
+                    </FadeIn>
+
                     {/* Bio layout — portrait photo + text */}
                     <FadeIn delay={0.1}>
-                        <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1.6fr] gap-10 md:gap-16 items-start mb-20">
+                        <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1.6fr] gap-10 md:gap-16 items-stretch mb-20">
 
-                            {/* Left — portrait photo with name overlay */}
+                            {/* Left — portrait photo, stretches to match bio height */}
                             <div className="flex flex-col items-center md:items-start">
-                                <div className="relative w-64 md:w-72 rounded-2xl overflow-hidden border border-white/[0.08]" style={{ aspectRatio: '9/16' }}>
+                                <div className="relative w-64 md:w-72 rounded-2xl overflow-hidden border border-white/[0.08] h-full min-h-[28rem]">
                                     <img
                                         src="/bio-khaled-portrait.jpg"
                                         alt="Khaled Iskandar"
@@ -566,9 +574,9 @@ export function LandingPageTest() {
                                     />
                                     {/* Name overlay at bottom */}
                                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-16 pb-5 px-5">
-                                        <h2 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,2.4rem)] leading-[0.92] text-white">
+                                        <h3 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,2.4rem)] leading-[0.92] text-white">
                                             KHALED<br /><span className="text-lime">ISKANDAR.</span>
-                                        </h2>
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
@@ -606,7 +614,7 @@ export function LandingPageTest() {
 
                     {/* Photo strip label */}
                     <FadeIn delay={0.25}>
-                        <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">In the room with the best</p>
+                        <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">Featured Talks & Collaborations</p>
                     </FadeIn>
                 </div>
 
@@ -626,7 +634,6 @@ export function LandingPageTest() {
                                 { src: '/collabs/collab-4.jpg', alt: 'Design workshop' },
                                 { src: '/collabs/collab-5.jpg', alt: 'Team masterclass' },
                                 { src: '/collabs/collab-6.jpg', alt: 'Studio session' },
-                                { src: '/collabs/collab-7.jpg', alt: 'Partner event' },
                                 { src: '/collabs/collab-8.jpg', alt: 'Workshop session' },
                                 { src: '/collabs/collab-vitra.jpg', alt: 'Vitra collaboration' },
                                 { src: '/collabs/collab-1.jpg', alt: 'Vitra showroom talk' },
@@ -635,7 +642,6 @@ export function LandingPageTest() {
                                 { src: '/collabs/collab-4.jpg', alt: 'Design workshop' },
                                 { src: '/collabs/collab-5.jpg', alt: 'Team masterclass' },
                                 { src: '/collabs/collab-6.jpg', alt: 'Studio session' },
-                                { src: '/collabs/collab-7.jpg', alt: 'Partner event' },
                                 { src: '/collabs/collab-8.jpg', alt: 'Workshop session' },
                                 { src: '/collabs/collab-vitra.jpg', alt: 'Vitra collaboration' },
                             ].map((photo, i) => (
