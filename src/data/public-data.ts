@@ -89,7 +89,7 @@ export const CASE_STUDIES: CaseStudy[] = [
         previewImgs: [
             '/casestudies/akshay/1.jpg',
             '/casestudies/akshay/3.jpg',
-            '/casestudies/akshay/sketch-3.png',
+            '/casestudies/akshay/4.jpg',
             '/casestudies/akshay/6.jpg',
         ],
         slides: [
