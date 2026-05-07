@@ -63,10 +63,6 @@ const SPRINT_INCLUSIONS = [
     'Free access to E-prompt books',
 ]
 
-const SPRINT_GAINS = [
-    { label: 'Speed', body: 'Go from sketch to photorealistic render in under 30 minutes' },
-    { label: 'Output', body: 'Leave with real deliverables you can present to clients immediately' },
-]
 
 const VSL_VIDEO_ID = '1187084528'
 // Replace with actual testimonial mashup Vimeo ID when available
@@ -356,6 +352,57 @@ function HeroVideo() {
     )
 }
 
+function VslPlayer({ videoId }: { videoId: string }) {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const iframeRef = useRef<HTMLIFrameElement>(null)
+    const [playing, setPlaying] = useState(false)
+
+    // Auto-play muted when scrolled into view
+    useEffect(() => {
+        const el = containerRef.current
+        if (!el) return
+        const obs = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting && iframeRef.current && !playing) {
+                // It's already autoplaying muted via the iframe src
+            }
+        }, { threshold: 0.5 })
+        obs.observe(el)
+        return () => obs.disconnect()
+    }, [playing])
+
+    const handlePlay = () => {
+        // Restart from beginning with sound
+        setPlaying(true)
+        if (iframeRef.current) {
+            iframeRef.current.src = `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=0&title=0&byline=0&portrait=0&color=d0ff71#t=0s`
+        }
+    }
+
+    return (
+        <div ref={containerRef} className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] aspect-video shadow-[0_0_80px_rgba(208,255,113,0.06)]">
+            <iframe
+                ref={iframeRef}
+                src={`https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&title=0&byline=0&portrait=0&color=d0ff71`}
+                className="w-full h-full"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+            />
+            {/* Play button — bottom-left to avoid blocking the face */}
+            {!playing && (
+                <button
+                    onClick={handlePlay}
+                    className="absolute bottom-5 left-5 z-10 flex items-center gap-2.5 px-5 py-3 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 hover:border-lime/40 hover:bg-black/80 transition-all group"
+                >
+                    <div className="w-8 h-8 rounded-full bg-lime flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Play className="w-4 h-4 text-black fill-black ml-0.5" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-white/80 group-hover:text-white font-body">Play with sound</span>
+                </button>
+            )}
+        </div>
+    )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function LandingPageTest() {
@@ -619,14 +666,7 @@ export function LandingPageTest() {
                         </div>
                     </FadeIn>
                     <FadeIn delay={0.2}>
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] aspect-video shadow-[0_0_80px_rgba(208,255,113,0.06)]">
-                            <iframe
-                                src={`https://player.vimeo.com/video/${VSL_VIDEO_ID}?autoplay=1&muted=1&title=0&byline=0&portrait=0&color=d0ff71`}
-                                className="w-full h-full"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                            />
-                        </div>
+                        <VslPlayer videoId={VSL_VIDEO_ID} />
                     </FadeIn>
                     <FadeIn delay={0.35} className="flex flex-col items-center justify-center mt-8 gap-4">
                         <button
@@ -638,31 +678,6 @@ export function LandingPageTest() {
                             className="text-[0.7rem] uppercase tracking-[0.15em] text-gray-500 hover:text-lime transition-colors font-body">
                             or take the AI readiness assessment →
                         </a>
-                    </FadeIn>
-                </div>
-            </section>
-
-            {/* ── TESTIMONIALS ───────────────────────────────────────── */}
-            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#050505]">
-                <div className="container mx-auto px-5 sm:px-6">
-
-                    <FadeIn className="text-center mb-10 md:mb-14">
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
-                            THE RESULTS SPEAK<br /><span className="text-lime">FOR THEMSELVES.</span>
-                        </h2>
-                        <p className="text-gray-500 text-base mt-2">From 30+ studios and firms around the world.</p>
-                    </FadeIn>
-
-                    {/* Testimonial mashup — 9:16 portrait */}
-                    <FadeIn delay={0.1} className="flex justify-center">
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black shadow-[0_0_60px_rgba(208,255,113,0.05)] w-full max-w-sm" style={{ aspectRatio: '9/16' }}>
-                            <iframe
-                                src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
-                                className="w-full h-full"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                            />
-                        </div>
                     </FadeIn>
                 </div>
             </section>
@@ -736,6 +751,31 @@ export function LandingPageTest() {
                             className="group flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-[0_0_24px_rgba(208,255,113,0.4)] hover:-translate-y-0.5 font-heading">
                             See Our Programs <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
                         </button>
+                    </FadeIn>
+                </div>
+            </section>
+
+            {/* ── TESTIMONIALS ───────────────────────────────────────── */}
+            <section className="py-20 md:py-28 border-t border-white/[0.04] bg-[#050505]">
+                <div className="container mx-auto px-5 sm:px-6">
+
+                    <FadeIn className="text-center mb-10 md:mb-14">
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
+                            THE RESULTS SPEAK<br /><span className="text-lime">FOR THEMSELVES.</span>
+                        </h2>
+                        <p className="text-gray-500 text-base mt-2">From 30+ studios and firms around the world.</p>
+                    </FadeIn>
+
+                    {/* Testimonial mashup — 9:16 portrait */}
+                    <FadeIn delay={0.1} className="flex justify-center">
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black shadow-[0_0_60px_rgba(208,255,113,0.05)] w-full max-w-sm" style={{ aspectRatio: '9/16' }}>
+                            <iframe
+                                src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                className="w-full h-full"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
                     </FadeIn>
                 </div>
             </section>
@@ -857,7 +897,7 @@ export function LandingPageTest() {
                 </div> {/* /z-10 container */}
             </section>
 
-            {/* ── AI FOR INDIVIDUALS ─────────────────────────────────────── */}
+            {/* ── AI SPRINT WORKSHOP FOR INDIVIDUALS ──────────────────── */}
             <section id="sprint" className="relative py-16 md:py-24 border-t border-white/[0.04] bg-black overflow-hidden">
                 {/* Purple gradient orb atmosphere */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full opacity-[0.06] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #8B5CF6 0%, #6D28D9 40%, transparent 70%)', filter: 'blur(80px)' }} />
@@ -868,7 +908,7 @@ export function LandingPageTest() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: '-60px' }}
                         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                        className="relative rounded-3xl overflow-hidden max-w-3xl mx-auto"
+                        className="relative rounded-3xl overflow-hidden max-w-4xl mx-auto"
                         style={{
                             background: 'linear-gradient(145deg, #12101a 0%, #0d0b14 50%, #09080f 100%)',
                             border: '1px solid rgba(139, 92, 246, 0.15)',
@@ -886,6 +926,11 @@ export function LandingPageTest() {
                                         <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
                                         Sprint Workshop · {sprintDates}
                                     </span>
+                                    {/* Live event badge */}
+                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-red-300 font-body border border-red-400/30 bg-red-500/10 px-3 py-1.5 rounded-full">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                                        Live Event
+                                    </span>
                                     {sprintLocation && (
                                         <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-purple-300/60 font-body border border-purple-400/10 bg-purple-400/[0.03] px-3 py-1.5 rounded-full">
                                             {sprintLocation}
@@ -893,7 +938,7 @@ export function LandingPageTest() {
                                     )}
                                 </div>
                                 <h3 className="font-heading font-black text-white uppercase text-[clamp(1.6rem,5vw,3.2rem)] leading-[1.0] md:leading-[0.93]">
-                                    AI for<br /><span className="text-purple-300">Individuals</span>
+                                    AI Sprint Workshop<br /><span className="text-purple-300">for Individuals</span>
                                 </h3>
                                 <p className="text-gray-400 text-base leading-relaxed font-body max-w-xl">
                                     3 live days on Zoom. Hands-on from session one. You leave with real AI-generated deliverables and a workflow you can use immediately. No prior experience needed.
@@ -925,29 +970,6 @@ export function LandingPageTest() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                                     {SPRINT_INCLUSIONS.map((item, i) => (
                                         <PurpleCheckItem key={item} text={item} delay={i * 0.05} />
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="border-t border-white/5" />
-
-                            {/* What you'll gain */}
-                            <div className="space-y-5">
-                                <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {SPRINT_GAINS.map((g, i) => (
-                                        <motion.div
-                                            key={g.label}
-                                            initial={{ opacity: 0, y: 16 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                                            className="rounded-2xl p-5 space-y-2"
-                                            style={{ background: 'rgba(139,92,246,0.03)', border: '1px solid rgba(139,92,246,0.08)' }}
-                                        >
-                                            <span className="font-heading font-black uppercase text-xl text-purple-300 leading-none">{g.label}</span>
-                                            <p className="text-xs text-gray-400 leading-relaxed font-body">{g.body}</p>
-                                        </motion.div>
                                     ))}
                                 </div>
                             </div>
