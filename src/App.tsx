@@ -96,7 +96,8 @@ function App() {
                             <Routes>
                                 {/* Public Routes */}
                                 <Route path="/login" element={<LoginPage />} />
-                                <Route path="/signup" element={<SignupPage />} />
+                                {/* Signup disabled — platform is invite-only */}
+                                <Route path="/signup" element={<Navigate to="/login" replace />} />
                                 <Route path="/signup/:token" element={<SignupPage />} />
                                 <Route path="/events-apply" element={<EventsApplyPage />} />
                                 <Route path="/apply/sales" element={<ApplySalesPage />} />

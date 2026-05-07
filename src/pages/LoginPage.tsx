@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -335,12 +335,9 @@ export function LoginPage() {
                         </>
                     )}
 
-                    {/* Signup Link */}
-                    <p className="mt-8 text-center text-sm text-gray-400">
-                        Don't have an account?{' '}
-                        <Link to="/signup" className="text-lime hover:underline">
-                            Sign up
-                        </Link>
+                    {/* Invite-only notice */}
+                    <p className="mt-8 text-center text-sm text-gray-500">
+                        This platform is invite-only. Contact your administrator for access.
                     </p>
                 </motion.div>
             </div>
