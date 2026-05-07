@@ -119,7 +119,8 @@ function GrainOverlay() {
     )
 }
 
-function MicroLabel({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function MicroLabel({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
     return <p className={`text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 ${center ? 'text-center' : ''}`}>{children}</p>
 }
 

@@ -118,7 +118,7 @@ function ProjectPresentation({
 }) {
     // Build slides: all images first, then optional film at the end
     const slides = useMemo(() => {
-        const s = project.images.map((img, i) => ({
+        const s: Array<{ type: 'image' | 'video'; img: string; label: string }> = project.images.map((img, i) => ({
             type: 'image' as const,
             img,
             label: `Image ${i + 1}`,
@@ -552,7 +552,7 @@ export function CaseStudiesPage() {
             {/* ── PROJECT GALLERIES (from NotSurePage) ─────────────── */}
             <section className="py-10 md:py-14 bg-black">
                 <div className="max-w-5xl mx-auto px-5 sm:px-6 space-y-5">
-                    {PROJECTS.map((project, i) => (
+                    {PROJECTS.map((project) => (
                         <ProjectSection key={project.id} project={project} />
                     ))}
                 </div>
