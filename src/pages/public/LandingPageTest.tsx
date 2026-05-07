@@ -932,11 +932,7 @@ export function LandingPageTest() {
                                         <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
                                         Sprint Workshop · {sprintDates}
                                     </span>
-                                    {/* Live event badge */}
-                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-red-300 font-body border border-red-400/30 bg-red-500/10 px-3 py-1.5 rounded-full">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                                        Live Event
-                                    </span>
+
                                     {sprintLocation && (
                                         <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-purple-300/60 font-body border border-purple-400/10 bg-purple-400/[0.03] px-3 py-1.5 rounded-full">
                                             {sprintLocation}
