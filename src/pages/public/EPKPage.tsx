@@ -82,7 +82,7 @@ export function EPKPage() {
         >
             {/* ─── SECTION 1: Hero ─── */}
             <section className="relative overflow-hidden">
-                {/* Dark green radial glow — top right */}
+                {/* Dark green radial glow. top right */}
                 <div
                     className="pointer-events-none absolute top-0 right-0 w-[700px] h-[700px]"
                     style={{

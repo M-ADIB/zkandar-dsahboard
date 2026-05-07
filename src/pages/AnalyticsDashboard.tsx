@@ -223,7 +223,7 @@ function ManagementTab({ data }: { data: ManagementSubmission[] }) {
                 <ChartCard title="Top Objectives (Q12)" delay={0.3}>
                     <MiniBar data={objectivesData} color="#75C345" height={260} />
                 </ChartCard>
-                <ChartCard title="Impact Areas — Avg Score (1–5)" delay={0.4}>
+                <ChartCard title="Impact Areas: Avg Score (1–5)" delay={0.4}>
                     <ResponsiveContainer width="100%" height={220}>
                         <RadarChart data={impactAreas}>
                             <PolarGrid stroke="#333" />

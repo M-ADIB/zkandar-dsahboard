@@ -186,7 +186,7 @@ export function EnrollPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center"
                 >
-                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Sprint Workshop — What actually happens</p>
+                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-4">Sprint Workshop. What actually happens</p>
                     <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] text-white mb-4">
                         In 3 days, you go from<br />
                         <span className="text-lime">"I've seen AI demos"</span> to<br />
@@ -362,7 +362,7 @@ export function EnrollPage() {
                         {loading ? (
                             <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
                         ) : (
-                            <>Secure my spot — 12,500 AED <ArrowRight className="h-5 w-5" /></>
+                            <>Secure my spot. 12,500 AED <ArrowRight className="h-5 w-5" /></>
                         )}
                     </button>
 

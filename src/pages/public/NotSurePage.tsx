@@ -33,7 +33,7 @@ const FAQS = [
     { q: "I'm not technical. Will I keep up?", a: "Every person in every cohort has said some version of this on day one. By day two, they're generating renders. We designed the Sprint specifically for architects and designers. Zero coding, zero machine learning. If you can describe a space, you can direct AI." },
     { q: "I've tried AI tools before and they weren't accurate enough.", a: "You were probably using generic tools. What we teach are workflows built specifically for architectural output. Correct proportions, material logic, spatial coherence. The gap between \"AI art\" and \"AI directed design\" is enormous. This is the latter." },
     { q: "What if I fall behind during the Sprint?", a: "The Sprint is intensive by design, but we keep cohorts small enough that no one gets left behind. Every session is recorded. You get async access to all materials." },
-    { q: "I'm worried my clients won't trust AI-generated work.", a: "Your clients care about quality and speed. Not how it was made. The renders in our gallery? Clients approved them without knowing AI was involved. What matters is the output — and it's indistinguishable from traditional renders, often better." },
+    { q: "I'm worried my clients won't trust AI-generated work.", a: "Your clients care about quality and speed. Not how it was made. The renders in our gallery? Clients approved them without knowing AI was involved. What matters is the output, and it's indistinguishable from traditional renders, often better." },
     { q: "Can I apply this to my actual projects, or is it all theory?", a: "Zero theory. By the end of day one you're running AI workflows on real briefs. By day three you leave with deliverables you can use immediately." },
 ]
 
@@ -55,7 +55,7 @@ const PROJECTS: ProjectCategory[] = [
         id: 'f1',
         tag: 'Sports & Branding',
         title: 'F1 Sprint Campaign',
-        description: 'Cinematic Formula 1 campaign imagery — entirely AI-generated. From race-day atmosphere to hero shots.',
+        description: 'Cinematic Formula 1 campaign imagery, entirely AI-generated. From race-day atmosphere to hero shots.',
         images: [
             '/more-works/f1/1.jpg',
             '/more-works/f1/2.jpg',
@@ -63,13 +63,13 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/f1/4.jpg',
         ],
         vimeoId: '1187702968',
-        filmLabel: 'F1 Sprint — AI Campaign Film',
+        filmLabel: 'F1 Sprint AI Campaign Film',
     },
     {
         id: 'landscaping',
         tag: 'Landscape Architecture',
         title: 'Landscape Design',
-        description: 'From site plans to lush environmental renders — AI-generated landscaping at full client-presentation quality.',
+        description: 'From site plans to lush environmental renders. AI-generated landscaping at full client-presentation quality.',
         images: [
             '/more-works/landscaping/1.jpg',
             '/more-works/landscaping/2.jpg',
@@ -88,7 +88,7 @@ const PROJECTS: ProjectCategory[] = [
         id: 'atelier',
         tag: 'Luxury Brand',
         title: 'Atelier Carrousel',
-        description: 'Product photography and cinematic brand identity — from opening scene to final product shot, no studio required.',
+        description: 'Product photography and cinematic brand identity, from opening scene to final product shot, no studio required.',
         images: [
             '/more-works/atelier-carrousel/opening.jpg',
             '/more-works/atelier-carrousel/product-1.webp',
@@ -97,26 +97,26 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/atelier-carrousel/closing.jpg',
         ],
         vimeoId: '1187090835',
-        filmLabel: 'Atelier Carrousel — AI Brand Film',
+        filmLabel: 'Atelier Carrousel AI Brand Film',
     },
     {
         id: 'coco',
         tag: 'Hospitality & Retail',
         title: 'Coco Chanel Concept',
-        description: 'Cinematic hospitality scenes and retail visualization — AI-directed atmospheres at luxury brand standard.',
+        description: 'Cinematic hospitality scenes and retail visualization. AI-directed atmospheres at luxury brand standard.',
         images: [
             '/more-works/coco-chanel/1.jpg',
             '/more-works/coco-chanel/2.jpg',
             '/more-works/coco-chanel/3.jpg',
         ],
         vimeoId: '1187667794',
-        filmLabel: 'Coco Chanel Concept — AI Brand Film',
+        filmLabel: 'Coco Chanel Concept AI Brand Film',
     },
     {
         id: 'product',
         tag: 'Product Design',
         title: 'Furniture Collection',
-        description: 'From rough sketch to photorealistic product render — the full AI workflow, prize-winning output.',
+        description: 'From rough sketch to photorealistic product render, the full AI workflow, prize-winning output.',
         images: [
             '/more-works/product-design/sketch-1.png',
             '/more-works/product-design/sketch-2.png',
@@ -273,7 +273,7 @@ function ProjectSection({ project, reverse: _reverse = false }: { project: Proje
                     </div>
                 )}
 
-                {/* AI Film embed — shown at the bottom of the card when a vimeoId exists */}
+                {/* AI Film embed. shown at the bottom of the card when a vimeoId exists */}
                 {project.vimeoId && (
                     <div className="border-t border-white/[0.05] mx-6 mb-6 pt-5">
                         <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime mb-3">AI Film Output</p>

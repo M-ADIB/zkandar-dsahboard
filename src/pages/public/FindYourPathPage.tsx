@@ -27,7 +27,7 @@ const SECTIONS: Section[] = [
                 sub: 'Your role defines which skills and systems will give you the highest return.',
                 options: [
                     { label: 'Individual designer or architect', sub: 'I work independently or as part of someone else\'s team', value: 'individual' },
-                    { label: 'Studio or firm owner', sub: 'I run the operation — I set direction, tools, and culture', value: 'owner' },
+                    { label: 'Studio or firm owner', sub: 'I run the operation, I set direction, tools, and culture', value: 'owner' },
                     { label: 'Team lead or creative director', sub: 'I manage designers and drive how the team delivers', value: 'lead' },
                     { label: 'Student or recent graduate', sub: 'I\'m building my skills and portfolio', value: 'student' },
                 ],
@@ -37,7 +37,7 @@ const SECTIONS: Section[] = [
                 text: 'How many people work on design at your firm?',
                 sub: 'Team size shapes what kind of AI system makes sense.',
                 options: [
-                    { label: 'Just me', sub: 'Solo practice — I wear all the hats', value: 'solo' },
+                    { label: 'Just me', sub: 'Solo practice, I wear all the hats', value: 'solo' },
                     { label: '2–5 people', sub: 'Small team, tight collaboration', value: 'small' },
                     { label: '6–20 people', sub: 'Mid-size studio with multiple roles', value: 'medium' },
                     { label: '20+ people', sub: 'Large firm with departments', value: 'large' },
@@ -66,12 +66,12 @@ const SECTIONS: Section[] = [
     {
         id: 'your-readiness',
         label: 'Your AI Readiness',
-        intro: 'We need to understand where you are right now — not where you want to be.',
+        intro: 'We need to understand where you are right now, not where you want to be.',
         questions: [
             {
                 id: 'ai_frequency',
                 text: 'How often do you currently use AI in your design work?',
-                sub: 'Be honest — this is the baseline we\'ll build from.',
+                sub: 'Be honest, this is the baseline we\'ll build from.',
                 options: [
                     { label: 'Never used it', sub: 'I haven\'t tried AI tools for design work yet', value: 'never' },
                     { label: 'Tried it a few times', sub: 'I\'ve experimented but don\'t use it regularly', value: 'few_times' },
@@ -115,12 +115,12 @@ const SECTIONS: Section[] = [
             {
                 id: 'ai_confidence',
                 text: 'How confident are you at prompting AI to get the result you want?',
-                sub: 'Prompting is a skill — where are you on that curve?',
+                sub: 'Prompting is a skill. Where are you on that curve?',
                 options: [
-                    { label: 'Not confident at all — I\'m mostly guessing', sub: 'Results feel random and hard to control', value: 'not_at_all' },
-                    { label: 'A little — sometimes it works, often it doesn\'t', sub: 'I get decent results occasionally but can\'t repeat it', value: 'a_little' },
-                    { label: 'Fairly confident — I can usually get close', sub: 'I have some techniques that work most of the time', value: 'fairly' },
-                    { label: 'Very confident — I have a system that works consistently', sub: 'I can reliably produce professional output through prompting', value: 'very' },
+                    { label: 'Not confident at all. I\'m mostly guessing', sub: 'Results feel random and hard to control', value: 'not_at_all' },
+                    { label: 'A little. Sometimes it works, often it doesn\'t', sub: 'I get decent results occasionally but can\'t repeat it', value: 'a_little' },
+                    { label: 'Fairly confident, I can usually get close', sub: 'I have some techniques that work most of the time', value: 'fairly' },
+                    { label: 'Very confident, I have a system that works consistently', sub: 'I can reliably produce professional output through prompting', value: 'very' },
                 ],
             },
         ],
@@ -137,8 +137,8 @@ const SECTIONS: Section[] = [
                 options: [
                     { label: 'I don\'t know where to start or what to focus on', sub: 'Too many tools and options, no clear direction', value: 'direction' },
                     { label: 'Output quality isn\'t good enough for professional use', sub: 'I can generate things but they don\'t look right', value: 'quality' },
-                    { label: 'I can do it once but can\'t repeat it reliably', sub: 'Results are inconsistent — I can\'t build a repeatable process', value: 'consistency' },
-                    { label: 'I use it but my team doesn\'t — adoption is the problem', sub: 'The bottleneck is getting others on board', value: 'team' },
+                    { label: 'I can do it once but can\'t repeat it reliably', sub: 'Results are inconsistent. I can\'t build a repeatable process', value: 'consistency' },
+                    { label: 'I use it but my team doesn\'t. Adoption is the problem', sub: 'The bottleneck is getting others on board', value: 'team' },
                 ],
             },
             {
@@ -146,9 +146,9 @@ const SECTIONS: Section[] = [
                 text: 'How soon do you want to be producing AI work consistently?',
                 sub: 'Your timeline shapes which path makes the most sense.',
                 options: [
-                    { label: 'Right now — I have a live project or pitch coming up', sub: 'I need results fast', value: 'urgent' },
+                    { label: 'Right now, I have a live project or pitch coming up', sub: 'I need results fast', value: 'urgent' },
                     { label: 'Within the next 3 months', sub: 'I\'m committed, just not in a rush', value: 'soon' },
-                    { label: 'Longer term — building toward it steadily', sub: 'No hard deadline, but it\'s a real priority', value: 'planned' },
+                    { label: 'Longer term, building toward it steadily', sub: 'No hard deadline, but it\'s a real priority', value: 'planned' },
                     { label: 'I\'m still deciding if it\'s worth the investment', sub: 'Need to see more before committing', value: 'unsure' },
                 ],
             },
@@ -333,7 +333,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="max-w-2xl mx-auto px-5 sm:px-6 py-8 space-y-8"
             >
-                {/* Top badge — color matches score */}
+                {/* Top badge. color matches score */}
                 <div className="text-center space-y-3">
                     <span className="inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-full"
                         style={{
@@ -499,7 +499,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                     </div>
                 </div>
 
-                {/* Recommendation card — unified detailed format */}
+                {/* Recommendation card. unified detailed format */}
                 <div className="rounded-3xl overflow-hidden relative"
                     style={{
                         background: isSprint
@@ -547,7 +547,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                             <p className="text-sm text-gray-400 leading-relaxed max-w-lg">
                                 {isSprint
                                     ? 'Your profile points to a fast, hands-on intensive that gets you producing real AI output immediately. 3 days. Real deliverables. You leave with a workflow that works on your next client project.'
-                                    : 'Your profile shows this isn\'t just about one person upskilling — it\'s about transforming how your operation works. The AI Masterclass is built for firms. We come in, build the system, and leave your team certified and producing.'}
+                                    : 'Your profile shows this isn\'t just about one person upskilling. it\'s about transforming how your operation works. The AI Masterclass is built for firms. We come in, build the system, and leave your team certified and producing.'}
                             </p>
                         </div>
 
@@ -663,7 +663,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                                     border: '1px solid rgba(139,92,246,0.3)',
                                 }}
                             >
-                                Direct Checkout — Sprint Workshop
+                                Direct Checkout: Sprint Workshop
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </a>
                         ) : (
@@ -737,7 +737,7 @@ function GateScreen({ onSubmit }: { onSubmit: (firstName: string, lastName: stri
                     Final Step to See Your Results!
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                    Enter your details below — your personalized AI readiness report is ready.
+                    Enter your details below. your personalized AI readiness report is ready.
                 </p>
             </div>
 
@@ -822,7 +822,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
                     </h1>
 
                     <p className="text-sm sm:text-base text-gray-400 leading-relaxed mb-8 max-w-sm mx-auto">
-                        10 questions. Honest score. A clear path forward — whether that's a Sprint Workshop or the AI Masterclass.
+                        10 questions. Honest score. A clear path forward, whether that's a Sprint Workshop or the AI Masterclass.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-[0.6rem] text-gray-600 uppercase tracking-wider mb-10">
@@ -957,7 +957,7 @@ export function FindYourPathPage() {
                     </div>
                     <ProgressBar current={globalIdx + 1} total={TOTAL} />
 
-                    {/* Section intro — show on first question of each section */}
+                    {/* Section intro. show on first question of each section */}
                     {questionInSection === 1 && (
                         <motion.p
                             key={currentSection.id}

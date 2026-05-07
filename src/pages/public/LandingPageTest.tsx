@@ -311,7 +311,7 @@ function CaseStudyPresentation({
                                 <button
                                     onClick={() => onJump(i)}
                                     className={`shrink-0 flex flex-col items-center gap-1 transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
-                                    title={`${currentCategory} — ${s.title}`}
+                                    title={`${currentCategory}. ${s.title}`}
                                 >
                                     <div className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-colors duration-200 flex items-center justify-center bg-white/[0.04] ${isActive ? 'border-lime' : 'border-white/[0.06]'}`}>
                                         {s.vimeoId ? (
@@ -387,7 +387,7 @@ function VslPlayer({ videoId }: { videoId: string }) {
                 allow="autoplay; fullscreen; picture-in-picture"
                 allowFullScreen
             />
-            {/* Play button — bottom-left to avoid blocking the face */}
+            {/* Play button. bottom-left to avoid blocking the face */}
             {!playing && (
                 <button
                     onClick={handlePlay}
@@ -463,7 +463,7 @@ export function LandingPageTest() {
             {/* ── HERO ───────────────────────────────────────────────── */}
             <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0 overflow-hidden">
-                    {/* Poster image — shows instantly while video buffers */}
+                    {/* Poster image. shows instantly while video buffers */}
                     <img
                         src="/casestudies/nisreen/money-shot-night.jpg"
                         alt=""
@@ -471,7 +471,7 @@ export function LandingPageTest() {
                         style={{ filter: 'blur(3px) brightness(0.55)' }}
                         fetchPriority="high"
                     />
-                    {/* Full-bleed video background — fades in over poster once loaded */}
+                    {/* Full-bleed video background. fades in over poster once loaded */}
                     <HeroVideo />
                     {/* Gradient overlays for text legibility */}
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
@@ -560,11 +560,11 @@ export function LandingPageTest() {
                         </h2>
                     </FadeIn>
 
-                    {/* Bio layout — portrait photo + text */}
+                    {/* Bio layout. portrait photo + text */}
                     <FadeIn delay={0.1}>
                         <div className="max-w-5xl mx-auto grid md:grid-cols-[auto_1.6fr] gap-10 md:gap-16 items-stretch mb-20">
 
-                            {/* Left — portrait photo, stretches to match bio height */}
+                            {/* Left. portrait photo, stretches to match bio height */}
                             <div className="flex flex-col items-center md:items-start">
                                 <div className="relative w-64 md:w-72 rounded-2xl overflow-hidden border border-white/[0.08] h-full min-h-[28rem]">
                                     <img
@@ -581,7 +581,7 @@ export function LandingPageTest() {
                                 </div>
                             </div>
 
-                            {/* Right — bio text */}
+                            {/* Right. bio text */}
                             <div className="flex flex-col justify-center">
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
                                     Interior designer turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
@@ -772,7 +772,7 @@ export function LandingPageTest() {
                         <p className="text-gray-500 text-base mt-2">From 30+ studios and firms around the world.</p>
                     </FadeIn>
 
-                    {/* Testimonial mashup — 9:16 portrait */}
+                    {/* Testimonial mashup. 9:16 portrait */}
                     <FadeIn delay={0.1} className="flex justify-center">
                         <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black shadow-[0_0_60px_rgba(208,255,113,0.05)] w-full max-w-sm" style={{ aspectRatio: '9/16' }}>
                             <iframe

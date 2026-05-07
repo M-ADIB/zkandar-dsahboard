@@ -190,13 +190,13 @@ export const ApplySalesPage = () => {
                 {/* Title & Step Indicator */}
                 <div className="mb-8">
                     <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#D0FF71]/10 border border-[#D0FF71]/20 text-[#D0FF71] text-xs font-bold uppercase tracking-widest mb-4">
-                        Open Position — Fully Remote
+                        Open Position. Fully Remote
                     </div>
                     <h1 className="text-3xl md:text-5xl font-black font-neue uppercase tracking-wider mb-3">
                         High-Ticket Closer
                     </h1>
                     <p className="text-gray-400 font-medium mb-4 leading-relaxed">
-                        We're Zkandar AI — we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for a high-ticket closer to join our remote sales team.
+                        We're Zkandar AI. we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for a high-ticket closer to join our remote sales team.
                     </p>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Contact Info</span>
@@ -310,11 +310,11 @@ export const ApplySalesPage = () => {
                                             className={`${inputCls} appearance-none`}
                                         >
                                             <option value="">Select your timezone</option>
-                                            <option value="GMT+4 (UAE / Gulf)">GMT+4 — UAE / Gulf</option>
-                                            <option value="GMT+3 (Saudi Arabia / Kuwait / Qatar)">GMT+3 — Saudi Arabia / Kuwait / Qatar</option>
-                                            <option value="GMT+5 (Pakistan)">GMT+5 — Pakistan / Maldives</option>
-                                            <option value="GMT+2 (Egypt / Levant)">GMT+2 — Egypt / Jordan / Lebanon</option>
-                                            <option value="Other — willing to adapt to Gulf hours">Other — willing to adapt to Gulf hours</option>
+                                            <option value="GMT+4 (UAE / Gulf)">GMT+4. UAE / Gulf</option>
+                                            <option value="GMT+3 (Saudi Arabia / Kuwait / Qatar)">GMT+3. Saudi Arabia / Kuwait / Qatar</option>
+                                            <option value="GMT+5 (Pakistan)">GMT+5. Pakistan / Maldives</option>
+                                            <option value="GMT+2 (Egypt / Levant)">GMT+2. Egypt / Jordan / Lebanon</option>
+                                            <option value="Other. willing to adapt to Gulf hours">Other. willing to adapt to Gulf hours</option>
                                         </select>
                                     </div>
                                 </div>
@@ -406,9 +406,9 @@ export const ApplySalesPage = () => {
                                         className={`${inputCls} appearance-none`}
                                     >
                                         <option value="">Select an option</option>
-                                        <option value="Yes — it's my primary background">Yes — it's my primary background</option>
-                                        <option value="Yes — among other verticals">Yes — among other verticals</option>
-                                        <option value="No — but I've closed other high-ticket services">No — but I've closed other high-ticket services</option>
+                                        <option value="Yes. it's my primary background">Yes. it's my primary background</option>
+                                        <option value="Yes. among other verticals">Yes. among other verticals</option>
+                                        <option value="No. but I've closed other high-ticket services">No. but I've closed other high-ticket services</option>
                                     </select>
                                 </div>
 

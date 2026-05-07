@@ -282,7 +282,7 @@ export function WorkflowsPage() {
             {/* Noise overlay */}
             <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
 
-            {/* Background logo badge — zoomed out so full badge is visible */}
+            {/* Background logo badge. zoomed out so full badge is visible */}
             <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.05]">
                 <img src={logoSrc} alt="" className="w-[80%] md:w-[55%] lg:w-[40%] max-w-[600px] grayscale object-contain" />
             </div>
@@ -519,7 +519,7 @@ export function WorkflowsPage() {
                                 <p className="text-xs text-gray-500 uppercase tracking-widest font-heading mt-1">Creative output capacity</p>
                             </div>
                             <p className="text-sm text-gray-400 leading-relaxed font-body">
-                                A 10-person team operating with structured AI workflows produces the creative output equivalent to 20–25 participants using traditional methods — without adding headcount, salaries, or management overhead.
+                                A 10-person team operating with structured AI workflows produces the creative output equivalent to 20–25 participants using traditional methods. without adding headcount, salaries, or management overhead.
                             </p>
                         </div>
                     </div>

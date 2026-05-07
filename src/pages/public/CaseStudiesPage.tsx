@@ -50,8 +50,8 @@ const PROJECTS: ProjectCategory[] = [
     {
         id: 'som',
         tag: 'Architecture',
-        title: 'SOM — Skidmore Owings & Merrill',
-        description: 'Full AI-directed architectural visualization — from an initial sketch to photorealistic renders and a cinematic brand film.',
+        title: 'SOM x Skidmore Owings & Merrill',
+        description: 'Full AI-directed architectural visualization, from an initial sketch to photorealistic renders and a cinematic brand film.',
         images: [
             '/more-works/som/63.png',
             '/more-works/som/8.png',
@@ -69,41 +69,41 @@ const PROJECTS: ProjectCategory[] = [
             '/more-works/som/67.png',
         ],
         vimeoId: '1183148939',
-        filmLabel: 'SOM — AI Architecture Film',
+        filmLabel: 'SOM AI Architecture Film',
     },
     {
         id: 'f1',
         tag: 'Sports & Branding',
         title: 'F1 Sprint Campaign',
-        description: 'Cinematic Formula 1 campaign imagery — entirely AI-generated. From race-day atmosphere to hero shots.',
+        description: 'Cinematic Formula 1 campaign imagery, entirely AI-generated. From race-day atmosphere to hero shots.',
         images: ['/more-works/f1/1.jpg','/more-works/f1/2.jpg','/more-works/f1/3.jpg','/more-works/f1/4.jpg'],
         vimeoId: '1187078968',
-        filmLabel: 'F1 Sprint — AI Campaign Film',
+        filmLabel: 'F1 Sprint AI Campaign Film',
     },
     {
         id: 'atelier',
         tag: 'Luxury Brand',
         title: 'Atelier Carrousel',
-        description: 'Product photography and cinematic brand identity — from opening scene to final product shot, no studio required.',
+        description: 'Product photography and cinematic brand identity, from opening scene to final product shot, no studio required.',
         images: ['/more-works/atelier-carrousel/opening.jpg','/more-works/atelier-carrousel/product-1.webp','/more-works/atelier-carrousel/product-2.webp','/more-works/atelier-carrousel/product-3.webp','/more-works/atelier-carrousel/closing.jpg'],
         vimeoId: '1187090835',
-        filmLabel: 'Atelier Carrousel — AI Brand Film',
+        filmLabel: 'Atelier Carrousel AI Brand Film',
     },
     {
         id: 'product',
         tag: 'Product Design',
         title: 'Furniture Collection',
-        description: 'From rough sketch to photorealistic product render — the full AI workflow, prize-winning output.',
+        description: 'From rough sketch to photorealistic product render, the full AI workflow, prize-winning output.',
         images: ['/more-works/product-design/sketch-1.png','/more-works/product-design/sketch-2.png','/more-works/product-design/1.jpg','/more-works/product-design/2.jpg','/more-works/product-design/3.jpg','/more-works/product-design/4.jpg'],
     },
     {
         id: 'coco',
         tag: 'Hospitality & Retail',
         title: 'Coco Chanel Concept',
-        description: 'Cinematic hospitality scenes and retail visualization — AI-directed atmospheres at luxury brand standard.',
+        description: 'Cinematic hospitality scenes and retail visualization. AI-directed atmospheres at luxury brand standard.',
         images: ['/more-works/coco-chanel/1.jpg','/more-works/coco-chanel/2.jpg','/more-works/coco-chanel/3.jpg'],
         vimeoId: '1187667794',
-        filmLabel: 'Coco Chanel Concept — AI Brand Film',
+        filmLabel: 'Coco Chanel Concept AI Brand Film',
     },
 ]
 
@@ -514,7 +514,7 @@ function CaseStudyPresentation({
                                 <button
                                     onClick={() => onJump(i)}
                                     className={`shrink-0 flex flex-col items-center gap-1 transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-30 hover:opacity-60'}`}
-                                    title={`${currentCategory} — ${s.title}`}
+                                    title={`${currentCategory}. ${s.title}`}
                                 >
                                     <div className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-colors duration-200 flex items-center justify-center bg-white/[0.04] ${isActive ? 'border-lime' : 'border-white/[0.06]'}`}>
                                         {s.vimeoId ? (
@@ -583,12 +583,12 @@ export function CaseStudiesPage() {
                                     className="w-full h-full"
                                     allow="autoplay; fullscreen; picture-in-picture"
                                     allowFullScreen
-                                    title="Vitra Showroom — AI Film"
+                                    title="Vitra Showroom AI Film"
                                 />
                             </div>
                             <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
                                 <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Interior Design</span>
-                                <p className="font-heading font-black uppercase text-sm text-white">Vitra Showroom — AI Film</p>
+                                <p className="font-heading font-black uppercase text-sm text-white">Vitra Showroom AI Film</p>
                                 <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
                             </div>
                         </div>
@@ -653,10 +653,10 @@ export function CaseStudiesPage() {
                             </h2>
                             <LimeBar />
                         </div>
-                        <p className="text-gray-500 text-sm mt-3">In their own words — unscripted.</p>
+                        <p className="text-gray-500 text-sm mt-3">In their own words, unscripted.</p>
                     </FadeIn>
 
-                    {/* Portrait video grid — 9:16 aspect ratio */}
+                    {/* Portrait video grid. 9:16 aspect ratio */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                         {WORKSHOPS.map((w, i) => (
                             <FadeIn key={w.id} delay={i * 0.04}>

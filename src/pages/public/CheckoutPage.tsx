@@ -60,7 +60,7 @@ export function CheckoutPage() {
 
             <div className="max-w-lg mx-auto px-5 sm:px-6 py-12 sm:py-20">
 
-                {/* "Book a call" banner — shown when user has questions or is exploring */}
+                {/* "Book a call" banner. shown when user has questions or is exploring */}
                 {hasQuestions && (
                     <motion.div
                         initial={{ opacity: 0, y: -8 }}
