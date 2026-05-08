@@ -491,10 +491,10 @@ export function LandingPageTest() {
                                 </motion.span>
                                 <h1 className="font-heading font-black uppercase leading-[0.92]">
                                     <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
-                                        <SplitText text="ARCHITECTS," baseDelay={0.15} />
+                                        <SplitText text="ARCHITECTS" baseDelay={0.15} /><span className="inline-block text-[0.7em]">,</span>
                                     </span>
                                     <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
-                                        <SplitText text="INTERIOR DESIGNERS," baseDelay={0.3} />
+                                        <SplitText text="INTERIOR DESIGNERS" baseDelay={0.3} /><span className="inline-block text-[0.7em]">,</span>
                                     </span>
                                     <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
                                         <SplitText text="& MARKETEERS" baseDelay={0.45} />
