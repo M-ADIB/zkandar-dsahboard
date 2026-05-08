@@ -410,6 +410,7 @@ export function LandingPageTest() {
     const [masterclassModalOpen, setMasterclassModalOpen] = useState(false)
     const [sprintDates, setSprintDates] = useState('June 3–5')
     const [sprintLocation, setSprintLocation] = useState('Live Zoom')
+    const [collabIdx, setCollabIdx] = useState<number | null>(null)
 
     // Fetch marketing settings from Supabase CMS
     useEffect(() => {
@@ -620,44 +621,111 @@ export function LandingPageTest() {
                 </div>
 
                 {/* Full-bleed infinite photo strip */}
-                <div className="relative">
-                    <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060606] to-transparent z-10 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060606] to-transparent z-10 pointer-events-none" />
-                    <div className="flex overflow-hidden">
-                        <div
-                            className="flex gap-3 shrink-0 animate-[ticker_35s_linear_infinite]"
-                            style={{ paddingRight: '0.75rem' }}
-                        >
-                            {[
-                                { src: '/collabs/collab-1.jpg', alt: 'Vitra showroom talk' },
-                                { src: '/collabs/collab-2.jpg', alt: 'Lighting Institute panel' },
-                                { src: '/collabs/collab-3.jpg', alt: 'Studio training' },
-                                { src: '/collabs/collab-4.jpg', alt: 'Design workshop' },
-                                { src: '/collabs/collab-5.jpg', alt: 'Team masterclass' },
-                                { src: '/collabs/collab-6.jpg', alt: 'Studio session' },
-                                { src: '/collabs/collab-8.jpg', alt: 'Workshop session' },
-                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra collaboration' },
-                                { src: '/collabs/collab-1.jpg', alt: 'Vitra showroom talk' },
-                                { src: '/collabs/collab-2.jpg', alt: 'Lighting Institute panel' },
-                                { src: '/collabs/collab-3.jpg', alt: 'Studio training' },
-                                { src: '/collabs/collab-4.jpg', alt: 'Design workshop' },
-                                { src: '/collabs/collab-5.jpg', alt: 'Team masterclass' },
-                                { src: '/collabs/collab-6.jpg', alt: 'Studio session' },
-                                { src: '/collabs/collab-8.jpg', alt: 'Workshop session' },
-                                { src: '/collabs/collab-vitra.jpg', alt: 'Vitra collaboration' },
-                            ].map((photo, i) => (
-                                <div key={i} className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden">
-                                    <img
-                                        src={photo.src}
-                                        alt={photo.alt}
-                                        loading="lazy"
-                                        className="h-full w-full object-cover opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-500"
-                                    />
+                {(() => {
+                    const COLLAB_PHOTOS = [
+                        { src: '/collabs/collab-1.jpg', alt: 'Collaboration 1' },
+                        { src: '/collabs/collab-2.jpg', alt: 'Collaboration 2' },
+                        { src: '/collabs/collab-3.jpg', alt: 'Collaboration 3' },
+                        { src: '/collabs/collab-4.jpg', alt: 'Collaboration 4' },
+                        { src: '/collabs/collab-5.jpg', alt: 'Collaboration 5' },
+                        { src: '/collabs/collab-6.jpg', alt: 'Collaboration 6' },
+                        { src: '/collabs/collab-7.jpg', alt: 'Collaboration 7' },
+                        { src: '/collabs/collab-8.jpg', alt: 'Collaboration 8' },
+                        { src: '/collabs/collab-9.jpg', alt: 'Collaboration 9' },
+                        { src: '/collabs/collab-10.jpg', alt: 'Collaboration 10' },
+                        { src: '/collabs/collab-11.jpg', alt: 'Collaboration 11' },
+                        { src: '/collabs/collab-12.jpg', alt: 'Collaboration 12' },
+                        { src: '/collabs/collab-13.jpg', alt: 'Collaboration 13' },
+                        { src: '/collabs/collab-14.jpg', alt: 'Collaboration 14' },
+                    ]
+                    // Duplicate for seamless infinite ticker
+                    const tickerPhotos = [...COLLAB_PHOTOS, ...COLLAB_PHOTOS]
+                    return (
+                        <>
+                            <div className="relative">
+                                <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060606] to-transparent z-10 pointer-events-none" />
+                                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060606] to-transparent z-10 pointer-events-none" />
+                                <div className="flex overflow-hidden">
+                                    <div
+                                        className="flex gap-3 shrink-0 animate-[ticker_50s_linear_infinite]"
+                                        style={{ paddingRight: '0.75rem' }}
+                                    >
+                                        {tickerPhotos.map((photo, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setCollabIdx(i % COLLAB_PHOTOS.length)}
+                                                className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden cursor-pointer group"
+                                            >
+                                                <img
+                                                    src={photo.src}
+                                                    alt={photo.alt}
+                                                    loading="lazy"
+                                                    className="h-full w-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                            </div>
+
+                            {/* Collab Lightbox */}
+                            <AnimatePresence>
+                                {collabIdx !== null && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md"
+                                        onClick={() => setCollabIdx(null)}
+                                    >
+                                        {/* Close */}
+                                        <button
+                                            onClick={() => setCollabIdx(null)}
+                                            className="absolute top-5 right-5 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                        >
+                                            <X className="w-6 h-6 text-white" />
+                                        </button>
+
+                                        {/* Prev */}
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setCollabIdx(i => i !== null ? (i - 1 + COLLAB_PHOTOS.length) % COLLAB_PHOTOS.length : 0) }}
+                                            className="absolute left-3 sm:left-6 z-10 p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                        >
+                                            <ChevronLeft className="w-6 h-6 text-white" />
+                                        </button>
+
+                                        {/* Image */}
+                                        <motion.img
+                                            key={collabIdx}
+                                            src={COLLAB_PHOTOS[collabIdx].src}
+                                            alt={COLLAB_PHOTOS[collabIdx].alt}
+                                            initial={{ opacity: 0, scale: 0.92 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.92 }}
+                                            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl"
+                                        />
+
+                                        {/* Next */}
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setCollabIdx(i => i !== null ? (i + 1) % COLLAB_PHOTOS.length : 0) }}
+                                            className="absolute right-3 sm:right-6 z-10 p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                        >
+                                            <ChevronRight className="w-6 h-6 text-white" />
+                                        </button>
+
+                                        {/* Counter */}
+                                        <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs text-white/50 font-body tracking-wider">
+                                            {collabIdx + 1} / {COLLAB_PHOTOS.length}
+                                        </span>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </>
+                    )
+                })()}
             </section>
 
             {/* ── VSL ────────────────────────────────────────────────── */}
