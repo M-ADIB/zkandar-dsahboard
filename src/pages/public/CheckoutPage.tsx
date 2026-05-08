@@ -1,26 +1,52 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle2, ArrowRight, Loader2, Phone, Calendar, Shield, Clock } from 'lucide-react'
+import { ArrowRight, Loader2, Phone, Calendar, Shield, CheckCircle2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
-const WHAT_YOU_GET = [
-    '3 Day Sprint Program. Live, hands on sessions',
-    'Prompt engineering for architectural output',
-    'Site analysis, concept sketching, and render workflows',
-    'All session recordings + lifetime access to materials',
-    'Private cohort Slack channel',
-    'Post-sprint 1-on-1 follow-up session',
+const SPRINT_INCLUSIONS = [
+    '3 live days of hands-on AI training',
+    'Real client-ready deliverables by Day 3',
+    'Access to session recordings',
 ]
 
 const CALENDLY_URL = 'https://calendly.com/zkandar/sprint-questions'
+
+function PurpleCheckItem({ text, delay = 0 }: { text: string; delay?: number }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: -6 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay, duration: 0.35 }}
+            className="flex items-start gap-3"
+        >
+            <CheckCircle2 className="h-4 w-4 text-purple-400 shrink-0 mt-0.5" />
+            <span className="text-sm text-gray-300 font-body">{text}</span>
+        </motion.div>
+    )
+}
 
 export function CheckoutPage() {
     const params = new URLSearchParams(window.location.search)
     const hasQuestions = params.get('questions') === 'true'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [sprintDates, setSprintDates] = useState('June 3–5')
+    const [sprintLocation, setSprintLocation] = useState('Live Zoom')
+
+    useEffect(() => {
+        supabase.from('settings').select('key, value')
+            .in('key', ['marketing_sprint_dates', 'marketing_sprint_location'])
+            .then(({ data }) => {
+                if (!data) return
+                const map: Record<string, string> = {}
+                ;(data as { key: string; value: string }[]).forEach(r => { map[r.key] = r.value })
+                if (map.marketing_sprint_dates) setSprintDates(map.marketing_sprint_dates)
+                if (map.marketing_sprint_location !== undefined) setSprintLocation(map.marketing_sprint_location)
+            })
+    }, [])
 
     const handleCheckout = async () => {
         setLoading(true)
@@ -58,9 +84,9 @@ export function CheckoutPage() {
                 </div>
             </div>
 
-            <div className="max-w-lg mx-auto px-5 sm:px-6 py-12 sm:py-20">
+            <div className="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-20">
 
-                {/* "Book a call" banner. shown when user has questions or is exploring */}
+                {/* "Book a call" banner — shown when user has questions */}
                 {hasQuestions && (
                     <motion.div
                         initial={{ opacity: 0, y: -8 }}
@@ -87,85 +113,113 @@ export function CheckoutPage() {
                     </motion.div>
                 )}
 
-                {/* Header */}
+                {/* ── AI SPRINT WORKSHOP CARD (matches main lander) ──────── */}
                 <motion.div
-                    initial={{ opacity: 0, y: 12 }}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-8"
+                    transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative rounded-3xl overflow-hidden"
+                    style={{
+                        background: 'linear-gradient(145deg, #12101a 0%, #0d0b14 50%, #09080f 100%)',
+                        border: '1px solid rgba(139, 92, 246, 0.15)',
+                        boxShadow: '0 0 0 1px rgba(139,92,246,0.04), 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(139,92,246,0.05) inset',
+                    }}
                 >
-                    <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/70 mb-2">Sprint Workshop</p>
-                    <h1 className="font-heading font-black uppercase text-[clamp(1.8rem,4vw,2.5rem)] leading-[0.95] text-white">Complete your<br />enrollment.</h1>
-                </motion.div>
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent" />
 
-                {/* Order card */}
-                <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden mb-6"
-                >
-                    {/* Product header */}
-                    <div className="relative h-32 overflow-hidden">
-                        <img src="/lander/4.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80" />
-                        <div className="absolute bottom-4 left-5">
-                            <h2 className="font-heading font-black uppercase text-lg text-white">AI Sprint Workshop</h2>
+                    <div className="p-8 md:p-12 space-y-8">
+
+                        {/* Badge + title */}
+                        <div className="space-y-5">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-purple-300 font-body border border-purple-400/20 bg-purple-400/5 px-3 py-1.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                                    Sprint Workshop · {sprintDates}
+                                </span>
+
+                                {sprintLocation && (
+                                    <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-purple-300/60 font-body border border-purple-400/10 bg-purple-400/[0.03] px-3 py-1.5 rounded-full">
+                                        {sprintLocation}
+                                    </span>
+                                )}
+                            </div>
+                            <h3 className="font-heading font-black text-white uppercase text-[clamp(1.6rem,5vw,3.2rem)] leading-[1.0] md:leading-[0.93]">
+                                AI Sprint Workshop<br /><span className="text-purple-300">for Individuals</span>
+                            </h3>
+                            <p className="text-gray-400 text-base leading-relaxed font-body max-w-xl">
+                                3 live days on Zoom. Hands-on from session one. You leave with real AI-generated deliverables and a workflow you can use immediately. No prior experience needed.
+                            </p>
                         </div>
-                    </div>
 
-                    {/* What's included */}
-                    <div className="p-5 border-b border-white/[0.06]">
-                        <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-3">What's included</p>
-                        <div className="space-y-2">
-                            {WHAT_YOU_GET.map((item, i) => (
-                                <div key={i} className="flex items-start gap-2.5">
-                                    <CheckCircle2 className="h-4 w-4 text-lime shrink-0 mt-0.5" />
-                                    <span className="text-sm text-gray-300">{item}</span>
+                        <div className="border-t border-white/5" />
+
+                        {/* Meta tags */}
+                        <div className="flex flex-wrap gap-3">
+                            {[
+                                { label: 'Duration', value: '3 Days' },
+                                { label: 'Format', value: 'Hands-On' },
+                                { label: 'Delivery', value: 'Live Zoom' },
+                                { label: 'Time', value: '7 PM Dubai' },
+                            ].map(m => (
+                                <div key={m.label} className="flex items-center gap-2 bg-white/5 border border-white/[0.08] rounded-full px-4 py-2">
+                                    <span className="text-[10px] uppercase tracking-widest text-purple-300/60 font-bold font-heading">{m.label}</span>
+                                    <span className="text-xs text-white font-body">{m.value}</span>
                                 </div>
                             ))}
                         </div>
-                    </div>
 
-                    {/* Price */}
-                    <div className="p-5 flex items-center justify-between">
-                        <div>
-                            <p className="text-xs text-gray-500">Total (one-time payment)</p>
-                            <div className="flex items-baseline gap-1.5 mt-0.5">
-                                <span className="font-heading font-black text-2xl text-white">12,500</span>
-                                <span className="text-sm font-semibold text-gray-400">AED</span>
+                        <div className="border-t border-white/5" />
+
+                        {/* What's included */}
+                        <div className="space-y-5">
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What's included</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                                {SPRINT_INCLUSIONS.map((item, i) => (
+                                    <PurpleCheckItem key={item} text={item} delay={i * 0.05} />
+                                ))}
                             </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                            <Clock className="h-3.5 w-3.5" />
-                            3 Day Program
-                        </div>
-                    </div>
-                </motion.div>
 
-                {/* Checkout button */}
-                <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15 }}
-                >
-                    {error && (
-                        <p className="text-sm text-red-400 mb-3 text-center">{error}</p>
-                    )}
-                    <button
-                        onClick={handleCheckout}
-                        disabled={loading}
-                        className="w-full py-4 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {loading ? (
-                            <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
-                        ) : (
-                            <>Pay 12,500 AED <ArrowRight className="h-5 w-5" /></>
-                        )}
-                    </button>
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                        <Shield className="h-3.5 w-3.5 text-gray-600" />
-                        <p className="text-xs text-gray-600">Secured by Stripe · Card details never touch our servers</p>
+                        <div className="border-t border-white/5" />
+
+                        {/* Price */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <p className="text-xs text-gray-500">Total (one-time payment)</p>
+                                <div className="flex items-baseline gap-1.5 mt-0.5">
+                                    <span className="font-heading font-black text-3xl text-white">12,500</span>
+                                    <span className="text-sm font-semibold text-gray-400">AED</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-white/5" />
+
+                        {/* CTA */}
+                        <div className="space-y-3">
+                            {error && (
+                                <p className="text-sm text-red-400 text-center">{error}</p>
+                            )}
+                            <button
+                                onClick={handleCheckout}
+                                disabled={loading}
+                                className="group w-full flex items-center justify-center gap-3 px-8 py-4 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
+                            >
+                                {loading ? (
+                                    <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
+                                ) : (
+                                    <>Pay 12,500 AED <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+                                )}
+                            </button>
+                            <div className="flex items-center justify-center gap-2">
+                                <Shield className="h-3.5 w-3.5 text-gray-600" />
+                                <p className="text-xs text-gray-600">Secured by Stripe · Card details never touch our servers</p>
+                            </div>
+                        </div>
+
                     </div>
+                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/20 to-transparent" />
                 </motion.div>
 
                 {/* Footer links */}
