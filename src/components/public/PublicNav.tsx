@@ -98,19 +98,8 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                         />
                     </a>
 
-                    {/* Right: CTA (hidden on mobile) + Hamburger */}
+                    {/* Right: Hamburger only */}
                     <div className="flex items-center gap-2.5 shrink-0">
-                        <motion.a
-                            href="/find-your-path"
-                            initial={{ opacity: 0, scale: 0.88 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.45, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.96 }}
-                            className="px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300"
-                        >
-                            Take the AI Assessment
-                        </motion.a>
 
                         <button
                             onClick={() => setMenuOpen(o => !o)}
@@ -168,8 +157,8 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                                     ))}
                                 </div>
 
-                                {/* CTA inside menu — mobile only */}
-                                <div className="mt-3 pt-3 border-t border-white/[0.06] sm:hidden">
+                                {/* CTA inside menu */}
+                                <div className="mt-3 pt-3 border-t border-white/[0.06]">
                                     <a
                                         href="/find-your-path"
                                         onClick={() => setMenuOpen(false)}
