@@ -485,19 +485,22 @@ export function LandingPageTest() {
                                 <motion.span
                                     initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-                                    className="block text-[0.7rem] sm:text-[0.8rem] font-bold uppercase tracking-[0.3em] text-white/40 font-body"
+                                    className="block text-[0.875rem] sm:text-[1rem] font-bold uppercase tracking-[0.3em] text-white/40 font-body"
                                 >
                                     We Teach
                                 </motion.span>
                                 <h1 className="font-heading font-black uppercase leading-[0.92]">
                                     <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
-                                        <SplitText text="ARCHITECTS &" baseDelay={0.15} />
+                                        <SplitText text="ARCHITECTS," baseDelay={0.15} />
                                     </span>
                                     <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
-                                        <SplitText text="INTERIOR DESIGNERS" baseDelay={0.3} />
+                                        <SplitText text="INTERIOR DESIGNERS," baseDelay={0.3} />
+                                    </span>
+                                    <span className="block text-white text-[clamp(2rem,5.5vw,4.5rem)]">
+                                        <SplitText text="& MARKETEERS" baseDelay={0.45} />
                                     </span>
                                     <span className="block text-lime text-[clamp(1.3rem,3.2vw,2.6rem)] mt-2">
-                                        <SplitText text="HOW TO USE AI." baseDelay={0.5} />
+                                        <SplitText text="HOW TO USE AI." baseDelay={0.6} />
                                     </span>
                                 </h1>
                             </div>
@@ -584,7 +587,7 @@ export function LandingPageTest() {
                             {/* Right. bio text */}
                             <div className="flex flex-col justify-center">
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                    Interior designer turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
+                                    Architect turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
                                 </p>
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
                                     For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI globally, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
