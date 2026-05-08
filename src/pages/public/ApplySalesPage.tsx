@@ -183,8 +183,7 @@ export const ApplySalesPage = () => {
                     >
                 {/* Logo */}
                 <div className="flex items-center space-x-3 mb-12">
-                    <img src={logoSrc} alt="Zkandar AI" className="h-14 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-                    <span className="text-xl font-bold font-neue">Zkandar AI</span>
+                    <img src={logoSrc} alt="Zkandar" className="h-14 object-contain" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                 </div>
 
                 {/* Title & Step Indicator */}
@@ -196,7 +195,7 @@ export const ApplySalesPage = () => {
                         High-Ticket Closer
                     </h1>
                     <p className="text-gray-400 font-medium mb-4 leading-relaxed">
-                        We're Zkandar AI. we teach architecture and interior design studios how to integrate AI into their workflow. We're looking for a high-ticket closer to join our remote sales team.
+                        We teach architecture and interior design studios how to integrate AI into their workflow. We're looking for a high-ticket closer to join our remote sales team.
                     </p>
                     <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
                         <span className={step >= 1 ? 'text-[#D0FF71]' : ''}>Step 1. Contact Info</span>

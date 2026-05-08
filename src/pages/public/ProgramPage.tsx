@@ -17,11 +17,7 @@ const inclusions = [
     'Data-driven analysis of teams performance',
 ]
 
-const gains = [
-    { label: 'Control', body: 'Direct AI output with precision so it fits your visual language every time' },
-    { label: 'Speed', body: 'Compress days of ideation into hours without sacrificing quality' },
-    { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
-]
+
 
 // ─── Calendly Modal ───────────────────────────────────────────────────────────
 
@@ -148,8 +144,7 @@ export function ProgramPage() {
                             transition={{ duration: 0.6 }}
                             className="flex items-center gap-3 pb-4 border-b border-white/5"
                         >
-                            <img src={logoSrc} alt="Zkandar AI" className="h-9 object-contain" />
-                            <span className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-white/50">Zkandar AI</span>
+                            <img src={logoSrc} alt="Zkandar" className="h-9 object-contain" />
                             <span className="ml-auto text-[10px] uppercase tracking-[0.15em] text-lime/60 font-bold border border-lime/20 px-3 py-1 rounded-full">Program</span>
                         </motion.div>
 
@@ -259,30 +254,6 @@ export function ProgramPage() {
                                 </div>
                             </div>
 
-                            {/* Divider */}
-                            <div className="border-t border-white/5" />
-
-                            {/* What you'll gain */}
-                            <div className="space-y-5">
-                                <h2 className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {gains.map((g, i) => (
-                                        <motion.div
-                                            key={g.label}
-                                            initial={{ opacity: 0, y: 16 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.5, delay: 0.8 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                                            className="rounded-2xl p-5 space-y-2"
-                                            style={{ background: 'rgba(208,255,113,0.03)', border: '1px solid rgba(208,255,113,0.08)' }}
-                                        >
-                                            <span className="font-heading font-black uppercase text-xl text-lime leading-none">{g.label}</span>
-                                            <p className="text-xs text-gray-400 leading-relaxed font-body">{g.body}</p>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Divider */}
                             <div className="border-t border-white/5" />
 
                             {/* CTA */}
@@ -314,7 +285,6 @@ export function ProgramPage() {
                     <div className="text-center pt-8 pb-4 border-t border-white/5">
                         <div className="flex items-center justify-center gap-2 opacity-40">
                             <img src={logoSrc} alt="" className="h-5 object-contain grayscale" />
-                            <span className="text-xs font-heading tracking-wider">Zkandar AI</span>
                         </div>
                     </div>
 

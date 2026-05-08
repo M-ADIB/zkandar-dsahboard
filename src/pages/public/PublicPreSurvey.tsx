@@ -409,15 +409,10 @@ export function PublicPreSurvey() {
                     >
                         Your response has been recorded. We appreciate you taking the time to share your expectations and context.
                     </motion.p>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm"
-                    >
-                        <Sparkles className="h-4 w-4" />
-                        Zkandar AI
-                    </motion.div>
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm">
+                            <Sparkles className="h-4 w-4" />
+                            Masterclass
+                        </div>
                 </div>
             </div>
         )
@@ -441,7 +436,7 @@ export function PublicPreSurvey() {
                     <div className="text-center mb-12">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm mb-6">
                             <Sparkles className="h-4 w-4" />
-                            Zkandar AI
+                            Masterclass
                         </div>
                         <h1 className="hero-text text-3xl mb-4">Pre-Masterclass Context Survey</h1>
                         <p className="text-gray-400 text-lg">

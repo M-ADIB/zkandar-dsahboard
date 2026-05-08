@@ -539,7 +539,7 @@ export function PostCompletionSurvey() {
                     <div className="text-center mb-12">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm mb-6">
                             <Sparkles className="h-4 w-4" />
-                            Zkandar AI
+                            Masterclass
                         </div>
                         <h1 className="hero-text text-3xl mb-4">Post-Masterclass Impact Survey</h1>
                         <p className="text-gray-400 text-lg">

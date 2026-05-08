@@ -38,8 +38,7 @@ export function ThankYouPage() {
                     transition={{ duration: 0.6 }}
                     className="flex items-center justify-center gap-2"
                 >
-                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
-                    <span className="text-sm font-heading font-bold tracking-wider text-white/70">Zkandar AI</span>
+                    <img src={logoSrc} alt="Zkandar" className="h-8 object-contain" />
                 </motion.div>
 
                 {/* Checkmark */}
@@ -98,7 +97,6 @@ export function ThankYouPage() {
                 >
                     <div className="flex items-center justify-center gap-2">
                         <img src={logoSrc} alt="" className="h-5 object-contain grayscale" />
-                        <span className="text-xs font-heading tracking-wider">Zkandar AI</span>
                     </div>
                 </motion.div>
             </div>

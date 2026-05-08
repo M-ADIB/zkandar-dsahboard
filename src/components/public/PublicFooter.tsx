@@ -3,7 +3,7 @@ import logoSrc from '../../assets/logo.png'
 const FOOTER_LINKS = {
     Programs: [
         { label: 'Home',               href: '/main' },
-        { label: 'Sprint Workshop',     href: '/find-your-path' },
+        { label: 'AI Sprint Workshop',  href: '/find-your-path' },
         { label: 'AI Masterclass',      href: '/ai-masterclass' },
     ],
     Resources: [
@@ -26,11 +26,8 @@ export function PublicFooter() {
 
                     {/* Brand */}
                     <div className="col-span-2 md:col-span-1">
-                        <a href="/main" className="flex items-center gap-2.5 mb-4 group">
-                            <img src={logoSrc} alt="Zkandar AI" className="h-7 object-contain" />
-                            <span className="font-heading font-black uppercase text-[0.68rem] tracking-[0.2em] text-white/60 group-hover:text-white transition-colors duration-300">
-                                Zkandar AI
-                            </span>
+                        <a href="/main" className="flex items-center mb-4 group">
+                            <img src={logoSrc} alt="Zkandar" className="h-[33px] object-contain" />
                         </a>
                         <p className="text-xs text-gray-600 leading-relaxed max-w-[220px] uppercase tracking-wide">
                             AI-Directed Design Education for Architects, Interior Designers &amp; Marketers

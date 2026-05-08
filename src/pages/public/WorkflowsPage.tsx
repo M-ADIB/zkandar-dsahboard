@@ -17,11 +17,7 @@ const masterclassInclusions = [
     'Data-driven analysis of teams performance',
 ]
 
-const masterclassGains = [
-    { label: 'Control', body: 'Direct AI output with precision so it fits your visual language every time' },
-    { label: 'Speed', body: 'Compress days of ideation into hours without sacrificing quality' },
-    { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
-]
+
 
 function CheckItem({ text, delay = 0 }: { text: string; delay?: number }) {
     const ref = useRef(null)
@@ -65,12 +61,13 @@ function useAnimatedNumber(end: number, duration = 1400, inView = false, decimal
 
 // ─── Section wrapper with scroll reveal ───────────────────────────────────────
 
-function Section({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+function Section({ children, className = '', delay = 0, id }: { children: React.ReactNode; className?: string; delay?: number; id?: string }) {
     const ref = useRef(null)
     const inView = useInView(ref, { once: true, margin: '-80px' })
     return (
         <motion.section
             ref={ref}
+            id={id}
             initial={{ opacity: 0, y: 50 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] }}
@@ -449,23 +446,7 @@ export function WorkflowsPage() {
                     </div>
                 </Section>
 
-                {/* ─── CTA strip ───────────────────────────────────────────── */}
-                <Section>
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-2xl"
-                        style={{ background: 'linear-gradient(145deg, #111811 0%, #0C130C 100%)', border: '1px solid rgba(208,255,113,0.15)' }}>
-                        <div>
-                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/60 mb-1">Seen enough?</p>
-                            <p className="font-heading font-black uppercase text-xl text-white leading-tight">Ready to bring AI to your studio?</p>
-                        </div>
-                        <button onClick={() => setModalOpen(true)}
-                            className="group shrink-0 flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5 font-heading">
-                            Book a Discovery Call
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="group-hover:translate-x-1 transition-transform">
-                                <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </button>
-                    </div>
-                </Section>
+
 
                 {/* ─── SECTION 7: Studio Capacity Multiplier ───────────────── */}
                 <Section>
@@ -525,26 +506,31 @@ export function WorkflowsPage() {
                     </div>
                 </Section>
 
+                {/* ─── CTA before calculator ────────────────────────────────── */}
+                <Section>
+                    <a href="#masterclass-program"
+                        className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
+                        style={{ background: 'linear-gradient(145deg, #111811 0%, #0C130C 100%)', border: '1px solid rgba(208,255,113,0.15)' }}>
+                        <div>
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-lime/60 mb-1">Seen enough?</p>
+                            <p className="font-heading font-black uppercase text-xl text-white leading-tight">See the Masterclass Program ↓</p>
+                        </div>
+                        <span className="group shrink-0 flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl text-sm uppercase tracking-wider font-heading">
+                            View Program
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="group-hover:translate-x-1 transition-transform">
+                                <path d="M8 3V13M8 13L4 9M8 13L12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </span>
+                    </a>
+                </Section>
+
                 {/* ─── Productivity Calculator ────────────────────────────────── */}
                 <ProductivityCalculator />
 
-                {/* ─── CTA strip 2 ─────────────────────────────────────────── */}
-                <Section>
-                    <div className="text-center space-y-5">
-                        <p className="text-gray-500 text-sm font-body">Your studio could be operating like this within 15 hours of training.</p>
-                        <button onClick={() => setModalOpen(true)}
-                            className="group inline-flex items-center gap-3 px-8 py-4 bg-lime text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:shadow-glow-lg hover:-translate-y-0.5 font-heading">
-                            Book a Discovery Call
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="group-hover:translate-x-1 transition-transform">
-                                <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </button>
-                        <p className="text-xs text-lime font-bold font-body">Free 15-minute call. No commitment.</p>
-                    </div>
-                </Section>
+
 
                 {/* ─── SECTION 7: MASTERCLASS CARD ─────────────────────────── */}
-                <Section className="pb-12">
+                <Section className="pb-12" id="masterclass-program">
                     <div className="space-y-6 mb-10 text-center">
                         <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">The Program</p>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.5vw,2.5rem)] leading-[1.05] md:leading-[0.95] text-white">
@@ -613,29 +599,6 @@ export function WorkflowsPage() {
 
                             <div className="border-t border-white/5" />
 
-                            {/* What you'll gain */}
-                            <div className="space-y-5">
-                                <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {masterclassGains.map((g, i) => (
-                                        <motion.div
-                                            key={g.label}
-                                            initial={{ opacity: 0, y: 16 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                                            className="rounded-2xl p-5 space-y-2"
-                                            style={{ background: 'rgba(208,255,113,0.03)', border: '1px solid rgba(208,255,113,0.08)' }}
-                                        >
-                                            <span className="font-heading font-black uppercase text-xl text-lime leading-none">{g.label}</span>
-                                            <p className="text-xs text-gray-400 leading-relaxed font-body">{g.body}</p>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="border-t border-white/5" />
-
                             {/* CTA */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                 <button
@@ -659,7 +622,6 @@ export function WorkflowsPage() {
                 <div className="text-center pt-8 pb-4 border-t border-white/5">
                     <div className="flex items-center justify-center gap-2 opacity-40">
                         <img src={logoSrc} alt="" className="h-5 object-contain grayscale" />
-                        <span className="text-xs font-heading tracking-wider">Zkandar AI</span>
                     </div>
                 </div>
 

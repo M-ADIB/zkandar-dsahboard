@@ -87,18 +87,15 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                                 : 'rounded-2xl bg-white/[0.05] border-white/[0.09] shadow-[0_4px_24px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.08)]'
                     }`}
                 >
-                    {/* Logo + Wordmark */}
-                    <a href="/main" className="flex items-center gap-2 shrink-0 group">
+                    {/* Logo only */}
+                    <a href="/main" className="flex items-center shrink-0 group">
                         <motion.img
                             src={logoSrc}
-                            alt="Zkandar AI"
+                            alt="Zkandar"
                             className="h-[32px] w-auto object-contain"
                             whileHover={{ scale: 1.08, rotate: -2 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 18 }}
                         />
-                        <span className="hidden sm:block font-heading font-black uppercase text-[0.68rem] tracking-[0.2em] text-white/70 group-hover:text-lime transition-colors duration-300">
-                            Zkandar AI
-                        </span>
                     </a>
 
                     {/* Right: CTA (hidden on mobile) + Hamburger */}
@@ -110,7 +107,7 @@ export function PublicNav({ topOffset = 0 }: PublicNavProps) {
                             transition={{ duration: 0.45, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.96 }}
-                            className="hidden sm:block px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300"
+                            className="px-3.5 py-1.5 rounded-md bg-white text-black font-bold text-[0.62rem] uppercase tracking-wider hover:bg-lime hover:shadow-[0_0_18px_rgba(208,255,113,0.4)] transition-all duration-300"
                         >
                             Take the AI Assessment
                         </motion.a>

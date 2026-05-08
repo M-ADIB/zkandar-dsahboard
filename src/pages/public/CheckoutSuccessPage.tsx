@@ -16,7 +16,7 @@ export function CheckoutSuccessPage() {
             {/* Nav */}
             <div className="absolute top-0 left-0 right-0 border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center">
                 <a href="/main" className="flex items-center gap-3">
-                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <img src={logoSrc} alt="Zkandar" className="h-8 object-contain" />
                 </a>
             </div>
 
@@ -35,7 +35,7 @@ export function CheckoutSuccessPage() {
                     You're in.
                 </h1>
                 <p className="text-gray-400 leading-relaxed mb-8 text-sm">
-                    Welcome to the next Zkandar AI Sprint Workshop cohort.
+                    Welcome to the next AI Sprint Workshop cohort.
                     Check your inbox. You'll receive your confirmation and
                     pre-work details within the next few minutes.
                 </p>
@@ -69,7 +69,7 @@ export function CheckoutSuccessPage() {
                         href="/main"
                         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] text-gray-300 font-medium text-sm hover:border-white/20 hover:text-white transition"
                     >
-                        Back to Zkandar AI <ArrowRight className="h-4 w-4" />
+                        Back to Home <ArrowRight className="h-4 w-4" />
                     </a>
                 </div>
             </motion.div>

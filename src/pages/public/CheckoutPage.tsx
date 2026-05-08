@@ -109,8 +109,7 @@ export function CheckoutPage() {
                         <img src="/lander/4.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80" />
                         <div className="absolute bottom-4 left-5">
-                            <p className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-lime/80">Zkandar AI</p>
-                            <h2 className="font-heading font-black uppercase text-lg text-white">Sprint Workshop</h2>
+                            <h2 className="font-heading font-black uppercase text-lg text-white">AI Sprint Workshop</h2>
                         </div>
                     </div>
 

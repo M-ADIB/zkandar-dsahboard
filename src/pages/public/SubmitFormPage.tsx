@@ -221,7 +221,7 @@ export function SubmitFormPage() {
                         href="/main"
                         className="inline-flex items-center gap-2 text-sm text-lime hover:text-lime/80 transition"
                     >
-                        ← Back to Zkandar AI
+                        ← Back to Home
                     </a>
                 </motion.div>
             </div>
@@ -233,7 +233,7 @@ export function SubmitFormPage() {
             {/* Nav strip */}
             <div className="border-b border-white/[0.06] px-5 sm:px-10 py-3.5 flex items-center justify-between">
                 <a href="/main" className="flex items-center gap-3">
-                    <img src={logoSrc} alt="Zkandar AI" className="h-8 object-contain" />
+                    <img src={logoSrc} alt="Zkandar" className="h-8 object-contain" />
                 </a>
                 <span className="text-[0.6875rem] text-gray-600 hidden sm:block uppercase tracking-[0.15em]">Application Form</span>
             </div>
