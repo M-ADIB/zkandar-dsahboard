@@ -586,7 +586,7 @@ export function LandingPageTest() {
                             {/* Right. bio text */}
                             <div className="flex flex-col justify-center">
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                    Architect turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
+                                    Architect and Interior Designer turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
                                 </p>
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
                                     For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI globally, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
