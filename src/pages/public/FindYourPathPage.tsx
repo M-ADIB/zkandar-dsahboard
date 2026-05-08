@@ -621,38 +621,6 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
 
                         <div className="border-t border-white/5" />
 
-                        {/* What you'll gain */}
-                        <div className="space-y-4">
-                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">What you'll walk away with</p>
-                            <div className={`grid grid-cols-1 ${isSprint ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3`}>
-                                {(isSprint
-                                    ? [
-                                        { label: 'Speed', body: 'Go from sketch to photorealistic render in under 30 minutes' },
-                                        { label: 'Output', body: 'Leave with real deliverables you can present to clients immediately' },
-                                    ]
-                                    : [
-                                        { label: 'Control', body: 'Direct AI output with precision so it fits your visual language every time' },
-                                        { label: 'Speed', body: 'Compress days of ideation into hours without sacrificing quality' },
-                                        { label: 'Confidence', body: 'Present AI-assisted work to clients with full creative ownership' },
-                                    ]
-                                ).map(g => (
-                                    <div key={g.label} className="rounded-xl p-4 space-y-1.5"
-                                        style={{
-                                            background: isSprint ? 'rgba(139,92,246,0.03)' : 'rgba(208,255,113,0.03)',
-                                            border: isSprint ? '1px solid rgba(139,92,246,0.08)' : '1px solid rgba(208,255,113,0.08)',
-                                        }}
-                                    >
-                                        <span className="font-heading font-black uppercase text-base leading-none"
-                                            style={{ color: isSprint ? '#a78bfa' : '#D0FF71' }}
-                                        >{g.label}</span>
-                                        <p className="text-[0.65rem] text-gray-400 leading-relaxed font-body">{g.body}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="border-t border-white/5" />
-
                         {/* CTA */}
                         {isSprint ? (
                             <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
