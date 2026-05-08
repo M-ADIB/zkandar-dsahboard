@@ -71,6 +71,7 @@ const PROJECTS: ProjectCategory[] = [
         title: 'Landscape Design',
         description: 'From site plans to lush environmental renders. AI-generated landscaping at full client-presentation quality.',
         images: [
+            '/more-works/landscaping/0.jpg',
             '/more-works/landscaping/1.jpg',
             '/more-works/landscaping/2.jpg',
             '/more-works/landscaping/3.jpg',
@@ -120,6 +121,7 @@ const PROJECTS: ProjectCategory[] = [
         images: [
             '/more-works/product-design/sketch-1.png',
             '/more-works/product-design/sketch-2.png',
+            '/more-works/product-design/sketch-3.png',
             '/more-works/product-design/1.jpg',
             '/more-works/product-design/2.jpg',
             '/more-works/product-design/3.jpg',

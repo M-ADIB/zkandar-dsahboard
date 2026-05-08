@@ -22,9 +22,7 @@ function FadeIn({ children, delay = 0, className = '' }: {
     )
 }
 
-function MicroLabel({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
-    return <p className={`text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 ${center ? 'text-center' : ''}`}>{children}</p>
-}
+
 
 function LimeBar() {
     return (
@@ -48,27 +46,21 @@ interface ProjectCategory {
 
 const PROJECTS: ProjectCategory[] = [
     {
+        id: 'vitra',
+        tag: 'Interior Design',
+        title: 'Vitra Showroom',
+        description: 'Complete AI-directed interior visualization and cinematic brand film for the Vitra showroom experience.',
+        images: [],
+        vimeoId: '1188971702',
+        filmLabel: 'Vitra Showroom AI Film',
+    },
+    {
         id: 'som',
         tag: 'Architecture',
         title: 'SOM x Skidmore Owings & Merrill',
         description: 'Full AI-directed architectural visualization, from an initial sketch to photorealistic renders and a cinematic brand film.',
-        images: [
-            '/more-works/som/63.png',
-            '/more-works/som/8.png',
-            '/more-works/som/11.png',
-            '/more-works/som/13.png',
-            '/more-works/som/14.png',
-            '/more-works/som/15.png',
-            '/more-works/som/17.png',
-            '/more-works/som/18.png',
-            '/more-works/som/20.png',
-            '/more-works/som/24.png',
-            '/more-works/som/25.png',
-            '/more-works/som/37.png',
-            '/more-works/som/62.png',
-            '/more-works/som/67.png',
-        ],
-        vimeoId: '1183148939',
+        images: Array.from({ length: 36 }, (_, i) => `/more-works/som/${i + 1}.jpg`),
+        vimeoId: '1187702968',
         filmLabel: 'SOM AI Architecture Film',
     },
     {
@@ -90,11 +82,24 @@ const PROJECTS: ProjectCategory[] = [
         filmLabel: 'Atelier Carrousel AI Brand Film',
     },
     {
+        id: 'landscaping',
+        tag: 'Landscape Architecture',
+        title: 'Landscape Design',
+        description: 'From site plans to lush environmental renders. AI-generated landscaping at full client-presentation quality.',
+        images: [
+            '/more-works/landscaping/0.jpg',
+            '/more-works/landscaping/1.jpg','/more-works/landscaping/2.jpg','/more-works/landscaping/3.jpg',
+            '/more-works/landscaping/4.jpg','/more-works/landscaping/5.jpg','/more-works/landscaping/6.jpg',
+            '/more-works/landscaping/7.jpg','/more-works/landscaping/8.jpg','/more-works/landscaping/9.jpg',
+            '/more-works/landscaping/10.jpg','/more-works/landscaping/11.jpg',
+        ],
+    },
+    {
         id: 'product',
         tag: 'Product Design',
         title: 'Furniture Collection',
         description: 'From rough sketch to photorealistic product render, the full AI workflow, prize-winning output.',
-        images: ['/more-works/product-design/sketch-1.png','/more-works/product-design/sketch-2.png','/more-works/product-design/1.jpg','/more-works/product-design/2.jpg','/more-works/product-design/3.jpg','/more-works/product-design/4.jpg'],
+        images: ['/more-works/product-design/sketch-1.png','/more-works/product-design/sketch-2.png','/more-works/product-design/sketch-3.png','/more-works/product-design/1.jpg','/more-works/product-design/2.jpg','/more-works/product-design/3.jpg','/more-works/product-design/4.jpg'],
     },
     {
         id: 'coco',
@@ -291,7 +296,14 @@ function ProjectPresentation({
 function ProjectSection({ project }: { project: ProjectCategory }) {
     const [lightbox, setLightbox] = useState<number | null>(null)
     const ref = useRef(null)
+    const isVideoOnly = project.images.length === 0 && !!project.vimeoId
     const [featured, ...thumbs] = project.images
+
+    // Special image labels (e.g. real-life phone camera photo)
+    const IMAGE_LABELS: Record<string, Record<number, string>> = {
+        landscaping: { 0: 'This image was taken in real life by a phone camera' },
+    }
+    const labelMap = IMAGE_LABELS[project.id] ?? {}
 
     return (
         <>
@@ -307,38 +319,58 @@ function ProjectSection({ project }: { project: ProjectCategory }) {
                 <div className="px-6 pt-6 pb-4 flex items-center gap-3">
                     <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">{project.tag}</span>
                 </div>
-                <div className={`flex gap-[3px] ${project.images.length >= 4 ? 'h-72 sm:h-80' : 'h-64 sm:h-72'}`}>
-                    <button onClick={() => setLightbox(0)} className="relative overflow-hidden flex-[2] group cursor-pointer">
-                        <img src={featured} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
-                        <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <span className="text-[0.6rem] uppercase tracking-wider text-white/80 bg-black/60 px-2 py-1 rounded-md backdrop-blur-sm">View Full</span>
+
+                {/* Video-only project (like Vitra) */}
+                {isVideoOnly && project.vimeoId && (
+                    <div className="mx-6 mb-4">
+                        <div className="rounded-2xl overflow-hidden aspect-video bg-black">
+                            <iframe src={`https://player.vimeo.com/video/${project.vimeoId}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                className="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen title={project.filmLabel ?? 'AI Film'} />
                         </div>
-                    </button>
-                    {thumbs.length > 0 && (
-                        <div className="flex flex-col flex-1 gap-[3px]">
-                            {thumbs.slice(0, 3).map((img, i) => (
-                                <button key={i} onClick={() => setLightbox(i + 1)} className="relative flex-1 overflow-hidden group cursor-pointer min-h-0">
-                                    <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
-                                    {i === 2 && thumbs.length > 3 && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                                            <span className="font-heading font-black text-white text-lg">+{thumbs.length - 3}</span>
-                                        </div>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                        {project.filmLabel && <p className="text-xs text-gray-500 mt-2">{project.filmLabel} · Fully AI-generated</p>}
+                    </div>
+                )}
+
+                {/* Image grid (non-video-only projects) */}
+                {!isVideoOnly && project.images.length > 0 && (
+                    <div className={`flex gap-[3px] ${project.images.length >= 4 ? 'h-72 sm:h-80' : 'h-64 sm:h-72'}`}>
+                        <button onClick={() => setLightbox(0)} className="relative overflow-hidden flex-[2] group cursor-pointer">
+                            <img src={featured} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
+                            <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span className="text-[0.6rem] uppercase tracking-wider text-white/80 bg-black/60 px-2 py-1 rounded-md backdrop-blur-sm">
+                                    {labelMap[0] ?? 'View Full'}
+                                </span>
+                            </div>
+                        </button>
+                        {thumbs.length > 0 && (
+                            <div className="flex flex-col flex-1 gap-[3px]">
+                                {thumbs.slice(0, 3).map((img, i) => (
+                                    <button key={i} onClick={() => setLightbox(i + 1)} className="relative flex-1 overflow-hidden group cursor-pointer min-h-0">
+                                        <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
+                                        {i === 2 && thumbs.length > 3 && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                                                <span className="font-heading font-black text-white text-lg">+{thumbs.length - 3}</span>
+                                            </div>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 <div className="px-6 py-5 flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         <h3 className="font-heading font-black uppercase text-lg text-white leading-tight mb-1">{project.title}</h3>
                         <p className="text-xs text-gray-500 leading-relaxed max-w-md">{project.description}</p>
                     </div>
-                    <button onClick={() => setLightbox(0)} className="shrink-0 flex items-center gap-2 text-[0.65rem] uppercase tracking-wider text-lime font-bold hover:text-white transition-colors mt-0.5">
-                        View All <ArrowRight className="w-3 h-3" />
-                    </button>
+                    {project.images.length > 0 && (
+                        <button onClick={() => setLightbox(0)} className="shrink-0 flex items-center gap-2 text-[0.65rem] uppercase tracking-wider text-lime font-bold hover:text-white transition-colors mt-0.5">
+                            View All <ArrowRight className="w-3 h-3" />
+                        </button>
+                    )}
                 </div>
                 {project.images.length > 4 && (
                     <div className="px-6 pb-6 flex gap-2 overflow-x-auto scrollbar-hide">
@@ -349,7 +381,7 @@ function ProjectSection({ project }: { project: ProjectCategory }) {
                         ))}
                     </div>
                 )}
-                {project.vimeoId && (
+                {!isVideoOnly && project.vimeoId && (
                     <div className="border-t border-white/[0.05] mx-6 mb-6 pt-5">
                         <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime mb-3">AI Film Output</p>
                         <div className="rounded-2xl overflow-hidden aspect-video bg-black">
@@ -572,29 +604,7 @@ export function CaseStudiesPage() {
                 </div>
             </section>
 
-            {/* ── STANDALONE AI FILM ──────────────────────────────── */}
-            <section className="py-10 md:py-14 bg-black">
-                <div className="max-w-5xl mx-auto px-5 sm:px-6">
-                    <FadeIn>
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/20 transition-colors duration-300 max-w-3xl">
-                            <div className="aspect-video">
-                                <iframe
-                                    src="https://player.vimeo.com/video/1188971702?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71"
-                                    className="w-full h-full"
-                                    allow="autoplay; fullscreen; picture-in-picture"
-                                    allowFullScreen
-                                    title="Vitra Showroom AI Film"
-                                />
-                            </div>
-                            <div className="px-5 py-4 flex items-center gap-4 border-t border-white/[0.05]">
-                                <span className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-lime border border-lime/20 bg-lime/5 px-2.5 py-1 rounded-full">Interior Design</span>
-                                <p className="font-heading font-black uppercase text-sm text-white">Vitra Showroom AI Film</p>
-                                <p className="text-xs text-gray-600 ml-auto hidden sm:block">Fully AI-generated · No production crew</p>
-                            </div>
-                        </div>
-                    </FadeIn>
-                </div>
-            </section>
+            {/* Vitra film is now the first project in PROJECTS array above */}
 
             {/* ── CASE STUDIES GRID ───────────────────────────────────── */}
             <section className="py-16 md:py-24 bg-black">
@@ -646,14 +656,12 @@ export function CaseStudiesPage() {
             <section className="py-16 md:py-24 border-t border-white/[0.04] bg-[#050505]">
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
                     <FadeIn className="mb-12">
-                        <MicroLabel>From the participants</MicroLabel>
-                        <div className="flex flex-wrap items-end gap-4 mt-4">
+                        <div className="flex flex-wrap items-end gap-4">
                             <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95]">
                                 HEAR FROM<br /><span className="text-lime">THE PEOPLE.</span>
                             </h2>
                             <LimeBar />
                         </div>
-                        <p className="text-gray-500 text-sm mt-3">In their own words, unscripted.</p>
                     </FadeIn>
 
                     {/* Portrait video grid. 9:16 aspect ratio */}
@@ -705,11 +713,7 @@ export function CaseStudiesPage() {
                             Take the AI Assessment Test <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </a>
                     </motion.div>
-                    <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }} transition={{ delay: 0.5 }}
-                        className="text-[0.65rem] text-gray-700 uppercase tracking-[0.18em] mt-8 leading-[1.8]">
-                        Learn how to master AI tools to have<br />an unfair advantage over your competitors
-                    </motion.p>
+
                 </div>
             </section>
 
