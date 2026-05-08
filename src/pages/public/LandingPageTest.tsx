@@ -499,7 +499,7 @@ export function LandingPageTest() {
                                         <SplitText text="& MARKETEERS" baseDelay={0.45} />
                                     </span>
                                     <span className="block text-lime text-[clamp(1.3rem,3.2vw,2.6rem)] mt-2">
-                                        <SplitText text="HOW TO USE AI." baseDelay={0.6} />
+                                        <SplitText text="HOW TO USE AI IN THEIR WORKFLOWS" baseDelay={0.6} />
                                     </span>
                                 </h1>
                             </div>
