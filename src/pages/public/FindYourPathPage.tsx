@@ -587,9 +587,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                                     ? [
                                         '3 live days of hands-on AI training',
                                         'Real client-ready deliverables by Day 3',
-                                        'Full Midjourney + AI rendering workflow',
                                         'Access to session recordings',
-                                        'Free access to E-prompt books',
                                     ]
                                     : [
                                         'Tailored content & case studies for your studio',

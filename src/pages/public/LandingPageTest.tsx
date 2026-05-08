@@ -58,9 +58,7 @@ const MASTERCLASS_GAINS = [
 const SPRINT_INCLUSIONS = [
     '3 live days of hands-on AI training',
     'Real client-ready deliverables by Day 3',
-    'Full Midjourney + AI rendering workflow',
     'Access to session recordings',
-    'Free access to E-prompt books',
 ]
 
 
