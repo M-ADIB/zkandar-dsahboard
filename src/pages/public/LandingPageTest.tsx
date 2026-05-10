@@ -594,7 +594,7 @@ export function LandingPageTest() {
                                 id: 'designers-hub',
                                 title: 'Designers Hub',
                                 venue: 'Art of Living Mall',
-                                image: '/collabs/events/designers-hub/1.jpg',
+                                image: '/collabs/events/designers-hub/3.jpg',
                                 description: 'Headlined an engaging AI talk with 30+ business owners and award-winning design studios titled "How AI is Redefining Our Creative Process, Forever!"',
                             },
                             {
