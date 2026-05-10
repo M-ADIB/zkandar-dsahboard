@@ -7,9 +7,10 @@ const FOOTER_LINKS = {
         { label: 'AI Masterclass',      href: '/ai-masterclass' },
     ],
     Resources: [
-        { label: 'Case Studies',           href: '/case-studies' },
-        { label: 'AI Assessment',          href: '/find-your-path' },
-        { label: 'Participant Login',       href: '/login' },
+        { label: 'Case Studies',              href: '/case-studies' },
+        { label: 'Events & Collaborations',   href: '/events-collabs' },
+        { label: 'AI Assessment',             href: '/find-your-path' },
+        { label: 'Participant Login',          href: '/login' },
     ],
     Contact: [
         { label: 'Book a Talk',            href: '/events-apply' },

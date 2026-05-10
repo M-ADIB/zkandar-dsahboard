@@ -26,6 +26,7 @@ interface PastEvent {
     description: string
     images: string[]
     highlights?: string[]
+    imagePosition?: string
 }
 
 const PAST_EVENTS: PastEvent[] = [
@@ -47,7 +48,7 @@ const PAST_EVENTS: PastEvent[] = [
         title: 'Designers Hub',
         venue: 'Art of Living Mall · UAE',
         description: 'Headlined an engaging AI talk with 30+ business owners and award-winning design studios titled "How AI is Redefining Our Creative Process, Forever!" We explored how AI is reshaping storytelling, design workflows, and the future of creative leadership in the UAE.',
-        images: ['/collabs/events/designers-hub/1.jpg'],
+        images: ['/collabs/events/designers-hub/1.jpg', '/collabs/events/designers-hub/2.jpg', '/collabs/events/designers-hub/3.jpg'],
         highlights: ['30+ business owners', 'Award-winning studios', 'Creative leadership focus'],
     },
     {
@@ -57,6 +58,7 @@ const PAST_EVENTS: PastEvent[] = [
         description: 'Invited as a guest speaker to 70+ participants consisting of Alumni, Business owners, students and fresh graduates, to speak about how AI is shifting the next paradigm in the design process whilst showcasing practical AI tools and applications on real life case studies.',
         images: ['/collabs/events/lau/1.jpg'],
         highlights: ['70+ participants', 'Alumni & students', 'Real-life case studies'],
+        imagePosition: 'top',
     },
     {
         id: 'sikka',
@@ -80,6 +82,14 @@ const PAST_EVENTS: PastEvent[] = [
             '/collabs/events/lighting-institute/2.jpg',
         ],
         highlights: ['Expert panel', 'Lighting design focus', 'Future-forward spaces'],
+    },
+    {
+        id: 'didi',
+        title: 'Dubai Institute of Design & Innovation',
+        venue: 'Online Masterclass',
+        description: 'An online masterclass where knowledge meets innovation and learning transcends borders. Delivering high-quality AI education rich in connection, strengthening ties with industry through every virtual classroom and shared idea.',
+        images: ['/collabs/events/didi/1.jpg'],
+        highlights: ['Online masterclass', 'Cross-border education', 'Industry partnerships'],
     },
 ]
 
@@ -258,7 +268,7 @@ export function EventsCollabsPage() {
                                         onClick={() => setLightbox({ images: event.images, idx: 0 })}
                                         className={`relative overflow-hidden ${event.images.length > 1 ? 'flex-[2]' : 'flex-1'} group cursor-pointer`}
                                     >
-                                        <img src={event.images[0]} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                                        <img src={event.images[0]} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={event.imagePosition ? { objectPosition: event.imagePosition } : undefined} loading="lazy" />
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
                                         <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <span className="text-[0.6rem] uppercase tracking-wider text-white/80 bg-black/60 px-2 py-1 rounded-md backdrop-blur-sm">View Full</span>
