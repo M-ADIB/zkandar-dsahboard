@@ -410,7 +410,7 @@ export function LandingPageTest() {
     const [masterclassModalOpen, setMasterclassModalOpen] = useState(false)
     const [sprintDates, setSprintDates] = useState('June 3–5')
     const [sprintLocation, setSprintLocation] = useState('Live Zoom')
-    const [collabIdx, setCollabIdx] = useState<number | null>(null)
+    
 
     // Fetch marketing settings from Supabase CMS
     useEffect(() => {
@@ -484,7 +484,7 @@ export function LandingPageTest() {
                                 <motion.span
                                     initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-                                    className="block text-[0.875rem] sm:text-[1rem] font-bold uppercase tracking-[0.3em] text-white/40 font-body"
+                                    className="block text-[1.15rem] sm:text-[1.3rem] font-bold uppercase tracking-[0.3em] text-white/40 font-body"
                                 >
                                     We Teach
                                 </motion.span>
@@ -556,9 +556,8 @@ export function LandingPageTest() {
 
                     {/* Section heading */}
                     <FadeIn className="max-w-5xl mx-auto mb-12">
-                        <p className="text-[0.65rem] font-bold uppercase tracking-[0.3em] text-white/30 font-body mb-3">About</p>
                         <h2 className="font-heading font-black uppercase text-[clamp(1.6rem,4vw,3rem)] leading-[0.95] text-white">
-                            Meet Your <span className="text-lime">Instructor.</span>
+                            ABOUT <span className="text-lime">US.</span>
                         </h2>
                     </FadeIn>
 
@@ -572,7 +571,7 @@ export function LandingPageTest() {
                                     <img
                                         src="/bio-khaled-portrait.jpg"
                                         alt="Khaled Iskandar"
-                                        className="w-full h-full object-cover object-top"
+                                        className="w-full h-full object-cover object-top scale-[1.3] translate-y-[5%]"
                                     />
                                     {/* Name overlay at bottom */}
                                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-16 pb-5 px-5">
@@ -586,13 +585,13 @@ export function LandingPageTest() {
                             {/* Right. bio text */}
                             <div className="flex flex-col justify-center">
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                    Architect and Interior Designer turned AI Educator and Workflow Strategist, working with architects, interior designers, and marketers to rethink how ideas are created and presented.
+                                    Architect and Interior Designer turned AI Educator and Workflow Strategist, educating architects, interior designers, and marketers on how to rethink the way ideas are created, developed, and presented through AI-driven workflows.
                                 </p>
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
-                                    For the past five years, he has led Masterclasses for award-winning design studios and built a strong presence as a thought leader in AI globally, headlining talks for <span className="text-white font-semibold">Skidmore Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Festival</span>, <span className="text-white font-semibold">Dubai Institute of Design &amp; Innovation</span>, and more.
+                                    As the founder of an AI EdTech company, he has spent the past five years leading Masterclasses and tailored AI integrations for award-winning design studios, while building a strong global presence as a thought leader in AI for the creative industry. His work has led him to headline talks and workshops for firms and institutions including <span className="text-white font-semibold">Skidmore, Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Art &amp; Design Festival</span>, and <span className="text-white font-semibold">Dubai Institute of Design and Innovation</span>, among others.
                                 </p>
                                 <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300">
-                                    Explore below how this approach is applied through <span className="text-lime font-semibold">Sprint Workshops</span> for individuals and tailored <span className="text-lime font-semibold">Masterclasses</span> for teams.
+                                    Explore below how these methodologies are applied through <span className="text-lime font-semibold">Sprint Workshops</span> for individuals and tailored <span className="text-lime font-semibold">Masterclasses</span> for teams.
                                 </p>
 
                                 {/* Headline talks */}
@@ -614,131 +613,85 @@ export function LandingPageTest() {
                         </div>
                     </FadeIn>
 
-                    {/* Photo strip label */}
+                    {/* Events & Collaborations heading */}
                     <FadeIn delay={0.25}>
                         <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">Featured Talks & Collaborations</p>
                     </FadeIn>
                 </div>
 
-                {/* Full-bleed infinite photo strip */}
-                {(() => {
-                    const COLLAB_PHOTOS = [
-                        { src: '/collabs/collab-1.jpg', alt: 'Collaboration 1' },
-                        { src: '/collabs/collab-2.jpg', alt: 'Collaboration 2' },
-                        { src: '/collabs/collab-3.jpg', alt: 'Collaboration 3' },
-                        { src: '/collabs/collab-4.jpg', alt: 'Collaboration 4' },
-                        { src: '/collabs/collab-5.jpg', alt: 'Collaboration 5' },
-                        { src: '/collabs/collab-6.jpg', alt: 'Collaboration 6' },
-                        { src: '/collabs/collab-7.jpg', alt: 'Collaboration 7' },
-                        { src: '/collabs/collab-8.jpg', alt: 'Collaboration 8' },
-                        { src: '/collabs/collab-9.jpg', alt: 'Collaboration 9' },
-                        { src: '/collabs/collab-10.jpg', alt: 'Collaboration 10' },
-                        { src: '/collabs/collab-11.jpg', alt: 'Collaboration 11' },
-                        { src: '/collabs/collab-12.jpg', alt: 'Collaboration 12' },
-                        { src: '/collabs/collab-13.jpg', alt: 'Collaboration 13' },
-                        { src: '/collabs/collab-14.jpg', alt: 'Collaboration 14' },
-                    ]
-                    // Duplicate for seamless infinite ticker
-                    const tickerPhotos = [...COLLAB_PHOTOS, ...COLLAB_PHOTOS]
-                    return (
-                        <>
-                            <div className="relative">
-                                <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060606] to-transparent z-10 pointer-events-none" />
-                                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060606] to-transparent z-10 pointer-events-none" />
-                                <div className="flex overflow-hidden">
-                                    <div
-                                        className="flex gap-3 shrink-0 animate-[ticker_50s_linear_infinite]"
-                                        style={{ paddingRight: '0.75rem' }}
-                                    >
-                                        {tickerPhotos.map((photo, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => setCollabIdx(i % COLLAB_PHOTOS.length)}
-                                                className="shrink-0 h-52 md:h-64 w-80 md:w-96 rounded-xl overflow-hidden cursor-pointer group"
-                                            >
-                                                <img
-                                                    src={photo.src}
-                                                    alt={photo.alt}
-                                                    loading="lazy"
-                                                    className="h-full w-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                                                />
-                                            </button>
-                                        ))}
-                                    </div>
+                {/* Event Cards Grid */}
+                <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                            {
+                                id: 'designers-hub',
+                                title: 'Designers Hub',
+                                venue: 'Art of Living Mall',
+                                image: '/collabs/events/designers-hub/1.jpg',
+                                description: 'Headlined an engaging AI talk with 30+ business owners and award-winning design studios titled "How AI is Redefining Our Creative Process, Forever!"',
+                            },
+                            {
+                                id: 'lau',
+                                title: 'Lebanese American University',
+                                venue: 'FF&E Webinar',
+                                image: '/collabs/events/lau/1.jpg',
+                                description: 'Invited as a guest speaker to 70+ participants to speak about how AI is shifting the next paradigm in the design process.',
+                            },
+                            {
+                                id: 'sikka',
+                                title: 'SIKKA',
+                                venue: 'Dubai Culture & Arts Authority',
+                                image: '/collabs/events/sikka/1.jpg',
+                                description: 'Guest speaker for the "SIKKA" event exploring how AI can be of valuable use for Artists & Designers.',
+                            },
+                            {
+                                id: 'lighting-institute',
+                                title: 'The Lighting Institute',
+                                venue: 'AI & Lighting Design',
+                                image: '/collabs/events/lighting-institute/1.jpg',
+                                description: 'Guest speaker on "Designing for future spaces with the involvement of AI and its impact on lighting design."',
+                            },
+                            {
+                                id: 'vitra',
+                                title: 'Vitra Showroom',
+                                venue: '300+ Attendees',
+                                image: '/collabs/events/vitra/1.jpg',
+                                description: 'Headlined an immersive AI experience at the Vitra Showroom for 300+ designers, architects, and industry leaders.',
+                            },
+                        ].map((event) => (
+                            <a
+                                key={event.id}
+                                href="/events-collabs"
+                                className="group relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-lime/20 transition-all duration-300 cursor-pointer"
+                            >
+                                <div className="aspect-[4/3] overflow-hidden">
+                                    <img src={event.image} alt={event.title} loading="lazy" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
                                 </div>
-                            </div>
-
-                            {/* Collab Lightbox */}
-                            <AnimatePresence>
-                                {collabIdx !== null && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md"
-                                        onClick={() => setCollabIdx(null)}
-                                    >
-                                        {/* Close */}
-                                        <button
-                                            onClick={() => setCollabIdx(null)}
-                                            className="absolute top-5 right-5 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                                        >
-                                            <X className="w-6 h-6 text-white" />
-                                        </button>
-
-                                        {/* Prev */}
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); setCollabIdx(i => i !== null ? (i - 1 + COLLAB_PHOTOS.length) % COLLAB_PHOTOS.length : 0) }}
-                                            className="absolute left-3 sm:left-6 z-10 p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                                        >
-                                            <ChevronLeft className="w-6 h-6 text-white" />
-                                        </button>
-
-                                        {/* Image */}
-                                        <motion.img
-                                            key={collabIdx}
-                                            src={COLLAB_PHOTOS[collabIdx].src}
-                                            alt={COLLAB_PHOTOS[collabIdx].alt}
-                                            initial={{ opacity: 0, scale: 0.92 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.92 }}
-                                            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl"
-                                        />
-
-                                        {/* Next */}
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); setCollabIdx(i => i !== null ? (i + 1) % COLLAB_PHOTOS.length : 0) }}
-                                            className="absolute right-3 sm:right-6 z-10 p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                                        >
-                                            <ChevronRight className="w-6 h-6 text-white" />
-                                        </button>
-
-                                        {/* Counter */}
-                                        <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs text-white/50 font-body tracking-wider">
-                                            {collabIdx + 1} / {COLLAB_PHOTOS.length}
-                                        </span>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </>
-                    )
-                })()}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                                <div className="absolute bottom-0 inset-x-0 p-4">
+                                    <p className="text-[0.55rem] font-bold uppercase tracking-[0.2em] text-lime/70 font-body mb-1">{event.venue}</p>
+                                    <h4 className="font-heading font-black uppercase text-sm text-white leading-tight mb-1">{event.title}</h4>
+                                    <p className="text-[0.65rem] text-gray-400 leading-relaxed line-clamp-2">{event.description}</p>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                    <FadeIn delay={0.3} className="flex justify-center mt-8">
+                        <a href="/events-collabs" className="group flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.15em] text-gray-500 hover:text-lime transition-colors font-body">
+                            View All Events & Collaborations <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                    </FadeIn>
+                </div>
             </section>
 
             {/* ── VSL ────────────────────────────────────────────────── */}
             <section className="py-20 md:py-28 border-t border-white/[0.04] bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-4xl">
                     <FadeIn className="text-center mb-10">
-                        <div className="space-y-2">
-                            <p className="text-[0.65rem] sm:text-[0.75rem] font-bold uppercase tracking-[0.3em] text-white/30 font-body">Full Workflow</p>
-                            <h2 className="font-heading font-black uppercase leading-[0.93]">
-                                <span className="block text-white text-[clamp(1.5rem,4vw,3rem)]">AI Design Workflow</span>
-                                <span className="block text-lime text-[clamp(1rem,2.4vw,1.8rem)] mt-1">From Sketch to Client Presentation.</span>
-                            </h2>
-                        </div>
+                        <h2 className="font-heading font-black uppercase leading-[0.93] text-[clamp(1.3rem,3.5vw,2.6rem)]">
+                            <span className="text-white">WATCH HOW I USE AI TO DESIGN</span><br />
+                            <span className="text-lime">A COMPLETE WORKFLOW</span>
+                        </h2>
                     </FadeIn>
                     <FadeIn delay={0.2}>
                         <VslPlayer videoId={VSL_VIDEO_ID} />
@@ -835,10 +788,9 @@ export function LandingPageTest() {
                 <div className="container mx-auto px-5 sm:px-6">
 
                     <FadeIn className="text-center mb-10 md:mb-14">
-                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95] mt-4 mb-3">
-                            THE RESULTS SPEAK<br /><span className="text-lime">FOR THEMSELVES.</span>
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.8rem,5vw,3.5rem)] leading-[0.95]">
+                            HEAR FROM OUR<br /><span className="text-lime">PAST PARTICIPANTS</span>
                         </h2>
-                        <p className="text-gray-500 text-base mt-2">From 30+ studios and firms around the world.</p>
                     </FadeIn>
 
                     {/* Testimonial mashup. 9:16 portrait */}
