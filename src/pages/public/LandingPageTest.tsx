@@ -565,10 +565,31 @@ export function LandingPageTest() {
                     </FadeIn>
                 </div>
 
-                {/* Event Cards Grid */}
-                <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {[
+                {/* Event Cards — horizontal swipe on mobile, grid on desktop */}
+                <div className="max-w-5xl mx-auto">
+                    {(() => {
+                        const EVENTS = [
+                            {
+                                id: 'vitra',
+                                title: 'Vitra Showroom',
+                                venue: '300+ Attendees',
+                                image: '/collabs/events/vitra/1.jpg',
+                                description: 'Headlined an immersive AI experience at the Vitra Showroom for 300+ designers, architects, and industry leaders.',
+                            },
+                            {
+                                id: 'lighting-institute',
+                                title: 'The Lighting Institute',
+                                venue: 'AI & Lighting Design',
+                                image: '/collabs/events/lighting-institute/1.jpg',
+                                description: 'Guest speaker on "Designing for future spaces with the involvement of AI and its impact on lighting design."',
+                            },
+                            {
+                                id: 'sikka',
+                                title: 'SIKKA',
+                                venue: 'Dubai Culture & Arts Authority',
+                                image: '/collabs/events/sikka/1.jpg',
+                                description: 'Guest speaker for the "SIKKA" event exploring how AI can be of valuable use for Artists & Designers.',
+                            },
                             {
                                 id: 'designers-hub',
                                 title: 'Designers Hub',
@@ -583,50 +604,44 @@ export function LandingPageTest() {
                                 image: '/collabs/events/lau/1.jpg',
                                 description: 'Invited as a guest speaker to 70+ participants to speak about how AI is shifting the next paradigm in the design process.',
                             },
-                            {
-                                id: 'sikka',
-                                title: 'SIKKA',
-                                venue: 'Dubai Culture & Arts Authority',
-                                image: '/collabs/events/sikka/1.jpg',
-                                description: 'Guest speaker for the "SIKKA" event exploring how AI can be of valuable use for Artists & Designers.',
-                            },
-                            {
-                                id: 'lighting-institute',
-                                title: 'The Lighting Institute',
-                                venue: 'AI & Lighting Design',
-                                image: '/collabs/events/lighting-institute/1.jpg',
-                                description: 'Guest speaker on "Designing for future spaces with the involvement of AI and its impact on lighting design."',
-                            },
-                            {
-                                id: 'vitra',
-                                title: 'Vitra Showroom',
-                                venue: '300+ Attendees',
-                                image: '/collabs/events/vitra/1.jpg',
-                                description: 'Headlined an immersive AI experience at the Vitra Showroom for 300+ designers, architects, and industry leaders.',
-                            },
-                        ].map((event) => (
-                            <a
-                                key={event.id}
-                                href="/events-collabs"
-                                className="group relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-lime/20 transition-all duration-300 cursor-pointer"
+                        ]
+                        return (
+                            <div
+                                className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-5 sm:px-6 pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:snap-none lg:pb-0"
+                                style={{ WebkitOverflowScrolling: 'touch' }}
                             >
-                                <div className="aspect-[4/3] overflow-hidden">
-                                    <img src={event.image} alt={event.title} loading="lazy" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
-                                </div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                                <div className="absolute bottom-0 inset-x-0 p-4">
-                                    <p className="text-[0.55rem] font-bold uppercase tracking-[0.2em] text-lime/70 font-body mb-1">{event.venue}</p>
-                                    <h4 className="font-heading font-black uppercase text-sm text-white leading-tight mb-1">{event.title}</h4>
-                                    <p className="text-[0.65rem] text-gray-400 leading-relaxed line-clamp-2">{event.description}</p>
-                                </div>
+                                {EVENTS.map((event) => (
+                                    <a
+                                        key={event.id}
+                                        href="/events-collabs"
+                                        className="group relative flex-shrink-0 w-[80vw] sm:w-[60vw] lg:w-auto snap-center rounded-2xl overflow-hidden border border-white/[0.08] hover:border-lime/30 bg-[#0c0c0c] transition-all duration-300 cursor-pointer hover:shadow-[0_0_30px_rgba(208,255,113,0.06)]"
+                                    >
+                                        {/* Image */}
+                                        <div className="aspect-[16/10] overflow-hidden relative">
+                                            <img src={event.image} alt={event.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-black/20 to-transparent" />
+                                            {/* Venue pill */}
+                                            <div className="absolute top-3 left-3">
+                                                <span className="text-[0.55rem] font-bold uppercase tracking-[0.18em] text-lime bg-black/70 backdrop-blur-md border border-lime/20 px-2.5 py-1 rounded-full font-body">{event.venue}</span>
+                                            </div>
+                                        </div>
+                                        {/* Content */}
+                                        <div className="p-5 pt-3">
+                                            <h4 className="font-heading font-black uppercase text-[0.95rem] text-white leading-tight mb-2 group-hover:text-lime transition-colors duration-300">{event.title}</h4>
+                                            <p className="text-[0.7rem] text-gray-400 leading-relaxed line-clamp-2 group-hover:text-gray-300 transition-colors">{event.description}</p>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                        )
+                    })()}
+                    <div className="px-5 sm:px-6">
+                        <FadeIn delay={0.3} className="flex justify-center mt-8">
+                            <a href="/events-collabs" className="group flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.15em] text-gray-500 hover:text-lime transition-colors font-body">
+                                View All Events & Collaborations <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                             </a>
-                        ))}
+                        </FadeIn>
                     </div>
-                    <FadeIn delay={0.3} className="flex justify-center mt-8">
-                        <a href="/events-collabs" className="group flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.15em] text-gray-500 hover:text-lime transition-colors font-body">
-                            View All Events & Collaborations <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                        </a>
-                    </FadeIn>
                 </div>
             </section>
 
