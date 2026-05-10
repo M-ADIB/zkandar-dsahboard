@@ -335,7 +335,7 @@ export function EventsCollabsPage() {
                     <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ delay: 0.35 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <a href="/apply/sales"
+                        <a href="/events-apply"
                             className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 hover:shadow-[0_0_40px_rgba(208,255,113,0.35)] hover:-translate-y-0.5 transition-all duration-300">
                             Get In Touch <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </a>
