@@ -85,7 +85,7 @@ const PROJECTS: ProjectCategory[] = [
         id: 'landscaping',
         tag: 'Landscape Architecture',
         title: 'Landscape Design',
-        description: 'From site plans to lush environmental renders. AI-generated landscaping at full client-presentation quality.',
+        description: 'From a real phone camera photo of a site in Dubai to fully AI-generated landscape concepts. Every image after the first is entirely AI-generated.',
         images: [
             '/more-works/landscaping/0.jpg',
             '/more-works/landscaping/1.jpg','/more-works/landscaping/2.jpg','/more-works/landscaping/3.jpg',
@@ -98,8 +98,16 @@ const PROJECTS: ProjectCategory[] = [
         id: 'product',
         tag: 'Product Design',
         title: 'Furniture Collection',
-        description: 'From rough sketch to photorealistic product render, the full AI workflow, prize-winning output.',
-        images: ['/more-works/product-design/sketch-1.png','/more-works/product-design/sketch-2.png','/more-works/product-design/sketch-3.png','/more-works/product-design/1.jpg','/more-works/product-design/2.jpg','/more-works/product-design/3.jpg','/more-works/product-design/4.jpg'],
+        description: 'From rough sketch to photorealistic product render. Each sketch is paired with its AI-generated output.',
+        images: [
+            '/more-works/product-design/sketch-1.png',
+            '/more-works/product-design/1.jpg',
+            '/more-works/product-design/sketch-2.png',
+            '/more-works/product-design/2.jpg',
+            '/more-works/product-design/sketch-3.png',
+            '/more-works/product-design/3.jpg',
+            '/more-works/product-design/4.jpg',
+        ],
     },
     {
         id: 'coco',
@@ -122,11 +130,29 @@ function ProjectPresentation({
     onClose: () => void
 }) {
     // Build slides: all images first, then optional film at the end
+    // Per-project image labels (e.g. real photos, sketch/render pairs)
+    const IMAGE_LABELS: Record<string, Record<number, string>> = {
+        landscaping: {
+            0: 'Real Photo — Taken by Phone Camera',
+            1: 'AI-Generated Concept 1', 2: 'AI-Generated Concept 2', 3: 'AI-Generated Concept 3',
+            4: 'AI-Generated Concept 4', 5: 'AI-Generated Concept 5', 6: 'AI-Generated Concept 6',
+            7: 'AI-Generated Concept 7', 8: 'AI-Generated Concept 8', 9: 'AI-Generated Concept 9',
+            10: 'AI-Generated Concept 10', 11: 'AI-Generated Concept 11',
+        },
+        product: {
+            0: 'Sketch 1', 1: 'AI Render of Sketch 1',
+            2: 'Sketch 2', 3: 'AI Render of Sketch 2',
+            4: 'Sketch 3', 5: 'AI Render of Sketch 3',
+            6: 'Full Collection — All Components',
+        },
+    }
+    const labelMap = IMAGE_LABELS[project.id] ?? {}
+
     const slides = useMemo(() => {
         const s: Array<{ type: 'image' | 'video'; img: string; label: string }> = project.images.map((img, i) => ({
             type: 'image' as const,
             img,
-            label: `Image ${i + 1}`,
+            label: labelMap[i] ?? `Image ${i + 1}`,
         }))
         if (project.vimeoId) {
             s.push({
@@ -136,7 +162,7 @@ function ProjectPresentation({
             })
         }
         return s
-    }, [project])
+    }, [project, labelMap])
 
     const [idx, setIdx] = useState(startIdx)
     const filmstripRef = useRef<HTMLDivElement>(null)
@@ -182,8 +208,8 @@ function ProjectPresentation({
                     <div className="shrink-0 flex items-center gap-3">
                         <p className="text-[0.65rem] text-gray-600 tabular-nums hidden sm:block">{idx + 1} / {slides.length}</p>
                         <button onClick={onClose}
-                            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/15 hover:border-lime/40 hover:bg-lime/10 text-gray-300 hover:text-lime transition-all">
-                            <X className="w-5 h-5" />
+                            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white/20 hover:border-lime/50 hover:bg-lime/10 text-gray-200 hover:text-lime transition-all">
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
                 </div>
@@ -211,7 +237,8 @@ function ProjectPresentation({
                 )}
 
                 {/* Central content */}
-                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52">
+                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52"
+                    onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
                     <AnimatePresence mode="wait">
                         {slide.type === 'video' ? (
                             <motion.div
@@ -249,14 +276,14 @@ function ProjectPresentation({
 
                 {/* Prev arrow */}
                 <button onClick={goPrev}
-                    className={`absolute left-3 sm:left-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${idx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronLeft className="w-5 h-5" />
+                    className={`absolute left-3 sm:left-6 z-[5] p-4 rounded-full bg-black/80 border-2 border-white/15 hover:border-lime/40 hover:bg-lime/10 text-white hover:text-lime transition-all backdrop-blur-sm ${idx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-7 h-7" />
                 </button>
 
                 {/* Next arrow */}
                 <button onClick={goNext}
-                    className={`absolute right-3 sm:right-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${idx === slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronRight className="w-5 h-5" />
+                    className={`absolute right-3 sm:right-6 z-[5] p-4 rounded-full bg-black/80 border-2 border-white/15 hover:border-lime/40 hover:bg-lime/10 text-white hover:text-lime transition-all backdrop-blur-sm ${idx === slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-7 h-7" />
                 </button>
             </div>
 
@@ -278,8 +305,8 @@ function ProjectPresentation({
                                         <img src={s.img} alt="" className="w-full h-full object-cover" loading="lazy" />
                                     )}
                                 </div>
-                                <span className={`text-[0.5rem] uppercase tracking-wider font-bold tabular-nums ${isActive ? 'text-lime' : 'text-gray-600'}`}>
-                                    {s.type === 'video' ? 'Film' : `${i + 1}`}
+                                <span className={`text-[0.5rem] uppercase tracking-wider font-bold tabular-nums max-w-14 truncate ${isActive ? 'text-lime' : 'text-gray-600'}`}>
+                                    {s.type === 'video' ? 'Film' : s.label.length <= 8 ? s.label : `${i + 1}`}
                                 </span>
                             </button>
                         )
@@ -299,11 +326,12 @@ function ProjectSection({ project }: { project: ProjectCategory }) {
     const isVideoOnly = project.images.length === 0 && !!project.vimeoId
     const [featured, ...thumbs] = project.images
 
-    // Special image labels (e.g. real-life phone camera photo)
-    const IMAGE_LABELS: Record<string, Record<number, string>> = {
+    // Special image labels for grid hover tooltips
+    const GRID_LABELS: Record<string, Record<number, string>> = {
         landscaping: { 0: 'This image was taken in real life by a phone camera' },
+        product: { 0: 'Sketch 1' },
     }
-    const labelMap = IMAGE_LABELS[project.id] ?? {}
+    const labelMap = GRID_LABELS[project.id] ?? {}
 
     return (
         <>
@@ -452,8 +480,8 @@ function CaseStudyPresentation({
                     <div className="shrink-0 flex items-center gap-3">
                         <p className="text-[0.65rem] text-gray-600 tabular-nums hidden sm:block">{slideIdx + 1} / {cs.slides.length}</p>
                         <button onClick={onClose}
-                            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/15 hover:border-lime/40 hover:bg-lime/10 text-gray-300 hover:text-lime transition-all">
-                            <X className="w-5 h-5" />
+                            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white/20 hover:border-lime/50 hover:bg-lime/10 text-gray-200 hover:text-lime transition-all">
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
                 </div>
@@ -481,7 +509,8 @@ function CaseStudyPresentation({
                 )}
 
                 {/* Main content */}
-                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52">
+                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52"
+                    onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
                     <AnimatePresence mode="wait">
                         {slide.vimeoId ? (
                             <motion.div
@@ -519,14 +548,14 @@ function CaseStudyPresentation({
 
                 {/* Prev arrow */}
                 <button onClick={onPrev}
-                    className={`absolute left-3 sm:left-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronLeft className="w-5 h-5" />
+                    className={`absolute left-3 sm:left-6 z-[5] p-4 rounded-full bg-black/80 border-2 border-white/15 hover:border-lime/40 hover:bg-lime/10 text-white hover:text-lime transition-all backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-7 h-7" />
                 </button>
 
                 {/* Next arrow */}
                 <button onClick={onNext}
-                    className={`absolute right-3 sm:right-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronRight className="w-5 h-5" />
+                    className={`absolute right-3 sm:right-6 z-[5] p-4 rounded-full bg-black/80 border-2 border-white/15 hover:border-lime/40 hover:bg-lime/10 text-white hover:text-lime transition-all backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-7 h-7" />
                 </button>
             </div>
 
@@ -583,12 +612,12 @@ export function CaseStudiesPage() {
 
             {/* ── PAGE HEADING ─────────────────────────────────────── */}
             <section className="pt-6 pb-10 md:pb-14 bg-black">
-                <div className="max-w-5xl mx-auto px-5 sm:px-6">
+                <div className="max-w-5xl mx-auto px-5 sm:px-6 text-center">
                     <FadeIn>
                         <h1 className="font-heading font-black uppercase text-[clamp(2rem,5vw,4rem)] leading-[0.95] text-white">
-                            Our <span className="text-lime">Work.</span>
+                            Our <span className="text-lime">AI Works</span>
                         </h1>
-                        <p className="text-gray-500 text-sm mt-3 max-w-lg">
+                        <p className="text-gray-500 text-sm mt-3 max-w-lg mx-auto">
                             Every image and film below was generated entirely with AI.
                         </p>
                     </FadeIn>
@@ -609,6 +638,14 @@ export function CaseStudiesPage() {
             {/* ── CASE STUDIES GRID ───────────────────────────────────── */}
             <section className="py-16 md:py-24 bg-black">
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
+                    <FadeIn className="mb-12 text-center">
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95] text-white">
+                            Participants' <span className="text-lime">Work</span>
+                        </h2>
+                        <p className="text-gray-500 text-sm mt-3 max-w-md mx-auto">
+                            Real projects created by our masterclass and sprint workshop participants using the workflows they learned.
+                        </p>
+                    </FadeIn>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         {CASE_STUDIES.map((cs, idx) => (
                             <FadeIn key={cs.id} delay={idx * 0.06}>
@@ -655,13 +692,11 @@ export function CaseStudiesPage() {
             {/* ── TESTIMONIAL VIDEOS ──────────────────────────────────── */}
             <section className="py-16 md:py-24 border-t border-white/[0.04] bg-[#050505]">
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
-                    <FadeIn className="mb-12">
-                        <div className="flex flex-wrap items-end gap-4">
-                            <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95]">
-                                HEAR FROM<br /><span className="text-lime">THE PEOPLE.</span>
-                            </h2>
-                            <LimeBar />
-                        </div>
+                    <FadeIn className="mb-12 text-center">
+                        <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95]">
+                            HEAR FROM<br /><span className="text-lime">OUR PARTICIPANTS</span>
+                        </h2>
+                        <div className="flex justify-center mt-4"><LimeBar /></div>
                     </FadeIn>
 
                     {/* Portrait video grid. 9:16 aspect ratio */}

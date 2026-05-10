@@ -160,8 +160,8 @@ function CaseStudyPresentation({
                     <div className="shrink-0 flex items-center gap-3">
                         <p className="text-[0.65rem] text-gray-600 tabular-nums hidden sm:block">{slideIdx + 1} / {cs.slides.length}</p>
                         <button onClick={onClose}
-                            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/15 hover:border-lime/40 hover:bg-lime/10 text-gray-300 hover:text-lime transition-all">
-                            <X className="w-5 h-5" />
+                            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white/20 hover:border-lime/50 hover:bg-lime/10 text-gray-200 hover:text-lime transition-all">
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
                 </div>
@@ -189,7 +189,8 @@ function CaseStudyPresentation({
                 )}
 
                 {/* Main content */}
-                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52">
+                <div className="relative z-[2] flex items-center justify-center w-full h-full p-4 sm:p-8 md:px-52"
+                    onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
                     <AnimatePresence mode="wait">
                         {slide.vimeoId ? (
                             <motion.div
@@ -227,14 +228,14 @@ function CaseStudyPresentation({
 
                 {/* Prev arrow */}
                 <button onClick={onPrev}
-                    className={`absolute left-3 sm:left-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronLeft className="w-5 h-5" />
+                    className={`absolute left-3 sm:left-6 z-[5] p-4 rounded-full bg-black/80 border-2 border-white/15 hover:border-lime/40 hover:bg-lime/10 text-white hover:text-lime transition-all backdrop-blur-sm ${slideIdx === 0 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronLeft className="w-7 h-7" />
                 </button>
 
                 {/* Next arrow */}
                 <button onClick={onNext}
-                    className={`absolute right-3 sm:right-5 z-[5] p-3 rounded-full bg-black/70 border border-white/10 hover:border-white/30 text-white transition backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
-                    <ChevronRight className="w-5 h-5" />
+                    className={`absolute right-3 sm:right-6 z-[5] p-4 rounded-full bg-black/80 border-2 border-white/15 hover:border-lime/40 hover:bg-lime/10 text-white hover:text-lime transition-all backdrop-blur-sm ${slideIdx === cs.slides.length - 1 ? 'opacity-20 pointer-events-none' : ''}`}>
+                    <ChevronRight className="w-7 h-7" />
                 </button>
             </div>
 
