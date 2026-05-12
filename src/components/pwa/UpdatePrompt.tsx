@@ -1,51 +1,40 @@
-import { useEffect } from 'react'
-import { toast } from 'sonner'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
+/**
+ * PWA auto-update handler.
+ * 
+ * With registerType: 'autoUpdate' and skipWaiting: true, the new service worker
+ * activates immediately. This component just ensures the registration happens
+ * and clears any legacy caches from the old prompt-based flow.
+ */
 export function UpdatePrompt() {
-    const {
-        needRefresh: [needRefresh, setNeedRefresh],
-        updateServiceWorker,
-    } = useRegisterSW({
+    useRegisterSW({
         onRegisterError(error) {
             console.error('SW registration error', error)
         },
         onRegistered(swRegistration) {
             if (swRegistration) {
-                // Poll for updates every 30 seconds
+                // Check for SW updates every 60 seconds
                 setInterval(() => {
                     swRegistration.update()
-                }, 30 * 1000)
+                }, 60 * 1000)
+            }
+        },
+        onNeedRefresh() {
+            // With autoUpdate + skipWaiting, the browser reloads automatically.
+            // Clear any old caches from the previous prompt-based SW to prevent stale content.
+            if ('caches' in window) {
+                caches.keys().then(keys => {
+                    keys.forEach(key => {
+                        // Nuke legacy workbox precaches — the new SW uses runtime caching only
+                        if (key.startsWith('workbox-precache') || key.startsWith('workbox-runtime')) {
+                            caches.delete(key)
+                        }
+                    })
+                })
             }
         },
     })
-
-    useEffect(() => {
-        if (needRefresh) {
-            toast('A new version is available', {
-                description: 'Update to get the latest features and fixes.',
-                duration: Infinity, // stay visible until acted upon
-                onDismiss: () => setNeedRefresh(false),
-                action: {
-                    label: 'Update now',
-                    onClick: async () => {
-                        // Clear all caches before updating
-                        if ('caches' in window) {
-                            try {
-                                const cacheKeys = await caches.keys()
-                                await Promise.all(cacheKeys.map(key => caches.delete(key)))
-                            } catch (e) {
-                                console.error('Failed to clear caches', e)
-                            }
-                        }
-                        
-                        // Proceed to update and reload
-                        updateServiceWorker(true)
-                    }
-                }
-            })
-        }
-    }, [needRefresh, updateServiceWorker, setNeedRefresh])
 
     return null
 }

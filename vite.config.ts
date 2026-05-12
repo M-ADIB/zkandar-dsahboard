@@ -8,11 +8,53 @@ export default defineConfig({
     plugins: [
         react(),
         VitePWA({
-            registerType: 'prompt',
+            registerType: 'autoUpdate',
             workbox: {
                 cleanupOutdatedCaches: true,
-                skipWaiting: false,
+                // Auto-update immediately — no more "click to update" gates
+                skipWaiting: true,
                 clientsClaim: true,
+                // Do NOT precache the HTML shell — always fetch from network
+                navigateFallback: null,
+                // Only precache hashed static assets (JS/CSS chunks with content hashes)
+                // This means index.html is NEVER cached by the service worker
+                globPatterns: ['**/*.{js,css,woff2}'],
+                // Runtime caching rules — network-first for everything that matters
+                runtimeCaching: [
+                    {
+                        // Navigation requests (HTML pages) — ALWAYS network first
+                        urlPattern: ({ request }) => request.mode === 'navigate',
+                        handler: 'NetworkFirst',
+                        options: {
+                            cacheName: 'pages',
+                            expiration: { maxEntries: 10, maxAgeSeconds: 60 },
+                            networkTimeoutSeconds: 3,
+                        },
+                    },
+                    {
+                        // Supabase API calls — never cache
+                        urlPattern: /\.supabase\.co/,
+                        handler: 'NetworkOnly',
+                    },
+                    {
+                        // Images — cache but keep them fresh
+                        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
+                        handler: 'StaleWhileRevalidate',
+                        options: {
+                            cacheName: 'images',
+                            expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 },
+                        },
+                    },
+                    {
+                        // Fonts — safe to cache longer since they rarely change
+                        urlPattern: /\.(?:woff|woff2|ttf|otf|eot)$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'fonts',
+                            expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 30 },
+                        },
+                    },
+                ],
             },
             includeAssets: ['favicon.png'],
             manifest: {
