@@ -88,7 +88,7 @@ export default function WebinarCheckoutPage() {
         // TODO: Integrate Stripe checkout session creation
         // For now, simulate and redirect to success
         await new Promise(r => setTimeout(r, 1500))
-        window.location.href = '/webinar/success'
+        window.location.href = `/webinar/upgrade?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
     }
 
     return (
