@@ -8,13 +8,14 @@ import { LeadDetailsModal } from '@/components/admin/LeadDetailsModal';
 import { LeadsTable } from '@/components/admin/leads/LeadsTable';
 import { ColumnSettingsPanel } from '@/components/admin/leads/ColumnSettingsPanel';
 import { AssessmentSubmissionsTab } from '@/components/admin/leads/AssessmentSubmissionsTab';
+import { WebinarLeadsTab } from '@/components/admin/leads/WebinarLeadsTab';
 import { logAudit } from '@/lib/audit';
 
 import { MetricCard } from '@/components/shared/MetricCard';
 
 export function LeadsPage() {
     const supabase = useSupabase();
-    const [activeTab, setActiveTab] = useState<'leads' | 'assessments'>('leads');
+    const [activeTab, setActiveTab] = useState<'leads' | 'assessments' | 'webinar'>('leads');
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -519,6 +520,9 @@ export function LeadsPage() {
 
             {/* Assessments tab */}
             {activeTab === 'assessments' && <AssessmentSubmissionsTab />}
+
+            {/* Webinar Leads tab */}
+            {activeTab === 'webinar' && <WebinarLeadsTab />}
 
             {/* Table */}
             {activeTab === 'leads' && <LeadsTable

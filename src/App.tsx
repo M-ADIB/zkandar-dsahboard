@@ -36,6 +36,9 @@ const PublicPreSurvey = lazy(() => import('@/pages/public/PublicPreSurvey').then
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
 const TermsOfServicePage = lazy(() => import('@/pages/TermsOfServicePage').then(module => ({ default: module.TermsOfServicePage })))
 const EPKPage = lazy(() => import('@/pages/public/EPKPage').then(module => ({ default: module.EPKPage })))
+const WebinarPage = lazy(() => import('@/pages/public/WebinarPage').then(module => ({ default: module.default })))
+const WebinarCheckoutPage = lazy(() => import('@/pages/public/WebinarCheckoutPage').then(module => ({ default: module.default })))
+const WebinarSuccessPage = lazy(() => import('@/pages/public/WebinarSuccessPage').then(module => ({ default: module.default })))
 const OnboardingSurvey = lazy(() => import('@/components/onboarding/OnboardingSurvey').then(module => ({ default: module.OnboardingSurvey })))
 const SprintWorkshopOnboarding = lazy(() => import('@/pages/onboarding/SprintWorkshopOnboarding').then(module => ({ default: module.SprintWorkshopOnboarding })))
 const WelcomePage = lazy(() => import('@/pages/WelcomePage').then(module => ({ default: module.WelcomePage })))
@@ -121,6 +124,9 @@ function App() {
                                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                                 <Route path="/terms" element={<TermsOfServicePage />} />
                                 <Route path="/epk/:slug" element={<EPKPage />} />
+                                <Route path="/webinar" element={<WebinarPage />} />
+                                <Route path="/webinar/checkout" element={<WebinarCheckoutPage />} />
+                                <Route path="/webinar/success" element={<WebinarSuccessPage />} />
 
                                 {/* Onboarding (full-screen) */}
                                 <Route
