@@ -487,6 +487,8 @@ export function LeadCaptureModal({ open, onClose }: {
             if (selectedUpsells.has('presentation-template')) productSlugs.push('webinar-template')
             if (selectedUpsells.has('style-catalog')) productSlugs.push('webinar-catalog')
 
+            console.log('[Checkout] Invoking create-checkout-session with products:', productSlugs)
+
             const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
                 body: {
                     products: productSlugs,
@@ -497,12 +499,29 @@ export function LeadCaptureModal({ open, onClose }: {
                 },
             })
 
-            if (fnError || !data?.url) {
-                throw new Error(data?.error ?? fnError?.message ?? 'Checkout failed')
+            if (fnError) {
+                console.error('[Checkout] Edge function error:', fnError)
+                // Supabase wraps non-2xx responses as FunctionsHttpError
+                // Try to extract the actual error message from the response context
+                let msg = fnError.message || 'Checkout failed'
+                try {
+                    if (fnError.context && typeof fnError.context.json === 'function') {
+                        const body = await fnError.context.json()
+                        if (body?.error) msg = body.error
+                    }
+                } catch { /* ignore parse errors */ }
+                throw new Error(msg)
             }
 
+            if (!data?.url) {
+                console.error('[Checkout] No URL in response:', data)
+                throw new Error(data?.error ?? 'Checkout session created but no redirect URL received')
+            }
+
+            console.log('[Checkout] Redirecting to Stripe:', data.url)
             window.location.href = data.url
         } catch (err: unknown) {
+            console.error('[Checkout] Error:', err)
             setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
             setIsProcessing(false)
         }
