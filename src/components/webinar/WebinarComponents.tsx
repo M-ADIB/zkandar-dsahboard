@@ -487,35 +487,35 @@ export function LeadCaptureModal({ open, onClose }: {
             if (selectedUpsells.has('presentation-template')) productSlugs.push('webinar-template')
             if (selectedUpsells.has('style-catalog')) productSlugs.push('webinar-catalog')
 
-            console.log('[Checkout] Invoking create-checkout-session with products:', productSlugs)
+            console.log('[Checkout] Calling create-checkout-session with products:', productSlugs)
 
-            const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-                body: {
+            // Direct fetch instead of supabase.functions.invoke to avoid SDK auth issues on public pages
+            const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+            const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                },
+                body: JSON.stringify({
                     products: productSlugs,
                     customer_email: email.trim().toLowerCase(),
                     customer_name: name.trim(),
                     success_url: `${origin}/webinar/upgrade?name=${encodeURIComponent(name.trim())}&email=${encodeURIComponent(email.trim())}`,
                     cancel_url: `${origin}/webinar`,
-                },
+                }),
             })
 
-            if (fnError) {
-                console.error('[Checkout] Edge function error:', fnError)
-                // Supabase wraps non-2xx responses as FunctionsHttpError
-                // Try to extract the actual error message from the response context
-                let msg = fnError.message || 'Checkout failed'
-                try {
-                    if (fnError.context && typeof fnError.context.json === 'function') {
-                        const body = await fnError.context.json()
-                        if (body?.error) msg = body.error
-                    }
-                } catch { /* ignore parse errors */ }
-                throw new Error(msg)
+            const data = await res.json()
+            console.log('[Checkout] Response:', res.status, data)
+
+            if (!res.ok) {
+                throw new Error(data?.error || `Checkout failed (${res.status})`)
             }
 
             if (!data?.url) {
-                console.error('[Checkout] No URL in response:', data)
-                throw new Error(data?.error ?? 'Checkout session created but no redirect URL received')
+                throw new Error('Checkout session created but no redirect URL received')
             }
 
             console.log('[Checkout] Redirecting to Stripe:', data.url)
