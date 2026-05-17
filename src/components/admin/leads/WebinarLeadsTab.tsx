@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSupabase } from '@/hooks/useSupabase'
-import { Download, Users, UserPlus, Eye, MailCheck, Search, ChevronDown, CheckCircle, DollarSign } from 'lucide-react'
+import { Download, Users, UserPlus, MailCheck, Search, ChevronDown, CheckCircle, DollarSign } from 'lucide-react'
 import { MetricCard } from '@/components/shared/MetricCard'
 
 interface WebinarLead {
