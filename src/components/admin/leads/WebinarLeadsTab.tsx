@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSupabase } from '@/hooks/useSupabase'
-import { Download, Users, UserPlus, Eye, MailCheck, Search, ChevronDown, CheckCircle } from 'lucide-react'
+import { Download, Users, UserPlus, Eye, MailCheck, Search, ChevronDown, CheckCircle, DollarSign } from 'lucide-react'
 import { MetricCard } from '@/components/shared/MetricCard'
 
 interface WebinarLead {
@@ -11,6 +11,9 @@ interface WebinarLead {
     phone: string | null
     source: string
     status: 'new' | 'contacted' | 'registered' | 'attended' | 'no_show'
+    payment_status: 'unpaid' | 'pending' | 'paid' | 'refunded'
+    amount_paid: number
+    stripe_session_id: string | null
     utm_source: string | null
     utm_medium: string | null
     utm_campaign: string | null
@@ -83,6 +86,8 @@ export function WebinarLeadsTab() {
         new: leads.filter(l => l.status === 'new').length,
         registered: leads.filter(l => l.status === 'registered').length,
         attended: leads.filter(l => l.status === 'attended').length,
+        revenue: leads.reduce((sum, l) => sum + (l.amount_paid || 0), 0),
+        paid: leads.filter(l => l.payment_status === 'paid').length,
     }), [leads])
 
     const handleUpdateStatus = async (id: string, status: string) => {
@@ -103,9 +108,11 @@ export function WebinarLeadsTab() {
 
     const handleExport = () => {
         if (filtered.length === 0) return
-        const headers = ['Name', 'Email', 'Phone', 'Status', 'Source', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Created']
+        const headers = ['Name', 'Email', 'Phone', 'Status', 'Payment Status', 'Amount Paid', 'Source', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Created']
         const rows = filtered.map(l => [
-            l.full_name, l.email, l.phone || '', l.status, l.source || '',
+            l.full_name, l.email, l.phone || '', l.status, l.payment_status || 'unpaid',
+            l.amount_paid ? `$${(l.amount_paid / 100).toFixed(2)}` : '$0',
+            l.source || '',
             l.utm_source || '', l.utm_medium || '', l.utm_campaign || '',
             new Date(l.created_at).toLocaleDateString()
         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
@@ -149,11 +156,12 @@ export function WebinarLeadsTab() {
             )}
 
             {/* Metric Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 <MetricCard label="Total Leads" value={stats.total} icon={Users} iconColor="text-gray-400" />
                 <MetricCard label="New" value={stats.new} icon={UserPlus} iconColor="text-blue-400" />
                 <MetricCard label="Registered" value={stats.registered} icon={MailCheck} limeAccent />
-                <MetricCard label="Attended" value={stats.attended} icon={Eye} iconColor="text-green-400" />
+                <MetricCard label="Paid" value={stats.paid} icon={DollarSign} iconColor="text-green-400" />
+                <MetricCard label="Revenue" value={`$${(stats.revenue / 100).toFixed(0)}`} icon={DollarSign} limeAccent />
             </div>
 
             {/* Toolbar */}
@@ -200,13 +208,14 @@ export function WebinarLeadsTab() {
                                 <th className="px-4 py-3 text-[0.65rem] uppercase tracking-wider text-gray-500 font-bold">Phone</th>
                                 <th className="px-4 py-3 text-[0.65rem] uppercase tracking-wider text-gray-500 font-bold">Status</th>
                                 <th className="px-4 py-3 text-[0.65rem] uppercase tracking-wider text-gray-500 font-bold">Source</th>
+                                <th className="px-4 py-3 text-[0.65rem] uppercase tracking-wider text-gray-500 font-bold">Payment</th>
                                 <th className="px-4 py-3 text-[0.65rem] uppercase tracking-wider text-gray-500 font-bold">Date</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.04]">
                             {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-12 text-center text-gray-600 text-sm">
+                                    <td colSpan={7} className="px-4 py-12 text-center text-gray-600 text-sm">
                                         {search || statusFilter !== 'all' ? 'No leads match your filters.' : 'No webinar leads yet. They\'ll appear here when people register through the landing page.'}
                                     </td>
                                 </tr>
@@ -237,6 +246,23 @@ export function WebinarLeadsTab() {
                                             </td>
                                             <td className="px-4 py-3">
                                                 <span className="text-xs text-gray-600">{lead.source || '—'}</span>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                {lead.payment_status === 'paid' ? (
+                                                    <span className="text-[0.65rem] font-bold px-2 py-0.5 rounded-md bg-green-400/10 text-green-400 border border-green-400/20">
+                                                        ${((lead.amount_paid || 0) / 100).toFixed(0)} paid
+                                                    </span>
+                                                ) : lead.payment_status === 'pending' ? (
+                                                    <span className="text-[0.65rem] font-bold px-2 py-0.5 rounded-md bg-yellow-400/10 text-yellow-400 border border-yellow-400/20">
+                                                        Pending
+                                                    </span>
+                                                ) : lead.payment_status === 'refunded' ? (
+                                                    <span className="text-[0.65rem] font-bold px-2 py-0.5 rounded-md bg-red-400/10 text-red-400 border border-red-400/20">
+                                                        Refunded
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[0.65rem] text-gray-700">—</span>
+                                                )}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="text-xs text-gray-400">{formatDate(lead.created_at)}</div>
