@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import { Check, Play, ArrowRight } from 'lucide-react'
 // Nav/Footer intentionally removed
@@ -55,8 +55,22 @@ export default function WebinarPage() {
     const [leadModalOpen, setLeadModalOpen] = useState(false)
     const [activeFaq, setActiveFaq] = useState<number | null>(null)
     const [vslPlaying, setVslPlaying] = useState(false)
+    const [showStickyBar, setShowStickyBar] = useState(false)
+    const heroRef = useRef<HTMLElement>(null)
 
     useEffect(() => { trackFBEvent('ViewContent', { content_name: 'webinar_page' }) }, [])
+
+    // Show sticky bar only after scrolling past the hero section
+    useEffect(() => {
+        const el = heroRef.current
+        if (!el) return
+        const observer = new IntersectionObserver(
+            ([entry]) => setShowStickyBar(!entry.isIntersecting),
+            { threshold: 0 }
+        )
+        observer.observe(el)
+        return () => observer.disconnect()
+    }, [])
 
     const openCta = () => {
         trackFBEvent('Lead', { content_name: 'webinar_cta_click' })
@@ -69,7 +83,7 @@ export default function WebinarPage() {
 
 
             {/* ═══ S1: HERO ═══ */}
-            <section className="pt-16 pb-8 md:pt-20 md:pb-12">
+            <section ref={heroRef} className="pt-16 pb-8 md:pt-20 md:pb-12">
                 <div className="max-w-[52rem] mx-auto px-5 sm:px-8 text-center space-y-7">
                     <FadeIn>
                         <img src={logoSrc} alt="Zkandar" className="h-7 mx-auto opacity-50" />
@@ -110,7 +124,13 @@ export default function WebinarPage() {
                         <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-[0_0_80px_rgba(208,255,113,0.06)] aspect-video bg-[#080808]">
                             {!vslPlaying ? (
                                 <button onClick={() => setVslPlaying(true)} className="absolute inset-0 flex items-center justify-center group z-10">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                    <img
+                                        src={`https://vumbnail.com/${VSL_ID}.jpg`}
+                                        alt="Watch the webinar intro"
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-300" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                     <div className="relative w-[4.5rem] h-[4.5rem] rounded-full bg-lime flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_50px_rgba(208,255,113,0.35)]">
                                         <Play className="w-7 h-7 text-black fill-black ml-0.5" />
                                     </div>
@@ -468,7 +488,7 @@ export default function WebinarPage() {
             </Section>
 
             {/* ═══ STICKY BOTTOM BAR ═══ */}
-            <div className="fixed bottom-0 left-0 right-0 z-[100] bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06]">
+            <div className={`fixed bottom-0 left-0 right-0 z-[100] bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] transition-transform duration-300 ease-out ${showStickyBar ? 'translate-y-0' : 'translate-y-full'}`}>
                 <div className="max-w-[52rem] mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2.5">
                     <button
                         onClick={openCta}
