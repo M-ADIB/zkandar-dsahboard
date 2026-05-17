@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Star, Zap, Users, Video, BookOpen } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '@/assets/logo.png'
@@ -34,11 +34,11 @@ const VIP_TIER = {
     accentColor: 'text-amber-400',
     bgGlow: 'shadow-[0_0_40px_rgba(245,158,11,0.08)]',
     features: [
-        { icon: Video, text: 'Exclusive bonus session — advanced AI techniques for complex projects' },
-        { icon: Users, text: 'Private VIP group — direct access to Khaled & fellow VIP members' },
-        { icon: BookOpen, text: 'Complete AI prompt library — 50+ curated prompts for interior design' },
-        { icon: Zap, text: 'Priority Q&A — your questions answered first in every session' },
-        { icon: Star, text: 'VIP certificate — recognized as a distinguished participant' },
+        { icon: Video, text: 'Exclusive bonus session: advanced AI techniques for complex projects' },
+        { icon: Users, text: 'Private VIP group with direct access to Khaled and fellow VIP members' },
+        { icon: BookOpen, text: 'Complete AI prompt library with 50+ curated prompts for interior design' },
+        { icon: Zap, text: 'Priority Q&A: your questions answered first in every session' },
+        { icon: Star, text: 'VIP certificate, recognized as a distinguished participant' },
     ],
 }
 
@@ -55,12 +55,12 @@ const ELITE_TIER = {
     bgGlow: 'shadow-[0_0_40px_rgba(208,255,113,0.08)]',
     badge: 'BEST VALUE',
     features: [
-        { icon: Sparkles, text: 'Everything in VIP — all VIP features included' },
-        { icon: Users, text: '1-on-1 mentoring session (30 min) — personalized to your business' },
-        { icon: BookOpen, text: 'Complete project case study files — real project, all assets included' },
+        { icon: Sparkles, text: 'Everything in VIP: all VIP features included' },
+        { icon: Users, text: '1-on-1 mentoring session (30 min) personalized to your business' },
+        { icon: BookOpen, text: 'Complete project case study files with real project assets included' },
         { icon: Video, text: 'Lifetime access to all webinar recordings & future updates' },
-        { icon: Zap, text: 'Custom AI workflow audit — Khaled reviews your current process' },
-        { icon: Crown, text: 'Featured in Zkandar alumni network — exclusive networking access' },
+        { icon: Zap, text: 'Custom AI workflow audit where Khaled reviews your current process' },
+        { icon: Crown, text: 'Featured in Zkandar alumni network with exclusive networking access' },
     ],
 }
 
@@ -71,12 +71,9 @@ export default function WebinarUpgradePage() {
 
     const [selectedTier, setSelectedTier] = useState<string | null>(null)
     const [isProcessing, setIsProcessing] = useState(false)
-    const [showConfetti, setShowConfetti] = useState(true)
 
     useEffect(() => {
         trackFBEvent('ViewContent', { content_name: 'webinar_upgrade_page', email })
-        const t = setTimeout(() => setShowConfetti(false), 3000)
-        return () => clearTimeout(t)
     }, [email])
 
     const handleUpgrade = async (tierId: string, price: number) => {
@@ -107,21 +104,17 @@ export default function WebinarUpgradePage() {
                 <img src={logoSrc} alt="Zkandar" className="h-7 opacity-60" />
             </div>
 
-            {/* Success Banner */}
-            <AnimatePresence>
-                {showConfetti && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="relative bg-lime/[0.06] border-b border-lime/20 py-3 text-center"
-                    >
-                        <p className="text-sm text-lime font-bold">
-                            🎉 Payment confirmed! You're in, {name || 'there'}!
-                        </p>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Urgency Banner — Don't leave yet! */}
+            <div className="relative bg-amber-500/[0.08] border-b border-amber-500/20 py-3.5 px-4 text-center">
+                <p className="text-sm font-bold text-amber-400 flex items-center justify-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                    </span>
+                    WAIT! You're not done yet, {name || 'there'}.
+                </p>
+                <p className="text-[0.7rem] text-amber-300/60 mt-1">Your seat is confirmed. But this one-time offer disappears when you leave this page.</p>
+            </div>
 
             {/* Main Content */}
             <div className="relative max-w-4xl mx-auto px-5 sm:px-8 py-12 md:py-16">

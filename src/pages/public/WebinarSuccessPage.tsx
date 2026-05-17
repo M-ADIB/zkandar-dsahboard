@@ -34,7 +34,7 @@ export default function WebinarSuccessPage() {
                 </h1>
                 <p className="text-gray-400 leading-relaxed mb-8 text-sm">
                     Welcome to the 3-Day AI Design Webinar.
-                    Check your inbox — you'll receive your confirmation, Zoom link, and pre-session materials within the next few minutes.
+                    Check your inbox. You'll receive your confirmation, Zoom link, and pre-session materials within the next few minutes.
                 </p>
 
                 <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 mb-8 text-left space-y-3">

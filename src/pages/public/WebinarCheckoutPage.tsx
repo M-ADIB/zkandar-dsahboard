@@ -21,7 +21,7 @@ const UPSELLS: UpsellProduct[] = [
     {
         id: 'presentation-template',
         name: 'Professional Presentation Template',
-        description: 'A ready-to-use presentation template covering every stage of a design project — from brief to delivery. Just drop in your images and you\'re done.',
+        description: 'A ready-to-use presentation template covering every stage of a design project, from brief to delivery. Just drop in your images and you\'re done.',
         price: 17,
         badge: 'LIMITED OFFER',
         features: [
@@ -218,7 +218,7 @@ export default function WebinarCheckoutPage() {
                         className="w-full bg-lime text-black font-heading font-black uppercase text-sm py-4 rounded-xl hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                        {isProcessing ? 'PROCESSING…' : `COMPLETE PURCHASE — $${total}`}
+                        {isProcessing ? 'PROCESSING…' : `COMPLETE PURCHASE · $${total}`}
                     </button>
 
                     <div className="flex items-center justify-center gap-2 text-[0.65rem] text-gray-600">
