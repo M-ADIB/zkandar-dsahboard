@@ -42,6 +42,7 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
       'webinar-catalog': 'Interior Design Style Catalog',
       'vip': 'VIP Access Upgrade',
       'vip-elite': 'VIP Elite Upgrade',
+      'test': 'Zkandar AI — Pipeline Test',
     };
     return names[p] || p;
   });
@@ -78,16 +79,16 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
                 <!-- Greeting -->
                 <tr>
                   <td style="padding:24px 24px 0;">
-                    <div style="font-size:18px;font-weight:700;color:#FFFFFF;">Hey ${firstName},</div>
+                    <div style="font-size:18px;font-weight:700;color:#FFFFFF;">Hi ${firstName},</div>
                     <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">
-                      Your payment has been confirmed and your spot is secured. We're thrilled to have you join us.
+                      Your payment has been confirmed and your spot is secured. We're excited to have you join us for the program.
                     </div>
                   </td>
                 </tr>
 
                 <!-- Order Summary -->
                 <tr>
-                  <td style="padding:20px 24px;">
+                  <td style="padding:20px 24px 0;">
                     <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
                       <tr>
                         <td style="padding:16px;">
@@ -107,16 +108,31 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
                   </td>
                 </tr>
 
+                <!-- Zoom Link Placeholder -->
+                <tr>
+                  <td style="padding:16px 24px 0;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #D0FF71;border-radius:12px;">
+                      <tr>
+                        <td style="padding:16px;">
+                          <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">📅 Session Link</div>
+                          <div style="font-size:13px;color:#D1D5DB;line-height:1.6;">
+                            Your Zoom link will be shared here closer to the session date. Keep an eye on your inbox.
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
                 <!-- What's Next -->
                 <tr>
-                  <td style="padding:0 24px 20px;">
+                  <td style="padding:16px 24px 0;">
                     <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
                       <tr>
                         <td style="padding:16px;">
                           <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
                           <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">
-                            📅 You'll receive the session schedule and Zoom links via email<br/>
-                            📋 Pre-work brief will be shared before Day 1<br/>
+                            📋 A pre-work brief will be shared before Day 1<br/>
                             💬 Access to the private cohort community<br/>
                             🎯 Come ready to transform your workflow with AI
                           </div>
@@ -128,13 +144,12 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
 
                 <!-- Footer -->
                 <tr>
-                  <td style="padding:0 24px 24px;">
+                  <td style="padding:24px 24px 24px;">
                     <div style="font-size:14px;color:#D1D5DB;line-height:1.6;">
-                      If you have any questions before the sessions begin, just reply to this email — we're here to help.
+                      If you have any questions before the session begins, just reply to this email — we're here to help.
                     </div>
                     <div style="margin-top:20px;">
-                      <div style="font-size:14px;font-weight:700;color:#FFFFFF;">Khaled & The Zkandar AI Team</div>
-                      <div style="font-size:12px;color:#9CA3AF;">Zkandar AI — Design Smarter with AI</div>
+                      <div style="font-size:14px;font-weight:700;color:#FFFFFF;">Zkandar AI</div>
                     </div>
                   </td>
                 </tr>
@@ -143,7 +158,7 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
             </td>
           </tr>
 
-          <!-- Unsubscribe -->
+          <!-- Copyright -->
           <tr>
             <td style="padding:16px;text-align:center;">
               <div style="font-size:11px;color:#6B7280;">© ${new Date().getFullYear()} Zkandar AI. All rights reserved.</div>
@@ -166,6 +181,7 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
       },
       body: JSON.stringify({
         from: 'Zkandar AI <hello@app.zkandar.com>',
+        reply_to: 'admin@zkandar.com',
         to: customerEmail,
         subject: `Booking Confirmed — You're In, ${firstName}! 🎉`,
         html,
@@ -181,6 +197,7 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
     console.error('Email send failed:', err);
   }
 }
+
 
 // ── Main webhook handler ──
 Deno.serve(async (req: Request) => {
