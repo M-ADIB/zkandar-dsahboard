@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Check, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
+import { supabase } from '@/lib/supabase'
 import logoSrc from '@/assets/logo.png'
 
 /* ── Upsell Product Type ── */
@@ -78,17 +79,40 @@ export default function WebinarCheckoutPage() {
     const total = useMemo(() => orderItems.reduce((s, i) => s + i.price * i.qty, 0), [orderItems])
 
     const handleCheckout = async () => {
+        if (!email) {
+            window.location.href = '/webinar'
+            return
+        }
+
         setIsProcessing(true)
-        trackFBEvent('Purchase', {
-            content_name: 'webinar_purchase',
+        trackFBEvent('AddToCart', {
+            content_name: 'webinar_checkout',
             value: total,
             currency: 'USD',
             content_ids: ['webinar', ...Array.from(selectedUpsells)],
         })
-        // TODO: Integrate Stripe checkout session creation
-        // For now, simulate and redirect to success
-        await new Promise(r => setTimeout(r, 1500))
-        window.location.href = `/webinar/upgrade?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
+
+        const products = ['webinar', ...Array.from(selectedUpsells)]
+        const origin = window.location.origin
+
+        const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
+            body: {
+                products,
+                customer_name: name,
+                customer_email: email.toLowerCase(),
+                success_url: `${origin}/webinar/success?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
+                cancel_url: `${origin}/webinar/checkout?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
+            },
+        })
+
+        if (fnError || !data?.url) {
+            console.error('Checkout error:', fnError?.message ?? data?.error)
+            setIsProcessing(false)
+            alert('Something went wrong. Please try again or contact support.')
+            return
+        }
+
+        window.location.href = data.url
     }
 
     return (

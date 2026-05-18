@@ -37,7 +37,7 @@ const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(mo
 const TermsOfServicePage = lazy(() => import('@/pages/TermsOfServicePage').then(module => ({ default: module.TermsOfServicePage })))
 const EPKPage = lazy(() => import('@/pages/public/EPKPage').then(module => ({ default: module.EPKPage })))
 const WebinarPage = lazy(() => import('@/pages/public/WebinarPage').then(module => ({ default: module.default })))
-
+const WebinarCheckoutPage = lazy(() => import('@/pages/public/WebinarCheckoutPage').then(module => ({ default: module.default })))
 const WebinarSuccessPage = lazy(() => import('@/pages/public/WebinarSuccessPage').then(module => ({ default: module.default })))
 const WebinarUpgradePage = lazy(() => import('@/pages/public/WebinarUpgradePage').then(module => ({ default: module.default })))
 const WebinarTestPage = lazy(() => import('@/pages/public/WebinarTestPage').then(module => ({ default: module.default })))
@@ -127,7 +127,7 @@ function App() {
                                 <Route path="/terms" element={<TermsOfServicePage />} />
                                 <Route path="/epk/:slug" element={<EPKPage />} />
                                 <Route path="/webinar" element={<WebinarPage />} />
-
+                                <Route path="/webinar/checkout" element={<WebinarCheckoutPage />} />
                                 <Route path="/webinar/upgrade" element={<WebinarUpgradePage />} />
                                 <Route path="/webinar/success" element={<WebinarSuccessPage />} />
                                 <Route path="/webinar/-test" element={<WebinarTestPage />} />

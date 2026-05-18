@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { X, Share, PlusSquare } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function InstallPrompt() {
+    const { pathname } = useLocation()
     const [isIOS, setIsIOS] = useState(false)
     const [isStandalone, setIsStandalone] = useState(false)
     const [showPrompt, setShowPrompt] = useState(false)
@@ -63,7 +65,7 @@ export function InstallPrompt() {
         setShowPrompt(false)
     }
 
-    if (!showPrompt || isStandalone) return null
+    if (!showPrompt || isStandalone || pathname.startsWith('/webinar')) return null
 
     return (
         <AnimatePresence>
