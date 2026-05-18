@@ -47,20 +47,20 @@ Deno.serve(async (req: Request) => {
       'webinar': STRIPE_PRICE_ID_SPRINT,  // alias
     };
 
-    // Resolve the primary product price (first product in array)
     const primaryProduct = products[0];
-    const priceId = priceMap[primaryProduct];
-    if (!priceId) {
+    const isTestProduct = primaryProduct === 'test';
+
+    // Resolve the primary product price (first product in array)
+    const priceId = isTestProduct ? undefined : priceMap[primaryProduct];
+    if (!isTestProduct && !priceId) {
       throw new Error(`No Stripe Price ID configured for product: "${primaryProduct}". Set STRIPE_PRICE_ID_SPRINT via supabase secrets.`);
     }
 
-    console.log('Creating checkout session for:', products, '| Email:', customer_email, '| Name:', customer_name);
+    console.log('Creating checkout session for:', products, '| Email:', customer_email, '| Name:', customer_name, '| Test:', isTestProduct);
 
     // Build Stripe Checkout Session payload with metadata for webhook
     const params = new URLSearchParams({
       'mode': 'payment',
-      'line_items[0][price]': priceId,
-      'line_items[0][quantity]': '1',
       'success_url': success_url,
       'cancel_url': cancel_url,
       'payment_method_types[0]': 'card',
@@ -70,6 +70,17 @@ Deno.serve(async (req: Request) => {
       'metadata[customer_email]': (customer_email || '').toLowerCase(),
       'metadata[products]': JSON.stringify(products),
     });
+
+    if (isTestProduct) {
+      // Ad-hoc $2 test product — no saved Stripe Price ID needed
+      params.set('line_items[0][price_data][currency]', 'usd');
+      params.set('line_items[0][price_data][product_data][name]', 'Zkandar AI — Pipeline Test ($2)');
+      params.set('line_items[0][price_data][unit_amount]', '200');  // $2.00 in cents
+      params.set('line_items[0][quantity]', '1');
+    } else {
+      params.set('line_items[0][price]', priceId!);
+      params.set('line_items[0][quantity]', '1');
+    }
 
     if (customer_email) {
       params.set('customer_email', customer_email.toLowerCase());

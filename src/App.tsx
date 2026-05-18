@@ -40,6 +40,7 @@ const WebinarPage = lazy(() => import('@/pages/public/WebinarPage').then(module 
 
 const WebinarSuccessPage = lazy(() => import('@/pages/public/WebinarSuccessPage').then(module => ({ default: module.default })))
 const WebinarUpgradePage = lazy(() => import('@/pages/public/WebinarUpgradePage').then(module => ({ default: module.default })))
+const WebinarTestPage = lazy(() => import('@/pages/public/WebinarTestPage').then(module => ({ default: module.default })))
 const OnboardingSurvey = lazy(() => import('@/components/onboarding/OnboardingSurvey').then(module => ({ default: module.OnboardingSurvey })))
 const SprintWorkshopOnboarding = lazy(() => import('@/pages/onboarding/SprintWorkshopOnboarding').then(module => ({ default: module.SprintWorkshopOnboarding })))
 const WelcomePage = lazy(() => import('@/pages/WelcomePage').then(module => ({ default: module.WelcomePage })))
@@ -129,6 +130,7 @@ function App() {
 
                                 <Route path="/webinar/upgrade" element={<WebinarUpgradePage />} />
                                 <Route path="/webinar/success" element={<WebinarSuccessPage />} />
+                                <Route path="/webinar/-test" element={<WebinarTestPage />} />
 
                                 {/* Onboarding (full-screen) */}
                                 <Route
