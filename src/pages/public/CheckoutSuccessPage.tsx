@@ -36,17 +36,17 @@ export function CheckoutSuccessPage() {
                 </h1>
                 <p className="text-gray-400 leading-relaxed mb-8 text-sm">
                     Welcome to the next AI Sprint Workshop cohort.
-                    Check your inbox. You'll receive your confirmation and
-                    pre-work details within the next few minutes.
+                    Check your inbox — you'll receive <strong className="text-white">two emails</strong>:
+                    a booking confirmation and your <strong className="text-white">dashboard login credentials</strong>.
                 </p>
 
                 <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 mb-8 text-left space-y-3">
                     <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-1">What happens next</p>
                     {[
-                        'Confirmation email with session dates and Zoom links',
+                        'Booking confirmation with order summary',
+                        'Dashboard login credentials (separate email)',
                         'Pre-work brief to set up your AI tools before Day 1',
-                        'Access to the private cohort Slack channel',
-                        'Optional 1 on 1 onboarding call with the Zkandar team',
+                        'Access to session materials and recordings on your dashboard',
                     ].map((step, i) => (
                         <div key={i} className="flex items-start gap-2.5">
                             <CheckCircle2 className="h-4 w-4 text-lime shrink-0 mt-0.5" />
@@ -57,19 +57,20 @@ export function CheckoutSuccessPage() {
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <a
+                        href="/login"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-xs hover:opacity-90 transition"
+                    >
+                        <ArrowRight className="h-4 w-4" />
+                        Go to Dashboard Login
+                    </a>
+                    <a
                         href={ONBOARDING_URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-xs hover:opacity-90 transition"
-                    >
-                        <Calendar className="h-4 w-4" />
-                        Book onboarding call
-                    </a>
-                    <a
-                        href="/main"
                         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] text-gray-300 font-medium text-sm hover:border-white/20 hover:text-white transition"
                     >
-                        Back to Home <ArrowRight className="h-4 w-4" />
+                        <Calendar className="h-4 w-4" />
+                        Book onboarding call (optional)
                     </a>
                 </div>
             </motion.div>

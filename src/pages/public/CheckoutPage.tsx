@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Loader2, Phone, Calendar, Shield, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Loader2, Phone, Calendar, Shield, CheckCircle2, User, Mail } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
@@ -35,6 +35,8 @@ export function CheckoutPage() {
     const [error, setError] = useState<string | null>(null)
     const [sprintDates, setSprintDates] = useState('June 3–5')
     const [sprintLocation, setSprintLocation] = useState('Live Zoom')
+    const [customerName, setCustomerName] = useState('')
+    const [customerEmail, setCustomerEmail] = useState('')
 
     useEffect(() => {
         supabase.from('settings').select('key, value')
@@ -49,6 +51,16 @@ export function CheckoutPage() {
     }, [])
 
     const handleCheckout = async () => {
+        // Validate required fields
+        if (!customerName.trim() || !customerEmail.trim()) {
+            setError('Please enter your full name and email address.')
+            return
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
+            setError('Please enter a valid email address.')
+            return
+        }
+
         setLoading(true)
         setError(null)
         trackFBEvent('InitiateCheckout', { content_name: 'sprint_workshop', value: 0, currency: 'USD' })
@@ -57,6 +69,8 @@ export function CheckoutPage() {
         const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
             body: {
                 product: 'sprint',
+                customer_name: customerName.trim(),
+                customer_email: customerEmail.trim().toLowerCase(),
                 success_url: `${origin}/checkout-success?source=checkout`,
                 cancel_url: `${origin}/checkout`,
             },
@@ -189,6 +203,35 @@ export function CheckoutPage() {
                                 <div className="flex items-baseline gap-1.5 mt-0.5">
                                     <span className="font-heading font-black text-3xl text-white">12,500</span>
                                     <span className="text-sm font-semibold text-gray-400">AED</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-white/5" />
+
+                        {/* Your details */}
+                        <div className="space-y-4">
+                            <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500">Your details</p>
+                            <div className="space-y-3">
+                                <div className="relative">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                    <input
+                                        type="text"
+                                        placeholder="Full name"
+                                        value={customerName}
+                                        onChange={e => setCustomerName(e.target.value)}
+                                        className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-gray-600 text-sm font-body focus:outline-none focus:border-purple-400/40 transition-colors"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                                    <input
+                                        type="email"
+                                        placeholder="Email address"
+                                        value={customerEmail}
+                                        onChange={e => setCustomerEmail(e.target.value)}
+                                        className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-gray-600 text-sm font-body focus:outline-none focus:border-purple-400/40 transition-colors"
+                                    />
                                 </div>
                             </div>
                         </div>

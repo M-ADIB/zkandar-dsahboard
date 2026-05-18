@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle2, CreditCard, Loader2, AlertTriangle, Zap } from 'lucide-react'
+import { CreditCard, Loader2, AlertTriangle, Zap } from 'lucide-react'
 import logoSrc from '../../assets/logo.png'
 
 export default function WebinarTestPage() {
