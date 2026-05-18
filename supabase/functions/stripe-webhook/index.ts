@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY') ?? Deno.env.get('stripe_secret_key');
-const STRIPE_WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET') ?? Deno.env.get('stripe_webhook_secret');
+const STRIPE_WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET') ?? Deno.env.get('stripe_webhook_secret') ?? Deno.env.get('stripe_webhook_signing_secret');
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -192,12 +192,15 @@ Deno.serve(async (req: Request) => {
     const body = await req.text();
     const signature = req.headers.get('stripe-signature');
 
+    console.log('Webhook secret loaded:', STRIPE_WEBHOOK_SECRET ? 'YES (length: ' + STRIPE_WEBHOOK_SECRET.length + ')' : 'NO');
+
     if (STRIPE_WEBHOOK_SECRET) {
       if (!signature) { console.error('Missing stripe-signature header'); return new Response('Missing signature', { status: 400 }); }
       const isValid = await verifyStripeSignature(body, signature, STRIPE_WEBHOOK_SECRET);
       if (!isValid) { console.error('Invalid webhook signature'); return new Response('Invalid signature', { status: 400 }); }
+      console.log('Webhook signature verified successfully');
     } else {
-      console.warn('STRIPE_WEBHOOK_SECRET not set — skipping signature verification');
+      console.warn('No webhook secret found — tried STRIPE_WEBHOOK_SECRET, stripe_webhook_secret, stripe_webhook_signing_secret');
     }
 
     const event = JSON.parse(body);
