@@ -7,6 +7,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Sprint cohort — the active sprint_workshop cohort
+const SPRINT_COHORT_ID = '813335a5-3d30-497c-a27d-f2702020f6b2';
+
 // ── Stripe signature verification ──
 async function verifyStripeSignature(payload: string, signature: string, secret: string): Promise<boolean> {
   const parts = signature.split(',').reduce((acc: Record<string, string>, part) => {
@@ -26,159 +29,267 @@ async function verifyStripeSignature(payload: string, signature: string, secret:
   return expectedSig === sig;
 }
 
-// ── Booking confirmation email ──
-async function sendBookingConfirmationEmail(customerEmail: string, customerName: string, products: string[], amountTotal: number) {
-  if (!RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not set — skipping confirmation email');
-    return;
+// ── Generate a secure temp password ──
+function generateTempPassword(): string {
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$';
+  let pw = '';
+  const arr = new Uint8Array(12);
+  crypto.getRandomValues(arr);
+  for (const b of arr) pw += chars[b % chars.length];
+  return pw;
+}
+
+// ── Provision Sprint user: create auth user + profile + cohort membership ──
+async function provisionSprintUser(
+  supabase: ReturnType<typeof createClient>,
+  email: string,
+  fullName: string,
+  tempPassword: string
+): Promise<{ userId: string; isNew: boolean }> {
+  // Check if user already exists
+  const { data: existing } = await supabase
+    .from('users')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (existing?.id) {
+    console.log('User already exists:', existing.id);
+    // Still ensure cohort membership
+    await supabase.from('cohort_memberships').upsert(
+      { user_id: existing.id, cohort_id: SPRINT_COHORT_ID },
+      { onConflict: 'user_id,cohort_id', ignoreDuplicates: true }
+    );
+    return { userId: existing.id, isNew: false };
   }
 
-  const firstName = customerName.split(' ')[0] || 'there';
-  const formattedAmount = `$${(amountTotal / 100).toFixed(2)}`;
-  const productNames = products.map(p => {
-    const names: Record<string, string> = {
-      'webinar': '3-Day AI Design Webinar',
-      'webinar-template': 'Professional Presentation Template',
-      'webinar-catalog': 'Interior Design Style Catalog',
-      'vip': 'VIP Access Upgrade',
-      'vip-elite': 'VIP Elite Upgrade',
-      'test': 'Zkandar AI — Pipeline Test',
-    };
-    return names[p] || p;
+  // Create Supabase auth user
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { full_name: fullName },
   });
 
-  const productListHtml = productNames.map(name =>
-    `<tr><td style="padding:8px 0; font-size:14px; color:#D1D5DB; border-bottom:1px solid #1F2937;">✓ ${name}</td></tr>`
-  ).join('');
+  if (authError) throw new Error(`Auth user creation failed: ${authError.message}`);
+  const userId = authData.user.id;
+  console.log('Auth user created:', userId);
+
+  // Upsert profile in users table
+  await supabase.from('users').upsert({
+    id: userId,
+    email,
+    full_name: fullName,
+    role: 'participant',
+    user_type: 'sprint_member',
+    onboarding_completed: false,
+    created_at: new Date().toISOString(),
+  }, { onConflict: 'id', ignoreDuplicates: false });
+
+  // Add cohort membership
+  await supabase.from('cohort_memberships').upsert(
+    { user_id: userId, cohort_id: SPRINT_COHORT_ID },
+    { onConflict: 'user_id,cohort_id', ignoreDuplicates: true }
+  );
+
+  console.log('Sprint user provisioned:', userId, '| Cohort:', SPRINT_COHORT_ID);
+  return { userId, isNew: true };
+}
+
+// ── Sprint credentials email ──
+async function sendSprintCredentialsEmail(email: string, fullName: string, tempPassword: string) {
+  if (!RESEND_API_KEY) { console.warn('RESEND_API_KEY not set — skipping credentials email'); return; }
+
+  const firstName = fullName.split(' ')[0] || 'there';
+  const dashboardUrl = 'https://app.zkandar.com';
 
   const html = `<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Booking Confirmed — Zkandar AI</title>
-  <style type="text/css">body,table,td{font-family:Arial,sans-serif!important;}</style>
-</head>
-<body style="margin:0;padding:0;background:#0B0B0B;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
-    <tr>
-      <td align="center" style="padding:32px 16px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-          <tr>
-            <td style="background:#111111;border:1px solid #1F2937;border-radius:16px;overflow:hidden;">
-              <table width="100%" cellpadding="0" cellspacing="0">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Welcome to Zkandar AI — Sprint Workshop</title></head>
+<body style="margin:0;padding:0;background:#0B0B0B;font-family:Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+      <tr><td style="background:#111111;border:1px solid #1F2937;border-radius:16px;overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0">
 
-                <!-- Header Banner -->
-                <tr>
-                  <td style="background:linear-gradient(135deg,#D0FF71 0%,#5A9F2E 100%);padding:28px 24px;text-align:center;">
-                    <div style="font-size:28px;font-weight:900;color:#000;letter-spacing:0.02em;">YOU'RE IN! 🎉</div>
-                    <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;font-weight:600;">Booking Confirmed</div>
-                  </td>
-                </tr>
+          <!-- Header -->
+          <tr><td style="background:linear-gradient(135deg,#D0FF71 0%,#5A9F2E 100%);padding:28px 24px;text-align:center;">
+            <div style="font-size:28px;font-weight:900;color:#000;letter-spacing:0.02em;">YOU'RE IN! 🎉</div>
+            <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;font-weight:600;">Sprint Workshop — Access Confirmed</div>
+          </td></tr>
 
-                <!-- Greeting -->
-                <tr>
-                  <td style="padding:24px 24px 0;">
-                    <div style="font-size:18px;font-weight:700;color:#FFFFFF;">Hi ${firstName},</div>
-                    <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">
-                      Your payment has been confirmed and your spot is secured. We're excited to have you join us for the program.
-                    </div>
-                  </td>
-                </tr>
+          <!-- Greeting -->
+          <tr><td style="padding:24px 24px 0;">
+            <div style="font-size:18px;font-weight:700;color:#FFFFFF;">Hi ${firstName},</div>
+            <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">
+              Your payment is confirmed and your Sprint Workshop account is ready. Use the credentials below to sign in to your dashboard.
+            </div>
+          </td></tr>
 
-                <!-- Order Summary -->
-                <tr>
-                  <td style="padding:20px 24px 0;">
-                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
-                      <tr>
-                        <td style="padding:16px;">
-                          <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Order Summary</div>
-                          <table width="100%" cellpadding="0" cellspacing="0">
-                            ${productListHtml}
-                          </table>
-                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;border-top:1px solid #374151;">
-                            <tr>
-                              <td style="padding-top:12px;font-size:14px;font-weight:700;color:#FFFFFF;">Total Paid</td>
-                              <td style="padding-top:12px;font-size:14px;font-weight:700;color:#D0FF71;text-align:right;">${formattedAmount}</td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
+          <!-- Credentials box -->
+          <tr><td style="padding:20px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:2px solid #D0FF71;border-radius:12px;">
+              <tr><td style="padding:20px;">
+                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">🔑 Your Login Credentials</div>
+                <div style="margin-bottom:10px;">
+                  <span style="font-size:11px;color:#9CA3AF;display:block;margin-bottom:4px;">EMAIL</span>
+                  <span style="font-size:14px;color:#FFFFFF;font-weight:600;">${email}</span>
+                </div>
+                <div style="margin-bottom:16px;">
+                  <span style="font-size:11px;color:#9CA3AF;display:block;margin-bottom:4px;">TEMPORARY PASSWORD</span>
+                  <span style="font-size:18px;color:#D0FF71;font-weight:900;letter-spacing:0.05em;font-family:monospace;">${tempPassword}</span>
+                </div>
+                <div style="font-size:12px;color:#9CA3AF;line-height:1.5;">
+                  ⚠️ Please change your password after your first login from the Settings page.
+                </div>
+                <div style="margin-top:16px;">
+                  <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#D0FF71,#5A9F2E);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+                    Sign In to Dashboard →
+                  </a>
+                </div>
+              </td></tr>
+            </table>
+          </td></tr>
 
-                <!-- Zoom Link Placeholder -->
-                <tr>
-                  <td style="padding:16px 24px 0;">
-                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #D0FF71;border-radius:12px;">
-                      <tr>
-                        <td style="padding:16px;">
-                          <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">📅 Session Link</div>
-                          <div style="font-size:13px;color:#D1D5DB;line-height:1.6;">
-                            Your Zoom link will be shared here closer to the session date. Keep an eye on your inbox.
-                          </div>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
+          <!-- What's Next -->
+          <tr><td style="padding:16px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
+              <tr><td style="padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
+                <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">
+                  📋 Your session schedule and materials are in the dashboard<br/>
+                  🎯 Complete assignments after each session to unlock the next<br/>
+                  📅 A 1-on-1 strategy call is unlocked after all sessions are complete<br/>
+                  💬 Reach the team anytime via the chat inside the platform
+                </div>
+              </td></tr>
+            </table>
+          </td></tr>
 
-                <!-- What's Next -->
-                <tr>
-                  <td style="padding:16px 24px 0;">
-                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
-                      <tr>
-                        <td style="padding:16px;">
-                          <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
-                          <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">
-                            📋 A pre-work brief will be shared before Day 1<br/>
-                            💬 Access to the private cohort community<br/>
-                            🎯 Come ready to transform your workflow with AI
-                          </div>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- Footer -->
-                <tr>
-                  <td style="padding:24px 24px 24px;">
-                    <div style="font-size:14px;color:#D1D5DB;line-height:1.6;">
-                      If you have any questions before the session begins, just reply to this email — we're here to help.
-                    </div>
-                    <div style="margin-top:20px;">
-                      <div style="font-size:14px;font-weight:700;color:#FFFFFF;">Zkandar AI</div>
-                    </div>
-                  </td>
-                </tr>
-
-              </table>
-            </td>
-          </tr>
-
-          <!-- Copyright -->
-          <tr>
-            <td style="padding:16px;text-align:center;">
-              <div style="font-size:11px;color:#6B7280;">© ${new Date().getFullYear()} Zkandar AI. All rights reserved.</div>
-            </td>
-          </tr>
+          <!-- Footer -->
+          <tr><td style="padding:24px;">
+            <div style="font-size:14px;color:#D1D5DB;line-height:1.6;">
+              Questions? Reply to this email — we're here to help.
+            </div>
+            <div style="margin-top:16px;">
+              <div style="font-size:14px;font-weight:700;color:#FFFFFF;">Zkandar AI</div>
+            </div>
+          </td></tr>
 
         </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+      </td></tr>
+      <tr><td style="padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6B7280;">© ${new Date().getFullYear()} Zkandar AI. All rights reserved.</div>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
+      body: JSON.stringify({
+        from: 'Zkandar AI <hello@app.zkandar.com>',
+        reply_to: 'admin@zkandar.com',
+        to: email,
+        subject: `Welcome to the Sprint Workshop — Your Login Details, ${firstName}! 🚀`,
+        html,
+      }),
+    });
+    const txt = await res.text();
+    if (!res.ok) console.error('Resend error (credentials):', res.status, txt);
+    else console.log('Credentials email sent to:', email);
+  } catch (err) {
+    console.error('Credentials email send failed:', err);
+  }
+}
+
+// ── Webinar booking confirmation email ──
+async function sendBookingConfirmationEmail(customerEmail: string, customerName: string, products: string[], amountTotal: number) {
+  if (!RESEND_API_KEY) { console.warn('RESEND_API_KEY not set — skipping confirmation email'); return; }
+
+  const firstName = customerName.split(' ')[0] || 'there';
+  const formattedAmount = `$${(amountTotal / 100).toFixed(2)}`;
+  const names: Record<string, string> = {
+    'webinar': '3-Day AI Design Webinar',
+    'webinar-template': 'Professional Presentation Template',
+    'webinar-catalog': 'Interior Design Style Catalog',
+    'vip': 'VIP Access Upgrade',
+    'vip-elite': 'VIP Elite Upgrade',
+    'test': 'Zkandar AI — Pipeline Test',
+  };
+  const productListHtml = products.map(p =>
+    `<tr><td style="padding:8px 0;font-size:14px;color:#D1D5DB;border-bottom:1px solid #1F2937;">✓ ${names[p] || p}</td></tr>`
+  ).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><title>Booking Confirmed — Zkandar AI</title></head>
+<body style="margin:0;padding:0;background:#0B0B0B;font-family:Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+      <tr><td style="background:#111111;border:1px solid #1F2937;border-radius:16px;overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td style="background:linear-gradient(135deg,#D0FF71 0%,#5A9F2E 100%);padding:28px 24px;text-align:center;">
+            <div style="font-size:28px;font-weight:900;color:#000;">YOU'RE IN! 🎉</div>
+            <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;font-weight:600;">Booking Confirmed</div>
+          </td></tr>
+          <tr><td style="padding:24px 24px 0;">
+            <div style="font-size:18px;font-weight:700;color:#FFF;">Hi ${firstName},</div>
+            <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">Your payment has been confirmed and your spot is secured.</div>
+          </td></tr>
+          <tr><td style="padding:20px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
+              <tr><td style="padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Order Summary</div>
+                <table width="100%" cellpadding="0" cellspacing="0">${productListHtml}</table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;border-top:1px solid #374151;">
+                  <tr>
+                    <td style="padding-top:12px;font-size:14px;font-weight:700;color:#FFF;">Total Paid</td>
+                    <td style="padding-top:12px;font-size:14px;font-weight:700;color:#D0FF71;text-align:right;">${formattedAmount}</td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td></tr>
+          <tr><td style="padding:16px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #D0FF71;border-radius:12px;">
+              <tr><td style="padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">📅 Session Link</div>
+                <div style="font-size:13px;color:#D1D5DB;line-height:1.6;">Your Zoom link will be shared closer to the session date. Keep an eye on your inbox.</div>
+              </td></tr>
+            </table>
+          </td></tr>
+          <tr><td style="padding:16px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
+              <tr><td style="padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
+                <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">📋 A pre-work brief will be shared before Day 1<br/>💬 Access to the private cohort community<br/>🎯 Come ready to transform your workflow with AI</div>
+              </td></tr>
+            </table>
+          </td></tr>
+          <tr><td style="padding:24px;">
+            <div style="font-size:14px;color:#D1D5DB;line-height:1.6;">If you have questions before the session begins, just reply to this email.</div>
+            <div style="margin-top:20px;font-size:14px;font-weight:700;color:#FFF;">Zkandar AI</div>
+          </td></tr>
+        </table>
+      </td></tr>
+      <tr><td style="padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6B7280;">© ${new Date().getFullYear()} Zkandar AI. All rights reserved.</div>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({
         from: 'Zkandar AI <hello@app.zkandar.com>',
         reply_to: 'admin@zkandar.com',
@@ -187,23 +298,17 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
         html,
       }),
     });
-    const responseText = await res.text();
-    if (!res.ok) {
-      console.error('Resend error:', res.status, responseText);
-    } else {
-      console.log('Confirmation email sent to:', customerEmail);
-    }
+    const txt = await res.text();
+    if (!res.ok) console.error('Resend error (booking):', res.status, txt);
+    else console.log('Confirmation email sent to:', customerEmail);
   } catch (err) {
-    console.error('Email send failed:', err);
+    console.error('Booking email send failed:', err);
   }
 }
 
-
 // ── Main webhook handler ──
 Deno.serve(async (req: Request) => {
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
-  }
+  if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
   try {
     const body = await req.text();
@@ -217,7 +322,7 @@ Deno.serve(async (req: Request) => {
       if (!isValid) { console.error('Invalid webhook signature'); return new Response('Invalid signature', { status: 400 }); }
       console.log('Webhook signature verified successfully');
     } else {
-      console.warn('No webhook secret found — tried STRIPE_WEBHOOK_SECRET, stripe_webhook_secret, stripe_webhook_signing_secret');
+      console.warn('No webhook secret found — skipping signature check');
     }
 
     const event = JSON.parse(body);
@@ -231,60 +336,81 @@ Deno.serve(async (req: Request) => {
 
         const customerEmail = (session.customer_email || session.metadata?.customer_email || '').toLowerCase();
         const customerName = session.metadata?.customer_name || '';
-        const products = session.metadata?.products ? JSON.parse(session.metadata.products) : [];
+        const products: string[] = session.metadata?.products ? JSON.parse(session.metadata.products) : [];
 
-        // Update purchase record
-        const { data: purchase, error: updateError } = await supabase
+        console.log('Products:', products, '| Email:', customerEmail);
+
+        const isPaid = session.payment_status === 'paid';
+        const isSprintProduct = products.includes('sprint');
+        const isTestProduct = products.includes('test');
+
+        // ── Update/create purchase record ──
+        const { error: updateError } = await supabase
           .from('webinar_purchases')
           .update({
-            status: session.payment_status === 'paid' ? 'completed' : 'pending',
+            status: isPaid ? 'completed' : 'pending',
             stripe_payment_intent_id: session.payment_intent || null,
             stripe_customer_id: session.customer || null,
             amount_total: session.amount_total || 0,
             currency: session.currency || 'usd',
-            completed_at: session.payment_status === 'paid' ? new Date().toISOString() : null,
+            completed_at: isPaid ? new Date().toISOString() : null,
             updated_at: new Date().toISOString(),
-            metadata: { payment_status: session.payment_status, payment_method_types: session.payment_method_types, stripe_event_id: event.id },
+            metadata: { payment_status: session.payment_status, stripe_event_id: event.id },
           })
-          .eq('stripe_session_id', session.id)
-          .select()
-          .single();
+          .eq('stripe_session_id', session.id);
 
-        if (updateError) {
-          console.error('Failed to update purchase:', updateError.message);
-          if (updateError.code === 'PGRST116') {
-            await supabase.from('webinar_purchases').insert({
-              customer_email: customerEmail,
-              customer_name: customerName,
-              stripe_session_id: session.id,
-              stripe_payment_intent_id: session.payment_intent || null,
-              stripe_customer_id: session.customer || null,
-              products,
-              amount_total: session.amount_total || 0,
-              currency: session.currency || 'usd',
-              status: session.payment_status === 'paid' ? 'completed' : 'pending',
-              completed_at: session.payment_status === 'paid' ? new Date().toISOString() : null,
-              metadata: { payment_status: session.payment_status, stripe_event_id: event.id, created_via: 'webhook_fallback' },
-            });
-            console.log('Purchase created via webhook fallback');
-          }
-        } else {
-          console.log('Purchase updated:', purchase?.id);
+        if (updateError?.code === 'PGRST116') {
+          await supabase.from('webinar_purchases').insert({
+            customer_email: customerEmail,
+            customer_name: customerName,
+            stripe_session_id: session.id,
+            stripe_payment_intent_id: session.payment_intent || null,
+            stripe_customer_id: session.customer || null,
+            products,
+            amount_total: session.amount_total || 0,
+            currency: session.currency || 'usd',
+            status: isPaid ? 'completed' : 'pending',
+            completed_at: isPaid ? new Date().toISOString() : null,
+            metadata: { payment_status: session.payment_status, stripe_event_id: event.id, created_via: 'webhook_fallback' },
+          });
+          console.log('Purchase created via webhook fallback');
         }
 
-        // Update lead payment status
-        if (customerEmail && session.payment_status === 'paid') {
+        if (!isPaid || !customerEmail) {
+          console.log('Skipping post-purchase logic — not paid or no email');
+          break;
+        }
+
+        // ── Sprint: provision user + send credentials ──
+        if (isSprintProduct || isTestProduct) {
+          console.log('Sprint/test purchase detected — provisioning user...');
+          try {
+            const tempPassword = generateTempPassword();
+            const { isNew } = await provisionSprintUser(supabase, customerEmail, customerName, tempPassword);
+
+            if (isNew) {
+              await sendSprintCredentialsEmail(customerEmail, customerName, tempPassword);
+              console.log('Sprint provisioning complete — credentials sent');
+            } else {
+              console.log('User already existed — skipping credentials email');
+            }
+          } catch (provisionErr) {
+            console.error('Sprint provisioning error:', provisionErr);
+            // Non-fatal — don't block the webhook response
+          }
+        } else {
+          // ── Webinar: update lead + send booking confirmation ──
           await supabase.from('webinar_leads').update({
             payment_status: 'paid',
             amount_paid: session.amount_total || 0,
             status: 'registered',
             updated_at: new Date().toISOString(),
           }).eq('email', customerEmail);
-          console.log('Lead payment status updated for:', customerEmail);
+          console.log('Webinar lead updated for:', customerEmail);
 
-          // Send booking confirmation email
           await sendBookingConfirmationEmail(customerEmail, customerName, products, session.amount_total || 0);
         }
+
         break;
       }
 

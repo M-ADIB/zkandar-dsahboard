@@ -4,7 +4,6 @@ import {
     CheckCircle2, ArrowRight, Loader2, Shield, Clock,
     Zap, Users, Star, AlertTriangle, Calendar
 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '../../assets/logo.png'
 
@@ -96,16 +95,34 @@ export function EnrollPage() {
         trackFBEvent('InitiateCheckout', { content_name: 'sprint_enroll', value: 0, currency: 'USD' })
 
         const origin = window.location.origin
-        const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-            body: {
-                product: 'sprint',
-                success_url: `${origin}/checkout-success?source=enroll`,
-                cancel_url: `${origin}/enroll`,
-            },
-        })
+        const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+        const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-        if (fnError || !data?.url) {
-            setError(data?.error ?? fnError?.message ?? 'Something went wrong. Please try again.')
+        let data: { url?: string; error?: string } | null = null
+        let fetchError: string | null = null
+
+        try {
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                },
+                body: JSON.stringify({
+                    product: 'sprint',
+                    success_url: `${origin}/checkout-success?source=enroll`,
+                    cancel_url: `${origin}/enroll`,
+                }),
+            })
+            data = await res.json()
+            if (!res.ok) fetchError = data?.error ?? `Request failed (${res.status})`
+        } catch (err) {
+            fetchError = err instanceof Error ? err.message : 'Network error'
+        }
+
+        if (fetchError || !data?.url) {
+            setError(data?.error ?? fetchError ?? 'Something went wrong. Please try again.')
             setLoading(false)
             return
         }

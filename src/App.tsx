@@ -48,6 +48,7 @@ const WelcomePage = lazy(() => import('@/pages/WelcomePage').then(module => ({ d
 // Dashboard Pages
 const OwnerDashboard = lazy(() => import('@/pages/OwnerDashboard').then(module => ({ default: module.OwnerDashboard })))
 const ParticipantDashboard = lazy(() => import('@/pages/ParticipantDashboard').then(module => ({ default: module.ParticipantDashboard })))
+const SprintMemberProfilePage = lazy(() => import('@/pages/SprintMemberProfilePage').then(module => ({ default: module.SprintMemberProfilePage })))
 const AnalyticsDashboard = lazy(() => import('@/pages/AnalyticsDashboard').then(module => ({ default: module.AnalyticsDashboard })))
 const CompaniesPage = lazy(() => import('@/pages/admin/CompaniesPage').then(module => ({ default: module.CompaniesPage })))
 const CompanyWorkspacePage = lazy(() => import('@/pages/admin/CompanyWorkspacePage').then(module => ({ default: module.CompanyWorkspacePage })))
@@ -362,6 +363,15 @@ function App() {
                                     />
                                     <Route path="settings" element={<SettingsPage />} />
                                     <Route path="notifications" element={<NotificationsPage />} />
+                                    <Route
+                                        path="profile"
+                                        element={
+                                            <MemberRoute>
+                                                <SprintMemberProfilePage />
+                                            </MemberRoute>
+                                        }
+                                    />
+
 
                                 </Route>
 

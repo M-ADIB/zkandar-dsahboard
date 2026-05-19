@@ -2,21 +2,42 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY') ?? Deno.env.get('stripe_secret_key');
-const STRIPE_PRICE_ID_SPRINT = Deno.env.get('STRIPE_PRICE_ID_SPRINT');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Inline sprint pricing. Override by setting STRIPE_PRICE_ID_SPRINT.
+const STRIPE_PRICE_ID_SPRINT = Deno.env.get('STRIPE_PRICE_ID_SPRINT') ?? null;
+const SPRINT_INLINE_AMOUNT_CENTS = 81600; // $816.00 USD
+
+// ── Webinar product catalog (inline pricing, no Stripe Price ID needed) ──
+const WEBINAR_PRODUCTS: Record<string, { name: string; amount: number }> = {
+  'webinar':           { name: '3-Day AI Design Webinar',           amount: 29700 }, // $297
+  'webinar-template':  { name: 'Professional Presentation Template', amount:  4700 }, // $47
+  'webinar-catalog':   { name: 'Interior Design Style Catalog',      amount:  2700 }, // $27
+  'vip':               { name: 'VIP Access Upgrade',                 amount:  9700 }, // $97
+  'vip-elite':         { name: 'VIP Elite Upgrade',                  amount: 19700 }, // $197
+};
+
+const ALLOWED_ORIGINS = [
+  'https://app.zkandar.com',
+  'https://zkandar.com',
+  'https://www.zkandar.com',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
 function getCorsHeaders(req: Request): Record<string, string> {
-  const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN');
   const requestOrigin = req.headers.get('origin') ?? '';
-  const origin = allowedOrigin
-    ? (requestOrigin === allowedOrigin ? requestOrigin : allowedOrigin)
-    : requestOrigin || '*';
+  const envAllowed = Deno.env.get('ALLOWED_ORIGIN');
+  const allowed = envAllowed ? [envAllowed, ...ALLOWED_ORIGINS] : ALLOWED_ORIGINS;
+  const origin = allowed.includes(requestOrigin) ? requestOrigin : '*';
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
   };
 }
+
 
 Deno.serve(async (req: Request) => {
   const corsHeaders = getCorsHeaders(req);
@@ -40,20 +61,18 @@ Deno.serve(async (req: Request) => {
       throw new Error('success_url and cancel_url are required');
     }
 
-    // Map product slugs → Stripe Price IDs
-    // For now we only have the sprint price, but this is extensible
-    const priceMap: Record<string, string | undefined> = {
-      'sprint': STRIPE_PRICE_ID_SPRINT,
-      'webinar': STRIPE_PRICE_ID_SPRINT,  // alias
-    };
-
     const primaryProduct = products[0];
     const isTestProduct = primaryProduct === 'test';
+    const isSprintProduct = primaryProduct === 'sprint';
+    const isWebinarProduct = primaryProduct in WEBINAR_PRODUCTS;
 
-    // Resolve the primary product price (first product in array)
-    const priceId = isTestProduct ? undefined : priceMap[primaryProduct];
-    if (!isTestProduct && !priceId) {
-      throw new Error(`No Stripe Price ID configured for product: "${primaryProduct}". Set STRIPE_PRICE_ID_SPRINT via supabase secrets.`);
+    // Sprint uses a saved price ID if available, otherwise falls back to inline pricing
+    const sprintPriceId = isSprintProduct ? STRIPE_PRICE_ID_SPRINT : undefined;
+    const useInlineSprint = isSprintProduct && !sprintPriceId;
+
+    // Throw only for truly unknown products
+    if (!isTestProduct && !isSprintProduct && !isWebinarProduct) {
+      throw new Error(`Unknown product: "${primaryProduct}". Supported: webinar, webinar-template, webinar-catalog, vip, vip-elite, sprint, test`);
     }
 
     console.log('Creating checkout session for:', products, '| Email:', customer_email, '| Name:', customer_name, '| Test:', isTestProduct);
@@ -72,13 +91,30 @@ Deno.serve(async (req: Request) => {
     });
 
     if (isTestProduct) {
-      // Ad-hoc $2 test product — no saved Stripe Price ID needed
+      // Ad-hoc $2 test product
       params.set('line_items[0][price_data][currency]', 'usd');
       params.set('line_items[0][price_data][product_data][name]', 'Zkandar AI — Pipeline Test ($2)');
-      params.set('line_items[0][price_data][unit_amount]', '200');  // $2.00 in cents
+      params.set('line_items[0][price_data][unit_amount]', '200');
+      params.set('line_items[0][quantity]', '1');
+    } else if (isWebinarProduct) {
+      // Webinar products — inline pricing, supports multiple line items (upsells)
+      products.forEach((slug, idx) => {
+        const product = WEBINAR_PRODUCTS[slug];
+        if (!product) return; // skip unknown slugs in bundle
+        params.set(`line_items[${idx}][price_data][currency]`, 'usd');
+        params.set(`line_items[${idx}][price_data][product_data][name]`, product.name);
+        params.set(`line_items[${idx}][price_data][unit_amount]`, String(product.amount));
+        params.set(`line_items[${idx}][quantity]`, '1');
+      });
+    } else if (useInlineSprint) {
+      // Sprint inline pricing — no saved Stripe Price ID required
+      params.set('line_items[0][price_data][currency]', 'usd');
+      params.set('line_items[0][price_data][product_data][name]', 'Sprint Workshop — Zkandar AI');
+      params.set('line_items[0][price_data][unit_amount]', String(SPRINT_INLINE_AMOUNT_CENTS));
       params.set('line_items[0][quantity]', '1');
     } else {
-      params.set('line_items[0][price]', priceId!);
+      // Saved Stripe Price ID (sprint with env var)
+      params.set('line_items[0][price]', sprintPriceId!);
       params.set('line_items[0][quantity]', '1');
     }
 

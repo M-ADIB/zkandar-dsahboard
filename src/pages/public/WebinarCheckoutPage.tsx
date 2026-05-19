@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Check, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
-import { supabase } from '@/lib/supabase'
 import logoSrc from '@/assets/logo.png'
 
 /* ── Upsell Product Type ── */
@@ -95,18 +94,36 @@ export default function WebinarCheckoutPage() {
         const products = ['webinar', ...Array.from(selectedUpsells)]
         const origin = window.location.origin
 
-        const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-            body: {
-                products,
-                customer_name: name,
-                customer_email: email.toLowerCase(),
-                success_url: `${origin}/webinar/success?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
-                cancel_url: `${origin}/webinar/checkout?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
-            },
-        })
+        const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+        const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+        let data: { url?: string; error?: string } | null = null
+        let fnError: string | null = null
+
+        try {
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                },
+                body: JSON.stringify({
+                    products,
+                    customer_name: name,
+                    customer_email: email.toLowerCase(),
+                    success_url: `${origin}/webinar/success?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
+                    cancel_url: `${origin}/webinar/checkout?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
+                }),
+            })
+            data = await res.json()
+            if (!res.ok) fnError = data?.error ?? `Request failed (${res.status})`
+        } catch (err) {
+            fnError = err instanceof Error ? err.message : 'Network error'
+        }
 
         if (fnError || !data?.url) {
-            console.error('Checkout error:', fnError?.message ?? data?.error)
+            console.error('Checkout error:', fnError ?? data?.error)
             setIsProcessing(false)
             alert('Something went wrong. Please try again or contact support.')
             return

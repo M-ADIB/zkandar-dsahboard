@@ -31,13 +31,14 @@ export default function WebinarTestPage() {
                 headers: {
                     'Content-Type': 'application/json',
                     'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                 },
                 body: JSON.stringify({
                     products: ['test'],
                     customer_email: email.trim().toLowerCase(),
                     customer_name: name.trim(),
                     success_url: `${origin}/webinar/success?test=true`,
-                    cancel_url: `${origin}/webinar/-test`,
+                    cancel_url: `${origin}/webinar/test`,
                 }),
             })
 

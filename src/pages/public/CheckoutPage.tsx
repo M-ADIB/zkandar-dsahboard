@@ -31,6 +31,7 @@ function PurpleCheckItem({ text, delay = 0 }: { text: string; delay?: number }) 
 export function CheckoutPage() {
     const params = new URLSearchParams(window.location.search)
     const hasQuestions = params.get('questions') === 'true'
+    const isTestMode = params.get('test') === 'true'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [sprintDates, setSprintDates] = useState('June 3–5')
@@ -66,18 +67,36 @@ export function CheckoutPage() {
         trackFBEvent('InitiateCheckout', { content_name: 'sprint_workshop', value: 0, currency: 'USD' })
 
         const origin = window.location.origin
-        const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-            body: {
-                product: 'sprint',
-                customer_name: customerName.trim(),
-                customer_email: customerEmail.trim().toLowerCase(),
-                success_url: `${origin}/checkout-success?source=checkout`,
-                cancel_url: `${origin}/checkout`,
-            },
-        })
+        const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+        const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-        if (fnError || !data?.url) {
-            setError(data?.error ?? fnError?.message ?? 'Something went wrong. Please try again.')
+        let data: { url?: string; error?: string } | null = null
+        let fetchError: string | null = null
+
+        try {
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                },
+                body: JSON.stringify({
+                    product: isTestMode ? 'test' : 'sprint',
+                    customer_name: customerName.trim(),
+                    customer_email: customerEmail.trim().toLowerCase(),
+                    success_url: `${origin}/checkout-success?source=checkout`,
+                    cancel_url: `${origin}/checkout${isTestMode ? '?test=true' : ''}`,
+                }),
+            })
+            data = await res.json()
+            if (!res.ok) fetchError = data?.error ?? `Request failed (${res.status})`
+        } catch (err) {
+            fetchError = err instanceof Error ? err.message : 'Network error'
+        }
+
+        if (fetchError || !data?.url) {
+            setError(data?.error ?? fetchError ?? 'Something went wrong. Please try again.')
             setLoading(false)
             return
         }
@@ -125,6 +144,19 @@ export function CheckoutPage() {
                             </a>
                         </div>
                     </motion.div>
+                )}
+
+                {/* Test mode banner */}
+                {isTestMode && (
+                    <div className="mb-6 p-3.5 rounded-2xl border border-yellow-500/40 bg-yellow-500/[0.06] flex items-center gap-3">
+                        <span className="text-lg">🧪</span>
+                        <div>
+                            <p className="text-sm font-bold text-yellow-300">TEST MODE — $2 charge only</p>
+                            <p className="text-xs text-yellow-400/70 mt-0.5">
+                                Using Stripe test card <strong className="text-yellow-300">4242 4242 4242 4242</strong> · Exp: any future date · CVC: any 3 digits
+                            </p>
+                        </div>
+                    </div>
                 )}
 
                 {/* ── AI SPRINT WORKSHOP CARD (matches main lander) ──────── */}
@@ -251,6 +283,8 @@ export function CheckoutPage() {
                             >
                                 {loading ? (
                                     <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
+                                ) : isTestMode ? (
+                                    <>🧪 Test Payment ($2) <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
                                 ) : (
                                     <>Pay 12,500 AED <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
                                 )}

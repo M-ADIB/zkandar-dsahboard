@@ -499,8 +499,8 @@ export function ParticipantDashboard() {
                         )}
                     </div>
 
-                    {/* Right: Welcome video mini-frame */}
-                    <WelcomeVideoMiniFrame userType={user?.user_type ?? null} />
+                    {/* Right: Welcome video mini-frame — hidden for sprint members */}
+                    {!isSprintMember && <WelcomeVideoMiniFrame userType={user?.user_type ?? null} />}
                 </div>
             </motion.div>
 

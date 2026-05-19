@@ -22,7 +22,7 @@ const teamQuestions = [
         text: 'What best describes your current role?',
         type: 'radio' as const,
         required: true,
-        options: ['Interior Designer', 'Architect', 'Visualizer', 'Junior Designer', 'Senior Designer', 'BIM / Technical', 'Other'],
+        options: ['Interior Designer', 'Architect', 'Visualizer', 'Junior Designer', 'Senior Designer', 'Other'],
     },
     {
         id: 'experience_years',
@@ -321,6 +321,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
         nationality: '',
     })
     const [answers, setAnswers] = useState<Record<string, string | string[] | number | Record<string, number>>>({})
+    const [otherSpecifications, setOtherSpecifications] = useState<Record<string, string>>({}) 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [companies, setCompanies] = useState<Company[]>([])
     const [companiesLoading, setCompaniesLoading] = useState(true)
@@ -413,6 +414,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                     onboarding_data: {
                         basic_info: validation.data,
                         survey_answers: answers,
+                        other_specifications: otherSpecifications,
                         completed_at: new Date().toISOString(),
                     },
                 } as any)
@@ -544,6 +546,15 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
         ? companySelectionError || (basicInfoValidation.success ? null : basicInfoValidation.error.errors[0]?.message)
         : null
 
+    // Helper: does this question have an "Other" option that's currently selected?
+    const isOtherSelected = (q: typeof questions[number]) => {
+        if (!q.options?.includes('Other')) return false
+        const answer = answers[q.id]
+        if (q.type === 'radio') return answer === 'Other'
+        if (q.type === 'checkbox') return Array.isArray(answer) && answer.includes('Other')
+        return false
+    }
+
     const canProceed = () => {
         if (step === 0) return userType !== null
         if (step === 1) {
@@ -561,6 +572,8 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                 const matrixAnswer = answer as Record<string, number>
                 return Object.keys(matrixAnswer).length === q.matrixItems?.length
             }
+            // If "Other" is selected, require a specification
+            if (isOtherSelected(q) && !otherSpecifications[q.id]?.trim()) return false
         }
         return true
     }
@@ -955,6 +968,24 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                             </div>
                                         </button>
                                     ))}
+                                    {/* "Other — please specify" text input for radio */}
+                                    {currentQuestion.type === 'radio' &&
+                                        currentQuestion.options?.includes('Other') &&
+                                        answers[currentQuestion.id] === 'Other' && (
+                                        <div className="mt-2">
+                                            <label className="block text-xs uppercase tracking-widest text-lime/70 font-bold mb-2">
+                                                Please specify ↓
+                                            </label>
+                                            <input
+                                                type="text"
+                                                autoFocus
+                                                value={otherSpecifications[currentQuestion.id] || ''}
+                                                onChange={(e) => setOtherSpecifications(prev => ({ ...prev, [currentQuestion!.id]: e.target.value }))}
+                                                placeholder="Describe your role..."
+                                                className="w-full px-5 py-4 bg-lime/5 border-2 border-lime/30 rounded-[20px] focus:outline-none focus:border-lime/60 transition-all text-white text-base placeholder:text-gray-600"
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* CHECKBOX */}
                                     {currentQuestion.type === 'checkbox' && currentQuestion.options?.map(option => {
@@ -997,6 +1028,25 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                             </button>
                                         )
                                     })}
+                                    {/* "Other — please specify" text input for checkbox */}
+                                    {currentQuestion.type === 'checkbox' &&
+                                        currentQuestion.options?.includes('Other') &&
+                                        Array.isArray(answers[currentQuestion.id]) &&
+                                        (answers[currentQuestion.id] as string[]).includes('Other') && (
+                                        <div className="mt-2">
+                                            <label className="block text-xs uppercase tracking-widest text-lime/70 font-bold mb-2">
+                                                Please specify "Other" ↓
+                                            </label>
+                                            <input
+                                                type="text"
+                                                autoFocus
+                                                value={otherSpecifications[currentQuestion.id] || ''}
+                                                onChange={(e) => setOtherSpecifications(prev => ({ ...prev, [currentQuestion!.id]: e.target.value }))}
+                                                placeholder="Please describe..."
+                                                className="w-full px-5 py-4 bg-lime/5 border-2 border-lime/30 rounded-[20px] focus:outline-none focus:border-lime/60 transition-all text-white text-base placeholder:text-gray-600"
+                                            />
+                                        </div>
+                                    )}
 
                                     {/* SCALE */}
                                     {currentQuestion.type === 'scale' && (
