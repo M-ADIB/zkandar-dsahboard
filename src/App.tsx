@@ -31,6 +31,7 @@ const EnrollPage = lazy(() => import('@/pages/public/EnrollPage').then(module =>
 const CheckoutSuccessPage = lazy(() => import('@/pages/public/CheckoutSuccessPage').then(module => ({ default: module.CheckoutSuccessPage })))
 const CaseStudiesPage = lazy(() => import('@/pages/public/CaseStudiesPage').then(module => ({ default: module.CaseStudiesPage })))
 const EventsCollabsPage = lazy(() => import('@/pages/public/EventsCollabsPage').then(module => ({ default: module.EventsCollabsPage })))
+const TeamsMasterclassPage = lazy(() => import('@/pages/public/TeamsMasterclassPage').then(module => ({ default: module.TeamsMasterclassPage })))
 const PostCompletionSurvey = lazy(() => import('@/pages/public/PostCompletionSurvey').then(module => ({ default: module.PostCompletionSurvey })))
 const PublicPreSurvey = lazy(() => import('@/pages/public/PublicPreSurvey').then(module => ({ default: module.PublicPreSurvey })))
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
@@ -118,6 +119,7 @@ function App() {
                                 <Route path="/not-sure" element={<Navigate to="/case-studies" replace />} />
                                 <Route path="/case-studies" element={<CaseStudiesPage />} />
                                 <Route path="/events-collabs" element={<EventsCollabsPage />} />
+                                <Route path="/programs/teams-masterclass" element={<TeamsMasterclassPage />} />
                                 <Route path="/find-your-path" element={<FindYourPathPage />} />
                                 <Route path="/checkout" element={<CheckoutPage />} />
                                 <Route path="/enroll" element={<EnrollPage />} />
