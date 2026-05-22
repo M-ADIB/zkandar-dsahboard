@@ -389,7 +389,7 @@ export function TeamsMasterclassPage() {
                                 {
                                     step: "01",
                                     title: "Tax Registration & Invoicing",
-                                    desc: "We will supply our Tax Registration Certificate (TRN) and the official invoice to initiate internal financial procurement cycles."
+                                    desc: "We require your tax registration details so we can supply you with the official invoice to initiate internal financial procurement cycles."
                                 },
                                 {
                                     step: "02",
