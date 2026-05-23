@@ -143,7 +143,14 @@ export function ParticipantDashboard() {
     const [bookingCompleted, setBookingCompleted] = useState(false)
     const [calendlyUrl, setCalendlyUrl] = useState<string | null>(null)
     const [showBookingDialog, setShowBookingDialog] = useState(false)
-    const [countdown, setCountdown] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null)
+    const [countdown, setCountdown] = useState<{
+        days: number;
+        hours: number;
+        minutes: number;
+        seconds: number;
+        sessionNumber?: number;
+        sessionTitle?: string;
+    } | null>(null)
 
     const firstName = user?.full_name?.split(' ')[0] || 'there'
 
@@ -302,9 +309,9 @@ export function ParticipantDashboard() {
         return () => { ignore = true }
     }, [effectiveUserId])
 
-    // ── Countdown timer (sprint members only) ─────────────────────────────────
+    // ── Countdown timer (sprint, team, and management members) ────────────────
     useEffect(() => {
-        if (!isSprintMember || sessions.length === 0) { setCountdown(null); return }
+        if (sessions.length === 0) { setCountdown(null); return }
         const nextSession = [...sessions]
             .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
             .find(s => new Date(s.scheduled_date).getTime() > Date.now())
@@ -317,12 +324,14 @@ export function ParticipantDashboard() {
                 hours: Math.floor((diff % 86400000) / 3600000),
                 minutes: Math.floor((diff % 3600000) / 60000),
                 seconds: Math.floor((diff % 60000) / 1000),
+                sessionNumber: nextSession.session_number,
+                sessionTitle: nextSession.title,
             })
         }
         tick()
         const id = setInterval(tick, 1000)
         return () => clearInterval(id)
-    }, [isSprintMember, sessions])
+    }, [sessions])
 
     // ── Derived state ──────────────────────────────────────────────────────────
     const sessionTimeline = useMemo(() => {
@@ -476,10 +485,14 @@ export function ParticipantDashboard() {
                                 : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
                         </p>
 
-                        {/* Countdown timer — sprint members only, shows until next session starts */}
-                        {isSprintMember && countdown && (
+                        {/* Countdown timer — shows until next session starts */}
+                        {countdown && (
                             <div className="mt-5 flex items-center gap-3 flex-wrap">
-                                <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">Next session in</span>
+                                <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">
+                                    {countdown.sessionNumber 
+                                        ? `Session ${countdown.sessionNumber} starts in` 
+                                        : 'Next upcoming session in'}
+                                </span>
                                 <div className="flex items-center gap-1.5">
                                     {[
                                         { v: countdown.days, label: 'd' },
