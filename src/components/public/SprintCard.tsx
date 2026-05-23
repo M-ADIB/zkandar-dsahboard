@@ -8,6 +8,7 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 // ── Shared data ─────────────────────────────────────────────────────────
 
@@ -54,7 +55,7 @@ interface SprintCardProps {
 export function SprintCard({
     sprintDates,
     sprintLocation,
-    checkoutUrl = 'https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M',
+    checkoutUrl = '/checkout',
 }: SprintCardProps) {
     return (
         <motion.div
@@ -128,13 +129,23 @@ export function SprintCard({
 
                 {/* CTA */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <a href={checkoutUrl}
-                        className="group flex items-center gap-3 px-8 py-4 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading"
-                        style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
-                    >
-                        Direct Checkout
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                    {checkoutUrl.startsWith('http') ? (
+                        <a href={checkoutUrl}
+                            className="group flex items-center gap-3 px-8 py-4 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading"
+                            style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
+                        >
+                            Direct Checkout
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </a>
+                    ) : (
+                        <Link to={checkoutUrl}
+                            className="group flex items-center gap-3 px-8 py-4 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading"
+                            style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
+                        >
+                            Direct Checkout
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                    )}
                 </div>
 
             </div>

@@ -639,7 +639,12 @@ export interface Database {
             [_ in never]: never
         }
         Functions: {
-            [_ in never]: never
+            handle_sprint_workshop_signup: {
+                Args: {
+                    user_uuid: string
+                }
+                Returns: unknown
+            }
         }
         Enums: {
             user_role: UserRole

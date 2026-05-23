@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronDown, ChevronUp, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { PublicNav } from '../../components/public/PublicNav'
 import { PublicFooter } from '../../components/public/PublicFooter'
 
@@ -429,10 +430,10 @@ export function NotSurePage() {
                     <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }} transition={{ delay: 0.35 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
+                        <Link to="/checkout"
                             className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-lime text-black font-body font-bold uppercase tracking-wider text-sm hover:opacity-90 hover:shadow-[0_0_40px_rgba(208,255,113,0.35)] hover:-translate-y-0.5 transition-all duration-300">
                             Direct Checkout <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
+                        </Link>
                     </motion.div>
 
                     <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}

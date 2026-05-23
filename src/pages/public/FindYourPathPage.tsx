@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, ChevronLeft, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { InlineWidget } from 'react-calendly'
 import { supabase } from '@/lib/supabase'
 import { PublicNav } from '../../components/public/PublicNav'
@@ -621,7 +622,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
 
                         {/* CTA */}
                         {isSprint ? (
-                            <a href="https://buy.stripe.com/00wbJ10jzeCB3jGdfd1wY0M"
+                            <Link to="/checkout"
                                 className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-body font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:-translate-y-0.5"
                                 style={{
                                     background: 'rgba(139,92,246,0.12)',
@@ -631,7 +632,7 @@ function ResultsScreen({ answers, firstName }: { answers: Answers; firstName: st
                             >
                                 Direct Checkout: Sprint Workshop
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </a>
+                            </Link>
                         ) : (
                             <button
                                 onClick={() => setModalOpen(true)}

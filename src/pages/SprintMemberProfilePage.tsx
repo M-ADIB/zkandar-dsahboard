@@ -138,7 +138,11 @@ export function SprintMemberProfilePage() {
                     <p className="text-gray-400 text-sm">{user?.email}</p>
                     <div className="flex flex-wrap gap-2 mt-3">
                         <span className="px-3 py-1 rounded-full bg-lime/10 border border-lime/20 text-lime text-xs font-bold uppercase tracking-wide">
-                            Sprint Member
+                            {user?.user_type === 'sprint_member'
+                                ? 'Sprint Member'
+                                : user?.user_type === 'management'
+                                    ? 'Management Member'
+                                    : 'Team Member'}
                         </span>
                         {basicInfo?.nationality && (
                             <span className="px-3 py-1 rounded-full bg-white/5 border border-border text-gray-300 text-xs font-medium">
@@ -173,7 +177,7 @@ export function SprintMemberProfilePage() {
                         </p>
                     </div>
                     <Link
-                        to="/onboarding/sprint-workshop"
+                        to={user?.user_type === 'sprint_member' ? '/onboarding/sprint-workshop' : '/onboarding'}
                         className="inline-flex items-center gap-2 px-6 py-3 gradient-lime text-black font-black uppercase tracking-widest text-sm rounded-xl hover:opacity-90 transition"
                     >
                         Start Onboarding

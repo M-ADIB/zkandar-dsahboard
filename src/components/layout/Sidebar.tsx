@@ -119,7 +119,7 @@ const memberNavSections: NavSection[] = [
         title: 'System',
         id: 'member_system',
         items: [
-            { icon: UserCircle2, label: 'My Profile', path: '/profile', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['team', 'management'] },
+            { icon: UserCircle2, label: 'My Profile', path: '/profile', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: Settings, label: 'Settings', path: '/settings', roles: ['owner', 'admin', 'executive', 'participant'] },
         ]
     }

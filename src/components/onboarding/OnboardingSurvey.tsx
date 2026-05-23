@@ -425,6 +425,16 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                 throw error
             }
 
+            if (isSprintWorkshop) {
+                const { error: rpcError } = await (supabase as any).rpc('handle_sprint_workshop_signup', {
+                    user_uuid: user.id
+                });
+                if (rpcError) {
+                    console.error('RPC Error enrolling in sprint workshop:', rpcError)
+                    throw rpcError;
+                }
+            }
+
             await refreshUser()
             toast.success(`Welcome to Zkandar AI ${isSprintWorkshop ? 'Sprint Workshop' : 'Master Class'}!`)
             navigate('/welcome')
@@ -546,12 +556,18 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
         ? companySelectionError || (basicInfoValidation.success ? null : basicInfoValidation.error.errors[0]?.message)
         : null
 
+    // Helper: find if there is an option that contains "other" (case-insensitive)
+    const getOtherOption = (q: typeof questions[number]) => {
+        return q.options?.find(opt => opt.toLowerCase().includes('other')) || null
+    }
+
     // Helper: does this question have an "Other" option that's currently selected?
     const isOtherSelected = (q: typeof questions[number]) => {
-        if (!q.options?.includes('Other')) return false
+        const otherOpt = getOtherOption(q)
+        if (!otherOpt) return false
         const answer = answers[q.id]
-        if (q.type === 'radio') return answer === 'Other'
-        if (q.type === 'checkbox') return Array.isArray(answer) && answer.includes('Other')
+        if (q.type === 'radio') return answer === otherOpt
+        if (q.type === 'checkbox') return Array.isArray(answer) && answer.includes(otherOpt)
         return false
     }
 
@@ -970,8 +986,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                     ))}
                                     {/* "Other — please specify" text input for radio */}
                                     {currentQuestion.type === 'radio' &&
-                                        currentQuestion.options?.includes('Other') &&
-                                        answers[currentQuestion.id] === 'Other' && (
+                                        isOtherSelected(currentQuestion) && (
                                         <div className="mt-2">
                                             <label className="block text-xs uppercase tracking-widest text-lime/70 font-bold mb-2">
                                                 Please specify ↓
@@ -981,7 +996,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                                 autoFocus
                                                 value={otherSpecifications[currentQuestion.id] || ''}
                                                 onChange={(e) => setOtherSpecifications(prev => ({ ...prev, [currentQuestion!.id]: e.target.value }))}
-                                                placeholder="Describe your role..."
+                                                placeholder="Please specify..."
                                                 className="w-full px-5 py-4 bg-lime/5 border-2 border-lime/30 rounded-[20px] focus:outline-none focus:border-lime/60 transition-all text-white text-base placeholder:text-gray-600"
                                             />
                                         </div>
@@ -1030,12 +1045,10 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                                     })}
                                     {/* "Other — please specify" text input for checkbox */}
                                     {currentQuestion.type === 'checkbox' &&
-                                        currentQuestion.options?.includes('Other') &&
-                                        Array.isArray(answers[currentQuestion.id]) &&
-                                        (answers[currentQuestion.id] as string[]).includes('Other') && (
+                                        isOtherSelected(currentQuestion) && (
                                         <div className="mt-2">
                                             <label className="block text-xs uppercase tracking-widest text-lime/70 font-bold mb-2">
-                                                Please specify "Other" ↓
+                                                Please specify "{getOtherOption(currentQuestion)}" ↓
                                             </label>
                                             <input
                                                 type="text"
