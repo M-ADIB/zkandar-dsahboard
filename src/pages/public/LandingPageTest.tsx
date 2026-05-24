@@ -755,9 +755,9 @@ export function LandingPageTest() {
                         </h2>
                     </FadeIn>
 
-                    {/* Testimonial mashup. 9:16 portrait */}
-                    <FadeIn delay={0.1} className="flex justify-center">
-                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black shadow-[0_0_60px_rgba(208,255,113,0.05)] w-full max-w-sm" style={{ aspectRatio: '9/16' }}>
+                    {/* Testimonial mashup. 16:9 landscape */}
+                    <FadeIn delay={0.1} className="flex justify-center max-w-4xl mx-auto">
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-black shadow-[0_0_60px_rgba(208,255,113,0.05)] w-full aspect-video">
                             <iframe
                                 src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
                                 className="w-full h-full"

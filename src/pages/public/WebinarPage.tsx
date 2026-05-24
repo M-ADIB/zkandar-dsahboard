@@ -166,23 +166,23 @@ export default function WebinarPage() {
                 <FadeIn>
                     <SectionHeading>HEAR FROM <span className="text-lime">OUR PARTICIPANTS</span></SectionHeading>
                 </FadeIn>
-                <FadeIn delay={0.1}>
+                
+                {/* 16:9 Testimonial Mashup Video */}
+                <FadeIn delay={0.1} className="max-w-3xl mx-auto mb-10">
+                    <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-[0_0_80px_rgba(208,255,113,0.06)] aspect-video bg-[#080808]">
+                        <iframe
+                            src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                            className="w-full h-full"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            title="Testimonial Mashup"
+                        />
+                    </div>
+                </FadeIn>
+
+                <FadeIn delay={0.2}>
                     <div className="relative overflow-hidden">
                         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-2 px-2">
-                            {/* Testimonial mashup hero video */}
-                            <div
-                                className="shrink-0 snap-center rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/25 transition-colors duration-300"
-                                style={{ width: '200px', aspectRatio: '9/16' }}
-                            >
-                                <iframe
-                                    src={`https://player.vimeo.com/video/${TESTIMONIAL_MASHUP_ID}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
-                                    className="w-full h-full"
-                                    allow="autoplay; fullscreen; picture-in-picture"
-                                    allowFullScreen
-                                    title="Testimonial Mashup"
-                                    loading="lazy"
-                                />
-                            </div>
                             {WORKSHOPS.map((w) => (
                                 <div
                                     key={w.id}
