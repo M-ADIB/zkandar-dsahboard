@@ -15,7 +15,7 @@ import {
 /* ── Constants ─────────────────────────────────────────── */
 const TARGET_DATE = new Date('2026-06-05T00:00:00+04:00') // First price increase: launch (May 29) + 7 days
 const VSL_ID = '1187084528'
-const TESTIMONIAL_MASHUP_ID = '1187721520'
+const TESTIMONIAL_MASHUP_ID = '1195125355'
 
 const FAQS = [
     { q: 'Do I need any AI experience to join?', a: 'No. This webinar is designed for all levels, whether you\'ve never touched an AI tool or you\'ve been experimenting on your own.' },
