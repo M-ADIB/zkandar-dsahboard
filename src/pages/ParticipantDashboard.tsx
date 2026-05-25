@@ -13,6 +13,7 @@ import {
     X,
     Lock,
     CalendarCheck,
+    GraduationCap,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -26,6 +27,141 @@ import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswer
 function extractVimeoId(urlOrId: string): string {
     const match = urlOrId.match(/vimeo\.com\/(\d+)/)
     return match ? match[1] : urlOrId.replace(/\D/g, '')
+}
+
+function formatDubaiTime(isoDate: string) {
+    const date = new Date(isoDate)
+    if (Number.isNaN(date.getTime())) return '7 p.m. Dubai time'
+    
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        timeZone: 'Asia/Dubai'
+    })
+    
+    const parts = formatter.formatToParts(date)
+    const hour = parts.find(p => p.type === 'hour')?.value || '7'
+    const minute = parts.find(p => p.type === 'minute')?.value || '00'
+    const dayPeriod = parts.find(p => p.type === 'dayPeriod')?.value || 'PM'
+    
+    const periodStr = dayPeriod.toLowerCase().replace('am', 'a.m.').replace('pm', 'p.m.')
+    const timeStr = minute === '00' ? `${hour} ${periodStr}` : `${hour}:${minute} ${periodStr}`
+    return `${timeStr} Dubai time`
+}
+
+interface CertificateModalProps {
+    isOpen: boolean
+    onClose: () => void
+    userName: string
+    companyName: string
+    onClaim: () => Promise<void>
+    isClaimed: boolean
+}
+
+function CertificateModal({
+    isOpen,
+    onClose,
+    userName,
+    companyName,
+    onClaim,
+    isClaimed,
+}: CertificateModalProps) {
+    const [claiming, setClaiming] = useState(false)
+    if (!isOpen) return null
+
+    const handleClaimClick = async () => {
+        setClaiming(true)
+        await onClaim()
+        setClaiming(false)
+    }
+
+    return (
+        <Portal>
+            <div className="fixed inset-0 z-[71] flex items-center justify-center p-4">
+                <div onClick={onClose} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+                
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    className="relative w-full max-w-2xl bg-bg-card border-2 border-lime/30 rounded-3xl p-8 md:p-12 shadow-2xl text-center space-y-8 overflow-hidden"
+                >
+                    <div className="absolute inset-0 opacity-[0.03] z-0 pointer-events-none" style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                    }} />
+
+                    <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-lime/10 blur-[80px] z-0 pointer-events-none" />
+                    <div className="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-lime/10 blur-[80px] z-0 pointer-events-none" />
+
+                    <div className="relative z-10 space-y-6">
+                        <div className="space-y-2">
+                            <span className="text-[11px] font-bold tracking-[0.2em] text-lime uppercase">Zkandar AI Academy</span>
+                            <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">Certificate of Completion</h2>
+                            <div className="h-0.5 w-24 bg-lime mx-auto mt-4" />
+                        </div>
+
+                        <div className="space-y-4 py-4">
+                            <p className="text-gray-400 text-sm italic">This is proudly presented to</p>
+                            <h3 className="text-2xl md:text-3xl font-bold text-white tracking-wide font-heading">{userName}</h3>
+                            {companyName && (
+                                <p className="text-lime/90 font-medium text-sm tracking-wide uppercase">{companyName}</p>
+                            )}
+                            <div className="max-w-md mx-auto h-[1px] bg-white/10 my-4" />
+                            <p className="text-gray-300 text-sm max-w-md mx-auto leading-relaxed">
+                                for successfully completing the intensive <span className="text-white font-semibold">Zkandar AI Sprint Workshop</span>, mastering advanced generative design workflows, AI tool adoption strategies, and collaborative team productivity frameworks.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-white/5">
+                            <div className="text-left space-y-1">
+                                <p className="text-xs text-gray-500 uppercase tracking-widest">Date</p>
+                                <p className="text-sm font-medium text-white">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+                            </div>
+                            
+                            <div className="space-y-1">
+                                <div className="font-serif italic text-lg text-lime tracking-wide">Khaled Zkandar</div>
+                                <div className="h-[1px] w-32 bg-white/20 mx-auto" />
+                                <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Founder & Instructor</p>
+                            </div>
+
+                            <div className="text-right space-y-1">
+                                <p className="text-xs text-gray-500 uppercase tracking-widest">Credential ID</p>
+                                <p className="text-xs font-mono text-gray-400">ZK-AI-{Math.random().toString(36).substring(2, 8).toUpperCase()}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-6 shrink-0">
+                            {!isClaimed ? (
+                                <button
+                                    onClick={handleClaimClick}
+                                    disabled={claiming}
+                                    className="px-6 py-3 rounded-xl gradient-lime text-black font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-lime/10 disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {claiming ? 'Claiming...' : 'Claim Certificate & Unlock 1-on-1'}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        window.print()
+                                    }}
+                                    className="px-6 py-3 rounded-xl gradient-lime text-black font-semibold text-sm hover:opacity-90 transition shadow-lg shadow-lime/10"
+                                >
+                                    Download PDF
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </Portal>
+    )
 }
 
 /** Mini Vimeo frame shown in the hero banner — fetches URL from platform_settings */
@@ -141,6 +277,10 @@ export function ParticipantDashboard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [bookingCompleted, setBookingCompleted] = useState(false)
+    const [certificateClaimed, setCertificateClaimed] = useState(false)
+    const [showCertificateModal, setShowCertificateModal] = useState(false)
+    const [companyName, setCompanyName] = useState('')
+    const [userName, setUserName] = useState('')
     const [calendlyUrl, setCalendlyUrl] = useState<string | null>(null)
     const [showBookingDialog, setShowBookingDialog] = useState(false)
     const [countdown, setCountdown] = useState<{
@@ -150,6 +290,7 @@ export function ParticipantDashboard() {
         seconds: number;
         sessionNumber?: number;
         sessionTitle?: string;
+        dubaiTimeLabel?: string;
     } | null>(null)
 
     const firstName = user?.full_name?.split(' ')[0] || 'there'
@@ -171,7 +312,7 @@ export function ParticipantDashboard() {
             const [profileRes, membershipRes, calendlyRes] = await Promise.all([
                 supabase
                     .from('users')
-                    .select('company_id, ai_readiness_score, onboarding_data, user_type, sprint_booking_completed')
+                    .select('full_name, company_id, ai_readiness_score, onboarding_data, user_type, sprint_booking_completed, profile_data')
                     .eq('id', effectiveUserId)
                     .single(),
                 supabase
@@ -187,28 +328,33 @@ export function ParticipantDashboard() {
 
             if (ignore) return
 
-            const profileRow = profileRes.data as { company_id: string | null; ai_readiness_score: number; onboarding_data: Record<string, unknown> | null; user_type: string | null; sprint_booking_completed: boolean | null } | null
+            const profileRow = profileRes.data as { full_name: string | null; company_id: string | null; ai_readiness_score: number; onboarding_data: Record<string, unknown> | null; user_type: string | null; sprint_booking_completed: boolean | null; profile_data: Record<string, any> | null } | null
             // Note: we do NOT set aiScore from the DB value here to avoid a visible flash.
             // The score is computed live below once all data is fetched.
             setBookingCompleted(profileRow?.sprint_booking_completed ?? false)
+            setCertificateClaimed(!!profileRow?.profile_data?.certificate_claimed)
+            setUserName(profileRow?.full_name || '')
             setCalendlyUrl((calendlyRes.data as { value: string } | null)?.value ?? null)
             const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
 
             const cohortIdSet = new Set<string>(membershipIds)
 
             // Also check if the user's company has a cohort
+            let compName = ''
             if (profileRow?.company_id) {
                 const { data: companyData } = await supabase
                     .from('companies')
-                    .select('cohort_id')
+                    .select('name, cohort_id')
                     .eq('id', profileRow.company_id)
                     .single()
 
                 if (ignore) return
 
-                const compRow = companyData as { cohort_id: string | null } | null
+                const compRow = companyData as { name: string; cohort_id: string | null } | null
+                if (compRow?.name) compName = compRow.name
                 if (compRow?.cohort_id) cohortIdSet.add(compRow.cohort_id)
             }
+            setCompanyName(compName)
 
             const cohortIds = Array.from(cohortIdSet)
 
@@ -326,6 +472,7 @@ export function ParticipantDashboard() {
                 seconds: Math.floor((diff % 60000) / 1000),
                 sessionNumber: nextSession.session_number,
                 sessionTitle: nextSession.title,
+                dubaiTimeLabel: formatDubaiTime(nextSession.scheduled_date)
             })
         }
         tick()
@@ -460,6 +607,33 @@ export function ParticipantDashboard() {
     const primaryCohort = cohorts[0]
     const isSprintWorkshop = primaryCohort?.offering_type === 'sprint_workshop'
 
+    const handleClaimCertificate = async () => {
+        if (!effectiveUserId) return
+        try {
+            const { data: userData } = await (supabase
+                .from('users' as any) as any)
+                .select('profile_data')
+                .eq('id', effectiveUserId)
+                .single()
+            
+            const currentProfile = (userData?.profile_data as Record<string, any>) || {}
+            const newProfile = {
+                ...currentProfile,
+                certificate_claimed: true,
+                certificate_claimed_at: new Date().toISOString()
+            }
+            
+            await (supabase
+                .from('users' as any) as any)
+                .update({ profile_data: newProfile })
+                .eq('id', effectiveUserId)
+            
+            setCertificateClaimed(true)
+        } catch (err) {
+            console.error('Failed to claim certificate:', err)
+        }
+    }
+
     const handleHaveBooked = async () => {
         if (!effectiveUserId) return
         const { error: bookErr } = await supabase
@@ -505,8 +679,8 @@ export function ParticipantDashboard() {
                             <div className="mt-5 flex items-center gap-3 flex-wrap">
                                 <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">
                                     {countdown.sessionNumber 
-                                        ? `Session ${countdown.sessionNumber} starts in (Dubai Time)` 
-                                        : 'Next upcoming session in (Dubai Time)'}
+                                        ? `Session ${countdown.sessionNumber} starts in` 
+                                        : 'Next upcoming session starts in'}
                                 </span>
                                 <div className="flex items-center gap-1.5">
                                     {[
@@ -523,6 +697,11 @@ export function ParticipantDashboard() {
                                         </div>
                                     ))}
                                 </div>
+                                {countdown.dubaiTimeLabel && (
+                                    <span className="text-sm font-semibold text-lime ml-0.5">
+                                        {countdown.dubaiTimeLabel}
+                                    </span>
+                                )}
                             </div>
                         )}
                     </div>
@@ -777,23 +956,81 @@ export function ParticipantDashboard() {
                                 })
                             )}
 
-                            {/* Booking milestone — sprint members only */}
+                            {/* Certificate milestone — sprint members only */}
                             {isSprintMember && (
                                 <div className="relative group">
-                                    <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors ${
-                                        bookingCompleted
-                                            ? 'hover:bg-white/5 border border-transparent'
+                                    <div className="absolute left-[35px] top-[48px] bottom-[-8px] w-px bg-border z-0" />
+                                    
+                                    <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
+                                        certificateClaimed
+                                            ? 'hover:bg-white/5 border-transparent'
                                             : allSessionsCompleted
                                             ? 'bg-lime/5 border border-lime/20'
                                             : 'opacity-40 border border-transparent'
                                     }`}>
                                         <div className="flex flex-col items-center shrink-0 w-10">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                bookingCompleted ? 'bg-lime/10' : allSessionsCompleted ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                certificateClaimed ? 'bg-lime/10' : allSessionsCompleted ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                            }`}>
+                                                {certificateClaimed ? (
+                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                ) : allSessionsCompleted ? (
+                                                    <GraduationCap className="h-5 w-5 text-black" />
+                                                ) : (
+                                                    <Lock className="h-5 w-5 text-gray-500" />
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between gap-4">
+                                                <div className="min-w-0">
+                                                    <p className={`font-medium truncate ${certificateClaimed ? 'text-gray-400' : allSessionsCompleted ? 'text-lime' : 'text-gray-600'}`}>
+                                                        AI Certificate of Completion
+                                                    </p>
+                                                    <p className={`text-xs mt-0.5 ${certificateClaimed ? 'text-gray-600' : allSessionsCompleted ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {certificateClaimed ? 'Certificate claimed!' : allSessionsCompleted ? 'Claim your personalized certificate' : 'Unlocks after completing all sessions'}
+                                                    </p>
+                                                </div>
+                                                {allSessionsCompleted && !certificateClaimed && (
+                                                    <button
+                                                        onClick={() => setShowCertificateModal(true)}
+                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                    >
+                                                        Claim Certificate
+                                                    </button>
+                                                )}
+                                                {certificateClaimed && (
+                                                    <button
+                                                        onClick={() => setShowCertificateModal(true)}
+                                                        className="px-4 py-2 text-sm bg-white/5 hover:bg-white/10 text-white font-medium rounded-lg shrink-0 transition-all border border-border"
+                                                    >
+                                                        View Certificate
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="h-1.5" />
+                                </div>
+                            )}
+
+                            {/* Booking milestone — sprint members only */}
+                            {isSprintMember && (
+                                <div className="relative group">
+                                    <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
+                                        bookingCompleted
+                                            ? 'hover:bg-white/5 border-transparent'
+                                            : certificateClaimed
+                                            ? 'bg-lime/5 border border-lime/20'
+                                            : 'opacity-40 border border-transparent'
+                                    }`}>
+                                        <div className="flex flex-col items-center shrink-0 w-10">
+                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                bookingCompleted ? 'bg-lime/10' : certificateClaimed ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
                                             }`}>
                                                 {bookingCompleted ? (
                                                     <CheckCircle2 className="h-5 w-5 text-lime" />
-                                                ) : allSessionsCompleted ? (
+                                                ) : certificateClaimed ? (
                                                     <CalendarCheck className="h-5 w-5 text-black" />
                                                 ) : (
                                                     <Lock className="h-5 w-5 text-gray-500" />
@@ -803,14 +1040,14 @@ export function ParticipantDashboard() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
-                                                    <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : allSessionsCompleted ? 'text-lime' : 'text-gray-600'}`}>
+                                                    <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : certificateClaimed ? 'text-lime' : 'text-gray-600'}`}>
                                                         Book Your 1-on-1
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : allSessionsCompleted ? 'text-lime/70' : 'text-gray-600'}`}>
-                                                        {bookingCompleted ? 'Booked!' : allSessionsCompleted ? 'Schedule a call with Khaled' : 'Unlocks after completing all sessions'}
+                                                    <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : certificateClaimed ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {bookingCompleted ? 'Booked!' : certificateClaimed ? 'Schedule a call with Khaled' : 'Unlocks after claiming your certificate of completion'}
                                                     </p>
                                                 </div>
-                                                {allSessionsCompleted && !bookingCompleted && (
+                                                {certificateClaimed && !bookingCompleted && (
                                                     <button
                                                         onClick={() => setShowBookingDialog(true)}
                                                         className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
@@ -994,6 +1231,14 @@ export function ParticipantDashboard() {
                         </motion.div>
                     </Portal>
                 )}
+                <CertificateModal
+                    isOpen={showCertificateModal}
+                    onClose={() => setShowCertificateModal(false)}
+                    userName={userName || user?.full_name || 'Participant'}
+                    companyName={companyName}
+                    onClaim={handleClaimCertificate}
+                    isClaimed={certificateClaimed}
+                />
             </AnimatePresence>
         </div>
     )
