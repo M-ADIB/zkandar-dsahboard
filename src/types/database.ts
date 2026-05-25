@@ -204,6 +204,7 @@ export interface Session {
     session_number: number
     title: string
     scheduled_date: string
+    zoom_link: string | null
     recording_url: string | null
     materials: SessionMaterial[]
     attendance: string[]

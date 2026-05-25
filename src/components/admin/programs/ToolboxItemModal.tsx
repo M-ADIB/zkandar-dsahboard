@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ExternalLink, Plus, Trash2, Image as ImageIcon, Video, Upload, Loader2 } from 'lucide-react'
+import { X, ExternalLink, Plus, Trash2, Image as ImageIcon, Video, Upload, Loader2, ChevronUp, ChevronDown } from 'lucide-react'
 import { useSupabase } from '@/hooks/useSupabase'
 import { Portal } from '@/components/shared/Portal'
 import toast from 'react-hot-toast'
@@ -199,6 +199,19 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
         setForm({
             ...form,
             media: form.media.filter(m => m.id !== id)
+        })
+    }
+
+    const moveMedia = (index: number, direction: 'up' | 'down') => {
+        const nextIndex = direction === 'up' ? index - 1 : index + 1
+        if (nextIndex < 0 || nextIndex >= form.media.length) return
+        const nextMedia = [...form.media]
+        const temp = nextMedia[index]
+        nextMedia[index] = nextMedia[nextIndex]
+        nextMedia[nextIndex] = temp
+        setForm({
+            ...form,
+            media: nextMedia
         })
     }
 
@@ -403,15 +416,38 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                                     <div className="space-y-4">
                                         {form.media.map((m, index) => (
                                             <div key={m.id} className="p-3 bg-white/5 border border-border rounded-xl space-y-3 relative group">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeMedia(m.id)}
-                                                    className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-400 hover:bg-black/40 rounded-lg transition"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+                                                <div className="absolute top-2 right-2 flex items-center gap-1">
+                                                    {index > 0 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => moveMedia(index, 'up')}
+                                                            title="Move Up"
+                                                            className="p-1 text-gray-400 hover:text-white hover:bg-black/45 rounded transition"
+                                                        >
+                                                            <ChevronUp className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
+                                                    {index < form.media.length - 1 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => moveMedia(index, 'down')}
+                                                            title="Move Down"
+                                                            className="p-1 text-gray-400 hover:text-white hover:bg-black/45 rounded transition"
+                                                        >
+                                                            <ChevronDown className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeMedia(m.id)}
+                                                        title="Delete"
+                                                        className="p-1 text-gray-400 hover:text-red-400 hover:bg-black/45 rounded transition"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
 
-                                                <div className="flex items-center gap-2 pr-8 text-sm font-medium text-gray-300">
+                                                <div className="flex items-center gap-2 pr-20 text-sm font-medium text-gray-300">
                                                     {m.type === 'video' ? <Video className="w-4 h-4 text-blue-400" /> : <ImageIcon className="w-4 h-4 text-purple-400" />}
                                                     {m.type === 'video' ? 'Video Player' : 'Image Asset'} #{index + 1}
                                                 </div>

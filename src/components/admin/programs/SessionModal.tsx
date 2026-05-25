@@ -19,6 +19,7 @@ type SessionFormData = {
     session_number: string;
     scheduled_date: string;
     status: SessionStatus;
+    zoom_link: string;
     recording_url: string;
     description: string;
 };
@@ -55,6 +56,7 @@ export function SessionModal({
         session_number: String(defaultSessionNumber),
         scheduled_date: '',
         status: 'scheduled',
+        zoom_link: '',
         recording_url: '',
         description: '',
     });
@@ -74,6 +76,7 @@ export function SessionModal({
                 session_number: String(session.session_number ?? ''),
                 scheduled_date: toDateTimeLocal(session.scheduled_date),
                 status: session.status,
+                zoom_link: session.zoom_link ?? '',
                 recording_url: session.recording_url ?? '',
                 description: (session as Session & { description?: string }).description ?? '',
             });
@@ -85,6 +88,7 @@ export function SessionModal({
                 session_number: String(defaultSessionNumber),
                 scheduled_date: '',
                 status: 'scheduled',
+                zoom_link: '',
                 recording_url: '',
                 description: '',
             });
@@ -142,6 +146,7 @@ export function SessionModal({
             scheduled_date: scheduledDateISO,
             session_date: scheduledDateISO,   // mirror field added outside migrations
             status: formData.status,
+            zoom_link: formData.zoom_link.trim() || null,
             recording_url: formData.recording_url.trim() || null,
             description: formData.description.trim() || null,
             materials: validatedMaterials,
@@ -252,10 +257,21 @@ export function SessionModal({
                 <label className="block text-sm font-medium text-gray-300 mb-1">Zoom / Meeting Link</label>
                 <input
                     type="url"
+                    value={formData.zoom_link}
+                    onChange={(e) => setFormData({ ...formData, zoom_link: e.target.value })}
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
+                    placeholder="https://zoom.us/j/..."
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Recording Link</label>
+                <input
+                    type="url"
                     value={formData.recording_url}
                     onChange={(e) => setFormData({ ...formData, recording_url: e.target.value })}
                     className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-white focus:outline-none focus:border-lime/40 focus:bg-white/[0.05] transition-all"
-                    placeholder="https://zoom.us/j/..."
+                    placeholder="https://vimeo.com/... or Zoom cloud recording URL"
                 />
             </div>
 

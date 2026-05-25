@@ -42,9 +42,12 @@ Deno.serve(async (req) => {
         
         // Pass the auth token dynamically to verify the user
         const token = authHeader.replace(/^Bearer\s+/i, '')
-        const { data: { user: callerAuth }, error: authError } = await adminClient.auth.getUser(token)
+        const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+            global: { headers: { Authorization: authHeader } },
+        })
+        const { data: { user: callerAuth }, error: authError } = await anonClient.auth.getUser(token)
         if (authError || !callerAuth) {
-            return new Response(JSON.stringify({ error: `DEBUG 401: Unauthorized user fetch.` }), {
+            return new Response(JSON.stringify({ error: `DEBUG 401: Unauthorized user fetch. Error: ${authError?.message || 'No user found'}` }), {
                 status: 200,
                 headers: { ...dynamicCorsHeaders, 'Content-Type': 'application/json' },
             })

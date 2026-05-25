@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Clock, CheckCircle2, Upload, Link as LinkIcon, ArrowRight, Video, Image as ImageIcon } from 'lucide-react'
+import { FileText, Clock, CheckCircle2, Upload, Link as LinkIcon, ArrowRight, Video, Image as ImageIcon, Lock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
@@ -19,13 +19,15 @@ type AssignmentCard = {
     status: 'pending' | 'submitted' | 'upcoming'
     feedback?: string
     materials?: SessionMaterial[]
+    isLocked?: boolean
 }
 
 export function AssignmentsPage() {
     const [filter, setFilter] = useState<'all' | 'pending' | 'submitted'>('all')
     const { user, loading: authLoading } = useAuth()
-    const { isPreviewing } = useViewMode()
-    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
+    const { effectiveUserId, isPreviewing } = useViewMode()
+    const targetUserId = effectiveUserId || user?.id
+    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts(targetUserId)
     const [assignments, setAssignments] = useState<AssignmentCard[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -42,7 +44,7 @@ export function AssignmentsPage() {
             return
         }
 
-        if (!user || cohortIds.length === 0) {
+        if (!targetUserId || cohortIds.length === 0) {
             setAssignments([])
             setLoading(false)
             return
@@ -98,7 +100,7 @@ export function AssignmentsPage() {
         const { data: submissionsData, error: submissionsError } = await supabase
             .from('submissions')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('user_id', targetUserId)
             .in('assignment_id', assignmentIds)
 
         if (submissionsError) {
@@ -113,39 +115,44 @@ export function AssignmentsPage() {
 
         const cohortMap = new Map(cohorts.map((cohort) => [cohort.id, cohort]))
 
-        const cards = assignmentRows.map((assignment) => {
-            const session = sessionMap.get(assignment.session_id)
-            const submission = submissionsByAssignment.get(assignment.id)
-            const dueDate = assignment.due_date ? new Date(assignment.due_date) : null
-            const isOverdue = dueDate ? dueDate.getTime() < Date.now() : false
+        const cards = assignmentRows
+            .map((assignment) => {
+                const session = sessionMap.get(assignment.session_id)
+                const sessionStartTime = session ? new Date(session.scheduled_date).getTime() : 0
+                const isLocked = session ? Date.now() < sessionStartTime : true
 
-            const cohort = session ? cohortMap.get(session.cohort_id) : undefined
-            const programLabel = cohort ? cohort.name : null
+                const submission = submissionsByAssignment.get(assignment.id)
+                const dueDate = assignment.due_date ? new Date(assignment.due_date) : null
+                const isOverdue = dueDate ? dueDate.getTime() < Date.now() : false
 
-            const status: AssignmentCard['status'] = submission
-                ? 'submitted'
-                : isOverdue
-                    ? 'pending'
-                    : 'upcoming'
+                const cohort = session ? cohortMap.get(session.cohort_id) : undefined
+                const programLabel = cohort ? cohort.name : null
 
-            return {
-                id: assignment.id,
-                title: assignment.title,
-                description: assignment.description ?? 'No description provided.',
-                session: session
-                    ? `${programLabel ? `${programLabel} · ` : ''}Session ${session.session_number}: ${session.title}`
-                    : 'Session',
-                dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
-                submissionFormat: assignment.submission_format,
-                status,
-                feedback: submission?.feedback ?? undefined,
-                materials: assignment.materials ?? [],
-            }
-        })
+                const status: AssignmentCard['status'] = submission
+                    ? 'submitted'
+                    : isOverdue
+                        ? 'pending'
+                        : 'upcoming'
+
+                return {
+                    id: assignment.id,
+                    title: assignment.title,
+                    description: assignment.description ?? 'No description provided.',
+                    session: session
+                        ? `${programLabel ? `${programLabel} · ` : ''}Session ${session.session_number}: ${session.title}`
+                        : 'Session',
+                    dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
+                    submissionFormat: assignment.submission_format,
+                    status,
+                    feedback: submission?.feedback ?? undefined,
+                    materials: assignment.materials ?? [],
+                    isLocked,
+                }
+            })
 
         setAssignments(cards)
         setLoading(false)
-    }, [authLoading, cohortsLoading, cohortsError, user, cohortIds, cohorts])
+    }, [authLoading, cohortsLoading, cohortsError, targetUserId, cohortIds, cohorts])
 
     const scheduleRefresh = useCallback(() => {
         if (refreshTimerRef.current !== null) return
@@ -161,7 +168,7 @@ export function AssignmentsPage() {
 
     useEffect(() => {
         if (authLoading || cohortsLoading) return
-        if (!user || cohortIds.length === 0) return
+        if (!targetUserId || cohortIds.length === 0) return
 
         const channels = cohortIds.map((cohortId) => {
             return supabase
@@ -197,14 +204,14 @@ export function AssignmentsPage() {
             .subscribe()
 
         const submissionsChannel = supabase
-            .channel(`submissions:${user.id}`)
+            .channel(`submissions:${targetUserId}`)
             .on(
                 'postgres_changes',
                 {
                     event: '*',
                     schema: 'public',
                     table: 'submissions',
-                    filter: `user_id=eq.${user.id}`,
+                    filter: `user_id=eq.${targetUserId}`,
                 },
                 () => {
                     scheduleRefresh()
@@ -223,7 +230,7 @@ export function AssignmentsPage() {
                 refreshTimerRef.current = null
             }
         }
-    }, [authLoading, cohortsLoading, user?.id, cohortIds, scheduleRefresh])
+    }, [authLoading, cohortsLoading, targetUserId, cohortIds, scheduleRefresh])
 
     const filteredAssignments = useMemo(() => assignments.filter((assignment) => {
         if (filter === 'all') return true
@@ -297,10 +304,17 @@ export function AssignmentsPage() {
                             <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                                 {/* Icon */}
                                 <div
-                                    className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${assignment.status === 'submitted' ? 'bg-lime/10' : 'bg-white/5'
-                                        }`}
+                                    className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${
+                                        assignment.isLocked
+                                            ? 'bg-red-500/10'
+                                            : assignment.status === 'submitted'
+                                                ? 'bg-lime/10'
+                                                : 'bg-white/5'
+                                    }`}
                                 >
-                                    {assignment.status === 'submitted' ? (
+                                    {assignment.isLocked ? (
+                                        <Lock className="h-6 w-6 text-red-400" />
+                                    ) : assignment.status === 'submitted' ? (
                                         <CheckCircle2 className="h-6 w-6 text-lime" />
                                     ) : assignment.submissionFormat === 'file' ? (
                                         <Upload className="h-6 w-6 text-gray-400" />
@@ -319,20 +333,28 @@ export function AssignmentsPage() {
                                             <p className="text-xs text-lime mt-1">{assignment.session}</p>
                                         </div>
                                         {/* Status Badge */}
-                                        {assignment.status === 'pending' && (
-                                            <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-xs rounded-lg shrink-0">
-                                                Due Soon
+                                        {assignment.isLocked ? (
+                                            <span className="px-3 py-1 bg-red-500/10 text-red-400 text-xs rounded-lg shrink-0 flex items-center gap-1">
+                                                <Lock className="h-3.5 w-3.5" /> Locked
                                             </span>
-                                        )}
-                                        {assignment.status === 'submitted' && (
-                                            <span className="px-3 py-1 bg-lime/10 text-lime text-xs rounded-lg shrink-0">
-                                                Submitted
-                                            </span>
-                                        )}
-                                        {assignment.status === 'upcoming' && (
-                                            <span className="px-3 py-1 bg-gray-500/10 text-gray-400 text-xs rounded-lg shrink-0">
-                                                Upcoming
-                                            </span>
+                                        ) : (
+                                            <>
+                                                {assignment.status === 'pending' && (
+                                                    <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-xs rounded-lg shrink-0">
+                                                        Due Soon
+                                                    </span>
+                                                )}
+                                                {assignment.status === 'submitted' && (
+                                                    <span className="px-3 py-1 bg-lime/10 text-lime text-xs rounded-lg shrink-0">
+                                                        Submitted
+                                                    </span>
+                                                )}
+                                                {assignment.status === 'upcoming' && (
+                                                    <span className="px-3 py-1 bg-gray-500/10 text-gray-400 text-xs rounded-lg shrink-0">
+                                                        Upcoming
+                                                    </span>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                     <p className="text-gray-400 text-sm mt-2">{assignment.description}</p>
@@ -370,12 +392,21 @@ export function AssignmentsPage() {
                                 {/* Action */}
                                 {assignment.status !== 'submitted' && (
                                     <button
-                                        disabled={isPreviewing}
-                                        onClick={() => !isPreviewing && setSubmitTarget(assignment)}
+                                        disabled={isPreviewing || assignment.isLocked}
+                                        onClick={() => !isPreviewing && !assignment.isLocked && setSubmitTarget(assignment)}
                                         className="px-5 py-2.5 gradient-lime text-black font-medium rounded-xl hover:opacity-90 transition shrink-0 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {isPreviewing ? 'Preview mode' : 'Submit'}
-                                        <ArrowRight className="h-4 w-4" />
+                                        {assignment.isLocked ? (
+                                            <>
+                                                Locked <Lock className="h-4 w-4" />
+                                            </>
+                                        ) : isPreviewing ? (
+                                            'Preview mode'
+                                        ) : (
+                                            <>
+                                                Submit <ArrowRight className="h-4 w-4" />
+                                            </>
+                                        )}
                                     </button>
                                 )}
                             </div>
@@ -387,7 +418,7 @@ export function AssignmentsPage() {
             <SubmitAssignmentModal
                 isOpen={!!submitTarget}
                 assignment={submitTarget}
-                userId={user?.id ?? ''}
+                userId={targetUserId ?? ''}
                 onClose={() => setSubmitTarget(null)}
                 onSuccess={() => {
                     setSubmitTarget(null)

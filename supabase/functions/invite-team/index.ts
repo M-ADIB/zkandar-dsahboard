@@ -132,9 +132,12 @@ Deno.serve(async (req) => {
 
         // Verify caller
         const token = authHeader.replace(/^Bearer\s+/i, '')
-        const { data: { user: callerAuth }, error: authError } = await adminClient.auth.getUser(token)
+        const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+            global: { headers: { Authorization: authHeader } },
+        })
+        const { data: { user: callerAuth }, error: authError } = await anonClient.auth.getUser(token)
         if (authError || !callerAuth) {
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            return new Response(JSON.stringify({ error: `Unauthorized: ${authError?.message || 'No user found'}` }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })

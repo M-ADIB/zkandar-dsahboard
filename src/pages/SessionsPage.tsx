@@ -4,6 +4,7 @@ import { Calendar, Play, FileText, CheckCircle2, Clock, ExternalLink } from 'luc
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
+import { useViewMode } from '@/context/ViewModeContext'
 import { formatDateLabel, formatTimeLabel } from '@/lib/time'
 import type { OfferingType, Session } from '@/types/database'
 
@@ -16,6 +17,7 @@ type SessionCard = {
     duration: string
     status: 'completed' | 'scheduled' | 'upcoming'
     materialsCount: number
+    zoomLink: string | null
     recordingUrl: string | null
 }
 
@@ -27,7 +29,8 @@ const offeringLabels: Record<OfferingType, string> = {
 export function SessionsPage() {
     const [filter, setFilter] = useState<'all' | 'completed' | 'upcoming'>('all')
     const { user, loading: authLoading } = useAuth()
-    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts()
+    const { effectiveUserId } = useViewMode()
+    const { cohorts, cohortIds, loading: cohortsLoading, error: cohortsError } = useAccessibleCohorts(effectiveUserId)
     const [sessions, setSessions] = useState<Session[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -81,7 +84,7 @@ export function SessionsPage() {
         return () => {
             ignore = true
         }
-    }, [authLoading, cohortsLoading, cohortsError, user?.id, cohortIds])
+    }, [authLoading, cohortsLoading, cohortsError, effectiveUserId, cohortIds])
 
     useEffect(() => {
         if (authLoading || cohortsLoading) return
@@ -158,6 +161,7 @@ export function SessionsPage() {
                 duration: formatTimeLabel(session.scheduled_date) || 'TBD',
                 status: derivedStatus,
                 materialsCount,
+                zoomLink: session.zoom_link ?? null,
                 recordingUrl: session.recording_url ?? null,
             }
         })
@@ -279,17 +283,32 @@ export function SessionsPage() {
                                         {session.materialsCount} materials
                                     </div>
                                 )}
-                                {session.recordingUrl && (
-                                    <a
-                                        href={session.recordingUrl}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="mt-3 flex items-center gap-1.5 text-xs text-lime hover:text-lime/80 transition-colors"
-                                    >
-                                        <ExternalLink className="h-3 w-3" />
-                                        Watch recording
-                                    </a>
+                                {session.status === 'completed' ? (
+                                    session.recordingUrl && (
+                                        <a
+                                            href={session.recordingUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="mt-3 flex items-center gap-1.5 text-xs text-lime hover:text-lime/80 transition-colors font-medium"
+                                        >
+                                            <Play className="h-3 w-3" />
+                                            Watch recording
+                                        </a>
+                                    )
+                                ) : (
+                                    session.zoomLink && (
+                                        <a
+                                            href={session.zoomLink}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="mt-3 flex items-center gap-1.5 text-xs text-lime hover:text-lime/80 transition-colors font-medium"
+                                        >
+                                            <ExternalLink className="h-3 w-3" />
+                                            Join session (Zoom)
+                                        </a>
+                                    )
                                 )}
                             </div>
                         </motion.div>

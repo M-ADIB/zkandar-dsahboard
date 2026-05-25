@@ -7,8 +7,53 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-// Sprint cohort — the active sprint_workshop cohort
-const SPRINT_COHORT_ID = '813335a5-3d30-497c-a27d-f2702020f6b2';
+// Sprint cohort helper and fallback ID
+const SPRINT_FALLBACK_COHORT_ID = '813335a5-3d30-497c-a27d-f2702020f6b2';
+
+async function getSprintCohortId(supabase: ReturnType<typeof createClient>): Promise<string> {
+  try {
+    const { data: cohortData, error } = await supabase
+      .from('cohorts')
+      .select('id')
+      .eq('offering_type', 'sprint_workshop')
+      .in('status', ['upcoming', 'active'])
+      .order('start_date', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching upcoming sprint cohort:', error);
+    }
+    
+    if (cohortData?.id) {
+      console.log('Resolved upcoming sprint cohort:', cohortData.id);
+      return cohortData.id;
+    }
+
+    // Fallback: Query the latest sprint_workshop cohort by start_date descending
+    const { data: latestCohort, error: latestError } = await supabase
+      .from('cohorts')
+      .select('id')
+      .eq('offering_type', 'sprint_workshop')
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (latestError) {
+      console.error('Error fetching latest sprint cohort:', latestError);
+    }
+
+    if (latestCohort?.id) {
+      console.log('Resolved latest sprint cohort as fallback:', latestCohort.id);
+      return latestCohort.id;
+    }
+  } catch (err) {
+    console.error('Failed to resolve sprint cohort dynamically, using fallback:', err);
+  }
+
+  console.log('Using hardcoded fallback sprint cohort:', SPRINT_FALLBACK_COHORT_ID);
+  return SPRINT_FALLBACK_COHORT_ID;
+}
 
 // ── Stripe signature verification ──
 async function verifyStripeSignature(payload: string, signature: string, secret: string): Promise<boolean> {
@@ -46,6 +91,9 @@ async function provisionSprintUser(
   fullName: string,
   tempPassword: string
 ): Promise<{ userId: string; isNew: boolean }> {
+  // Resolve sprint cohort ID dynamically
+  const sprintCohortId = await getSprintCohortId(supabase);
+
   // Check if user already exists
   const { data: existing } = await supabase
     .from('users')
@@ -57,7 +105,7 @@ async function provisionSprintUser(
     console.log('User already exists:', existing.id);
     // Still ensure cohort membership
     await supabase.from('cohort_memberships').upsert(
-      { user_id: existing.id, cohort_id: SPRINT_COHORT_ID },
+      { user_id: existing.id, cohort_id: sprintCohortId },
       { onConflict: 'user_id,cohort_id', ignoreDuplicates: true }
     );
     return { userId: existing.id, isNew: false };
@@ -88,11 +136,11 @@ async function provisionSprintUser(
 
   // Add cohort membership
   await supabase.from('cohort_memberships').upsert(
-    { user_id: userId, cohort_id: SPRINT_COHORT_ID },
+    { user_id: userId, cohort_id: sprintCohortId },
     { onConflict: 'user_id,cohort_id', ignoreDuplicates: true }
   );
 
-  console.log('Sprint user provisioned:', userId, '| Cohort:', SPRINT_COHORT_ID);
+  console.log('Sprint user provisioned:', userId, '| Cohort:', sprintCohortId);
   return { userId, isNew: true };
 }
 
@@ -393,6 +441,44 @@ Deno.serve(async (req: Request) => {
               console.log('Sprint provisioning complete — credentials sent');
             } else {
               console.log('User already existed — skipping credentials email');
+            }
+
+            // ALSO add them to the leads table
+            const { data: existingLead } = await supabase
+              .from('leads')
+              .select('id')
+              .eq('email', customerEmail)
+              .maybeSingle();
+
+            const leadPayload = {
+              full_name: customerName,
+              email: customerEmail,
+              priority: 'COMPLETED',
+              offering_type: 'sprint_workshop',
+              payment_amount: session.amount_total ? (session.amount_total / 100) : 12500,
+              amount_paid: session.amount_total ? (session.amount_total / 100) : 12500,
+              paid_full: true,
+              date_of_payment: new Date().toISOString(),
+              notes: `Automatically created via Stripe checkout completion. Product: ${products.join(', ')}`,
+              updated_at: new Date().toISOString(),
+            };
+
+            if (!existingLead) {
+              const { error: leadErr } = await supabase
+                .from('leads')
+                .insert({
+                  ...leadPayload,
+                  created_at: new Date().toISOString(),
+                });
+              if (leadErr) console.error('Error inserting lead from webhook:', leadErr);
+              else console.log('Lead created in leads table for:', customerEmail);
+            } else {
+              const { error: leadErr } = await supabase
+                .from('leads')
+                .update(leadPayload)
+                .eq('id', existingLead.id);
+              if (leadErr) console.error('Error updating existing lead from webhook:', leadErr);
+              else console.log('Existing lead updated to COMPLETED for:', customerEmail);
             }
           } catch (provisionErr) {
             console.error('Sprint provisioning error:', provisionErr);

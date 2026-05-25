@@ -173,9 +173,12 @@ Deno.serve(async (req) => {
         
         // Pass the auth token dynamically to verify the user
         const token = authHeader.replace(/^Bearer\s+/i, '')
-        const { data: { user: callerAuth }, error: authError } = await adminClient.auth.getUser(token)
+        const anonClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+            global: { headers: { Authorization: authHeader } },
+        })
+        const { data: { user: callerAuth }, error: authError } = await anonClient.auth.getUser(token)
         if (authError || !callerAuth) {
-            return new Response(JSON.stringify({ error: `DEBUG 401: Unauthorized user fetch. Token snippet: ${token.substring(0, 10)}... Error: ${authError?.message || 'No user found'}` }), {
+            return new Response(JSON.stringify({ error: `DEBUG 401: Unauthorized user fetch. Error: ${authError?.message || 'No user found'}` }), {
                 status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
@@ -206,7 +209,21 @@ Deno.serve(async (req) => {
         }
 
         if (!email || !role) {
-            return new Response(JSON.stringify({ error: 'DEBUG 400: email and role are required' }), {
+            return new Response(JSON.stringify({ error: 'Email and role are required.' }), {
+                status: 200,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        // Check if user already exists in the users table
+        const { data: existingUser } = await adminClient
+            .from('users')
+            .select('id')
+            .eq('email', email.trim().toLowerCase())
+            .maybeSingle()
+
+        if (existingUser) {
+            return new Response(JSON.stringify({ error: 'This email is already registered.' }), {
                 status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
@@ -233,9 +250,9 @@ Deno.serve(async (req) => {
 
         if (inviteError) {
             const msg = inviteError.message.toLowerCase().includes('already registered')
-                ? 'This email is already registered'
+                ? 'This email is already registered.'
                 : inviteError.message
-            return new Response(JSON.stringify({ error: `DEBUG 400 Invite Error: ${msg}` }), {
+            return new Response(JSON.stringify({ error: msg }), {
                 status: 200,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })

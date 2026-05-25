@@ -188,6 +188,7 @@ export function ProgramsPage() {
                 isLoading={isLoading}
                 onEdit={(p) => { setSelectedProgram(p); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                onRowClick={(p) => navigate(`/admin/programs/${p.id}`)}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
             />

@@ -30,3 +30,25 @@ export function formatTimeLabel(isoDate: string) {
     if (Number.isNaN(date.getTime())) return ''
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
+
+export function formatSessionDateTime(isoDate: string) {
+    const date = new Date(isoDate)
+    if (Number.isNaN(date.getTime())) return 'TBD'
+    
+    // Format the date part (e.g., June 3, 2026)
+    const dateStr = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Asia/Dubai'
+    })
+    
+    // Format the time part (e.g., 07:00 PM)
+    const timeStr = date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Asia/Dubai'
+    })
+    
+    return `${dateStr} @ ${timeStr} DUBAI`
+}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, FileText, Plus, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Calendar, FileText, Plus, GraduationCap, Users, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSupabase } from '@/hooks/useSupabase';
 import { AdminTable } from '@/components/admin/shared/AdminTable';
@@ -10,9 +10,12 @@ import { SubmissionsModal } from '@/components/admin/assignments/SubmissionsModa
 import { SelectionActionBar } from '@/components/admin/shared/SelectionActionBar';
 import { BulkDeleteConfirm } from '@/components/admin/shared/BulkDeleteConfirm';
 import { formatDateLabel, formatTimeLabel } from '@/lib/time';
-import type { Assignment, Cohort, CohortStatus, OfferingType, Session, SessionStatus } from '@/types/database';
+import type { Assignment, Cohort, CohortStatus, OfferingType, Session, SessionStatus, User, Company } from '@/types/database';
+import { setDynamicPageTitle } from '@/hooks/usePageTitle';
+import { UserModal } from '@/components/admin/users/UserModal';
+import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
 
-type DetailTab = 'sessions' | 'assignments';
+type DetailTab = 'sessions' | 'assignments' | 'participants';
 
 const offeringLabels: Record<OfferingType, string> = {
     sprint_workshop: 'Sprint Workshop',
@@ -43,7 +46,7 @@ function SessionsPanel({ cohort, onRefreshCount }: { cohort: Cohort; onRefreshCo
         setError(null);
         const { data, error: e } = await supabase
             .from('sessions')
-            .select('id, cohort_id, session_number, title, scheduled_date, status, recording_url, created_at')
+            .select('id, cohort_id, session_number, title, scheduled_date, status, zoom_link, recording_url, created_at')
             .eq('cohort_id', cohort.id)
             .order('session_number', { ascending: true });
         if (e) { setError(e.message); } else { setSessions((data as Session[]) ?? []); }
@@ -78,7 +81,13 @@ function SessionsPanel({ cohort, onRefreshCount }: { cohort: Cohort; onRefreshCo
             },
         },
         {
-            header: 'Recording URL',
+            header: 'Zoom Link',
+            accessor: (s: Session) => s.zoom_link
+                ? <span className="text-lime text-xs truncate max-w-[160px] block">Set</span>
+                : <span className="text-gray-600 text-xs">—</span>,
+        },
+        {
+            header: 'Recording Link',
             accessor: (s: Session) => s.recording_url
                 ? <span className="text-lime text-xs truncate max-w-[160px] block">Set</span>
                 : <span className="text-gray-600 text-xs">—</span>,
@@ -139,6 +148,7 @@ function SessionsPanel({ cohort, onRefreshCount }: { cohort: Cohort; onRefreshCo
                 isLoading={isLoading}
                 onEdit={(s) => { setSelectedSession(s); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                onRowClick={(s) => { setSelectedSession(s); setIsModalOpen(true); }}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
             />
@@ -336,6 +346,7 @@ function AssignmentsPanel({ cohort }: { cohort: Cohort }) {
                 isLoading={isLoading}
                 onEdit={(a) => { setSelectedAssignment(a); setIsModalOpen(true); }}
                 onDelete={handleDelete}
+                onRowClick={(a) => { setSelectedAssignment(a); setIsModalOpen(true); }}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
             />
@@ -367,6 +378,237 @@ function AssignmentsPanel({ cohort }: { cohort: Cohort }) {
     );
 }
 
+// ─── Participants Panel ──────────────────────────────────────────────────────
+function ParticipantsPanel({ cohort }: { cohort: Cohort }) {
+    const supabase = useSupabase();
+    const [participants, setParticipants] = useState<User[]>([]);
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [programs, setPrograms] = useState<Cohort[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    
+    // User modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [selectedUserMemberships, setSelectedUserMemberships] = useState<string[]>([]);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+    const fetchParticipants = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // 1. Fetch memberships for this cohort
+            const { data: directMemberships, error: mError } = await supabase
+                .from('cohort_memberships')
+                .select('user_id')
+                .eq('cohort_id', cohort.id);
+
+            if (mError) throw mError;
+            const directUserIds = (directMemberships as { user_id: string }[] | null)?.map((m) => m.user_id) || [];
+
+            // 2. Fetch companies assigned to this cohort
+            const { data: companiesData, error: cError } = await supabase
+                .from('companies')
+                .select('id, name')
+                .eq('cohort_id', cohort.id);
+
+            if (cError) throw cError;
+            const companyIds = (companiesData as { id: string }[] | null)?.map((c) => c.id) || [];
+
+            // 3. Fetch users matching either direct memberships OR belonging to these companies
+            let fetchedUsers: User[] = [];
+            if (directUserIds.length > 0 || companyIds.length > 0) {
+                let query = supabase.from('users').select('*');
+                if (directUserIds.length > 0 && companyIds.length > 0) {
+                    query = query.or(`id.in.(${directUserIds.join(',')}),company_id.in.(${companyIds.join(',')})`);
+                } else if (directUserIds.length > 0) {
+                    query = query.in('id', directUserIds);
+                } else {
+                    query = query.in('company_id', companyIds);
+                }
+                const { data: usersData, error: uError } = await query;
+                if (uError) throw uError;
+                fetchedUsers = (usersData as User[]) ?? [];
+            }
+
+            setParticipants(fetchedUsers);
+
+            // Fetch reference lists for UserModal
+            const [companiesResult, programsResult] = await Promise.all([
+                supabase.from('companies').select('*').order('name'),
+                supabase.from('cohorts').select('*').order('start_date', { ascending: false }),
+            ]);
+
+            if (companiesResult.data) setCompanies(companiesResult.data as Company[]);
+            if (programsResult.data) setPrograms(programsResult.data as Cohort[]);
+
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchParticipants();
+    }, [cohort.id]);
+
+    const handleEditUser = async (user: User) => {
+        // Fetch user memberships first to pass to UserModal
+        const { data: userMemberships } = await supabase
+            .from('cohort_memberships')
+            .select('cohort_id')
+            .eq('user_id', user.id);
+
+        const mIds = (userMemberships as { cohort_id: string }[] | null)?.map((m) => m.cohort_id) || [];
+        setSelectedUserMemberships(mIds);
+        setSelectedUser(user);
+        setIsModalOpen(true);
+    };
+
+    const handleRemoveUser = async (user: User) => {
+        // Find if they are a direct member or member via company
+        const { data: membershipsData } = await supabase
+            .from('cohort_memberships')
+            .select('id')
+            .eq('cohort_id', cohort.id)
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        const membershipObj = membershipsData as { id: string } | null;
+
+        if (membershipObj?.id) {
+            if (!confirm(`Remove ${user.full_name} from this program?`)) return;
+            const { error: deleteErr } = await supabase
+                .from('cohort_memberships')
+                .delete()
+                .eq('id', membershipObj.id);
+
+            if (deleteErr) {
+                alert(`Error: ${deleteErr.message}`);
+            } else {
+                fetchParticipants();
+            }
+        } else {
+            alert(`${user.full_name} is in this cohort because their company is assigned to it. To remove them, change the company's assigned program on the Companies page.`);
+        }
+    };
+
+    const columns = useMemo(() => [
+        {
+            header: 'Name',
+            accessor: (user: User) => (
+                <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-lime/10 flex items-center justify-center shrink-0">
+                        <span className="text-lime font-bold text-xs">{(user.full_name || '?').charAt(0)}</span>
+                    </div>
+                    <span className="font-medium text-white">{user.full_name}</span>
+                </div>
+            ),
+            className: 'font-medium text-white',
+        },
+        { header: 'Email', accessor: 'email' as keyof User },
+        {
+            header: 'Role',
+            accessor: (user: User) => {
+                const roleLabel: Record<string, string> = {
+                    owner: 'Owner',
+                    admin: 'Admin',
+                    executive: 'Executive',
+                    participant: 'Participant',
+                };
+                return (
+                    <span className="px-2 py-1 text-xs rounded-lg border border-border text-gray-300">
+                        {roleLabel[user.role] ?? user.role}
+                    </span>
+                );
+            },
+        },
+        { header: 'Type', accessor: (user: User) => user.user_type ? user.user_type.replace(/_/g, ' ') : 'Unassigned', className: 'capitalize' },
+        {
+            header: 'Company',
+            accessor: (user: User) => {
+                if (!user.company_id) return '—';
+                const comp = companies.find((c) => c.id === user.company_id);
+                return comp ? comp.name : '—';
+            },
+        },
+        { header: 'Position', accessor: (user: User) => user.position || '—' },
+        {
+            header: 'Onboarding',
+            accessor: (user: User) => user.onboarding_completed ? (
+                <span className="px-2 py-0.5 rounded-lg border border-lime/30 bg-lime/10 text-lime text-xs font-medium">Completed</span>
+            ) : (
+                <span className="px-2 py-0.5 rounded-lg border border-white/[0.08] bg-white/[0.02] text-gray-500 text-xs font-medium">Pending</span>
+            ),
+        },
+        {
+            header: 'AI Readiness',
+            accessor: (user: User) => (
+                <span className={`font-semibold ${user.ai_readiness_score >= 70 ? 'text-lime' : user.ai_readiness_score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    {user.ai_readiness_score ?? '—'}
+                </span>
+            ),
+        },
+    ], [companies]);
+
+    return (
+        <div className="space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <p className="text-gray-400 text-sm">{participants.length} participant{participants.length !== 1 ? 's' : ''} in this program</p>
+                <button
+                    onClick={() => setIsInviteModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-lime hover:bg-lime/90 text-black text-xs font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(208,255,113,0.15)] cursor-pointer"
+                >
+                    <UserPlus className="h-4 w-4" />
+                    Invite Participant
+                </button>
+            </div>
+
+            {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
+
+            <AdminTable
+                data={participants}
+                columns={columns}
+                isLoading={isLoading}
+                onEdit={handleEditUser}
+                onDelete={handleRemoveUser}
+            />
+
+            {selectedUser && (
+                <UserModal
+                    isOpen={isModalOpen}
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setSelectedUser(null);
+                    }}
+                    onSuccess={() => {
+                        setIsModalOpen(false);
+                        setSelectedUser(null);
+                        fetchParticipants();
+                    }}
+                    user={selectedUser}
+                    companies={companies}
+                    programs={programs}
+                    memberships={selectedUserMemberships}
+                />
+            )}
+
+            <InviteUserModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                onSuccess={() => {
+                    setIsInviteModalOpen(false);
+                    fetchParticipants();
+                }}
+                companies={companies}
+                programs={programs}
+                defaultCohortId={cohort.id}
+            />
+        </div>
+    );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export function ProgramDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -381,7 +623,11 @@ export function ProgramDetailPage() {
     const fetchCohort = async () => {
         if (!id) return;
         const { data } = await supabase.from('cohorts').select('*').eq('id', id).single();
-        setCohort((data as Cohort | null) ?? null);
+        const fetchedCohort = (data as Cohort | null) ?? null;
+        setCohort(fetchedCohort);
+        if (fetchedCohort) {
+            setDynamicPageTitle(fetchedCohort.name);
+        }
         setIsLoading(false);
     };
 
@@ -394,11 +640,15 @@ export function ProgramDetailPage() {
     useEffect(() => {
         fetchCohort();
         refreshSessionCount();
+        return () => {
+            setDynamicPageTitle(null);
+        };
     }, [id]);
 
     const tabs: { id: DetailTab; label: string; icon: React.ElementType }[] = [
         { id: 'sessions', label: 'Sessions', icon: Calendar },
         { id: 'assignments', label: 'Assignments', icon: FileText },
+        { id: 'participants', label: 'Participants', icon: Users },
     ];
 
     if (isLoading) {
@@ -497,6 +747,7 @@ export function ProgramDetailPage() {
             >
                 {activeTab === 'sessions' && <SessionsPanel cohort={cohort} onRefreshCount={refreshSessionCount} />}
                 {activeTab === 'assignments' && <AssignmentsPanel cohort={cohort} />}
+                {activeTab === 'participants' && <ParticipantsPanel cohort={cohort} />}
             </motion.div>
         </div>
     );

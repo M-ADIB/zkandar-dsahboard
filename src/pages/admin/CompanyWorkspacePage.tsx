@@ -815,7 +815,15 @@ export function CompanyWorkspacePage() {
                                                 // Reload the cohort in state
                                                 const { data: newCohort } = await supabase
                                                     .from('cohorts').select('*').eq('id', selectedCohortId).single()
-                                                if (newCohort) setCohort(newCohort as Cohort)
+                                                if (newCohort) {
+                                                    setCohort(newCohort as Cohort)
+                                                    // Fetch and set sessions for this cohort
+                                                    const { data: sessData } = await supabase
+                                                        .from('sessions').select('*')
+                                                        .eq('cohort_id', selectedCohortId)
+                                                        .order('session_number', { ascending: true })
+                                                    setSessions((sessData as Session[]) ?? [])
+                                                }
                                                 setIsAssigning(false)
                                                 setIsAssignModalOpen(false)
                                             }}

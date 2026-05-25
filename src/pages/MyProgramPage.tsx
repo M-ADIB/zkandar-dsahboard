@@ -2,13 +2,13 @@ import { useEffect, useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
     GraduationCap, Calendar, ClipboardList, Film, FileText,
-    CheckCircle2, Clock, Upload, ChevronDown, ChevronUp, Link as LinkIcon,
+    CheckCircle2, Clock, Upload, ChevronDown, ChevronUp, Link as LinkIcon, Play, Lock,
 } from 'lucide-react'
 import { SubmitAssignmentModal } from '@/components/assignments/SubmitAssignmentModal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
-import { formatDateLabel, formatTimeLabel } from '@/lib/time'
+import { formatDateLabel, formatSessionDateTime } from '@/lib/time'
 import type { Assignment, Cohort, Session, SubmissionFormat } from '@/types/database'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -239,6 +239,8 @@ export function MyProgramPage() {
                         const isCompleted = session.status === 'completed'
                         const isAttended = attendance.has(session.id)
                         const isExpanded = expandedSession === session.id
+                        const sessionStartTime = new Date(session.scheduled_date).getTime()
+                        const sessionHasStarted = Date.now() >= sessionStartTime
                         const sessionAssignments = assignments.filter((a) => a.session_id === session.id)
                         const isLast = idx === sessions.length - 1
 
@@ -270,13 +272,15 @@ export function MyProgramPage() {
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-white">{session.title}</p>
                                             <p className="text-xs text-gray-500 mt-0.5">
-                                                {formatDateLabel(session.scheduled_date) || 'TBD'}
-                                                {formatTimeLabel(session.scheduled_date) ? ` · ${formatTimeLabel(session.scheduled_date)}` : ''}
+                                                {formatSessionDateTime(session.scheduled_date)}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
-                                            {session.recording_url && (
+                                            {session.recording_url && isCompleted && (
                                                 <span className="text-[10px] text-lime bg-lime/5 px-2 py-0.5 rounded border border-lime/20">Recording</span>
+                                            )}
+                                            {session.zoom_link && !isCompleted && (
+                                                <span className="text-[10px] text-blue-400 bg-blue-500/5 px-2 py-0.5 rounded border border-blue-500/20">Live Meeting</span>
                                             )}
                                             {sessionAssignments.length > 0 && (
                                                 <span className="text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-border">{sessionAssignments.length} task{sessionAssignments.length > 1 ? 's' : ''}</span>
@@ -293,7 +297,7 @@ export function MyProgramPage() {
                                             exit={{ opacity: 0, height: 0 }}
                                             className="space-y-2 pt-1 pb-2"
                                         >
-                                            {session.recording_url && (
+                                            {session.recording_url && isCompleted && (
                                                 <a
                                                     href={session.recording_url}
                                                     target="_blank"
@@ -302,6 +306,18 @@ export function MyProgramPage() {
                                                 >
                                                     <Film className="h-3.5 w-3.5" />
                                                     Watch Recording
+                                                </a>
+                                            )}
+
+                                            {session.zoom_link && !isCompleted && (
+                                                <a
+                                                    href={session.zoom_link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline"
+                                                >
+                                                    <Play className="h-3.5 w-3.5" />
+                                                    Join Live Meeting
                                                 </a>
                                             )}
 
@@ -327,13 +343,21 @@ export function MyProgramPage() {
                                                         return (
                                                             <div key={asgn.id} className="flex items-center justify-between bg-bg-elevated rounded-lg p-2.5 border border-border">
                                                                 <div className="flex items-center gap-2">
-                                                                    <ClipboardList className="h-3.5 w-3.5 text-gray-500" />
+                                                                    {sessionHasStarted ? (
+                                                                        <ClipboardList className="h-3.5 w-3.5 text-gray-500" />
+                                                                    ) : (
+                                                                        <Lock className="h-3.5 w-3.5 text-red-400" />
+                                                                    )}
                                                                     <div>
                                                                         <p className="text-xs font-medium text-white">{asgn.title}</p>
                                                                         {asgn.due_date && <p className="text-[10px] text-gray-500">Due {formatDateLabel(asgn.due_date)}</p>}
                                                                     </div>
                                                                 </div>
-                                                                {sub ? (
+                                                                {!sessionHasStarted ? (
+                                                                    <span className="px-2 py-0.5 text-[10px] rounded-md border bg-red-500/10 text-red-400 border-red-500/30 flex items-center gap-1">
+                                                                        <Lock className="h-3 w-3" /> Locked
+                                                                    </span>
+                                                                ) : sub ? (
                                                                     <span className={`px-2 py-0.5 text-[10px] rounded-md border ${sub.score != null ? 'bg-lime/10 text-lime border-lime/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30'}`}>
                                                                         {sub.score != null ? `✓ ${sub.score}pts` : 'Submitted'}
                                                                     </span>
@@ -373,13 +397,16 @@ export function MyProgramPage() {
                     </h2>
 
                     <div className="space-y-2">
-                        {assignments.map((asgn) => {
-                            const sub = submissionMap.get(asgn.id)
-                            const session = sessionMap.get(asgn.session_id)
-                            const isDue = asgn.due_date && new Date(asgn.due_date) < new Date() && !sub
+                        {assignments
+                            .map((asgn) => {
+                                const sub = submissionMap.get(asgn.id)
+                                const session = sessionMap.get(asgn.session_id)
+                                const sessionStartTime = session ? new Date(session.scheduled_date).getTime() : 0
+                                const isLocked = session ? Date.now() < sessionStartTime : true
+                                const isDue = asgn.due_date && new Date(asgn.due_date) < new Date() && !sub && !isLocked
 
-                            return (
-                                <div key={asgn.id} className={`bg-bg-elevated border rounded-xl p-4 transition ${isDue ? 'border-red-500/30' : 'border-border'}`}>
+                                return (
+                                    <div key={asgn.id} className={`bg-bg-elevated border rounded-xl p-4 transition ${isDue ? 'border-red-500/30' : 'border-border'}`}>
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
@@ -392,7 +419,7 @@ export function MyProgramPage() {
                                                 {session && <span>Session {session.session_number}</span>}
                                                 {asgn.due_date && (
                                                     <span className={isDue ? 'text-red-400 font-medium' : ''}>
-                                                        {isDue ? '⚠ Overdue' : `Due ${formatDateLabel(asgn.due_date)}`}
+                                                        {isLocked ? `Due ${formatDateLabel(asgn.due_date)}` : isDue ? '⚠ Overdue' : `Due ${formatDateLabel(asgn.due_date)}`}
                                                     </span>
                                                 )}
                                             </div>
@@ -402,7 +429,11 @@ export function MyProgramPage() {
                                         </div>
 
                                         <div className="shrink-0">
-                                            {sub ? (
+                                            {isLocked ? (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-red-500/10 text-red-400 border border-red-500/30">
+                                                    <Lock className="h-3.5 w-3.5" /> Locked
+                                                </span>
+                                            ) : sub ? (
                                                 <div className="text-right">
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg ${sub.score != null ? 'bg-lime/10 text-lime' : 'bg-amber-500/10 text-amber-300'}`}>
                                                         {sub.score != null ? <><CheckCircle2 className="h-3.5 w-3.5" /> {sub.score}pts</> : <><Clock className="h-3.5 w-3.5" /> Submitted</>}

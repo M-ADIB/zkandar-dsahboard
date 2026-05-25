@@ -19,7 +19,7 @@ import { useViewMode } from '@/context/ViewModeContext'
 import { ProgressBar } from '@/components/shared/ProgressBar'
 import { Portal } from '@/components/shared/Portal'
 import { supabase } from '@/lib/supabase'
-import { formatDateLabel, formatRelativeTime } from '@/lib/time'
+import { formatDateLabel, formatRelativeTime, formatSessionDateTime } from '@/lib/time'
 import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
 import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswers, UserType } from '@/types/database'
 
@@ -119,9 +119,9 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
 
 type SprintTimelineItem =
     | { type: 'session'; id: string; title: string; date: string; scheduledDate: string;
-        completed: boolean; current: boolean; recordingUrl: string | null }
+        completed: boolean; current: boolean; recordingUrl: string | null; zoomLink: string | null }
     | { type: 'assignment'; id: string; title: string; dueDate: string;
-        submitted: boolean; sessionCompleted: boolean }
+        submitted: boolean; sessionCompleted: boolean; locked?: boolean }
 
 
 export function ParticipantDashboard() {
@@ -242,7 +242,7 @@ export function ParticipantDashboard() {
             const [cohortsRes, sessionsRes, chatRes] = await Promise.all([
                 supabase.from('cohorts').select('*').in('id', cohortIds),
                 supabase.from('sessions')
-                    .select('id, title, scheduled_date, status, cohort_id, recording_url, session_number')
+                    .select('id, title, scheduled_date, status, cohort_id, zoom_link, recording_url, session_number')
                     .in('cohort_id', cohortIds)
                     .order('scheduled_date', { ascending: true }),
                 chatQuery
@@ -349,9 +349,11 @@ export function ParticipantDashboard() {
                 return {
                     id: session.id,
                     title: session.title,
-                    date: formatDateLabel(session.scheduled_date) || 'TBD',
+                    date: formatSessionDateTime(session.scheduled_date),
+                    scheduledDate: session.scheduled_date,
                     completed,
                     current,
+                    zoomLink: session.zoom_link ?? null,
                     recordingUrl: session.recording_url ?? null,
                 }
             })
@@ -383,10 +385,11 @@ export function ParticipantDashboard() {
                 type: 'session',
                 id: session.id,
                 title: session.title,
-                date: formatDateLabel(session.scheduled_date) || 'TBD',
+                date: formatSessionDateTime(session.scheduled_date),
                 scheduledDate: session.scheduled_date,
                 completed,
                 current,
+                zoomLink: session.zoom_link ?? null,
                 recordingUrl: session.recording_url ?? null,
             })
 
@@ -401,6 +404,7 @@ export function ParticipantDashboard() {
                     dueDate: a.due_date ? formatDateLabel(a.due_date) : 'TBD',
                     submitted: submissionIds.has(a.id),
                     sessionCompleted: completed,
+                    locked: scheduledAt > now,
                 })
             }
         }
@@ -416,24 +420,35 @@ export function ParticipantDashboard() {
     const assignmentSummary = useMemo(() => {
         const submissionIds = new Set(submissions.map((s) => s.assignment_id))
         const now = Date.now()
+        const sessionDateMap = new Map(sessions.map(s => [s.id, new Date(s.scheduled_date).getTime()]))
 
         const items = assignments
             .map((a) => {
                 const submitted = submissionIds.has(a.id)
                 const dueDate = a.due_date ? new Date(a.due_date).getTime() : null
                 const isOverdue = dueDate ? dueDate < now : false
-                const status: 'pending' | 'upcoming' | 'submitted' = submitted ? 'submitted' : isOverdue ? 'pending' : 'upcoming'
+                const sessionStartTime = sessionDateMap.get(a.session_id) ?? 0
+                const isLocked = sessionStartTime > now
+
+                const status: 'pending' | 'upcoming' | 'submitted' | 'locked' = isLocked
+                    ? 'locked'
+                    : submitted
+                        ? 'submitted'
+                        : isOverdue
+                            ? 'pending'
+                            : 'upcoming'
+
                 return { id: a.id, title: a.title, dueDate: a.due_date ? formatDateLabel(a.due_date) : 'TBD', status, dueSort: dueDate ?? Number.MAX_SAFE_INTEGER }
             })
             .sort((a, b) => {
-                const order = { pending: 0, upcoming: 1, submitted: 2 }
+                const order = { pending: 0, upcoming: 1, submitted: 2, locked: 3 }
                 if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status]
                 return a.dueSort - b.dueSort
             })
             .slice(0, 3)
 
         return { total: assignments.length, completed: submissionIds.size, items }
-    }, [assignments, submissions])
+    }, [assignments, submissions, sessions])
 
     const chatPreview = useMemo(() => recentMessages.map((m) => ({
         id: m.id,
@@ -490,8 +505,8 @@ export function ParticipantDashboard() {
                             <div className="mt-5 flex items-center gap-3 flex-wrap">
                                 <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">
                                     {countdown.sessionNumber 
-                                        ? `Session ${countdown.sessionNumber} starts in` 
-                                        : 'Next upcoming session in'}
+                                        ? `Session ${countdown.sessionNumber} starts in (Dubai Time)` 
+                                        : 'Next upcoming session in (Dubai Time)'}
                                 </span>
                                 <div className="flex items-center gap-1.5">
                                     {[
@@ -630,16 +645,33 @@ export function ParticipantDashboard() {
                                                                 </p>
                                                                 <p className={`text-xs mt-0.5 ${item.current ? 'text-lime/70' : 'text-gray-500'}`}>{item.date}</p>
                                                             </div>
-                                                            {item.recordingUrl ? (
-                                                                <button
-                                                                    onClick={() => window.open(item.recordingUrl!, '_blank')}
-                                                                    className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                                >
-                                                                    {item.completed ? 'Watch Now' : 'Join Now'}
-                                                                </button>
-                                                            ) : item.current ? (
-                                                                <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Soon</span>
-                                                            ) : null}
+                                                            {item.completed ? (
+                                                                item.recordingUrl && (
+                                                                    <button
+                                                                        onClick={() => window.open(item.recordingUrl!, '_blank')}
+                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                    >
+                                                                        Watch Now
+                                                                    </button>
+                                                                )
+                                                            ) : (
+                                                                item.zoomLink ? (
+                                                                    new Date(item.scheduledDate).getTime() > Date.now() ? (
+                                                                        <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
+                                                                            Coming Up
+                                                                        </span>
+                                                                    ) : (
+                                                                        <button
+                                                                            onClick={() => window.open(item.zoomLink!, '_blank')}
+                                                                            className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                        >
+                                                                            Join Now
+                                                                        </button>
+                                                                    )
+                                                                ) : item.current ? (
+                                                                    <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
+                                                                ) : null
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -648,10 +680,12 @@ export function ParticipantDashboard() {
                                                 <div className="relative flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-white/[0.03] border border-transparent transition-colors">
                                                     <div className="flex flex-col items-center shrink-0 w-10">
                                                         <div className={`h-8 w-8 rounded-lg flex items-center justify-center relative z-10 ${
-                                                            item.submitted ? 'bg-lime/10' : 'bg-white/[0.04]'
+                                                            item.submitted ? 'bg-lime/10' : item.locked ? 'bg-red-500/10' : 'bg-white/[0.04]'
                                                         }`}>
                                                             {item.submitted ? (
                                                                 <CheckCircle2 className="h-4 w-4 text-lime" />
+                                                            ) : item.locked ? (
+                                                                <Lock className="h-4 w-4 text-red-400" />
                                                             ) : (
                                                                 <FileText className="h-4 w-4 text-gray-500" />
                                                             )}
@@ -661,9 +695,13 @@ export function ParticipantDashboard() {
                                                         <p className={`text-sm truncate ${item.submitted ? 'text-gray-400' : 'text-white/80'}`}>{item.title}</p>
                                                         <p className="text-xs text-gray-600 mt-0.5">Due: {item.dueDate}</p>
                                                     </div>
-                                                    {item.submitted && (
+                                                    {item.submitted ? (
                                                         <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg shrink-0">Submitted</span>
-                                                    )}
+                                                    ) : item.locked ? (
+                                                        <span className="px-2 py-1 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg shrink-0 flex items-center gap-1">
+                                                            <Lock className="h-3 w-3" /> Locked
+                                                        </span>
+                                                    ) : null}
                                                 </div>
                                             )}
                                             <div className="h-1.5" />
@@ -703,16 +741,33 @@ export function ParticipantDashboard() {
                                                             </p>
                                                             <p className={`text-xs mt-0.5 truncate ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
                                                         </div>
-                                                        {session.recordingUrl ? (
-                                                            <button
-                                                                onClick={() => window.open(session.recordingUrl!, '_blank')}
-                                                                className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                            >
-                                                                {session.completed ? 'Watch Now' : 'Join Now'}
-                                                            </button>
-                                                        ) : session.current ? (
-                                                            <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Soon</span>
-                                                        ) : null}
+                                                        {session.completed ? (
+                                                            session.recordingUrl && (
+                                                                <button
+                                                                    onClick={() => window.open(session.recordingUrl!, '_blank')}
+                                                                    className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                >
+                                                                    Watch Now
+                                                                </button>
+                                                            )
+                                                        ) : (
+                                                            session.zoomLink ? (
+                                                                new Date(session.scheduledDate!).getTime() > Date.now() ? (
+                                                                    <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
+                                                                        Coming Up
+                                                                    </span>
+                                                                ) : (
+                                                                    <button
+                                                                        onClick={() => window.open(session.zoomLink!, '_blank')}
+                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                    >
+                                                                        Join Now
+                                                                    </button>
+                                                                )
+                                                            ) : session.current ? (
+                                                                <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
+                                                            ) : null
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -813,6 +868,11 @@ export function ParticipantDashboard() {
                                             )}
                                             {assignment.status === 'submitted' && (
                                                 <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg">Submitted</span>
+                                            )}
+                                            {assignment.status === 'locked' && (
+                                                <span className="px-2 py-1 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg flex items-center gap-1">
+                                                    <Lock className="h-3 w-3" /> Locked
+                                                </span>
                                             )}
                                         </div>
                                     </div>

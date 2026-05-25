@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { SessionModal } from '@/components/admin/programs/SessionModal'
 import { formatDateLabel, formatTimeLabel } from '@/lib/time'
 import type { Session, SessionStatus } from '@/types/database'
+import toast from 'react-hot-toast'
 
 interface WorkspaceSessionsProps {
     cohortId: string
@@ -49,11 +50,24 @@ export function WorkspaceSessions({ cohortId, sessions, onSessionsChange }: Work
 
     const handleSaveRecording = async (sessionId: string) => {
         setSavingRecording(true)
-        // @ts-expect-error - Supabase update type
-        await supabase.from('sessions').update({ recording_url: recordingUrl.trim() || null }).eq('id', sessionId)
-        setSavingRecording(false)
-        setEditingRecording(null)
-        onSessionsChange()
+        try {
+            const { error } = await (supabase
+                .from('sessions') as any)
+                .update({ recording_url: recordingUrl.trim() || null })
+                .eq('id', sessionId)
+
+            if (error) {
+                toast.error(`Failed to save recording link: ${error.message}`)
+            } else {
+                toast.success('Recording link saved successfully')
+                onSessionsChange()
+            }
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to save recording link')
+        } finally {
+            setSavingRecording(false)
+            setEditingRecording(null)
+        }
     }
 
     return (

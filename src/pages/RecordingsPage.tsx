@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Film, Play, Calendar, Clock, ExternalLink, Search } from 'lucide-react'
+import { Film, Play, Calendar, ExternalLink, Search, Lock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
-import { formatDateLabel, formatTimeLabel } from '@/lib/time'
+import { formatSessionDateTime } from '@/lib/time'
 import type { Session, Cohort } from '@/types/database'
 
 interface RecordingCard {
@@ -88,9 +88,7 @@ export function RecordingsPage() {
                 .from('sessions')
                 .select('id, title, session_number, scheduled_date, recording_url, status, cohort_id')
                 .in('cohort_id', cohortIds)
-                .not('recording_url', 'is', null)
-                .neq('recording_url', '')
-                .order('scheduled_date', { ascending: false })
+                .order('scheduled_date', { ascending: true })
 
             if (sessionsError) {
                 setError(sessionsError.message)
@@ -170,64 +168,78 @@ export function RecordingsPage() {
                 </motion.div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {filteredRecordings.map((recording, index) => (
-                        <motion.a
-                            key={recording.id}
-                            href={recording.recordingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.06 }}
-                            className="group relative bg-bg-card border border-border rounded-2xl overflow-hidden hover:border-lime/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(208,255,113,0.06)]"
-                        >
-                            {/* Thumbnail area */}
-                            <div className="relative h-40 bg-gradient-to-br from-lime/5 via-transparent to-green/5 flex items-center justify-center overflow-hidden">
-                                {/* Noise texture overlay */}
-                                <div className="absolute inset-0 opacity-[0.03]" style={{
-                                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                                }} />
+                    {filteredRecordings.map((recording, index) => {
+                        const hasRecording = Boolean(recording.recordingUrl)
+                        const CardWrapper = hasRecording ? motion.a : motion.div
+                        const wrapperProps = hasRecording ? {
+                            href: recording.recordingUrl,
+                            target: "_blank",
+                            rel: "noopener noreferrer"
+                        } : {}
 
-                                {/* Session number badge */}
-                                <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[11px] font-medium text-gray-300">
-                                    Session {recording.sessionNumber}
-                                </div>
+                        return (
+                            <CardWrapper
+                                key={recording.id}
+                                {...wrapperProps}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.06 }}
+                                className={`group relative bg-bg-card border rounded-2xl overflow-hidden transition-all duration-300 ${
+                                    hasRecording 
+                                        ? 'border-border hover:border-lime/30 hover:shadow-[0_0_30px_rgba(208,255,113,0.06)] cursor-pointer' 
+                                        : 'border-border/50 opacity-40'
+                                }`}
+                            >
+                                {/* Thumbnail area */}
+                                <div className="relative h-40 bg-gradient-to-br from-lime/5 via-transparent to-green/5 flex items-center justify-center overflow-hidden">
+                                    {/* Noise texture overlay */}
+                                    <div className="absolute inset-0 opacity-[0.03]" style={{
+                                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                    }} />
 
-                                {/* Play button */}
-                                <div className="h-14 w-14 rounded-full bg-lime/90 flex items-center justify-center shadow-lg shadow-lime/20 group-hover:scale-110 transition-transform duration-300">
-                                    <Play className="h-6 w-6 text-black ml-0.5" />
-                                </div>
+                                    {/* Session number badge */}
+                                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[11px] font-medium text-gray-300">
+                                        Session {recording.sessionNumber}
+                                    </div>
 
-                                {/* External link hint */}
-                                <div className="absolute top-3 right-3 h-7 w-7 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    <ExternalLink className="h-3.5 w-3.5 text-gray-300" />
-                                </div>
-                            </div>
+                                    {/* Play or Lock button */}
+                                    {hasRecording ? (
+                                        <div className="h-14 w-14 rounded-full bg-lime/90 flex items-center justify-center shadow-lg shadow-lime/20 group-hover:scale-110 transition-transform duration-300">
+                                            <Play className="h-6 w-6 text-black ml-0.5" />
+                                        </div>
+                                    ) : (
+                                        <div className="h-14 w-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                            <Lock className="h-6 w-6 text-gray-500" />
+                                        </div>
+                                    )}
 
-                            {/* Content */}
-                            <div className="p-4 space-y-3">
-                                <div>
-                                    <h3 className="font-semibold text-white text-sm group-hover:text-lime transition-colors line-clamp-1">
-                                        {recording.title}
-                                    </h3>
-                                    <p className="text-xs text-lime/70 mt-0.5">{recording.programName}</p>
-                                </div>
-
-                                <div className="flex items-center gap-3 text-xs text-gray-500">
-                                    <span className="flex items-center gap-1">
-                                        <Calendar className="h-3 w-3" />
-                                        {formatDateLabel(recording.scheduledDate)}
-                                    </span>
-                                    {formatTimeLabel(recording.scheduledDate) && (
-                                        <span className="flex items-center gap-1">
-                                            <Clock className="h-3 w-3" />
-                                            {formatTimeLabel(recording.scheduledDate)}
-                                        </span>
+                                    {/* External link hint */}
+                                    {hasRecording && (
+                                        <div className="absolute top-3 right-3 h-7 w-7 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <ExternalLink className="h-3.5 w-3.5 text-gray-300" />
+                                        </div>
                                     )}
                                 </div>
-                            </div>
-                        </motion.a>
-                    ))}
+
+                                {/* Content */}
+                                <div className="p-4 space-y-3">
+                                    <div>
+                                        <h3 className={`font-semibold text-sm transition-colors line-clamp-1 ${hasRecording ? 'text-white group-hover:text-lime' : 'text-gray-500'}`}>
+                                            {recording.title}
+                                        </h3>
+                                        <p className="text-xs text-lime/70 mt-0.5">{recording.programName}</p>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                                        <span className="flex items-center gap-1">
+                                            <Calendar className="h-3 w-3" />
+                                            {formatSessionDateTime(recording.scheduledDate)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </CardWrapper>
+                        )
+                    })}
                 </div>
             )}
         </div>

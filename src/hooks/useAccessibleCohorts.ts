@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
-import { useCompany } from '@/hooks/useCompany'
-import type { Cohort, CohortMembership } from '@/types/database'
+import type { Cohort } from '@/types/database'
 
-export function useAccessibleCohorts() {
+export function useAccessibleCohorts(overrideUserId?: string | null) {
     const { user, loading: authLoading } = useAuth()
-    const { company, loading: companyLoading } = useCompany()
     const [cohorts, setCohorts] = useState<Cohort[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    const targetUserId = overrideUserId !== undefined ? overrideUserId : user?.id
+
     const fetchCohorts = useCallback(async () => {
-        if (authLoading || companyLoading) return
-        if (!user) {
+        if (authLoading) return
+        if (!targetUserId) {
             setCohorts([])
             setLoading(false)
             return
@@ -22,64 +22,83 @@ export function useAccessibleCohorts() {
         setLoading(true)
         setError(null)
 
-        const { data: membershipData, error: membershipError } = await supabase
-            .from('cohort_memberships')
-            .select('cohort_id')
-            .eq('user_id', user.id)
+        try {
+            // 1. Get the user's company linkage
+            const { data: userData, error: userError } = await (supabase
+                .from('users')
+                .select('company_id')
+                .eq('id', targetUserId)
+                .maybeSingle() as any)
 
-        if (membershipError) {
-            setError(membershipError.message)
-            setCohorts([])
-            setLoading(false)
-            return
-        }
+            if (userError) throw userError
 
-        const membershipIds = ((membershipData as Pick<CohortMembership, 'cohort_id'>[]) ?? [])
-            .map((membership) => membership.cohort_id)
+            const companyId = userData?.company_id
 
-        const cohortIds = new Set<string>()
-        membershipIds.forEach((id) => cohortIds.add(id))
-        if (company?.cohort_id) {
-            cohortIds.add(company.cohort_id)
-        }
+            // 2. Get direct memberships
+            const { data: membershipData, error: membershipError } = await supabase
+                .from('cohort_memberships')
+                .select('cohort_id')
+                .eq('user_id', targetUserId)
 
-        if (cohortIds.size === 0) {
-            setCohorts([])
-            setLoading(false)
-            return
-        }
+            if (membershipError) throw membershipError
 
-        const { data: cohortData, error: cohortError } = await supabase
-            .from('cohorts')
-            .select('*')
-            .in('id', Array.from(cohortIds))
+            const cohortIds = new Set<string>(
+                ((membershipData as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
+            )
 
-        if (cohortError) {
-            setError(cohortError.message)
-            setCohorts([])
-        } else {
+            // 3. Get company's cohort_id if applicable
+            if (companyId) {
+                const { data: companyData, error: companyError } = await (supabase
+                    .from('companies')
+                    .select('cohort_id')
+                    .eq('id', companyId)
+                    .maybeSingle() as any)
+
+                if (companyError) throw companyError
+                if (companyData?.cohort_id) {
+                    cohortIds.add(companyData.cohort_id)
+                }
+            }
+
+            if (cohortIds.size === 0) {
+                setCohorts([])
+                setLoading(false)
+                return
+            }
+
+            // 4. Fetch the cohorts
+            const { data: cohortData, error: cohortError } = await supabase
+                .from('cohorts')
+                .select('*')
+                .in('id', Array.from(cohortIds))
+
+            if (cohortError) throw cohortError
+
             setCohorts((cohortData as Cohort[]) ?? [])
+        } catch (err: any) {
+            setError(err.message)
+            setCohorts([])
+        } finally {
+            setLoading(false)
         }
-
-        setLoading(false)
-    }, [authLoading, companyLoading, user?.id, company?.cohort_id])
+    }, [authLoading, targetUserId])
 
     useEffect(() => {
         fetchCohorts()
     }, [fetchCohorts])
 
     useEffect(() => {
-        if (authLoading || !user) return
+        if (authLoading || !targetUserId) return
 
         const channel = supabase
-            .channel(`cohort_memberships:${user.id}`)
+            .channel(`cohort_memberships:${targetUserId}`)
             .on(
                 'postgres_changes',
                 {
                     event: '*',
                     schema: 'public',
                     table: 'cohort_memberships',
-                    filter: `user_id=eq.${user.id}`,
+                    filter: `user_id=eq.${targetUserId}`,
                 },
                 () => {
                     fetchCohorts()
@@ -90,7 +109,7 @@ export function useAccessibleCohorts() {
         return () => {
             void supabase.removeChannel(channel)
         }
-    }, [authLoading, user?.id, fetchCohorts])
+    }, [authLoading, targetUserId, fetchCohorts])
 
     const cohortIds = useMemo(() => cohorts.map((cohort) => cohort.id), [cohorts])
 
