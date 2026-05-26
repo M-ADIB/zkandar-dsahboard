@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, ArrowRight, Play } from 'lucide-react'
+import { ArrowRight, Play } from 'lucide-react'
+import logo from '@/assets/logo.png'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 
@@ -178,7 +179,7 @@ export function WelcomePage() {
                             className="text-center"
                         >
                             <div className="flex items-center justify-center gap-2 mb-3">
-                                <Sparkles className="h-4 w-4 text-lime" />
+                                <img src={logo} alt="ZKandar AI Logo" className="h-3.5 w-3.5 object-contain" />
                                 <span className="text-xs uppercase tracking-widest text-lime">
                                     Welcome to the Platform
                                 </span>
@@ -238,15 +239,9 @@ export function WelcomePage() {
                                         : 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
                                 }`}
                             >
-                                {canEnter ? 'Enter the Platform' : 'Skip & Enter Platform'}
+                                Enter Platform
                                 <ArrowRight className="h-4 w-4" />
                             </button>
-
-                            {!canEnter && (
-                                <p className="text-[10px] text-gray-500 text-center uppercase tracking-wider">
-                                    Video playing — feel free to skip when you're ready
-                                </p>
-                            )}
 
                             {IS_DEV && !canEnter && (
                                 <button

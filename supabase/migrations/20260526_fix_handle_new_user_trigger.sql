@@ -1,4 +1,4 @@
--- Fix handle_new_user function to not attempt inserting non-existent 'role' column in cohort_memberships
+-- Fix handle_new_user function to not attempt inserting non-existent 'role' column in cohort_memberships and add secure search_path for GoTrue execution context
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -7,8 +7,8 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE((NEW.raw_user_meta_data->>'role')::user_role, 'participant'),
-    (NEW.raw_user_meta_data->>'user_type')::user_type,
+    COALESCE((NEW.raw_user_meta_data->>'role')::public.user_role, 'participant'::public.user_role),
+    (NEW.raw_user_meta_data->>'user_type')::public.user_type,
     (NEW.raw_user_meta_data->>'company_id')::uuid
   )
   ON CONFLICT (id) DO NOTHING;
@@ -25,4 +25,4 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_catalog;
