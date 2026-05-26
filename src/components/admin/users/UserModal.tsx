@@ -3,6 +3,8 @@ import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
 import type { Cohort, Company, User, UserRole, UserType } from '@/types/database';
 import { logAudit } from '@/lib/audit';
+import { Trash2, Upload, Loader2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 interface UserModalProps {
     isOpen: boolean;
@@ -62,8 +64,19 @@ export function UserModal({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [invoices, setInvoices] = useState<any[]>([]);
+    const [nativePurchases, setNativePurchases] = useState<any[]>([]);
+    const [invoiceName, setInvoiceName] = useState('');
+    const [invoiceAmount, setInvoiceAmount] = useState('');
+    const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
     useEffect(() => {
-        if (!user) return;
+        if (!user) {
+            setInvoices([]);
+            setNativePurchases([]);
+            return;
+        }
 
         setFormData({
             full_name: user.full_name,
@@ -77,7 +90,118 @@ export function UserModal({
         setSelectedPrograms(memberships);
         setInitialPrograms(memberships);
         setError(null);
+
+        // Load invoices from profile_data
+        const profileInvoices = (user.profile_data as any)?.invoices || [];
+        setInvoices(profileInvoices);
+
+        // Fetch native purchases in parallel
+        const fetchNativePurchases = async () => {
+            const { data, error: fetchErr } = await supabase
+                .from('webinar_purchases')
+                .select('*')
+                .or(`customer_email.ilike.${user.email},user_id.eq.${user.id}`)
+                .in('status', ['completed', 'paid']);
+            if (!fetchErr && data) {
+                setNativePurchases(data);
+            }
+        };
+        fetchNativePurchases();
     }, [user, memberships, isOpen]);
+
+    const handleUploadInvoice = async () => {
+        if (!user || !invoiceFile) return;
+        setIsUploading(true);
+        setError(null);
+        try {
+            const fileExt = invoiceFile.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+            
+            const { error: uploadErr } = await supabase.storage
+                .from('invoices')
+                .upload(filePath, invoiceFile, { upsert: true });
+                
+            if (uploadErr) throw uploadErr;
+            
+            const { data: urlData } = supabase.storage
+                .from('invoices')
+                .getPublicUrl(filePath);
+                
+            const newInvoice = {
+                id: crypto.randomUUID(),
+                name: invoiceName.trim() || invoiceFile.name,
+                amount: parseFloat(invoiceAmount) || 0,
+                url: urlData.publicUrl,
+                uploaded_at: new Date().toISOString(),
+                source: 'manual'
+            };
+            
+            const nextInvoices = [...invoices, newInvoice];
+            
+            const { data: userData } = await (supabase
+                .from('users' as any)
+                .select('profile_data')
+                .eq('id', user.id)
+                .single() as any);
+                
+            const currentProfile = (userData?.profile_data as Record<string, any>) || {};
+            const newProfile = {
+                ...currentProfile,
+                invoices: nextInvoices
+            };
+            
+            const { error: dbErr } = await (supabase
+                .from('users' as any)
+                .update({ profile_data: newProfile })
+                .eq('id', user.id) as any);
+                
+            if (dbErr) throw dbErr;
+            
+            setInvoices(nextInvoices);
+            setInvoiceName('');
+            setInvoiceAmount('');
+            setInvoiceFile(null);
+            toast.success('Invoice uploaded successfully!');
+            onSuccess();
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || 'Failed to upload invoice.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDeleteInvoice = async (invoiceId: string) => {
+        if (!user) return;
+        const nextInvoices = invoices.filter(inv => inv.id !== invoiceId);
+        try {
+            const { data: userData } = await (supabase
+                .from('users' as any)
+                .select('profile_data')
+                .eq('id', user.id)
+                .single() as any);
+                
+            const currentProfile = (userData?.profile_data as Record<string, any>) || {};
+            const newProfile = {
+                ...currentProfile,
+                invoices: nextInvoices
+            };
+            
+            const { error: dbErr } = await (supabase
+                .from('users' as any)
+                .update({ profile_data: newProfile })
+                .eq('id', user.id) as any);
+                
+            if (dbErr) throw dbErr;
+            
+            setInvoices(nextInvoices);
+            toast.success('Invoice removed successfully.');
+            onSuccess();
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to delete invoice.');
+        }
+    };
 
     const programGroups = useMemo(() => {
         const sprint = programs.filter((program) => program.offering_type === 'sprint_workshop');
@@ -355,6 +479,148 @@ export function UserModal({
                     </div>
                 )}
             </div>
+
+            {user && (
+                <>
+                    <div className="border-t border-white/[0.08] my-6" />
+                    
+                    <div className="space-y-4 text-left">
+                        <div>
+                            <h3 className="text-sm font-semibold text-white">Billing & Invoices</h3>
+                            <p className="text-xs text-gray-500 mt-0.5">Manage manual invoices or view native checkout history for this member.</p>
+                        </div>
+                        
+                        {/* Native Checkouts */}
+                        {nativePurchases.length > 0 && (
+                            <div className="space-y-2">
+                                <p className="text-xs font-bold uppercase tracking-wider text-lime/80">Native Checkout Purchases</p>
+                                <div className="space-y-2">
+                                    {nativePurchases.map((purchase) => (
+                                        <div key={purchase.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                                            <div className="min-w-0 flex-1 mr-4">
+                                                <p className="text-sm font-medium text-white truncate">
+                                                    {Array.isArray(purchase.products) ? purchase.products.join(', ') : 'Sprint Workshop'}
+                                                </p>
+                                                <p className="text-xs text-gray-500 mt-0.5">
+                                                    Completed on {new Date(purchase.completed_at || purchase.created_at).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-3 shrink-0">
+                                                <span className="text-sm font-mono font-semibold text-lime">
+                                                    ${((purchase.amount_total || 0) / 100).toFixed(2)}
+                                                </span>
+                                                <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-lime/10 text-lime uppercase tracking-wider">
+                                                    {purchase.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Manual Invoices List */}
+                        <div className="space-y-2">
+                            <p className="text-xs font-bold uppercase tracking-wider text-gray-400">Manual Invoices</p>
+                            {invoices.length === 0 ? (
+                                <p className="text-xs text-gray-600 italic">No manual invoices uploaded yet.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {invoices.map((inv) => (
+                                        <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                                            <div className="min-w-0 flex-1 mr-4">
+                                                <a 
+                                                    href={inv.url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="text-sm font-medium text-white hover:text-lime hover:underline truncate block"
+                                                >
+                                                    {inv.name}
+                                                </a>
+                                                <p className="text-xs text-gray-500 mt-0.5">
+                                                    Uploaded on {new Date(inv.uploaded_at).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-3 shrink-0">
+                                                {inv.amount > 0 && (
+                                                    <span className="text-sm font-mono font-semibold text-white">
+                                                        ${inv.amount.toFixed(2)}
+                                                    </span>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteInvoice(inv.id)}
+                                                    className="p-1 text-gray-500 hover:text-red-400 transition"
+                                                    title="Delete invoice"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Upload Form */}
+                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 space-y-4">
+                            <p className="text-xs font-bold uppercase tracking-wider text-gray-400">Upload New Invoice</p>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[11px] text-gray-400 mb-1">Invoice Label</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Invoice #2026-001"
+                                        value={invoiceName}
+                                        onChange={(e) => setInvoiceName(e.target.value)}
+                                        className="w-full px-3 py-1.5 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] text-gray-400 mb-1">Amount ($ USD, optional)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="e.g. 816.00"
+                                        value={invoiceAmount}
+                                        onChange={(e) => setInvoiceAmount(e.target.value)}
+                                        className="w-full px-3 py-1.5 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-[11px] text-gray-400 mb-1">Select File (PDF, PNG, JPG)</label>
+                                <input
+                                    type="file"
+                                    accept=".pdf,.png,.jpg,.jpeg,.webp"
+                                    onChange={(e) => setInvoiceFile(e.target.files?.[0] || null)}
+                                    className="w-full text-xs text-gray-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-lime/10 file:text-lime hover:file:bg-lime/20 file:cursor-pointer"
+                                />
+                            </div>
+                            
+                            <button
+                                type="button"
+                                onClick={handleUploadInvoice}
+                                disabled={isUploading || !invoiceFile}
+                                className="w-full py-2 bg-lime/10 border border-lime/20 hover:bg-lime/20 text-lime rounded-xl text-xs font-semibold tracking-wider uppercase transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                {isUploading ? (
+                                    <>
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                        Uploading...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className="h-3 w-3" />
+                                        Upload Invoice
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
         </ModalForm>
     );
 }
