@@ -40,7 +40,7 @@ export function CheckoutPage() {
     const [customerEmail, setCustomerEmail] = useState('')
 
     useEffect(() => {
-        supabase.from('settings').select('key, value')
+        supabase.from('platform_settings').select('key, value')
             .in('key', ['marketing_sprint_dates', 'marketing_sprint_location'])
             .then(({ data }) => {
                 if (!data) return

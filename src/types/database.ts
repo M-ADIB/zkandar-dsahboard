@@ -54,7 +54,7 @@ export interface User {
     avatar_url: string | null
     onboarding_completed: boolean
     welcome_video_watched: boolean
-    ai_readiness_score: number
+    ai_readiness_score: number | null
     profile_data: Record<string, unknown> | null
     onboarding_data: Record<string, unknown> | null
     created_at: string
@@ -244,17 +244,65 @@ export interface Submission {
 
 export interface ChatMessage {
     id: string
-    cohort_id: string | null
-    company_id: string | null
+    room_id: string
     sender_id: string
-    message: string
-    message_type: ChatMessageType
+    body: string | null
+    message_type: string
     file_url: string | null
-    channel_type: ChatChannelType
-    is_pinned: boolean
+    file_name: string | null
+    file_type: string | null
+    file_size: number | null
+    voice_duration: number | null
+    parent_id: string | null
+    reactions: Record<string, any> | null
+    forwarded_from: string | null
+    is_edited: boolean
+    edited_at: string | null
+    metadata: Record<string, any> | null
     created_at: string
     // Joined data
     sender?: User
+}
+
+export interface ChatRoom {
+    id: string
+    name: string | null
+    type: string
+    cohort_id: string | null
+    company_id: string | null
+    created_by: string | null
+    created_at: string
+    updated_at: string
+    // Frontend-joined fields
+    members?: ChatRoomMember[]
+    messages?: ChatMessage[]
+}
+
+export interface ChatRoomMember {
+    id: string
+    room_id: string
+    user_id: string
+    role: string
+    joined_at: string
+    // Frontend-joined fields
+    user?: User
+}
+
+export interface ChatReadReceipt {
+    id: string
+    room_id: string
+    user_id: string
+    last_read_at: string
+}
+
+export interface ChatPinnedMessage {
+    id: string
+    room_id: string
+    message_id: string
+    pinned_by: string
+    pinned_at: string
+    // Frontend-joined fields
+    message?: ChatMessage
 }
 
 export interface Survey {
@@ -284,13 +332,51 @@ export interface SurveyResponse {
 export interface Invitation {
     id: string
     email: string
+    role: string
     company_id: string | null
+    cohort_id: string | null
     invited_by: string | null
-    token: string
-    status: InvitationStatus
+    status: string
     created_at: string
-    expires_at: string
 }
+
+export interface WebinarLead {
+    id: string
+    created_at: string
+    updated_at: string
+    full_name: string
+    email: string
+    phone: string | null
+    source: string | null
+    status: string | null
+    utm_source: string | null
+    utm_medium: string | null
+    utm_campaign: string | null
+    stripe_session_id: string | null
+    payment_status: string | null
+    amount_paid: number | null
+    metadata: Record<string, any> | null
+}
+
+export interface WebinarPurchase {
+    id: string
+    user_id: string | null
+    lead_id: string | null
+    stripe_customer_id: string | null
+    stripe_session_id: string | null
+    stripe_payment_intent_id: string | null
+    status: string | null
+    amount_total: number | null
+    currency: string | null
+    customer_name: string | null
+    customer_email: string | null
+    products: string[] | null
+    metadata: Record<string, any> | null
+    completed_at: string | null
+    created_at: string
+    updated_at: string
+}
+
 
 export interface EventRequest {
     id: string
@@ -486,7 +572,7 @@ export interface EmailQueueItem {
 }
 
 // Database type for Supabase client
-export interface Database {
+export interface RawDatabase {
     public: {
         Tables: {
             users: {
@@ -499,7 +585,8 @@ export interface Database {
                     company_id?: string | null
                     user_type?: UserType | null
                     onboarding_completed?: boolean
-                    ai_readiness_score?: number
+                    welcome_video_watched?: boolean
+                    ai_readiness_score?: number | null
                     profile_data?: Record<string, unknown> | null
                     onboarding_data?: Record<string, unknown> | null
                     nationality?: string | null
@@ -552,9 +639,211 @@ export interface Database {
                 Update: Partial<Omit<Submission, 'id'>>
             }
             chat_messages: {
-                Row: ChatMessage
-                Insert: Omit<ChatMessage, 'id' | 'created_at'>
-                Update: Partial<Omit<ChatMessage, 'id'>>
+                Row: {
+                    id: string
+                    room_id: string
+                    sender_id: string
+                    body: string | null
+                    message_type: string
+                    file_url: string | null
+                    file_name: string | null
+                    file_type: string | null
+                    file_size: number | null
+                    voice_duration: number | null
+                    parent_id: string | null
+                    reactions: Record<string, any> | null
+                    forwarded_from: string | null
+                    is_edited: boolean
+                    edited_at: string | null
+                    metadata: Record<string, any> | null
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    room_id: string
+                    sender_id: string
+                    body?: string | null
+                    message_type?: string
+                    file_url?: string | null
+                    file_name?: string | null
+                    file_type?: string | null
+                    file_size?: number | null
+                    voice_duration?: number | null
+                    parent_id?: string | null
+                    reactions?: Record<string, any> | null
+                    forwarded_from?: string | null
+                    is_edited?: boolean
+                    edited_at?: string | null
+                    metadata?: Record<string, any> | null
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    room_id?: string
+                    sender_id?: string
+                    body?: string | null
+                    message_type?: string
+                    file_url?: string | null
+                    file_name?: string | null
+                    file_type?: string | null
+                    file_size?: number | null
+                    voice_duration?: number | null
+                    parent_id?: string | null
+                    reactions?: Record<string, any> | null
+                    forwarded_from?: string | null
+                    is_edited?: boolean
+                    edited_at?: string | null
+                    metadata?: Record<string, any> | null
+                    created_at?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "chat_messages_sender_id_fkey"
+                        columns: ["sender_id"]
+                        isOneToOne: false
+                        referencedRelation: "users"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "chat_messages_room_id_fkey"
+                        columns: ["room_id"]
+                        isOneToOne: false
+                        referencedRelation: "chat_rooms"
+                        referencedColumns: ["id"]
+                    }
+                ]
+            }
+            chat_rooms: {
+                Row: {
+                    id: string
+                    name: string | null
+                    type: string
+                    cohort_id: string | null
+                    company_id: string | null
+                    created_by: string | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    name?: string | null
+                    type: string
+                    cohort_id?: string | null
+                    company_id?: string | null
+                    created_by?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    name?: string | null
+                    type?: string
+                    cohort_id?: string | null
+                    company_id?: string | null
+                    created_by?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "chat_rooms_created_by_fkey"
+                        columns: ["created_by"]
+                        isOneToOne: false
+                        referencedRelation: "users"
+                        referencedColumns: ["id"]
+                    }
+                ]
+            }
+            chat_room_members: {
+                Row: {
+                    id: string
+                    room_id: string
+                    user_id: string
+                    role: string
+                    joined_at: string
+                }
+                Insert: {
+                    id?: string
+                    room_id: string
+                    user_id: string
+                    role?: string
+                    joined_at?: string
+                }
+                Update: {
+                    id?: string
+                    room_id?: string
+                    user_id?: string
+                    role?: string
+                    joined_at?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "chat_room_members_room_id_fkey"
+                        columns: ["room_id"]
+                        isOneToOne: false
+                        referencedRelation: "chat_rooms"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "chat_room_members_user_id_fkey"
+                        columns: ["user_id"]
+                        isOneToOne: false
+                        referencedRelation: "users"
+                        referencedColumns: ["id"]
+                    }
+                ]
+            }
+            chat_read_receipts: {
+                Row: {
+                    id: string
+                    room_id: string
+                    user_id: string
+                    last_read_at: string
+                }
+                Insert: {
+                    id?: string
+                    room_id: string
+                    user_id: string
+                    last_read_at?: string
+                }
+                Update: {
+                    id?: string
+                    room_id?: string
+                    user_id?: string
+                    last_read_at?: string
+                }
+            }
+            chat_pinned_messages: {
+                Row: {
+                    id: string
+                    room_id: string
+                    message_id: string
+                    pinned_by: string
+                    pinned_at: string
+                }
+                Insert: {
+                    id?: string
+                    room_id: string
+                    message_id: string
+                    pinned_by: string
+                    pinned_at?: string
+                }
+                Update: {
+                    id?: string
+                    room_id?: string
+                    message_id?: string
+                    pinned_by?: string
+                    pinned_at?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "chat_pinned_messages_message_id_fkey"
+                        columns: ["message_id"]
+                        isOneToOne: false
+                        referencedRelation: "chat_messages"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
             surveys: {
                 Row: Survey
@@ -568,8 +857,29 @@ export interface Database {
             }
             invitations: {
                 Row: Invitation
-                Insert: Omit<Invitation, 'id' | 'created_at'>
-                Update: Partial<Omit<Invitation, 'id'>>
+                Insert: Omit<Invitation, 'id' | 'created_at'> & {
+                    id?: string
+                    created_at?: string
+                }
+                Update: Partial<Omit<Invitation, 'id' | 'created_at'>>
+            }
+            webinar_leads: {
+                Row: WebinarLead
+                Insert: Omit<WebinarLead, 'id' | 'created_at' | 'updated_at'> & {
+                    id?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: Partial<Omit<WebinarLead, 'id' | 'created_at' | 'updated_at'>>
+            }
+            webinar_purchases: {
+                Row: WebinarPurchase
+                Insert: Omit<WebinarPurchase, 'id' | 'created_at' | 'updated_at'> & {
+                    id?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: Partial<Omit<WebinarPurchase, 'id' | 'created_at' | 'updated_at'>>
             }
             notifications: {
                 Row: Notification
@@ -635,11 +945,382 @@ export interface Database {
                 Insert: Omit<EmailQueueItem, 'id' | 'created_at' | 'updated_at'>
                 Update: Partial<Omit<EmailQueueItem, 'id' | 'created_at'>>
             }
+            assessment_submissions: {
+                Row: {
+                    id: string
+                    created_at: string
+                    name: string
+                    email: string
+                    answers: Record<string, any>
+                    readiness_score: number
+                    path_result: string
+                    context: string | null
+                    team_size: string | null
+                    phone: string | null
+                    first_name: string | null
+                    last_name: string | null
+                }
+                Insert: {
+                    id?: string
+                    created_at?: string
+                    name: string
+                    email: string
+                    answers: Record<string, any>
+                    readiness_score: number
+                    path_result: string
+                    context?: string | null
+                    team_size?: string | null
+                    phone?: string | null
+                    first_name?: string | null
+                    last_name?: string | null
+                }
+                Update: {
+                    id?: string
+                    created_at?: string
+                    name?: string
+                    email?: string
+                    answers?: Record<string, any>
+                    readiness_score?: number
+                    path_result?: string
+                    context?: string | null
+                    team_size?: string | null
+                    phone?: string | null
+                    first_name?: string | null
+                    last_name?: string | null
+                }
+            }
+            events: {
+                Row: {
+                    id: string
+                    title: string
+                    venue: string | null
+                    description: string | null
+                    event_date: string | null
+                    status: string | null
+                    image_url: string | null
+                    created_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    title: string
+                    venue?: string | null
+                    description?: string | null
+                    event_date?: string | null
+                    status?: string | null
+                    image_url?: string | null
+                    created_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    title?: string
+                    venue?: string | null
+                    description?: string | null
+                    event_date?: string | null
+                    status?: string | null
+                    image_url?: string | null
+                    created_at?: string | null
+                }
+            }
+            platform_settings: {
+                Row: {
+                    id: string
+                    key: string
+                    value: string
+                    label: string | null
+                    category: string | null
+                    updated_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    key: string
+                    value: string
+                    label?: string | null
+                    category?: string | null
+                    updated_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    key?: string
+                    value?: string
+                    label?: string | null
+                    category?: string | null
+                    updated_at?: string | null
+                }
+            }
+            costs: {
+                Row: {
+                    id: string
+                    item_name: string
+                    category: string
+                    invoice_date: string | null
+                    total_amount: number
+                    payment_date: string | null
+                    notes: string | null
+                    credential_email: string | null
+                    credential_password: string | null
+                    is_active: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    item_name: string
+                    category: string
+                    invoice_date?: string | null
+                    total_amount: number
+                    payment_date?: string | null
+                    notes?: string | null
+                    credential_email?: string | null
+                    credential_password?: string | null
+                    is_active?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    item_name?: string
+                    category?: string
+                    invoice_date?: string | null
+                    total_amount?: number
+                    payment_date?: string | null
+                    notes?: string | null
+                    credential_email?: string | null
+                    credential_password?: string | null
+                    is_active?: boolean
+                    created_at?: string
+                }
+            }
+            job_applications: {
+                Row: JobApplication
+                Insert: Omit<JobApplication, 'id' | 'created_at'> & {
+                    id?: string
+                    created_at?: string
+                }
+                Update: Partial<JobApplication>
+            }
+            session_attendance: {
+                Row: {
+                    id: string
+                    session_id: string
+                    user_id: string
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    session_id: string
+                    user_id: string
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    session_id?: string
+                    user_id?: string
+                    created_at?: string
+                }
+            }
+
+            management_submissions: {
+                Row: {
+                    id: string
+                    created_at: string
+                    user_email: string
+                    full_name: string | null
+                    company_name: string | null
+                    company_id: string | null
+                    q1_role: string | null
+                    q2_studio_focus: string | null
+                    q3_ai_adoption_status: string | null
+                    q4_visibility: number | null
+                    q5_opportunities: string[] | null
+                    q6_risks: string[] | null
+                    q7_alignment_confidence: number | null
+                    q8_guidance_level: string | null
+                    q9_success_factor: string | null
+                    q10_team_readiness: number | null
+                    q11_impact_speed: number | null
+                    q11_impact_quality: number | null
+                    q11_impact_efficiency: number | null
+                    q11_impact_client_satisfaction: number | null
+                    q11_impact_competitive_advantage: number | null
+                    q12_objectives: string[] | null
+                    q13_success_definition: string | null
+                }
+                Insert: {
+                    id?: string
+                    created_at?: string
+                    user_email: string
+                    full_name?: string | null
+                    company_name?: string | null
+                    company_id?: string | null
+                    q1_role?: string | null
+                    q2_studio_focus?: string | null
+                    q3_ai_adoption_status?: string | null
+                    q4_visibility?: number | null
+                    q5_opportunities?: string[] | null
+                    q6_risks?: string[] | null
+                    q7_alignment_confidence?: number | null
+                    q8_guidance_level?: string | null
+                    q9_success_factor?: string | null
+                    q10_team_readiness?: number | null
+                    q11_impact_speed?: number | null
+                    q11_impact_quality?: number | null
+                    q11_impact_efficiency?: number | null
+                    q11_impact_client_satisfaction?: number | null
+                    q11_impact_competitive_advantage?: number | null
+                    q12_objectives?: string[] | null
+                    q13_success_definition?: string | null
+                }
+                Update: {
+                    id?: string
+                    created_at?: string
+                    user_email?: string
+                    full_name?: string | null
+                    company_name?: string | null
+                    company_id?: string | null
+                    q1_role?: string | null
+                    q2_studio_focus?: string | null
+                    q3_ai_adoption_status?: string | null
+                    q4_visibility?: number | null
+                    q5_opportunities?: string[] | null
+                    q6_risks?: string[] | null
+                    q7_alignment_confidence?: number | null
+                    q8_guidance_level?: string | null
+                    q9_success_factor?: string | null
+                    q10_team_readiness?: number | null
+                    q11_impact_speed?: number | null
+                    q11_impact_quality?: number | null
+                    q11_impact_efficiency?: number | null
+                    q11_impact_client_satisfaction?: number | null
+                    q11_impact_competitive_advantage?: number | null
+                    q12_objectives?: string[] | null
+                    q13_success_definition?: string | null
+                }
+            }
+            team_submissions: {
+                Row: {
+                    id: string
+                    created_at: string
+                    user_email: string
+                    full_name: string | null
+                    company_name: string | null
+                    company_id: string | null
+                    q1_role: string | null
+                    q1_role_other: string | null
+                    q2_experience_years: string | null
+                    q3_ai_usage: string | null
+                    q4_ai_tools: string[] | null
+                    q5_confidence_ai_workflow: number | null
+                    q6_skill_level_ai_tools: number | null
+                    q7_difficulty_areas: string[] | null
+                    q8_outputs_meet_standards_confidence: number | null
+                    q9_concerns: string[] | null
+                    q10_help_most: string | null
+                    q11_readiness: number | null
+                    q12_top_goals: string[] | null
+                    q13_success_definition: string | null
+                }
+                Insert: {
+                    id?: string
+                    created_at?: string
+                    user_email: string
+                    full_name?: string | null
+                    company_name?: string | null
+                    company_id?: string | null
+                    q1_role?: string | null
+                    q1_role_other?: string | null
+                    q2_experience_years?: string | null
+                    q3_ai_usage?: string | null
+                    q4_ai_tools?: string[] | null
+                    q5_confidence_ai_workflow?: number | null
+                    q6_skill_level_ai_tools?: number | null
+                    q7_difficulty_areas?: string[] | null
+                    q8_outputs_meet_standards_confidence?: number | null
+                    q9_concerns?: string[] | null
+                    q10_help_most?: string | null
+                    q11_readiness?: number | null
+                    q12_top_goals?: string[] | null
+                    q13_success_definition?: string | null
+                }
+                Update: {
+                    id?: string
+                    created_at?: string
+                    user_email?: string
+                    full_name?: string | null
+                    company_name?: string | null
+                    company_id?: string | null
+                    q1_role?: string | null
+                    q1_role_other?: string | null
+                    q2_experience_years?: string | null
+                    q3_ai_usage?: string | null
+                    q4_ai_tools?: string[] | null
+                    q5_confidence_ai_workflow?: number | null
+                    q6_skill_level_ai_tools?: number | null
+                    q7_difficulty_areas?: string[] | null
+                    q8_outputs_meet_standards_confidence?: number | null
+                    q9_concerns?: string[] | null
+                    q10_help_most?: string | null
+                    q11_readiness?: number | null
+                    q12_top_goals?: string[] | null
+                    q13_success_definition?: string | null
+                }
+            }
+            post_completion_survey_responses: {
+                Row: {
+                    id: string
+                    survey_type: string
+                    respondent_name: string | null
+                    respondent_email: string | null
+                    company_name: string | null
+                    company_id: string | null
+                    answers: Record<string, any>
+                    submitted_at: string
+                }
+                Insert: {
+                    id?: string
+                    survey_type: string
+                    respondent_name?: string | null
+                    respondent_email?: string | null
+                    company_name?: string | null
+                    company_id?: string | null
+                    answers?: Record<string, any>
+                    submitted_at?: string
+                }
+                Update: {
+                    id?: string
+                    survey_type?: string
+                    respondent_name?: string | null
+                    respondent_email?: string | null
+                    company_name?: string | null
+                    company_id?: string | null
+                    answers?: Record<string, any>
+                    submitted_at?: string
+                }
+            }
         }
         Views: {
             [_ in never]: never
         }
         Functions: {
+            delete_chat_room: {
+                Args: {
+                    p_room_id: string
+                }
+                Returns: unknown
+            }
+            get_unread_counts: {
+                Args: {
+                    p_user_id: string
+                }
+                Returns: {
+                    room_id: string
+                    unread_count: number
+                }[]
+            }
+            get_public_signup_options: {
+                Args: Record<string, never>
+                Returns: {
+                    companies: { id: string; name: string }[]
+                    sprintWorkshops: { id: string; name: string }[]
+                }
+            }
             handle_sprint_workshop_signup: {
                 Args: {
                     user_uuid: string
@@ -663,3 +1344,25 @@ export interface Database {
         }
     }
 }
+
+type Simplify<T> = { [K in keyof T]: T[K] };
+
+type MapTable<T extends { Row: any; Insert: any; Update: any }> = {
+    Row: Simplify<T['Row']>;
+    Insert: Simplify<T['Insert']>;
+    Update: Simplify<T['Update']>;
+    Relationships: T extends { Relationships: infer R } ? R : any[];
+};
+
+export type Database = {
+    public: {
+        Tables: {
+            [K in keyof RawDatabase['public']['Tables']]: MapTable<RawDatabase['public']['Tables'][K]>;
+        };
+        Views: RawDatabase['public']['Views'];
+        Functions: RawDatabase['public']['Functions'];
+        Enums: RawDatabase['public']['Enums'];
+        CompositeTypes: RawDatabase['public']['CompositeTypes'];
+    };
+};
+

@@ -86,7 +86,7 @@ export function UsersPage() {
         }
 
         if (!invitationsResult.error) {
-            setInvitations((invitationsResult.data as { id: string; email: string; role: string; status: string; created_at: string }[]) ?? []);
+            setInvitations((invitationsResult.data as unknown as { id: string; email: string; role: string; status: string; created_at: string }[]) ?? []);
         }
 
         setIsLoading(false);

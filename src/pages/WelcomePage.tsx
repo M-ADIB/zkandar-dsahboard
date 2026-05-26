@@ -93,7 +93,6 @@ export function WelcomePage() {
         // Mark in DB
         await supabase
             .from('users')
-            // @ts-expect-error - update type inference failing for new column
             .update({ welcome_video_watched: true })
             .eq('id', user.id)
 

@@ -401,10 +401,8 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                 ? scaleAnswers.reduce((sum, [, val]) => sum + (typeof val === 'number' ? val : 0), 0) / scaleAnswers.length * 20
                 : 50
 
-            // Update user profile
             const { error } = await supabase
                 .from('users')
-                // @ts-expect-error - Supabase update type inference failing
                 .update({
                     full_name: basicInfo.full_name,
                     company_id: basicInfo.company_id || null,

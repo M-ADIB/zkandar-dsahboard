@@ -233,7 +233,6 @@ export function MyPerformancePage() {
     // Write the computed score back to the DB so the dashboard can read it
     useEffect(() => {
         if (loading || !effectiveUserId || finalScore === 0) return
-        // @ts-expect-error - Supabase update type inference issue
         supabase.from('users').update({ ai_readiness_score: finalScore }).eq('id', effectiveUserId)
     }, [finalScore, effectiveUserId, loading])
 

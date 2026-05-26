@@ -7,6 +7,7 @@ import type {
     EmailTemplate,
     EmailCampaign,
     EmailCampaignRecipient,
+    UserRole,
 } from '@/types/database'
 import {
     Mail,
@@ -141,7 +142,7 @@ export function EmailHubPage() {
         const recipients = new Map<string, string>()
 
         if (audiences.has('all_members') || audiences.has('executives')) {
-            const roles = audiences.has('all_members')
+            const roles: UserRole[] = audiences.has('all_members')
                 ? ['participant', 'executive']
                 : ['executive']
             const { data } = await supabase
@@ -156,11 +157,11 @@ export function EmailHubPage() {
         if (audiences.has('leads') || audiences.has('hot_leads') || audiences.has('active_leads') || audiences.has('lava_leads')) {
             let query = supabase.from('leads').select('email, full_name').not('email', 'is', null)
             if (audiences.has('hot_leads') && !audiences.has('leads')) {
-                query = query.eq('priority', 'HOT') as any
+                query = query.eq('priority', 'HOT' as any) as any
             } else if (audiences.has('active_leads') && !audiences.has('leads')) {
-                query = query.eq('priority', 'ACTIVE') as any
+                query = query.eq('priority', 'ACTIVE' as any) as any
             } else if (audiences.has('lava_leads') && !audiences.has('leads')) {
-                query = query.eq('priority', 'LAVA') as any
+                query = query.eq('priority', 'LAVA' as any) as any
             }
             // If multiple lead filters or 'leads' is selected, combine
             if (audiences.has('leads')) {
@@ -171,7 +172,7 @@ export function EmailHubPage() {
                 if (audiences.has('active_leads')) priorities.push('ACTIVE')
                 if (audiences.has('lava_leads')) priorities.push('LAVA')
                 if (priorities.length > 1) {
-                    query = supabase.from('leads').select('email, full_name').not('email', 'is', null).in('priority', priorities) as any
+                    query = supabase.from('leads').select('email, full_name').not('email', 'is', null).in('priority', priorities as any) as any
                 }
             }
             const { data } = await query

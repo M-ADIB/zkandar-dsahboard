@@ -166,7 +166,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
         void supabase
             .from('notifications')
-            // @ts-expect-error - Supabase update type inference issue
             .update({ read: true })
             .eq('id', id)
             .eq('user_id', user.id)
@@ -183,7 +182,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
         void supabase
             .from('notifications')
-            // @ts-expect-error - Supabase update type inference issue
             .update({ read: true })
             .eq('user_id', user.id)
             .eq('read', false)

@@ -371,18 +371,37 @@ export function ParticipantDashboard() {
             // ── 2. Fetch cohorts, sessions, and chats in parallel ──────────────
             const companyId = profileRow?.company_id
 
-            let chatQuery = supabase
-                .from('chat_messages')
-                .select('id, message, created_at, sender:users(full_name), cohort_id, company_id')
-                .order('created_at', { ascending: false })
-                .limit(4)
+            // Fetch rooms linked to cohort or company first
+            let userRoomIds: string[] = []
+            if (cohortIds.length > 0 || companyId) {
+                let roomQuery = supabase.from('chat_rooms').select('id')
+                if (cohortIds.length > 0 && companyId) {
+                    roomQuery = roomQuery.or(`cohort_id.in.(${cohortIds.join(',')}),company_id.eq.${companyId}`)
+                } else if (cohortIds.length > 0) {
+                    roomQuery = roomQuery.in('cohort_id', cohortIds)
+                } else if (companyId) {
+                    roomQuery = roomQuery.eq('company_id', companyId)
+                }
+                const { data: rooms } = await roomQuery
+                if (rooms) {
+                    userRoomIds = rooms.map(r => r.id)
+                }
+            }
 
-            if (cohortIds.length > 0 && companyId) {
-                chatQuery = chatQuery.or(`cohort_id.in.(${cohortIds.join(',')}),company_id.eq.${companyId}`)
-            } else if (cohortIds.length > 0) {
-                chatQuery = chatQuery.in('cohort_id', cohortIds)
-            } else if (companyId) {
-                chatQuery = chatQuery.eq('company_id', companyId)
+            let chatQuery
+            if (userRoomIds.length > 0) {
+                chatQuery = supabase
+                    .from('chat_messages')
+                    .select('id, body, created_at, sender:users(full_name)')
+                    .in('room_id', userRoomIds)
+                    .order('created_at', { ascending: false })
+                    .limit(4)
+            } else {
+                chatQuery = supabase
+                    .from('chat_messages')
+                    .select('id, body, created_at, sender:users(full_name)')
+                    .eq('id', '00000000-0000-0000-0000-000000000000')
+                    .limit(0)
             }
 
             const [cohortsRes, sessionsRes, chatRes] = await Promise.all([
@@ -600,7 +619,7 @@ export function ParticipantDashboard() {
     const chatPreview = useMemo(() => recentMessages.map((m) => ({
         id: m.id,
         sender: m.sender?.full_name ?? 'Member',
-        message: m.message,
+        message: m.body ?? '',
         time: formatRelativeTime(m.created_at),
     })), [recentMessages])
 

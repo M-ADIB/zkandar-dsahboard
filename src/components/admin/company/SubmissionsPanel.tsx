@@ -107,7 +107,6 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
 
         setSavingId(userId)
         const score = draft.score.trim() ? parseInt(draft.score, 10) : null
-        // @ts-expect-error - Supabase update type
         await supabase.from('submissions').update({
             feedback: draft.feedback.trim() || null,
             score: Number.isNaN(score) ? null : score,

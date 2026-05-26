@@ -78,7 +78,7 @@ export function SessionsAdminPage() {
                 return
             }
 
-            setSessions((fallback.data as Session[]) ?? [])
+            setSessions((fallback.data as unknown as Session[]) ?? [])
             setIsLoading(false)
             return
         }

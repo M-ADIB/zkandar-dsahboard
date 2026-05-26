@@ -309,7 +309,6 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             // Update existing cohort
             const { error: saveError } = await supabase
                 .from('cohorts')
-                // @ts-expect-error - Supabase update type inference issue
                 .update(payload)
                 .eq('id', program.id);
 
@@ -322,7 +321,6 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             // Insert new cohort
             const { data: newCohort, error: saveError } = await supabase
                 .from('cohorts')
-                // @ts-expect-error - Supabase insert type inference issue
                 .insert(payload)
                 .select('id')
                 .single();
@@ -346,14 +344,12 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
             // Unlink any company previously assigned, then assign the new one.
             await supabase
                 .from('companies')
-                // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: null })
                 .eq('cohort_id', cohortId)
                 .neq('id', companyId);
 
             const { error: linkError } = await supabase
                 .from('companies')
-                // @ts-expect-error - Supabase update type inference issue
                 .update({ cohort_id: cohortId })
                 .eq('id', companyId);
 
@@ -382,7 +378,6 @@ export function ProgramModal({ isOpen, onClose, onSuccess, program }: ProgramMod
                 }));
                 const { error: memberError } = await supabase
                     .from('cohort_memberships')
-                    // @ts-expect-error - Supabase insert type inference issue
                     .insert(inserts);
 
                 if (memberError) {

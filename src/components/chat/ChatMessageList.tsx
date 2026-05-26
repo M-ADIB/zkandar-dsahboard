@@ -307,7 +307,7 @@ function ChatMessageListView({ messages, loading, error, messagesEndRef }: ChatM
                 </div>
             ) : (
                 messages.map(msg => (
-                    <ChatMessageBubble key={msg.id} {...msg} />
+                    <ChatMessageBubble key={msg.id} {...(msg as any)} />
                 ))
             )}
             <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} />

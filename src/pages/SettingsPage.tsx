@@ -160,7 +160,6 @@ function DevTab() {
         setPendingAction(null)
 
         const { error: updateError } = await supabase.from('users')
-            // @ts-expect-error - type inference failing for new columns
             .update({
                 onboarding_completed: false,
                 welcome_video_watched: false,
@@ -192,7 +191,6 @@ function DevTab() {
         await supabase.from('survey_responses').delete().eq('user_id', selectedUser)
 
         const { error: updateError } = await supabase.from('users')
-            // @ts-expect-error - type inference failing for new columns
             .update({
                 onboarding_completed: false,
                 welcome_video_watched: false,
@@ -515,7 +513,7 @@ export function SettingsPage() {
         setIsExporting(true)
         try {
             const [submissionsRes, chatRes] = await Promise.all([
-                supabase.from('assignment_submissions').select('*').eq('user_id', user.id),
+                supabase.from('submissions').select('*').eq('user_id', user.id),
                 supabase.from('chat_messages').select('*').eq('user_id', user.id),
             ])
 

@@ -143,7 +143,6 @@ export function UserModal({
 
         const { error: updateError } = await supabase
             .from('users')
-            // @ts-expect-error - Supabase update type inference issue
             .update(payload)
             .eq('id', user.id);
 
@@ -159,7 +158,6 @@ export function UserModal({
         if (toAdd.length > 0) {
             const { error: addError } = await supabase
                 .from('cohort_memberships')
-                // @ts-expect-error - Supabase insert type inference issue
                 .insert(toAdd.map((cohort_id) => ({ user_id: user.id, cohort_id })));
 
             if (addError) {

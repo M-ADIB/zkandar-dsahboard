@@ -48,7 +48,6 @@ export function WorkspaceAttendance({ sessions, members }: WorkspaceAttendancePr
             setAttendance((prev) => { const n = new Set(prev); n.delete(key); return n })
         } else {
             // Insert
-            // @ts-expect-error - Supabase insert type
             await supabase.from('session_attendance').insert({ session_id: sessionId, user_id: userId })
             setAttendance((prev) => new Set(prev).add(key))
         }

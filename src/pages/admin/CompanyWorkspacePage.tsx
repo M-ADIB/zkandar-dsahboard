@@ -471,8 +471,14 @@ export function CompanyWorkspacePage() {
                                                         )}
                                                     </td>
                                                     <td className="px-5 py-4">
-                                                        <span className={`text-sm font-semibold ${member.ai_readiness_score >= 7 ? 'text-lime' : member.ai_readiness_score >= 4 ? 'text-yellow-400' : 'text-red-400'}`}>
-                                                            {member.ai_readiness_score ?? '—'}
+                                                        <span className={`text-sm font-semibold ${
+                                                            member.ai_readiness_score !== null && member.ai_readiness_score >= 70
+                                                                ? 'text-lime'
+                                                                : member.ai_readiness_score !== null && member.ai_readiness_score >= 40
+                                                                ? 'text-yellow-400'
+                                                                : 'text-red-400'
+                                                        }`}>
+                                                            {member.ai_readiness_score !== null ? `${member.ai_readiness_score}%` : '—'}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -804,7 +810,7 @@ export function CompanyWorkspacePage() {
                                                 setAssignError(null)
                                                 const { error: updateErr } = await supabase
                                                     .from('companies')
-                                                    // @ts-expect-error - Supabase update type inference
+                                                    
                                                     .update({ cohort_id: selectedCohortId })
                                                     .eq('id', company.id)
                                                 if (updateErr) {
@@ -916,7 +922,7 @@ export function CompanyWorkspacePage() {
                                                 setAddMemberError(null)
                                                 const { error: updateErr } = await supabase
                                                     .from('users')
-                                                    // @ts-expect-error - Supabase update type inference
+                                                    
                                                     .update({ company_id: id })
                                                     .eq('id', selectedAddUserId)
                                                 if (updateErr) {

@@ -544,11 +544,18 @@ function ParticipantsPanel({ cohort }: { cohort: Cohort }) {
         },
         {
             header: 'AI Readiness',
-            accessor: (user: User) => (
-                <span className={`font-semibold ${user.ai_readiness_score >= 70 ? 'text-lime' : user.ai_readiness_score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
-                    {user.ai_readiness_score ?? '—'}
-                </span>
-            ),
+            accessor: (user: User) => {
+                const score = user.ai_readiness_score;
+                const scoreText = score !== null ? `${score}%` : '—';
+                const colorClass = score !== null 
+                    ? (score >= 70 ? 'text-lime' : score >= 40 ? 'text-yellow-400' : 'text-red-400')
+                    : 'text-gray-500';
+                return (
+                    <span className={`font-semibold ${colorClass}`}>
+                        {scoreText}
+                    </span>
+                );
+            },
         },
     ], [companies]);
 

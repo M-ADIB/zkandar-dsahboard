@@ -150,15 +150,14 @@ export function SessionModal({
             recording_url: formData.recording_url.trim() || null,
             description: formData.description.trim() || null,
             materials: validatedMaterials,
+            attendance: session ? session.attendance : [],
         };
 
         const { error: saveError } = session
             ? await supabase.from('sessions')
-                // @ts-expect-error - Supabase update type inference issue
                 .update(payload)
                 .eq('id', session.id)
             : await supabase.from('sessions')
-                // @ts-expect-error - Supabase insert type inference issue
                 .insert(payload);
 
         setIsLoading(false);

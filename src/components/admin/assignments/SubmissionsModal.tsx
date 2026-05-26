@@ -99,7 +99,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
                 setError(fetchError.message)
                 setSubmissions([])
             } else {
-                const rows = (data as SubmissionRow[]) ?? []
+                const rows = (data as unknown as SubmissionRow[]) ?? []
                 setSubmissions(rows)
                 setFeedbackDrafts(Object.fromEntries(rows.map((r) => [r.id, r.feedback ?? ''])))
                 setScoreDrafts(Object.fromEntries(rows.map((r) => [r.id, r.score ?? null])))
@@ -118,7 +118,6 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
         const { error: updateError } = await supabase
             .from('submissions')
-            // @ts-expect-error - runtime columns
             .update({ feedback: feedbackVal.trim() || null, score: scoreVal, status: 'reviewed' })
             .eq('id', submissionId)
 

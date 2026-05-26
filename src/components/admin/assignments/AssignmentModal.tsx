@@ -131,11 +131,9 @@ export function AssignmentModal({
 
         const { error: saveError } = assignment
             ? await supabase.from('assignments')
-                // @ts-expect-error - Supabase update type inference issue
                 .update(payload)
                 .eq('id', assignment.id)
             : await supabase.from('assignments')
-                // @ts-expect-error - Supabase insert type inference issue
                 .insert(payload)
 
         setIsLoading(false)

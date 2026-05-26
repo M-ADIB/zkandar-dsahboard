@@ -61,7 +61,7 @@ interface TeamSubmission {
 
 interface PostSubmission {
     id: string
-    created_at: string
+    submitted_at: string
     survey_type: 'management' | 'team'
     respondent_name: string | null
     respondent_email: string | null
