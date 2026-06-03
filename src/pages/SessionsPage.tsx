@@ -136,12 +136,14 @@ export function SessionsPage() {
     const sessionCards = useMemo<SessionCard[]>(() => {
         const cohortMap = new Map(cohorts.map((cohort) => [cohort.id, cohort]))
         return sessions.map((session) => {
-            const scheduledAt = new Date(session.scheduled_date)
-            const isPast = scheduledAt.getTime() < Date.now()
-            const diffDays = (scheduledAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-            const derivedStatus: SessionCard['status'] = session.status === 'completed' || isPast
+            const scheduledTime = new Date(session.scheduled_date).getTime()
+            const now = Date.now()
+            const isCompleted = session.status === 'completed' || !!session.recording_url || now > scheduledTime + 4 * 60 * 60 * 1000
+            const isLiveOrSoon = now >= scheduledTime - 3 * 60 * 60 * 1000 && now <= scheduledTime + 4 * 60 * 60 * 1000
+            
+            const derivedStatus: SessionCard['status'] = isCompleted
                 ? 'completed'
-                : diffDays <= 3
+                : isLiveOrSoon
                     ? 'scheduled'
                     : 'upcoming'
 
@@ -253,9 +255,9 @@ export function SessionsPage() {
                                             Completed
                                         </span>
                                     ) : session.status === 'scheduled' ? (
-                                        <span className="flex items-center gap-1 px-2 py-1 bg-yellow-500/10 text-yellow-400 text-xs rounded-lg">
-                                            <Clock className="h-3 w-3" />
-                                            Live Soon
+                                        <span className="flex items-center gap-1 px-2 py-1 bg-lime/10 text-lime text-xs rounded-lg border border-lime/20 font-medium">
+                                            <Clock className="h-3 w-3 animate-pulse" />
+                                            Live Now
                                         </span>
                                     ) : (
                                         <span className="flex items-center gap-1 px-2 py-1 bg-gray-500/10 text-gray-400 text-xs rounded-lg">
@@ -297,7 +299,7 @@ export function SessionsPage() {
                                         </a>
                                     )
                                 ) : (
-                                    session.zoomLink && (
+                                    session.status === 'scheduled' && session.zoomLink && (
                                         <a
                                             href={session.zoomLink}
                                             target="_blank"

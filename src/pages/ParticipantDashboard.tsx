@@ -187,7 +187,7 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
 
     return (
         <>
-            <div className="hidden lg:block shrink-0 w-56 xl:w-64">
+            <div className="hidden lg:block shrink-0 w-56 xl:w-64 space-y-2">
                 <div
                     className="relative rounded-xl overflow-hidden border border-white/10 shadow-xl shadow-black/50"
                     style={{ aspectRatio: '16/9' }}
@@ -207,10 +207,8 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
                             <Play className="h-5 w-5 text-white ml-1 transition-colors group-hover:text-lime" />
                         </div>
                     </div>
-                    <div className="absolute bottom-0 inset-x-0 px-3 py-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none">
-                        <p className="text-[10px] text-white/90 font-medium tracking-wide shadow-black drop-shadow-md">PLATFORM WALKTHROUGH</p>
-                    </div>
                 </div>
+                <p className="text-[11px] text-gray-400 font-bold tracking-[0.2em] text-center uppercase">PLATFORM WALKTHROUGH</p>
             </div>
 
             <AnimatePresence>
@@ -255,7 +253,7 @@ function WelcomeVideoMiniFrame({ userType }: { userType: UserType | null }) {
 
 type SprintTimelineItem =
     | { type: 'session'; id: string; title: string; date: string; scheduledDate: string;
-        completed: boolean; current: boolean; recordingUrl: string | null; zoomLink: string | null }
+        completed: boolean; current: boolean; isLiveOrSoon: boolean; recordingUrl: string | null; zoomLink: string | null }
     | { type: 'assignment'; id: string; title: string; dueDate: string;
         submitted: boolean; sessionCompleted: boolean; locked?: boolean; status?: string }
 
@@ -288,6 +286,7 @@ export function ParticipantDashboard() {
         hours: number;
         minutes: number;
         seconds: number;
+        isLive?: boolean;
         sessionNumber?: number;
         sessionTitle?: string;
         dubaiTimeLabel?: string;
@@ -477,12 +476,35 @@ export function ParticipantDashboard() {
     // ── Countdown timer (sprint, team, and management members) ────────────────
     useEffect(() => {
         if (sessions.length === 0) { setCountdown(null); return }
-        const nextSession = [...sessions]
-            .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
-            .find(s => new Date(s.scheduled_date).getTime() > Date.now())
-        if (!nextSession) { setCountdown(null); return }
         const tick = () => {
-            const diff = new Date(nextSession.scheduled_date).getTime() - Date.now()
+            const now = Date.now()
+            
+            // Check if there is an active/live session right now
+            const live = sessions.find(s => {
+                const scheduledAt = new Date(s.scheduled_date).getTime()
+                return now >= scheduledAt && now <= scheduledAt + 4 * 60 * 60 * 1000 && !s.recording_url && s.status !== 'completed'
+            })
+            
+            if (live) {
+                setCountdown({
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    isLive: true,
+                    sessionNumber: live.session_number,
+                    sessionTitle: live.title
+                })
+                return
+            }
+
+            const nextSession = [...sessions]
+                .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
+                .find(s => new Date(s.scheduled_date).getTime() > now)
+
+            if (!nextSession) { setCountdown(null); return }
+
+            const diff = new Date(nextSession.scheduled_date).getTime() - now
             if (diff <= 0) { setCountdown(null); return }
             setCountdown({
                 days: Math.floor(diff / 86400000),
@@ -502,16 +524,15 @@ export function ParticipantDashboard() {
     // ── Derived state ──────────────────────────────────────────────────────────
     const sessionTimeline = useMemo(() => {
         const now = Date.now()
-        let currentMarked = false
 
         return sessions
             .slice()
             .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
             .map((session) => {
                 const scheduledAt = new Date(session.scheduled_date).getTime()
-                const completed = session.status === 'completed' || (scheduledAt < now && !!session.recording_url)
-                const current = !completed && !currentMarked
-                if (current) currentMarked = true
+                const completed = session.status === 'completed' || !!session.recording_url || now > scheduledAt + 4 * 60 * 60 * 1000
+                const isLiveOrSoon = now >= scheduledAt - 3 * 60 * 60 * 1000 && now <= scheduledAt + 4 * 60 * 60 * 1000
+                const current = !completed && isLiveOrSoon
                 return {
                     id: session.id,
                     title: session.title,
@@ -519,6 +540,7 @@ export function ParticipantDashboard() {
                     scheduledDate: session.scheduled_date,
                     completed,
                     current,
+                    isLiveOrSoon,
                     zoomLink: session.zoom_link ?? null,
                     recordingUrl: session.recording_url ?? null,
                 }
@@ -550,7 +572,6 @@ export function ParticipantDashboard() {
     const sprintTimeline = useMemo((): SprintTimelineItem[] => {
         if (!isSprintMember) return []
         const now = Date.now()
-        let currentMarked = false
         const submissionIds = new Set(submissions.map(s => s.assignment_id))
         const result: SprintTimelineItem[] = []
 
@@ -559,9 +580,9 @@ export function ParticipantDashboard() {
         )
         for (const session of sorted) {
             const scheduledAt = new Date(session.scheduled_date).getTime()
-            const completed = session.status === 'completed' || (scheduledAt < now && !!session.recording_url)
-            const current = !completed && !currentMarked
-            if (current) currentMarked = true
+            const completed = session.status === 'completed' || !!session.recording_url || now > scheduledAt + 4 * 60 * 60 * 1000
+            const isLiveOrSoon = now >= scheduledAt - 3 * 60 * 60 * 1000 && now <= scheduledAt + 4 * 60 * 60 * 1000
+            const current = !completed && isLiveOrSoon
 
             result.push({
                 type: 'session',
@@ -571,6 +592,7 @@ export function ParticipantDashboard() {
                 scheduledDate: session.scheduled_date,
                 completed,
                 current,
+                isLiveOrSoon,
                 zoomLink: session.zoom_link ?? null,
                 recordingUrl: session.recording_url ?? null,
             })
@@ -735,33 +757,45 @@ export function ParticipantDashboard() {
 
                         {/* Countdown timer — shows until next session starts */}
                         {countdown && (
-                            <div className="mt-5 flex items-center gap-3 flex-wrap">
-                                <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">
-                                    {countdown.sessionNumber 
-                                        ? `Session ${countdown.sessionNumber} starts in` 
-                                        : 'Next upcoming session starts in'}
-                                </span>
-                                <div className="flex items-center gap-1.5">
-                                    {[
-                                        { v: countdown.days, label: 'd' },
-                                        { v: countdown.hours, label: 'h' },
-                                        { v: countdown.minutes, label: 'm' },
-                                        { v: countdown.seconds, label: 's' },
-                                    ].map(({ v, label }) => (
-                                        <div key={label} className="flex flex-col items-center">
-                                            <span className="w-10 h-9 flex items-center justify-center bg-lime/10 border border-lime/20 rounded-lg text-lime font-mono font-bold text-sm tabular-nums">
-                                                {String(v).padStart(2, '0')}
-                                            </span>
-                                            <span className="text-[9px] text-gray-600 mt-0.5 uppercase tracking-wider">{label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                {countdown.dubaiTimeLabel && (
-                                    <span className="text-sm font-semibold text-lime ml-0.5">
-                                        {countdown.dubaiTimeLabel}
+                            countdown.isLive ? (
+                                <div className="mt-5 inline-flex items-center gap-2 bg-lime/10 border border-lime/20 rounded-xl px-4 py-2.5 text-lime shrink-0">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75 animate-duration-1000"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-lime"></span>
                                     </span>
-                                )}
-                            </div>
+                                    <span className="text-xs font-bold uppercase tracking-[0.05em]">
+                                        Session {countdown.sessionNumber} is Live Now! Join the Zoom meeting below.
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="mt-5 flex items-center gap-3 flex-wrap">
+                                    <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">
+                                        {countdown.sessionNumber 
+                                            ? `Session ${countdown.sessionNumber} starts in` 
+                                            : 'Next upcoming session starts in'}
+                                    </span>
+                                    <div className="flex items-center gap-1.5">
+                                        {[
+                                            { v: countdown.days, label: 'd' },
+                                            { v: countdown.hours, label: 'h' },
+                                            { v: countdown.minutes, label: 'm' },
+                                            { v: countdown.seconds, label: 's' },
+                                        ].map(({ v, label }) => (
+                                            <div key={label} className="flex flex-col items-center">
+                                                <span className="w-10 h-9 flex items-center justify-center bg-lime/10 border border-lime/20 rounded-lg text-lime font-mono font-bold text-sm tabular-nums">
+                                                    {String(v).padStart(2, '0')}
+                                                </span>
+                                                <span className="text-[9px] text-gray-600 mt-0.5 uppercase tracking-wider">{label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {countdown.dubaiTimeLabel && (
+                                        <span className="text-sm font-semibold text-lime ml-0.5">
+                                            {countdown.dubaiTimeLabel}
+                                        </span>
+                                    )}
+                                </div>
+                            )
                         )}
                     </div>
 
@@ -894,12 +928,18 @@ export function ParticipantDashboard() {
                                                                 )
                                                             ) : (
                                                                 item.zoomLink ? (
-                                                                    <button
-                                                                        onClick={() => window.open(item.zoomLink!, '_blank')}
-                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                                    >
-                                                                        Join Now
-                                                                    </button>
+                                                                    item.isLiveOrSoon ? (
+                                                                        <button
+                                                                            onClick={() => window.open(item.zoomLink!, '_blank')}
+                                                                            className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                        >
+                                                                            Join Now
+                                                                        </button>
+                                                                    ) : (
+                                                                        <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
+                                                                            Coming Up
+                                                                        </span>
+                                                                    )
                                                                 ) : item.current ? (
                                                                     <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
                                                                 ) : null
@@ -1006,12 +1046,18 @@ export function ParticipantDashboard() {
                                                             )
                                                         ) : (
                                                             session.zoomLink ? (
-                                                                <button
-                                                                    onClick={() => window.open(session.zoomLink!, '_blank')}
-                                                                    className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                                >
-                                                                    Join Now
-                                                                </button>
+                                                                session.isLiveOrSoon ? (
+                                                                    <button
+                                                                        onClick={() => window.open(session.zoomLink!, '_blank')}
+                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                    >
+                                                                        Join Now
+                                                                    </button>
+                                                                ) : (
+                                                                    <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
+                                                                        Coming Up
+                                                                    </span>
+                                                                )
                                                             ) : session.current ? (
                                                                 <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
                                                             ) : null

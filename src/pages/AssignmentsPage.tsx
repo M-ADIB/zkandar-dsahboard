@@ -177,7 +177,11 @@ export function AssignmentsPage() {
                     title: assignment.title,
                     description: assignment.description ?? 'No description provided.',
                     session: session
-                        ? `${programLabel ? `${programLabel} · ` : ''}Session ${session.session_number}: ${session.title}`
+                        ? `${programLabel ? `${programLabel} · ` : ''}Session ${session.session_number}${
+                            session.title.toLowerCase() === `session ${session.session_number}`
+                                ? ''
+                                : `: ${session.title}`
+                        }`
                         : 'Session',
                     dueDate: assignment.due_date ? formatDateLabel(assignment.due_date) : 'TBD',
                     submissionFormat: assignment.submission_format,

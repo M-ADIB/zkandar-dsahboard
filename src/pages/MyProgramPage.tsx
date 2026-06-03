@@ -148,7 +148,7 @@ export function MyProgramPage() {
         if (asgn.lock_override === 'locked') return true
         if (!session) return true
         const sessionStartTime = new Date(session.scheduled_date).getTime()
-        const sessionEnded = session.status === 'completed' || Date.now() > sessionStartTime
+        const sessionEnded = session.status === 'completed' || !!session.recording_url || Date.now() > sessionStartTime + 4 * 60 * 60 * 1000
 
         if (cohort?.offering_type === 'sprint_workshop') {
             const titleLower = asgn.title.toLowerCase()
@@ -270,7 +270,11 @@ export function MyProgramPage() {
 
                 <div className="space-y-0">
                     {sessions.map((session, idx) => {
-                        const isCompleted = session.status === 'completed'
+                        const scheduledTime = new Date(session.scheduled_date).getTime()
+                        const now = Date.now()
+                        const completed = session.status === 'completed' || !!session.recording_url || now > scheduledTime + 4 * 60 * 60 * 1000
+                        const isLiveOrSoon = now >= scheduledTime - 3 * 60 * 60 * 1000 && now <= scheduledTime + 4 * 60 * 60 * 1000
+                        
                         const isAttended = attendance.has(session.id)
                         const isExpanded = expandedSession === session.id
                         const sessionAssignments = assignments.filter((a) => a.session_id === session.id)
@@ -285,11 +289,11 @@ export function MyProgramPage() {
                                 {/* Left Side: Icon */}
                                 <div className="flex flex-col items-center shrink-0">
                                     <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold relative z-10 shadow-sm ${
-                                        isCompleted
+                                        completed
                                             ? isAttended ? 'bg-lime/20 text-lime border border-lime/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
                                             : 'bg-white/5 text-gray-500 border border-white/5'
                                     }`}>
-                                        {isCompleted ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
+                                        {completed ? (isAttended ? <CheckCircle2 className="h-4 w-4" /> : '✗') : session.session_number}
                                     </div>
                                 </div>
 
@@ -308,11 +312,14 @@ export function MyProgramPage() {
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
-                                            {session.recording_url && isCompleted && (
-                                                <span className="text-[10px] text-lime bg-lime/5 px-2 py-0.5 rounded border border-lime/20">Recording</span>
+                                            {session.recording_url && completed && (
+                                                <span className="text-[10px] text-lime bg-lime/5 px-2 py-0.5 rounded border border-lime/20 font-medium">Recording</span>
                                             )}
-                                            {session.zoom_link && !isCompleted && (
-                                                <span className="text-[10px] text-blue-400 bg-blue-500/5 px-2 py-0.5 rounded border border-blue-500/20">Live Meeting</span>
+                                            {session.zoom_link && !completed && isLiveOrSoon && (
+                                                <span className="text-[10px] text-lime bg-lime/5 px-2 py-0.5 rounded border border-lime/20 font-medium">Live Now</span>
+                                            )}
+                                            {session.zoom_link && !completed && !isLiveOrSoon && (
+                                                <span className="text-[10px] text-gray-500 bg-white/[0.02] px-2 py-0.5 rounded border border-white/[0.06] font-medium">Upcoming</span>
                                             )}
                                             {sessionAssignments.length > 0 && (
                                                 <span className="text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-border">{sessionAssignments.length} task{sessionAssignments.length > 1 ? 's' : ''}</span>
@@ -329,7 +336,7 @@ export function MyProgramPage() {
                                             exit={{ opacity: 0, height: 0 }}
                                             className="space-y-2 pt-1 pb-2"
                                         >
-                                            {session.recording_url && isCompleted && (
+                                            {session.recording_url && completed && (
                                                 <a
                                                     href={session.recording_url}
                                                     target="_blank"
@@ -341,12 +348,12 @@ export function MyProgramPage() {
                                                 </a>
                                             )}
 
-                                            {session.zoom_link && !isCompleted && (
+                                            {session.zoom_link && !completed && isLiveOrSoon && (
                                                 <a
                                                     href={session.zoom_link}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline"
+                                                    className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline font-bold"
                                                 >
                                                     <Play className="h-3.5 w-3.5" />
                                                     Join Live Meeting
