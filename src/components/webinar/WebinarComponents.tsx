@@ -148,10 +148,10 @@ export function CtaButton({ onClick, label = "RESERVE MY SEAT · $19", sub, size
 export function ScarcityPricing({ onCta }: { currentTier?: number; targetDate?: Date; onCta: () => void }) {
     const LAUNCH = new Date('2026-05-29T00:00:00+04:00')
     const steps = [
-        { price: 19, label: 'Launch Price', from: LAUNCH },
-        { price: 29, label: 'Week 2', from: new Date(LAUNCH.getTime() + 7 * 86400000) },
-        { price: 39, label: 'Week 3', from: new Date(LAUNCH.getTime() + 14 * 86400000) },
-        { price: 49, label: 'Week 4', from: new Date(LAUNCH.getTime() + 21 * 86400000) },
+        { price: 19, label: 'Early Bird Offer', from: LAUNCH },
+        { price: 29, label: 'After 1 Week', from: new Date(LAUNCH.getTime() + 7 * 86400000) },
+        { price: 39, label: 'After 2 Weeks', from: new Date(LAUNCH.getTime() + 14 * 86400000) },
+        { price: 49, label: 'Final Price', from: new Date(LAUNCH.getTime() + 21 * 86400000) },
     ]
 
     // Determine current step based on current date
@@ -169,7 +169,6 @@ export function ScarcityPricing({ onCta }: { currentTier?: number; targetDate?: 
             <div className="text-center space-y-2">
                 <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 font-bold">Price increases every 7 days</p>
                 <div className="flex items-baseline justify-center gap-3">
-                    <span className="line-through text-gray-700 text-2xl font-heading font-black">$100</span>
                     <span className="text-lime text-5xl sm:text-6xl font-heading font-black leading-none">${currentPrice}</span>
                 </div>
             </div>
@@ -287,27 +286,27 @@ export function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: 
 
 export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
     const before = [
-        'Developing design ideas using traditional methods only',
-        'Long render and presentation prep times',
-        'Unclear project stages from concept to execution',
-        'Using AI tools randomly or in limited ways',
-        'Knowing AI exists but not connecting it to a real workflow',
+        'Generating random AI images with no direction or consistency',
+        'Hitting a wall after one or two outputs and not knowing where to go',
+        'Using the same Pinterest references as every other designer',
+        'Clients showing YOU AI-generated images — and you can\'t do better',
+        'Falling behind competitors who\'ve already figured this out',
     ]
     const after = [
-        'Develop design ideas faster and more efficiently',
-        'Create renders and presentations in a fraction of the time',
-        'A complete Workflow for interior design, from idea to execution',
-        'Present projects to clients clearly and persuasively',
-        'Integrate AI into every stage of the design process',
+        'A complete system to go from sketch to full project with AI at every stage',
+        'Consistent, fingerprint-level imagery that looks like YOUR work, not generic AI',
+        'The ability to direct AI toward the exact results you want',
+        'Storytelling through your imagery — from macro concept to blow-up detail shots',
+        'The competitive edge that makes you indispensable, not replaceable',
     ]
     return (
         <div className="space-y-12">
-            <SectionHeading sub="This isn't about disconnected tools or theory. It's about understanding the complete interior design workflow as a clear, organized system with AI integrated at every stage.">
+            <SectionHeading sub="This isn't about learning another tool. It's about closing the gap between where you are and where the market demands you to be.">
                 WHAT WILL YOU <span className="text-lime">WALK AWAY WITH?</span>
             </SectionHeading>
             <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-[#0A0A0A] rounded-2xl p-6 border border-white/[0.06]">
-                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-red-400/60 mb-5">Before the Webinar</p>
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-red-400/60 mb-5">Without This Workshop</p>
                     <ul className="space-y-4">{before.map((b, i) => (
                         <li key={i} className="flex gap-3 text-[0.82rem] text-gray-500 leading-relaxed">
                             <XIcon className="w-4 h-4 text-red-500/50 shrink-0 mt-0.5" />{b}
@@ -315,7 +314,7 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
                     ))}</ul>
                 </div>
                 <div className="rounded-2xl p-6 border border-lime/[0.12] bg-lime/[0.02]">
-                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-lime mb-5">After the Webinar</p>
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-lime mb-5">After This Workshop</p>
                     <ul className="space-y-4">{after.map((a, i) => (
                         <li key={i} className="flex gap-3 text-[0.82rem] text-gray-200 leading-relaxed">
                             <Check className="w-4 h-4 text-lime shrink-0 mt-0.5" />{a}
@@ -326,9 +325,9 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
             <div className="text-center space-y-5 pt-4">
                 <h3 className="font-heading font-black uppercase text-xl text-white tracking-wide">THE RESULT:</h3>
                 <p className="text-[0.85rem] text-gray-400 leading-[1.75] max-w-xl mx-auto">
-                    Instead of treating the project as disconnected steps… you'll understand how the entire design process becomes an integrated <span className="text-lime font-semibold">Workflow</span>, executed with speed and efficiency using AI tools, through a real project we built live.
+                    You won't just know how to prompt. You'll know how to <span className="text-lime font-semibold">think, direct, and execute</span> with AI — turning rough sketches into complete design projects at a speed and quality level that puts you ahead of 95% of designers still guessing.
                 </p>
-                <CtaButton onClick={onCta} label="BOOK YOUR SEAT NOW · $19" size="md" />
+                <CtaButton onClick={onCta} label="GO BEYOND THE PROMPT · $19" size="md" />
             </div>
         </div>
     )
@@ -338,24 +337,25 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
 
 export function ValueTable() {
     const items = [
-        { item: '3 days of live training', value: '$250' },
-        { item: 'AI prompt library for designers', value: '$75' },
-        { item: 'Professional Creative Brief template', value: '$50' },
-        { item: 'Marketing Strategy Blueprint', value: '$50' },
-        { item: 'Storytelling Framework for presentations', value: '$40' },
-        { item: 'Traditional vs. AI Design comparison guide', value: '$35' },
+        { item: '2 days of live training with a real project walkthrough', value: '$250' },
+        { item: 'AI workflow system for design projects', value: '$150' },
+        { item: 'Storytelling framework for project presentations', value: '$40' },
+        { item: '4 years of AI in the design industry, compressed into 3 hrs', value: 'Priceless' },
     ]
     return (
         <div className="bg-[#0A0A0A] border border-white/[0.06] rounded-2xl overflow-hidden max-w-md mx-auto">
             {items.map((row, i) => (
                 <div key={i} className={`flex items-center justify-between px-5 py-3.5 ${i % 2 === 1 ? 'bg-white/[0.02]' : ''} ${i < items.length - 1 ? 'border-b border-white/[0.04]' : ''}`}>
                     <span className="text-[0.82rem] text-gray-300">{row.item}</span>
-                    <span className="text-[0.82rem] text-gray-600 font-bold ml-4 shrink-0 tabular-nums" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{row.value}</span>
+                    <span className="ml-4 shrink-0 flex items-center gap-2">
+                        <span className="text-[0.75rem] text-gray-700 line-through tabular-nums" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{row.value}</span>
+                        <span className="text-[0.75rem] text-lime font-bold uppercase tracking-wider">FREE</span>
+                    </span>
                 </div>
             ))}
             <div className="flex items-center justify-between px-5 py-4 border-t-2 border-lime/20 bg-lime/[0.03]">
                 <span className="text-sm font-bold text-white">Total real value</span>
-                <span className="text-2xl font-heading font-black text-lime">$500</span>
+                <span className="text-2xl font-heading font-black text-lime">$440+</span>
             </div>
         </div>
     )

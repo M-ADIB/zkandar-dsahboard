@@ -257,7 +257,7 @@ type SprintTimelineItem =
     | { type: 'session'; id: string; title: string; date: string; scheduledDate: string;
         completed: boolean; current: boolean; recordingUrl: string | null; zoomLink: string | null }
     | { type: 'assignment'; id: string; title: string; dueDate: string;
-        submitted: boolean; sessionCompleted: boolean; locked?: boolean }
+        submitted: boolean; sessionCompleted: boolean; locked?: boolean; status?: string }
 
 
 export function ParticipantDashboard() {
@@ -431,7 +431,7 @@ export function ParticipantDashboard() {
             if (sessionIds.length > 0) {
                 const { data: assignmentsData } = await supabase
                     .from('assignments')
-                    .select('id, title, due_date, session_id, submission_format')
+                    .select('id, title, due_date, session_id, submission_format, lock_override')
                     .in('session_id', sessionIds)
                     .order('due_date', { ascending: true })
 
@@ -443,7 +443,7 @@ export function ParticipantDashboard() {
                 if (assignmentRows.length > 0) {
                     const { data: submissionsData } = await supabase
                         .from('submissions')
-                        .select('id, assignment_id, submitted_at, score')
+                        .select('id, assignment_id, submitted_at, score, status')
                         .eq('user_id', effectiveUserId)
                         .in('assignment_id', assignmentRows.map((a) => a.id))
 
@@ -509,7 +509,7 @@ export function ParticipantDashboard() {
             .sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
             .map((session) => {
                 const scheduledAt = new Date(session.scheduled_date).getTime()
-                const completed = session.status === 'completed' || scheduledAt < now
+                const completed = session.status === 'completed' || (scheduledAt < now && !!session.recording_url)
                 const current = !completed && !currentMarked
                 if (current) currentMarked = true
                 return {
@@ -525,10 +525,26 @@ export function ParticipantDashboard() {
             })
     }, [sessions])
 
-    const allSessionsCompleted = useMemo(() =>
-        sessionTimeline.length > 0 && sessionTimeline.every(s => s.completed),
-        [sessionTimeline]
-    )
+    const s1ReflectionSubmitted = useMemo(() => {
+        const ass = assignments.find(a => a.title.toLowerCase().includes('session 1 reflection'))
+        return ass ? submissions.some(s => s.assignment_id === ass.id) : false
+    }, [assignments, submissions])
+
+    const s2ReflectionSubmitted = useMemo(() => {
+        const ass = assignments.find(a => a.title.toLowerCase().includes('session 2 reflection'))
+        return ass ? submissions.some(s => s.assignment_id === ass.id) : false
+    }, [assignments, submissions])
+
+    const sprintAssignmentSubmission = useMemo(() => {
+        const ass = assignments.find(a => a.title.toLowerCase().includes('sprint assignment') || a.title === 'AI ASSIGNMENT')
+        return ass ? submissions.find(s => s.assignment_id === ass.id) : null
+    }, [assignments, submissions])
+
+    const sprintAssignmentApproved = useMemo(() => {
+        return sprintAssignmentSubmission ? sprintAssignmentSubmission.status === 'approved' : false
+    }, [sprintAssignmentSubmission])
+
+
 
     // ── Sprint interleaved timeline (sessions + assignments) ──────────────────
     const sprintTimeline = useMemo((): SprintTimelineItem[] => {
@@ -543,7 +559,7 @@ export function ParticipantDashboard() {
         )
         for (const session of sorted) {
             const scheduledAt = new Date(session.scheduled_date).getTime()
-            const completed = session.status === 'completed' || scheduledAt < now
+            const completed = session.status === 'completed' || (scheduledAt < now && !!session.recording_url)
             const current = !completed && !currentMarked
             if (current) currentMarked = true
 
@@ -563,19 +579,43 @@ export function ParticipantDashboard() {
                 .filter(a => a.session_id === session.id)
                 .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''))
             for (const a of sessionAssignments) {
+                const titleLower = a.title.toLowerCase()
+                let isLocked = false
+                
+                if (a.lock_override === 'unlocked') {
+                    isLocked = false
+                } else if (a.lock_override === 'locked') {
+                    isLocked = true
+                } else if (titleLower.includes('session 1 reflection')) {
+                    // Unlocks after Session 1 ends
+                    isLocked = !completed
+                } else if (titleLower.includes('session 2 reflection') || titleLower.includes('session 2 implementation')) {
+                    // Unlocks after Session 2 ends AND S1 reflection submitted
+                    isLocked = !completed || !s1ReflectionSubmitted
+                } else if (titleLower.includes('sprint assignment') || a.title === 'AI ASSIGNMENT') {
+                    // Unlocks after Session 3 ends AND S2 reflection submitted
+                    isLocked = !completed || !s2ReflectionSubmitted
+                } else {
+                    isLocked = scheduledAt > now
+                }
+
+                const sub = submissions.find(s => s.assignment_id === a.id)
+                const isResubmit = sub ? sub.status === 'resubmit' : false
+
                 result.push({
                     type: 'assignment',
                     id: a.id,
                     title: a.title,
                     dueDate: a.due_date ? formatDateLabel(a.due_date) : 'TBD',
-                    submitted: submissionIds.has(a.id),
+                    submitted: submissionIds.has(a.id) && !isResubmit,
                     sessionCompleted: completed,
-                    locked: scheduledAt > now,
+                    locked: isLocked,
+                    status: sub?.status
                 })
             }
         }
         return result
-    }, [isSprintMember, sessions, assignments, submissions])
+    }, [isSprintMember, sessions, assignments, submissions, s1ReflectionSubmitted, s2ReflectionSubmitted])
 
     const totalSessions = sessions.length
     const completedSessions = useMemo(() => {
@@ -854,18 +894,12 @@ export function ParticipantDashboard() {
                                                                 )
                                                             ) : (
                                                                 item.zoomLink ? (
-                                                                    new Date(item.scheduledDate).getTime() > Date.now() ? (
-                                                                        <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
-                                                                            Coming Up
-                                                                        </span>
-                                                                    ) : (
-                                                                        <button
-                                                                            onClick={() => window.open(item.zoomLink!, '_blank')}
-                                                                            className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                                        >
-                                                                            Join Now
-                                                                        </button>
-                                                                    )
+                                                                    <button
+                                                                        onClick={() => window.open(item.zoomLink!, '_blank')}
+                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                    >
+                                                                        Join Now
+                                                                    </button>
                                                                 ) : item.current ? (
                                                                     <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
                                                                 ) : null
@@ -878,14 +912,28 @@ export function ParticipantDashboard() {
                                                 <div className="relative flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-white/[0.03] border border-transparent transition-colors">
                                                     <div className="flex flex-col items-center shrink-0 w-10">
                                                         <div className={`h-8 w-8 rounded-lg flex items-center justify-center relative z-10 ${
-                                                            item.submitted ? 'bg-lime/10' : item.locked ? 'bg-red-500/10' : 'bg-white/[0.04]'
+                                                            item.submitted 
+                                                                ? (item.status === 'approved' || item.status === 'reviewed') 
+                                                                    ? 'bg-lime/10' 
+                                                                    : item.status === 'resubmit' 
+                                                                        ? 'bg-orange-500/10' 
+                                                                        : 'bg-yellow-500/10'
+                                                                : item.locked 
+                                                                    ? 'bg-red-500/10' 
+                                                                    : 'bg-lime/5 border border-lime/20'
                                                         }`}>
                                                             {item.submitted ? (
-                                                                <CheckCircle2 className="h-4 w-4 text-lime" />
+                                                                (item.status === 'approved' || item.status === 'reviewed') ? (
+                                                                    <CheckCircle2 className="h-4 w-4 text-lime" />
+                                                                ) : item.status === 'resubmit' ? (
+                                                                    <X className="h-4 w-4 text-orange-400" />
+                                                                ) : (
+                                                                    <Clock className="h-4 w-4 text-yellow-400" />
+                                                                )
                                                             ) : item.locked ? (
                                                                 <Lock className="h-4 w-4 text-red-400" />
                                                             ) : (
-                                                                <FileText className="h-4 w-4 text-gray-500" />
+                                                                <FileText className="h-4 w-4 text-lime" />
                                                             )}
                                                         </div>
                                                     </div>
@@ -894,12 +942,20 @@ export function ParticipantDashboard() {
                                                         <p className="text-xs text-gray-600 mt-0.5">Due: {item.dueDate}</p>
                                                     </div>
                                                     {item.submitted ? (
-                                                        <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg shrink-0">Submitted</span>
+                                                        (item.status === 'approved' || item.status === 'reviewed') ? (
+                                                            <span className="px-2 py-1 text-xs bg-lime/10 text-lime border border-lime/20 rounded-lg shrink-0">Approved</span>
+                                                        ) : item.status === 'resubmit' ? (
+                                                            <span className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg shrink-0">Resubmit</span>
+                                                        ) : (
+                                                            <span className="px-2 py-1 text-xs bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 rounded-lg shrink-0">In Review</span>
+                                                        )
                                                     ) : item.locked ? (
                                                         <span className="px-2 py-1 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg shrink-0 flex items-center gap-1">
                                                             <Lock className="h-3 w-3" /> Locked
                                                         </span>
-                                                    ) : null}
+                                                    ) : (
+                                                        <span className="px-2 py-1 text-xs bg-lime/10 text-lime border border-lime/20 rounded-lg shrink-0">Available</span>
+                                                    )}
                                                 </div>
                                             )}
                                             <div className="h-1.5" />
@@ -950,18 +1006,12 @@ export function ParticipantDashboard() {
                                                             )
                                                         ) : (
                                                             session.zoomLink ? (
-                                                                new Date(session.scheduledDate!).getTime() > Date.now() ? (
-                                                                    <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
-                                                                        Coming Up
-                                                                    </span>
-                                                                ) : (
-                                                                    <button
-                                                                        onClick={() => window.open(session.zoomLink!, '_blank')}
-                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                                    >
-                                                                        Join Now
-                                                                    </button>
-                                                                )
+                                                                <button
+                                                                    onClick={() => window.open(session.zoomLink!, '_blank')}
+                                                                    className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                >
+                                                                    Join Now
+                                                                </button>
                                                             ) : session.current ? (
                                                                 <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
                                                             ) : null
@@ -983,17 +1033,17 @@ export function ParticipantDashboard() {
                                     <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
                                         certificateClaimed
                                             ? 'hover:bg-white/5 border-transparent'
-                                            : allSessionsCompleted
+                                            : sprintAssignmentApproved
                                             ? 'bg-lime/5 border border-lime/20'
                                             : 'opacity-40 border border-transparent'
                                     }`}>
                                         <div className="flex flex-col items-center shrink-0 w-10">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                certificateClaimed ? 'bg-lime/10' : allSessionsCompleted ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                certificateClaimed ? 'bg-lime/10' : sprintAssignmentApproved ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
                                             }`}>
                                                 {certificateClaimed ? (
                                                     <CheckCircle2 className="h-5 w-5 text-lime" />
-                                                ) : allSessionsCompleted ? (
+                                                ) : sprintAssignmentApproved ? (
                                                     <GraduationCap className="h-5 w-5 text-black" />
                                                 ) : (
                                                     <Lock className="h-5 w-5 text-gray-500" />
@@ -1003,14 +1053,14 @@ export function ParticipantDashboard() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
-                                                    <p className={`font-medium truncate ${certificateClaimed ? 'text-gray-400' : allSessionsCompleted ? 'text-lime' : 'text-gray-600'}`}>
+                                                    <p className={`font-medium truncate ${certificateClaimed ? 'text-gray-400' : sprintAssignmentApproved ? 'text-lime' : 'text-gray-600'}`}>
                                                         AI Certificate of Completion
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 ${certificateClaimed ? 'text-gray-600' : allSessionsCompleted ? 'text-lime/70' : 'text-gray-600'}`}>
-                                                        {certificateClaimed ? 'Certificate claimed!' : allSessionsCompleted ? 'Claim your personalized certificate' : 'Unlocks after completing all sessions'}
+                                                    <p className={`text-xs mt-0.5 ${certificateClaimed ? 'text-gray-600' : sprintAssignmentApproved ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {certificateClaimed ? 'Certificate claimed!' : sprintAssignmentApproved ? 'Claim your personalized certificate' : 'Unlocks after Sprint Assignment is approved'}
                                                     </p>
                                                 </div>
-                                                {allSessionsCompleted && !certificateClaimed && (
+                                                {sprintAssignmentApproved && !certificateClaimed && (
                                                     <button
                                                         onClick={() => setShowCertificateModal(true)}
                                                         className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
@@ -1039,17 +1089,17 @@ export function ParticipantDashboard() {
                                     <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
                                         bookingCompleted
                                             ? 'hover:bg-white/5 border-transparent'
-                                            : certificateClaimed
+                                            : sprintAssignmentApproved
                                             ? 'bg-lime/5 border border-lime/20'
                                             : 'opacity-40 border border-transparent'
                                     }`}>
                                         <div className="flex flex-col items-center shrink-0 w-10">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                bookingCompleted ? 'bg-lime/10' : certificateClaimed ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                bookingCompleted ? 'bg-lime/10' : sprintAssignmentApproved ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
                                             }`}>
                                                 {bookingCompleted ? (
                                                     <CheckCircle2 className="h-5 w-5 text-lime" />
-                                                ) : certificateClaimed ? (
+                                                ) : sprintAssignmentApproved ? (
                                                     <CalendarCheck className="h-5 w-5 text-black" />
                                                 ) : (
                                                     <Lock className="h-5 w-5 text-gray-500" />
@@ -1059,14 +1109,14 @@ export function ParticipantDashboard() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
-                                                    <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : certificateClaimed ? 'text-lime' : 'text-gray-600'}`}>
+                                                    <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : sprintAssignmentApproved ? 'text-lime' : 'text-gray-600'}`}>
                                                         Book Your 1-on-1
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : certificateClaimed ? 'text-lime/70' : 'text-gray-600'}`}>
-                                                        {bookingCompleted ? 'Booked!' : certificateClaimed ? 'Schedule a call with Khaled' : 'Unlocks after claiming your certificate of completion'}
+                                                    <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : sprintAssignmentApproved ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {bookingCompleted ? 'Booked!' : sprintAssignmentApproved ? 'Schedule a call with Khaled' : 'Unlocks after Sprint Assignment is approved'}
                                                     </p>
                                                 </div>
-                                                {certificateClaimed && !bookingCompleted && (
+                                                {sprintAssignmentApproved && !bookingCompleted && (
                                                     <button
                                                         onClick={() => setShowBookingDialog(true)}
                                                         className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"

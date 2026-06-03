@@ -694,7 +694,7 @@ export function CaseStudiesPage() {
                 <div className="container mx-auto px-5 sm:px-6 max-w-5xl">
                     <FadeIn className="mb-12 text-center">
                         <h2 className="font-heading font-black uppercase text-[clamp(1.5rem,4.2vw,3rem)] leading-[0.95]">
-                            HEAR FROM<br /><span className="text-lime">OUR PARTICIPANTS</span>
+                            HEAR FROM DESIGNERS WHO WENT<br /><span className="text-lime">BEYOND THE PROMPT</span>
                         </h2>
                         <div className="flex justify-center mt-4"><LimeBar /></div>
                     </FadeIn>

@@ -442,7 +442,7 @@ export function CompanyWorkspacePage() {
                                                 <tr
                                                     key={member.id}
                                                     className="hover:bg-white/5 transition cursor-pointer"
-                                                    onClick={() => setSelectedMember(member)}
+                                                    onClick={() => navigate(`/admin/members/${member.id}`)}
                                                 >
                                                     <td className="px-5 py-4">
                                                         <div className="flex items-center gap-3">

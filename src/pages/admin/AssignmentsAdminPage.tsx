@@ -26,7 +26,7 @@ export function AssignmentsAdminPage() {
         setError(null)
 
         const [assignmentsResult, sessionsResult, programsResult] = await Promise.all([
-            supabase.from('assignments').select('id, session_id, title, description, due_date, submission_format, created_at').order('due_date', { ascending: false }),
+            supabase.from('assignments').select('id, session_id, title, description, due_date, submission_format, lock_override, created_at').order('due_date', { ascending: false }),
             supabase.from('sessions').select('id, cohort_id, title, session_number').order('session_number', { ascending: true }),
             supabase.from('cohorts').select('id, name, start_date, end_date, status, offering_type, created_at').order('start_date', { ascending: false }),
         ])
@@ -139,6 +139,58 @@ export function AssignmentsAdminPage() {
                     >
                         {pending > 0 ? `${pending} to review` : total > 0 ? `${total} reviewed` : 'No submissions'}
                     </button>
+                )
+            },
+        },
+        {
+            header: 'Lock Override',
+            accessor: (assignment: Assignment) => {
+                const currentOverride = assignment.lock_override ?? 'default'
+                return (
+                    <div className="inline-flex rounded-xl bg-white/5 border border-white/[0.06] p-0.5 gap-0.5">
+                        {[
+                            { value: 'default', label: 'Default' },
+                            { value: 'unlocked', label: 'Unlock' },
+                            { value: 'locked', label: 'Lock' },
+                        ].map((opt) => {
+                            const isActive = currentOverride === opt.value
+                            return (
+                                <button
+                                    key={opt.value}
+                                    onClick={async (e) => {
+                                        e.stopPropagation()
+                                        const { error: err } = await supabase
+                                            .from('assignments')
+                                            .update({ lock_override: opt.value as 'default' | 'unlocked' | 'locked' })
+                                            .eq('id', assignment.id)
+                                        
+                                        if (err) {
+                                            alert(err.message)
+                                        } else {
+                                            setAssignments((prev) =>
+                                                prev.map((a) =>
+                                                    a.id === assignment.id
+                                                        ? { ...a, lock_override: opt.value as any }
+                                                        : a
+                                                )
+                                            )
+                                        }
+                                    }}
+                                    className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition ${
+                                        isActive
+                                            ? opt.value === 'unlocked'
+                                                ? 'bg-lime text-black'
+                                                : opt.value === 'locked'
+                                                ? 'bg-red-500 text-white'
+                                                : 'bg-white/10 text-white'
+                                            : 'text-gray-500 hover:text-gray-300'
+                                    }`}
+                                >
+                                    {opt.label}
+                                </button>
+                            )
+                        })}
+                    </div>
                 )
             },
         },

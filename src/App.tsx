@@ -58,6 +58,7 @@ const ProgramsPage = lazy(() => import('@/pages/admin/ProgramsPage').then(module
 const ProgramDetailPage = lazy(() => import('@/pages/admin/ProgramDetailPage').then(module => ({ default: module.ProgramDetailPage })))
 const AdminToolboxPage = lazy(() => import('@/pages/admin/AdminToolboxPage').then(module => ({ default: module.AdminToolboxPage })))
 const UsersPage = lazy(() => import('@/pages/admin/UsersPage').then(module => ({ default: module.UsersPage })))
+const MemberDetailPage = lazy(() => import('@/pages/admin/MemberDetailPage').then(module => ({ default: module.MemberDetailPage })))
 const EventsPage = lazy(() => import('@/pages/admin/EventsPage').then(module => ({ default: module.EventsPage })))
 const CostsPage = lazy(() => import('@/pages/admin/CostsPage').then(module => ({ default: module.CostsPage })))
 const RecruitingPage = lazy(() => import('@/pages/admin/RecruitingPage').then(module => ({ default: module.RecruitingPage })))
@@ -238,6 +239,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <UsersPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/members/:id"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <MemberDetailPage />
                                             </ProtectedRoute>
                                         }
                                     />

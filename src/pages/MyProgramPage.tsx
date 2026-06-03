@@ -129,6 +129,40 @@ export function MyProgramPage() {
     const totalAssignments = assignments.length
     const sessionMap = useMemo(() => new Map(sessions.map((s) => [s.id, s])), [sessions])
 
+    const s1ReflectionSubmitted = useMemo(() => {
+        const asgn = assignments.find(a => a.title.toLowerCase().includes('session 1 reflection'))
+        if (!asgn) return false
+        const sub = submissionMap.get(asgn.id)
+        return !!sub && sub.status !== 'resubmit'
+    }, [assignments, submissionMap])
+
+    const s2ReflectionSubmitted = useMemo(() => {
+        const asgn = assignments.find(a => a.title.toLowerCase().includes('session 2 reflection'))
+        if (!asgn) return false
+        const sub = submissionMap.get(asgn.id)
+        return !!sub && sub.status !== 'resubmit'
+    }, [assignments, submissionMap])
+
+    const isAssignmentLocked = (asgn: Assignment, session: Session | undefined) => {
+        if (asgn.lock_override === 'unlocked') return false
+        if (asgn.lock_override === 'locked') return true
+        if (!session) return true
+        const sessionStartTime = new Date(session.scheduled_date).getTime()
+        const sessionEnded = session.status === 'completed' || Date.now() > sessionStartTime
+
+        if (cohort?.offering_type === 'sprint_workshop') {
+            const titleLower = asgn.title.toLowerCase()
+            if (titleLower.includes('session 1 reflection')) {
+                return !sessionEnded
+            } else if (titleLower.includes('session 2 reflection') || titleLower.includes('session 2 implementation')) {
+                return !sessionEnded || !s1ReflectionSubmitted
+            } else if (titleLower.includes('sprint assignment') || asgn.title === 'AI ASSIGNMENT') {
+                return !sessionEnded || !s2ReflectionSubmitted
+            }
+        }
+        return Date.now() < sessionStartTime
+    }
+
     // Progress percentage
     const progressPct = useMemo(() => {
         const sessionWeight = 0.5
@@ -239,8 +273,6 @@ export function MyProgramPage() {
                         const isCompleted = session.status === 'completed'
                         const isAttended = attendance.has(session.id)
                         const isExpanded = expandedSession === session.id
-                        const sessionStartTime = new Date(session.scheduled_date).getTime()
-                        const sessionHasStarted = Date.now() >= sessionStartTime
                         const sessionAssignments = assignments.filter((a) => a.session_id === session.id)
                         const isLast = idx === sessions.length - 1
 
@@ -340,10 +372,11 @@ export function MyProgramPage() {
                                                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">Assignments</p>
                                                     {sessionAssignments.map((asgn) => {
                                                         const sub = submissionMap.get(asgn.id)
+                                                        const isAsgnLocked = isAssignmentLocked(asgn, session)
                                                         return (
                                                             <div key={asgn.id} className="flex items-center justify-between bg-bg-elevated rounded-lg p-2.5 border border-border">
                                                                 <div className="flex items-center gap-2">
-                                                                    {sessionHasStarted ? (
+                                                                    {!isAsgnLocked ? (
                                                                         <ClipboardList className="h-3.5 w-3.5 text-gray-500" />
                                                                     ) : (
                                                                         <Lock className="h-3.5 w-3.5 text-red-400" />
@@ -353,14 +386,28 @@ export function MyProgramPage() {
                                                                         {asgn.due_date && <p className="text-[10px] text-gray-500">Due {formatDateLabel(asgn.due_date)}</p>}
                                                                     </div>
                                                                 </div>
-                                                                {!sessionHasStarted ? (
+                                                                {isAsgnLocked ? (
                                                                     <span className="px-2 py-0.5 text-[10px] rounded-md border bg-red-500/10 text-red-400 border-red-500/30 flex items-center gap-1">
                                                                         <Lock className="h-3 w-3" /> Locked
                                                                     </span>
                                                                 ) : sub ? (
-                                                                    <span className={`px-2 py-0.5 text-[10px] rounded-md border ${sub.score != null ? 'bg-lime/10 text-lime border-lime/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30'}`}>
-                                                                        {sub.score != null ? `✓ ${sub.score}pts` : 'Submitted'}
-                                                                    </span>
+                                                                    sub.status === 'resubmit' ? (
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="px-2 py-0.5 text-[10px] rounded-md border bg-orange-500/10 text-orange-400 border-orange-500/30">
+                                                                                Resubmit
+                                                                            </span>
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); setSubmitTarget({ id: asgn.id, title: asgn.title, session: session.title, submissionFormat: asgn.submission_format }) }}
+                                                                                className="px-2 py-0.5 text-[10px] text-lime border border-lime/30 rounded-md hover:bg-lime/10 transition"
+                                                                            >
+                                                                                Resubmit
+                                                                            </button>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <span className={`px-2 py-0.5 text-[10px] rounded-md border ${sub.score != null ? 'bg-lime/10 text-lime border-lime/30' : 'bg-amber-500/10 text-amber-300 border-amber-500/30'}`}>
+                                                                            {sub.score != null ? `✓ ${sub.score}pts` : 'Submitted'}
+                                                                        </span>
+                                                                    )
                                                                 ) : (
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); setSubmitTarget({ id: asgn.id, title: asgn.title, session: session.title, submissionFormat: asgn.submission_format }) }}
@@ -401,9 +448,8 @@ export function MyProgramPage() {
                             .map((asgn) => {
                                 const sub = submissionMap.get(asgn.id)
                                 const session = sessionMap.get(asgn.session_id)
-                                const sessionStartTime = session ? new Date(session.scheduled_date).getTime() : 0
-                                const isLocked = session ? Date.now() < sessionStartTime : true
-                                const isDue = asgn.due_date && new Date(asgn.due_date) < new Date() && !sub && !isLocked
+                                const isAsgnLocked = isAssignmentLocked(asgn, session)
+                                const isDue = asgn.due_date && new Date(asgn.due_date) < new Date() && !sub && !isAsgnLocked
 
                                 return (
                                     <div key={asgn.id} className={`bg-bg-elevated border rounded-xl p-4 transition ${isDue ? 'border-red-500/30' : 'border-border'}`}>
@@ -419,7 +465,7 @@ export function MyProgramPage() {
                                                 {session && <span>Session {session.session_number}</span>}
                                                 {asgn.due_date && (
                                                     <span className={isDue ? 'text-red-400 font-medium' : ''}>
-                                                        {isLocked ? `Due ${formatDateLabel(asgn.due_date)}` : isDue ? '⚠ Overdue' : `Due ${formatDateLabel(asgn.due_date)}`}
+                                                        {isAsgnLocked ? `Due ${formatDateLabel(asgn.due_date)}` : isDue ? '⚠ Overdue' : `Due ${formatDateLabel(asgn.due_date)}`}
                                                     </span>
                                                 )}
                                             </div>
@@ -429,21 +475,35 @@ export function MyProgramPage() {
                                         </div>
 
                                         <div className="shrink-0">
-                                            {isLocked ? (
+                                            {isAsgnLocked ? (
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-red-500/10 text-red-400 border border-red-500/30">
                                                     <Lock className="h-3.5 w-3.5" /> Locked
                                                 </span>
                                             ) : sub ? (
-                                                <div className="text-right">
-                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg ${sub.score != null ? 'bg-lime/10 text-lime' : 'bg-amber-500/10 text-amber-300'}`}>
-                                                        {sub.score != null ? <><CheckCircle2 className="h-3.5 w-3.5" /> {sub.score}pts</> : <><Clock className="h-3.5 w-3.5" /> Submitted</>}
-                                                    </span>
-                                                    {sub.feedback && (
-                                                        <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.feedback}>
-                                                            💬 {sub.feedback}
-                                                        </p>
-                                                    )}
-                                                </div>
+                                                sub.status === 'resubmit' ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/30">
+                                                            Resubmit
+                                                        </span>
+                                                        <button
+                                                            onClick={() => setSubmitTarget({ id: asgn.id, title: asgn.title, session: sessionMap.get(asgn.session_id)?.title ?? '', submissionFormat: asgn.submission_format })}
+                                                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-lime border border-lime/30 rounded-lg hover:bg-lime/10 transition"
+                                                        >
+                                                            Resubmit
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-right">
+                                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg ${sub.score != null ? 'bg-lime/10 text-lime' : 'bg-amber-500/10 text-amber-300'}`}>
+                                                            {sub.score != null ? <><CheckCircle2 className="h-3.5 w-3.5" /> {sub.score}pts</> : <><Clock className="h-3.5 w-3.5" /> Submitted</>}
+                                                        </span>
+                                                        {sub.feedback && (
+                                                            <p className="text-[10px] text-gray-500 mt-1.5 max-w-[200px] truncate" title={sub.feedback}>
+                                                                💬 {sub.feedback}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )
                                             ) : (
                                                 <button
                                                     onClick={() => setSubmitTarget({ id: asgn.id, title: asgn.title, session: sessionMap.get(asgn.session_id)?.title ?? '', submissionFormat: asgn.submission_format })}

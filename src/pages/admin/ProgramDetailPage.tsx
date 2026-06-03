@@ -206,7 +206,7 @@ function AssignmentsPanel({ cohort }: { cohort: Cohort }) {
 
         const { data: assignmentData, error: ae } = await supabase
             .from('assignments')
-            .select('id, session_id, title, description, due_date, submission_format, created_at')
+            .select('id, session_id, title, description, due_date, submission_format, created_at, lock_override')
             .in('session_id', cohortSessions.map((s) => s.id))
             .order('due_date', { ascending: false });
         if (ae) { setError(ae.message); setIsLoading(false); return; }
@@ -277,6 +277,58 @@ function AssignmentsPanel({ cohort }: { cohort: Cohort }) {
                     >
                         {pending > 0 ? `${pending} to review` : total > 0 ? `${total} reviewed` : 'No submissions'}
                     </button>
+                );
+            },
+        },
+        {
+            header: 'Lock Override',
+            accessor: (a: Assignment) => {
+                const currentOverride = a.lock_override ?? 'default';
+                return (
+                    <div className="inline-flex rounded-xl bg-white/5 border border-white/[0.06] p-0.5 gap-0.5" onClick={(e) => e.stopPropagation()}>
+                        {[
+                            { value: 'default', label: 'Default' },
+                            { value: 'unlocked', label: 'Unlock' },
+                            { value: 'locked', label: 'Lock' },
+                        ].map((opt) => {
+                            const isActive = currentOverride === opt.value;
+                            return (
+                                <button
+                                    key={opt.value}
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+                                        const { error: err } = await supabase
+                                            .from('assignments')
+                                            .update({ lock_override: opt.value as 'default' | 'unlocked' | 'locked' })
+                                            .eq('id', a.id);
+                                        
+                                        if (err) {
+                                            alert(err.message);
+                                        } else {
+                                            setAssignments((prev) =>
+                                                prev.map((item) =>
+                                                    item.id === a.id
+                                                        ? { ...item, lock_override: opt.value as any }
+                                                        : item
+                                                )
+                                            );
+                                        }
+                                    }}
+                                    className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition ${
+                                        isActive
+                                            ? opt.value === 'unlocked'
+                                                ? 'bg-lime text-black'
+                                                : opt.value === 'locked'
+                                                ? 'bg-red-500 text-white'
+                                                : 'bg-white/10 text-white'
+                                            : 'text-gray-500 hover:text-gray-300'
+                                    }`}
+                                >
+                                    {opt.label}
+                                </button>
+                            );
+                        })}
+                    </div>
                 );
             },
         },
@@ -381,6 +433,7 @@ function AssignmentsPanel({ cohort }: { cohort: Cohort }) {
 // ─── Participants Panel ──────────────────────────────────────────────────────
 function ParticipantsPanel({ cohort }: { cohort: Cohort }) {
     const supabase = useSupabase();
+    const navigate = useNavigate();
     const [participants, setParticipants] = useState<User[]>([]);
     const [companies, setCompanies] = useState<Company[]>([]);
     const [programs, setPrograms] = useState<Cohort[]>([]);
@@ -580,6 +633,7 @@ function ParticipantsPanel({ cohort }: { cohort: Cohort }) {
                 isLoading={isLoading}
                 onEdit={handleEditUser}
                 onDelete={handleRemoveUser}
+                onRowClick={(user) => navigate(`/admin/members/${user.id}`)}
             />
 
             {selectedUser && (

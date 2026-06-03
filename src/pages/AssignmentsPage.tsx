@@ -16,10 +16,11 @@ type AssignmentCard = {
     session: string
     dueDate: string
     submissionFormat: SubmissionFormat
-    status: 'pending' | 'submitted' | 'upcoming'
+    status: 'pending' | 'submitted' | 'upcoming' | 'resubmit'
     feedback?: string
     materials?: SessionMaterial[]
     isLocked?: boolean
+    lockOverride?: 'default' | 'unlocked' | 'locked'
 }
 
 export function AssignmentsPage() {
@@ -115,24 +116,61 @@ export function AssignmentsPage() {
 
         const cohortMap = new Map(cohorts.map((cohort) => [cohort.id, cohort]))
 
+        // Find if S1 and S2 reflections are submitted to evaluate sequential locking
+        const s1ReflectionAss = assignmentRows.find(a => a.title.toLowerCase().includes('session 1 reflection'))
+        const s2ReflectionAss = assignmentRows.find(a => a.title.toLowerCase().includes('session 2 reflection'))
+
+        const s1Sub = s1ReflectionAss ? submissions.find(s => s.assignment_id === s1ReflectionAss.id) : null
+        const s2Sub = s2ReflectionAss ? submissions.find(s => s.assignment_id === s2ReflectionAss.id) : null
+
+        const s1ReflectionSubmitted = s1Sub && s1Sub.status !== 'resubmit'
+        const s2ReflectionSubmitted = s2Sub && s2Sub.status !== 'resubmit'
+
         const cards = assignmentRows
             .map((assignment) => {
                 const session = sessionMap.get(assignment.session_id)
+                const cohort = session ? cohortMap.get(session.cohort_id) : undefined
+                const isSprint = cohort?.offering_type === 'sprint_workshop'
+
                 const sessionStartTime = session ? new Date(session.scheduled_date).getTime() : 0
-                const isLocked = session ? Date.now() < sessionStartTime : true
+                const sessionEnded = session ? (session.status === 'completed' || Date.now() > sessionStartTime) : false
+
+                let isLocked = false
+                if (assignment.lock_override === 'unlocked') {
+                    isLocked = false
+                } else if (assignment.lock_override === 'locked') {
+                    isLocked = true
+                } else if (isSprint && session) {
+                    const titleLower = assignment.title.toLowerCase()
+                    if (titleLower.includes('session 1 reflection')) {
+                        isLocked = !sessionEnded
+                    } else if (titleLower.includes('session 2 reflection') || titleLower.includes('session 2 implementation')) {
+                        isLocked = !sessionEnded || !s1ReflectionSubmitted
+                    } else if (titleLower.includes('sprint assignment') || assignment.title === 'AI ASSIGNMENT') {
+                        isLocked = !sessionEnded || !s2ReflectionSubmitted
+                    } else {
+                        isLocked = Date.now() < sessionStartTime
+                    }
+                } else {
+                    isLocked = session ? Date.now() < sessionStartTime : true
+                }
 
                 const submission = submissionsByAssignment.get(assignment.id)
                 const dueDate = assignment.due_date ? new Date(assignment.due_date) : null
                 const isOverdue = dueDate ? dueDate.getTime() < Date.now() : false
 
-                const cohort = session ? cohortMap.get(session.cohort_id) : undefined
                 const programLabel = cohort ? cohort.name : null
 
-                const status: AssignmentCard['status'] = submission
-                    ? 'submitted'
-                    : isOverdue
-                        ? 'pending'
-                        : 'upcoming'
+                let status: AssignmentCard['status'] = 'upcoming'
+                if (submission) {
+                    if (submission.status === 'resubmit') {
+                        status = 'resubmit'
+                    } else {
+                        status = 'submitted'
+                    }
+                } else if (isOverdue) {
+                    status = 'pending'
+                }
 
                 return {
                     id: assignment.id,
@@ -147,6 +185,7 @@ export function AssignmentsPage() {
                     feedback: submission?.feedback ?? undefined,
                     materials: assignment.materials ?? [],
                     isLocked,
+                    lockOverride: assignment.lock_override,
                 }
             })
 
@@ -349,6 +388,11 @@ export function AssignmentsPage() {
                                                         Submitted
                                                     </span>
                                                 )}
+                                                {assignment.status === 'resubmit' && (
+                                                    <span className="px-3 py-1 bg-orange-500/10 text-orange-400 text-xs rounded-lg shrink-0">
+                                                        Resubmit
+                                                    </span>
+                                                )}
                                                 {assignment.status === 'upcoming' && (
                                                     <span className="px-3 py-1 bg-gray-500/10 text-gray-400 text-xs rounded-lg shrink-0">
                                                         Upcoming
@@ -402,6 +446,10 @@ export function AssignmentsPage() {
                                             </>
                                         ) : isPreviewing ? (
                                             'Preview mode'
+                                        ) : assignment.status === 'resubmit' ? (
+                                            <>
+                                                Resubmit <ArrowRight className="h-4 w-4" />
+                                            </>
                                         ) : (
                                             <>
                                                 Submit <ArrowRight className="h-4 w-4" />
@@ -422,7 +470,7 @@ export function AssignmentsPage() {
                 onClose={() => setSubmitTarget(null)}
                 onSuccess={() => {
                     setSubmitTarget(null)
-                    // Real-time subscription auto-refreshes the card
+                    refreshAssignments()
                 }}
             />
         </div>

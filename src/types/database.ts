@@ -3,7 +3,7 @@ export type UserType = 'management' | 'team' | 'sprint_member'
 export type CohortStatus = 'upcoming' | 'active' | 'completed'
 export type OfferingType = 'sprint_workshop' | 'master_class'
 export type SessionStatus = 'scheduled' | 'completed'
-export type SubmissionStatus = 'pending' | 'reviewed'
+export type SubmissionStatus = 'pending' | 'reviewed' | 'in_review' | 'approved' | 'resubmit'
 export type SubmissionFormat = 'file' | 'link' | 'text' | 'any'
 export type SurveyTrigger = 'onboarding' | 'mid_program' | 'post_program'
 export type ChatChannelType = 'team' | 'management' | 'sprint'
@@ -227,6 +227,7 @@ export interface Assignment {
     submission_format: SubmissionFormat
     materials?: SessionMaterial[]
     created_at: string
+    lock_override?: 'default' | 'unlocked' | 'locked'
 }
 
 export interface Submission {

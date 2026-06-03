@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Star, Zap, Users, Video, BookOpen } from 'lucide-react'
+import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Zap, Users, Video, Award, Rocket, FileText, X } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '@/assets/logo.png'
 
@@ -22,10 +22,10 @@ interface TierDef {
 }
 
 /* ── Upgrade Tiers ── */
-const VIP_TIER = {
-    id: 'vip',
-    name: 'VIP Access',
-    tagline: 'Go deeper. Get personal attention.',
+const SILVER_TIER: TierDef = {
+    id: 'silver',
+    name: 'Silver',
+    tagline: 'Go beyond the live sessions. Own the knowledge.',
     price: 59,
     icon: Crown,
     color: 'amber',
@@ -34,18 +34,16 @@ const VIP_TIER = {
     accentColor: 'text-amber-400',
     bgGlow: 'shadow-[0_0_40px_rgba(245,158,11,0.08)]',
     features: [
-        { icon: Video, text: 'Exclusive bonus session: advanced AI techniques for complex projects' },
-        { icon: Users, text: 'Private VIP group with direct access to Khaled and fellow VIP members' },
-        { icon: BookOpen, text: 'Complete AI prompt library with 50+ curated prompts for interior design' },
-        { icon: Zap, text: 'Priority Q&A: your questions answered first in every session' },
-        { icon: Star, text: 'VIP certificate, recognized as a distinguished participant' },
+        { icon: Video, text: 'Full workshop recordings — rewatch both days at your own pace, forever' },
+        { icon: Zap, text: 'Live Q&A priority — your questions get answered first during the workshop' },
+        { icon: Award, text: 'AI Certificate from Zkandar — proof you went beyond the prompt' },
     ],
 }
 
-const ELITE_TIER = {
-    id: 'vip-elite',
-    name: 'VIP Elite',
-    tagline: 'The full transformation. 1-on-1 mentoring included.',
+const GOLD_TIER: TierDef = {
+    id: 'gold',
+    name: 'Gold',
+    tagline: 'The full transformation. Personal mentoring included.',
     price: 149,
     icon: Gem,
     color: 'lime',
@@ -55,12 +53,13 @@ const ELITE_TIER = {
     bgGlow: 'shadow-[0_0_40px_rgba(208,255,113,0.08)]',
     badge: 'BEST VALUE',
     features: [
-        { icon: Sparkles, text: 'Everything in VIP: all VIP features included' },
-        { icon: Users, text: '1-on-1 mentoring session (30 min) personalized to your business' },
-        { icon: BookOpen, text: 'Complete project case study files with real project assets included' },
-        { icon: Video, text: 'Lifetime access to all webinar recordings & future updates' },
-        { icon: Zap, text: 'Custom AI workflow audit where Khaled reviews your current process' },
-        { icon: Crown, text: 'Featured in Zkandar alumni network with exclusive networking access' },
+        { icon: Sparkles, text: 'Everything in Silver — recordings, priority Q&A, and AI certificate' },
+        { icon: Video, text: 'Full workshop recordings — lifetime access to both days' },
+        { icon: FileText, text: 'Complete workshop PDF — the entire system documented for reference' },
+        { icon: Zap, text: 'Live Q&A priority — your questions answered first' },
+        { icon: Award, text: 'AI Certificate from Zkandar — recognized completion credential' },
+        { icon: Users, text: '1-on-1 call with Khaled (30 min) — personalized to your workflow' },
+        { icon: Rocket, text: 'Early access to the Sprint Workshop — locked-in priority registration' },
     ],
 }
 
@@ -104,14 +103,14 @@ export default function WebinarUpgradePage() {
                 <img src={logoSrc} alt="Zkandar" className="h-7 opacity-60" />
             </div>
 
-            {/* Urgency Banner — Don't leave yet! */}
+            {/* Urgency Banner */}
             <div className="relative bg-amber-500/[0.08] border-b border-amber-500/20 py-3.5 px-4 text-center">
                 <p className="text-sm font-bold text-amber-400 flex items-center justify-center gap-2">
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
                     </span>
-                    WAIT! You're not done yet, {name || 'there'}.
+                    WAIT — You're not done yet, {name || 'there'}.
                 </p>
                 <p className="text-[0.7rem] text-amber-300/60 mt-1">Your seat is confirmed. But this one-time offer disappears when you leave this page.</p>
             </div>
@@ -129,10 +128,10 @@ export default function WebinarUpgradePage() {
                         EXCLUSIVE ONE-TIME OFFER
                     </p>
                     <h1 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.8rem)] leading-[0.93] tracking-[0.01em]">
-                        WANT TO GET <span className="text-lime">10× MORE</span> FROM<br className="hidden sm:block" /> THIS EXPERIENCE?
+                        DON'T JUST WATCH.<br className="hidden sm:block" /> <span className="text-lime">OWN THE SYSTEM.</span>
                     </h1>
                     <p className="text-[0.9rem] text-gray-400 max-w-xl mx-auto leading-relaxed">
-                        You've secured your seat. Now unlock the tools, mentoring, and resources that separate participants from <strong className="text-white">professionals</strong>.
+                        You've secured your seat to Beyond the AI Prompt. Now decide how deep you want to go — do you want to <strong className="text-white">watch</strong> it, or do you want to <strong className="text-white">own</strong> it?
                     </p>
                     <p className="text-[0.65rem] text-red-400/70 font-bold uppercase tracking-wider">
                         ⏰ This offer disappears when you leave this page
@@ -141,37 +140,37 @@ export default function WebinarUpgradePage() {
 
                 {/* Tier Cards */}
                 <div className="grid md:grid-cols-2 gap-5 mb-10">
-                    {/* VIP Card */}
+                    {/* Silver Card */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.15 }}
                     >
                         <TierCard
-                            tier={VIP_TIER}
-                            isProcessing={isProcessing && selectedTier === VIP_TIER.id}
+                            tier={SILVER_TIER}
+                            isProcessing={isProcessing && selectedTier === SILVER_TIER.id}
                             disabled={isProcessing}
-                            onUpgrade={() => handleUpgrade(VIP_TIER.id, VIP_TIER.price)}
+                            onUpgrade={() => handleUpgrade(SILVER_TIER.id, SILVER_TIER.price)}
                         />
                     </motion.div>
 
-                    {/* Elite Card */}
+                    {/* Gold Card */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.25 }}
                     >
                         <TierCard
-                            tier={ELITE_TIER}
-                            isProcessing={isProcessing && selectedTier === ELITE_TIER.id}
+                            tier={GOLD_TIER}
+                            isProcessing={isProcessing && selectedTier === GOLD_TIER.id}
                             disabled={isProcessing}
-                            onUpgrade={() => handleUpgrade(ELITE_TIER.id, ELITE_TIER.price)}
+                            onUpgrade={() => handleUpgrade(GOLD_TIER.id, GOLD_TIER.price)}
                             featured
                         />
                     </motion.div>
                 </div>
 
-                {/* Comparison highlights */}
+                {/* Comparison Table */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -187,34 +186,30 @@ export default function WebinarUpgradePage() {
                                 <tr className="border-b border-white/[0.06]">
                                     <th className="text-left py-3 text-gray-500 font-bold uppercase tracking-wider">Feature</th>
                                     <th className="py-3 text-gray-500 font-bold uppercase tracking-wider text-center w-24">Standard</th>
-                                    <th className="py-3 text-amber-400 font-bold uppercase tracking-wider text-center w-24">VIP</th>
-                                    <th className="py-3 text-lime font-bold uppercase tracking-wider text-center w-24">Elite</th>
+                                    <th className="py-3 text-amber-400 font-bold uppercase tracking-wider text-center w-24">Silver</th>
+                                    <th className="py-3 text-lime font-bold uppercase tracking-wider text-center w-24">Gold</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/[0.04]">
                                 {[
-                                    { feature: '3-day live webinar access', standard: true, vip: true, elite: true },
-                                    { feature: 'Session recordings', standard: true, vip: true, elite: true },
-                                    { feature: 'Bonus advanced AI session', standard: false, vip: true, elite: true },
-                                    { feature: 'Private VIP group', standard: false, vip: true, elite: true },
-                                    { feature: '50+ AI prompt library', standard: false, vip: true, elite: true },
-                                    { feature: 'Priority Q&A', standard: false, vip: true, elite: true },
-                                    { feature: '1-on-1 mentoring (30 min)', standard: false, vip: false, elite: true },
-                                    { feature: 'Project case study files', standard: false, vip: false, elite: true },
-                                    { feature: 'Lifetime recording access', standard: false, vip: false, elite: true },
-                                    { feature: 'Custom workflow audit', standard: false, vip: false, elite: true },
-                                    { feature: 'Alumni network access', standard: false, vip: false, elite: true },
+                                    { feature: '2-day live workshop access', standard: true, silver: true, gold: true },
+                                    { feature: 'Workshop recordings (lifetime)', standard: false, silver: true, gold: true },
+                                    { feature: 'Complete workshop PDF', standard: false, silver: false, gold: true },
+                                    { feature: 'Priority Q&A', standard: false, silver: true, gold: true },
+                                    { feature: 'AI Certificate from Zkandar', standard: false, silver: true, gold: true },
+                                    { feature: '1-on-1 call with Khaled (30 min)', standard: false, silver: false, gold: true },
+                                    { feature: 'Early access to Sprint Workshop', standard: false, silver: false, gold: true },
                                 ].map((row, i) => (
                                     <tr key={i} className="hover:bg-white/[0.01]">
                                         <td className="py-2.5 text-gray-300 pr-4">{row.feature}</td>
                                         <td className="py-2.5 text-center">
-                                            {row.standard ? <Check className="w-3.5 h-3.5 text-gray-500 mx-auto" /> : <span className="text-gray-700">—</span>}
+                                            {row.standard ? <Check className="w-3.5 h-3.5 text-gray-500 mx-auto" /> : <X className="w-3.5 h-3.5 text-gray-700 mx-auto" />}
                                         </td>
                                         <td className="py-2.5 text-center">
-                                            {row.vip ? <Check className="w-3.5 h-3.5 text-amber-400 mx-auto" /> : <span className="text-gray-700">—</span>}
+                                            {row.silver ? <Check className="w-3.5 h-3.5 text-amber-400 mx-auto" /> : <X className="w-3.5 h-3.5 text-gray-700 mx-auto" />}
                                         </td>
                                         <td className="py-2.5 text-center">
-                                            {row.elite ? <Check className="w-3.5 h-3.5 text-lime mx-auto" /> : <span className="text-gray-700">—</span>}
+                                            {row.gold ? <Check className="w-3.5 h-3.5 text-lime mx-auto" /> : <X className="w-3.5 h-3.5 text-gray-700 mx-auto" />}
                                         </td>
                                     </tr>
                                 ))}
@@ -232,7 +227,7 @@ export default function WebinarUpgradePage() {
                 >
                     <div className="flex items-center justify-center gap-2 text-[0.65rem] text-gray-600">
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>100% money-back guarantee on all upgrades</span>
+                        <span>Secure checkout · Instant access after purchase</span>
                     </div>
 
                     <button

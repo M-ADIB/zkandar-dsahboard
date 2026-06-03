@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Mail, Clock, Trash2 } from 'lucide-react';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSessionStorage } from '@/hooks/useSessionStorage';
@@ -44,6 +45,7 @@ export function UsersPage() {
     const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
     const { session } = useAuth();
+    const navigate = useNavigate();
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -341,6 +343,7 @@ export function UsersPage() {
                 onDelete={(user) => {
                     setUserToDelete(user);
                 }}
+                onRowClick={(user) => navigate(`/admin/members/${user.id}`)}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
             />
