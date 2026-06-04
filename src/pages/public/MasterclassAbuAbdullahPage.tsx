@@ -12,9 +12,7 @@ import {
     Linkedin, 
     Sparkles, 
     Cpu, 
-    Layout, 
     PenTool, 
-    FileSpreadsheet, 
     Image as ImageIcon,
     Award
 } from 'lucide-react'
@@ -39,7 +37,7 @@ function FadeIn({ children, delay = 0, className = '' }: {
     )
 }
 
-export function TeamsMasterclassPage() {
+export function MasterclassAbuAbdullahPage() {
     return (
         <div className="min-h-screen bg-black text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
             <PublicNav />
@@ -94,11 +92,11 @@ export function TeamsMasterclassPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                             <div>
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Prepared For</span>
-                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">Mr. Gustavo De Hos De Hostsos</span>
+                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">Abu Abdullah</span>
                             </div>
                             <div className="border-t sm:border-t-0 sm:border-l border-white/[0.08] pt-4 sm:pt-0 sm:pl-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Company</span>
-                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">Forsite Creative</span>
+                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">AL JAWAHER ENGINEERING CONSULTANCY</span>
                             </div>
                             <div className="border-t sm:border-t-0 sm:border-l border-white/[0.08] pt-4 sm:pt-0 sm:pl-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Prepared By</span>
@@ -228,9 +226,9 @@ export function TeamsMasterclassPage() {
                                 },
                                 {
                                     num: "03",
-                                    title: "Technical Specification Review Workflows",
-                                    icon: FileSpreadsheet,
-                                    topics: ["Cross-referencing workflows", "Structured review outputs", "AI-assisted discrepancy detection"]
+                                    title: "ON-SITE DOCUMENTATION",
+                                    icon: FileText,
+                                    topics: ["AI assisted workflow for documentation", "Text + image to template migration"]
                                 },
                                 {
                                     num: "04",
@@ -240,12 +238,6 @@ export function TeamsMasterclassPage() {
                                 },
                                 {
                                     num: "05",
-                                    title: "FF&E Development",
-                                    icon: Layout,
-                                    topics: ["Bespoke furniture ideation systems", "Spatial placement workflows", "Contextual rendering systems"]
-                                },
-                                {
-                                    num: "06",
                                     title: "The Art of Storytelling",
                                     icon: Sparkles,
                                     topics: [
@@ -257,7 +249,7 @@ export function TeamsMasterclassPage() {
                                     ]
                                 },
                                 {
-                                    num: "07",
+                                    num: "06",
                                     title: "Prize Money Competition",
                                     icon: Award,
                                     topics: ["Moodboards & FF&E Design challenges", "Storytelling & narrative execution", "AI-generated consultant briefs"]
