@@ -10,6 +10,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { formatDateLabel, formatSessionDateTime } from '@/lib/time'
 import type { Assignment, Cohort, Session, SubmissionFormat } from '@/types/database'
+import { VideoModal } from '@/components/shared/VideoModal'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Submission {
@@ -39,6 +40,7 @@ export function MyProgramPage() {
     const [submitTarget, setSubmitTarget] = useState<{
         id: string; title: string; session: string; submissionFormat: SubmissionFormat
     } | null>(null)
+    const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null)
 
     useEffect(() => {
         if (!user || !effectiveUserId) return
@@ -337,15 +339,13 @@ export function MyProgramPage() {
                                             className="space-y-2 pt-1 pb-2"
                                         >
                                             {session.recording_url && completed && (
-                                                <a
-                                                    href={session.recording_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline"
+                                                <button
+                                                    onClick={() => setActiveVideoUrl(session.recording_url)}
+                                                    className="inline-flex items-center gap-1.5 text-xs text-lime hover:underline cursor-pointer"
                                                 >
                                                     <Film className="h-3.5 w-3.5" />
                                                     Watch Recording
-                                                </a>
+                                                </button>
                                             )}
 
                                             {session.zoom_link && !completed && isLiveOrSoon && (
@@ -545,6 +545,12 @@ export function MyProgramPage() {
                         setSubmissions((subData as Submission[]) ?? [])
                     }
                 }}
+            />
+
+            <VideoModal
+                isOpen={!!activeVideoUrl}
+                videoUrl={activeVideoUrl || ''}
+                onClose={() => setActiveVideoUrl(null)}
             />
 
             {/* ── Miro Board ── */}

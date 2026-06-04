@@ -7,6 +7,7 @@ import { useAccessibleCohorts } from '@/hooks/useAccessibleCohorts'
 import { useViewMode } from '@/context/ViewModeContext'
 import { formatDateLabel, formatTimeLabel } from '@/lib/time'
 import type { OfferingType, Session } from '@/types/database'
+import { VideoModal } from '@/components/shared/VideoModal'
 
 type SessionCard = {
     id: string
@@ -34,6 +35,7 @@ export function SessionsPage() {
     const [sessions, setSessions] = useState<Session[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null)
 
     const sortSessions = (items: Session[]) => {
         return [...items].sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())
@@ -287,16 +289,16 @@ export function SessionsPage() {
                                 )}
                                 {session.status === 'completed' ? (
                                     session.recordingUrl && (
-                                        <a
-                                            href={session.recordingUrl}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="mt-3 flex items-center gap-1.5 text-xs text-lime hover:text-lime/80 transition-colors font-medium"
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setActiveVideoUrl(session.recordingUrl)
+                                            }}
+                                            className="mt-3 flex items-center gap-1.5 text-xs text-lime hover:text-lime/80 transition-colors font-medium cursor-pointer"
                                         >
                                             <Play className="h-3 w-3" />
                                             Watch recording
-                                        </a>
+                                        </button>
                                     )
                                 ) : (
                                     session.status === 'scheduled' && session.zoomLink && (
@@ -317,6 +319,12 @@ export function SessionsPage() {
                     ))}
                 </div>
             )}
+
+            <VideoModal
+                isOpen={!!activeVideoUrl}
+                videoUrl={activeVideoUrl || ''}
+                onClose={() => setActiveVideoUrl(null)}
+            />
         </div>
     )
 }

@@ -19,6 +19,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { ProgressBar } from '@/components/shared/ProgressBar'
 import { Portal } from '@/components/shared/Portal'
+import { VideoModal } from '@/components/shared/VideoModal'
 import { supabase } from '@/lib/supabase'
 import { formatDateLabel, formatRelativeTime, formatSessionDateTime } from '@/lib/time'
 import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
@@ -281,6 +282,7 @@ export function ParticipantDashboard() {
     const [userName, setUserName] = useState('')
     const [calendlyUrl, setCalendlyUrl] = useState<string | null>(null)
     const [showBookingDialog, setShowBookingDialog] = useState(false)
+    const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null)
     const [countdown, setCountdown] = useState<{
         days: number;
         hours: number;
@@ -920,7 +922,7 @@ export function ParticipantDashboard() {
                                                             {item.completed ? (
                                                                 item.recordingUrl && (
                                                                     <button
-                                                                        onClick={() => window.open(item.recordingUrl!, '_blank')}
+                                                                        onClick={() => setActiveVideoUrl(item.recordingUrl)}
                                                                         className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
                                                                     >
                                                                         Watch Now
@@ -1038,7 +1040,7 @@ export function ParticipantDashboard() {
                                                         {session.completed ? (
                                                             session.recordingUrl && (
                                                                 <button
-                                                                    onClick={() => window.open(session.recordingUrl!, '_blank')}
+                                                                    onClick={() => setActiveVideoUrl(session.recordingUrl)}
                                                                     className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
                                                                 >
                                                                     Watch Now
@@ -1353,6 +1355,11 @@ export function ParticipantDashboard() {
                     companyName={companyName}
                     onClaim={handleClaimCertificate}
                     isClaimed={certificateClaimed}
+                />
+                <VideoModal
+                    isOpen={!!activeVideoUrl}
+                    videoUrl={activeVideoUrl || ''}
+                    onClose={() => setActiveVideoUrl(null)}
                 />
             </AnimatePresence>
         </div>

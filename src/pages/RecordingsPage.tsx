@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useViewMode } from '@/context/ViewModeContext'
 import { formatSessionDateTime } from '@/lib/time'
 import type { Session, Cohort } from '@/types/database'
+import { VideoModal } from '@/components/shared/VideoModal'
 
 interface RecordingCard {
     id: string
@@ -24,6 +25,7 @@ export function RecordingsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState('')
+    const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null)
 
     const userId = effectiveUserId || user?.id
 
@@ -170,11 +172,9 @@ export function RecordingsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                     {filteredRecordings.map((recording, index) => {
                         const hasRecording = Boolean(recording.recordingUrl)
-                        const CardWrapper = hasRecording ? motion.a : motion.div
+                        const CardWrapper = motion.div
                         const wrapperProps = hasRecording ? {
-                            href: recording.recordingUrl,
-                            target: "_blank",
-                            rel: "noopener noreferrer"
+                            onClick: () => setActiveVideoUrl(recording.recordingUrl)
                         } : {}
 
                         return (
@@ -184,7 +184,7 @@ export function RecordingsPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.06 }}
-                                className={`group relative bg-bg-card border rounded-2xl overflow-hidden transition-all duration-300 ${
+                                className={`group relative bg-bg-card border rounded-2xl overflow-hidden transition-all duration-300 text-left ${
                                     hasRecording 
                                         ? 'border-border hover:border-lime/30 hover:shadow-[0_0_30px_rgba(208,255,113,0.06)] cursor-pointer' 
                                         : 'border-border/50 opacity-40'
@@ -242,6 +242,12 @@ export function RecordingsPage() {
                     })}
                 </div>
             )}
+
+            <VideoModal
+                isOpen={!!activeVideoUrl}
+                videoUrl={activeVideoUrl || ''}
+                onClose={() => setActiveVideoUrl(null)}
+            />
         </div>
     )
 }
