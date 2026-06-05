@@ -414,7 +414,7 @@ export function MasterclassAbuAbdullahPage() {
                             </div>
                             <div className="shrink-0">
                                 <a 
-                                    href="/ai-masterclass-services-agreement.pdf" 
+                                    href="/zkandar-ai-masterclass-agreement-abu-mahmad.pdf" 
                                     download 
                                     className="text-lime hover:text-white inline-flex items-center gap-2 uppercase tracking-wider text-xs font-bold font-body transition-colors border border-lime/20 bg-lime/5 hover:bg-lime/10 px-4 py-2.5 rounded-xl"
                                 >
@@ -428,7 +428,7 @@ export function MasterclassAbuAbdullahPage() {
                         <div className="bg-[#111111] border border-white/[0.06] rounded-3xl p-2 sm:p-4 overflow-hidden shadow-inner">
                             <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/[0.04]">
                                 <iframe 
-                                    src="/ai-masterclass-services-agreement.pdf#toolbar=0" 
+                                    src="/zkandar-ai-masterclass-agreement-abu-mahmad.pdf#toolbar=0" 
                                     className="w-full h-full bg-[#111111] rounded-2xl"
                                     title="AI Masterclass Services Agreement"
                                 />

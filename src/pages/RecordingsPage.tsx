@@ -18,6 +18,49 @@ interface RecordingCard {
     status: 'completed' | 'scheduled'
 }
 
+function RecordingThumbnail({ videoUrl, hasRecording }: { videoUrl: string; hasRecording: boolean }) {
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!hasRecording || !videoUrl) return
+
+        const fetchThumbnail = async () => {
+            try {
+                if (videoUrl.includes('vimeo.com')) {
+                    const response = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`)
+                    if (response.ok) {
+                        const data = await response.json()
+                        if (data.thumbnail_url) {
+                            setThumbnailUrl(data.thumbnail_url)
+                        }
+                    }
+                } else if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                    const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i)
+                    if (ytMatch) {
+                        setThumbnailUrl(`https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`)
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching video thumbnail:', error)
+            }
+        }
+
+        fetchThumbnail()
+    }, [videoUrl, hasRecording])
+
+    if (thumbnailUrl) {
+        return (
+            <img 
+                src={thumbnailUrl} 
+                alt="Video Thumbnail" 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+        )
+    }
+
+    return null
+}
+
 export function RecordingsPage() {
     const { user, loading: authLoading } = useAuth()
     const { effectiveUserId } = useViewMode()
@@ -192,30 +235,37 @@ export function RecordingsPage() {
                             >
                                 {/* Thumbnail area */}
                                 <div className="relative h-40 bg-gradient-to-br from-lime/5 via-transparent to-green/5 flex items-center justify-center overflow-hidden">
+                                    <RecordingThumbnail videoUrl={recording.recordingUrl} hasRecording={hasRecording} />
+
+                                    {/* Dark overlay for thumbnail image */}
+                                    {hasRecording && (
+                                        <div className="absolute inset-0 bg-black/45 group-hover:bg-black/55 transition-colors duration-300 z-10" />
+                                    )}
+
                                     {/* Noise texture overlay */}
-                                    <div className="absolute inset-0 opacity-[0.03]" style={{
+                                    <div className="absolute inset-0 opacity-[0.03] z-10" style={{
                                         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
                                     }} />
 
                                     {/* Session number badge */}
-                                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[11px] font-medium text-gray-300">
+                                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[11px] font-medium text-gray-300 z-20">
                                         Session {recording.sessionNumber}
                                     </div>
 
                                     {/* Play or Lock button */}
                                     {hasRecording ? (
-                                        <div className="h-14 w-14 rounded-full bg-lime/90 flex items-center justify-center shadow-lg shadow-lime/20 group-hover:scale-110 transition-transform duration-300">
+                                        <div className="h-14 w-14 rounded-full bg-lime/90 flex items-center justify-center shadow-lg shadow-lime/20 group-hover:scale-110 transition-transform duration-300 z-20">
                                             <Play className="h-6 w-6 text-black ml-0.5" />
                                         </div>
                                     ) : (
-                                        <div className="h-14 w-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                        <div className="h-14 w-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center z-20">
                                             <Lock className="h-6 w-6 text-gray-500" />
                                         </div>
                                     )}
 
                                     {/* External link hint */}
                                     {hasRecording && (
-                                        <div className="absolute top-3 right-3 h-7 w-7 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <div className="absolute top-3 right-3 h-7 w-7 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
                                             <ExternalLink className="h-3.5 w-3.5 text-gray-300" />
                                         </div>
                                     )}
