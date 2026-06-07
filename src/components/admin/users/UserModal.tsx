@@ -256,6 +256,66 @@ export function UserModal({
         setIsLoading(true);
         setError(null);
 
+        if (invoiceFile) {
+            try {
+                const fileExt = invoiceFile.name.split('.').pop();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const filePath = `${user.id}/${fileName}`;
+                
+                const { error: uploadErr } = await supabase.storage
+                    .from('invoices')
+                    .upload(filePath, invoiceFile, { upsert: true });
+                    
+                if (uploadErr) throw uploadErr;
+                
+                const { data: urlData } = supabase.storage
+                    .from('invoices')
+                    .getPublicUrl(filePath);
+                    
+                const newInvoice = {
+                    id: crypto.randomUUID(),
+                    name: invoiceName.trim() || invoiceFile.name,
+                    amount: parseFloat(invoiceAmount) || 0,
+                    url: urlData.publicUrl,
+                    uploaded_at: new Date().toISOString(),
+                    source: 'manual'
+                };
+                
+                const nextInvoices = [...invoices, newInvoice];
+                
+                const { data: userData } = await (supabase
+                    .from('users' as any)
+                    .select('profile_data')
+                    .eq('id', user.id)
+                    .single() as any);
+                    
+                const currentProfile = (userData?.profile_data as Record<string, any>) || {};
+                const newProfile = {
+                    ...currentProfile,
+                    invoices: nextInvoices
+                };
+                
+                const { error: dbErr } = await (supabase
+                    .from('users' as any)
+                    .update({ profile_data: newProfile })
+                    .eq('id', user.id) as any);
+                    
+                if (dbErr) throw dbErr;
+                
+                setInvoices(nextInvoices);
+                setInvoiceName('');
+                setInvoiceAmount('');
+                setInvoiceFile(null);
+                toast.success('Invoice uploaded successfully!');
+            } catch (err: any) {
+                console.error(err);
+                setError(err.message || 'Failed to upload invoice.');
+                toast.error(err.message || 'Failed to upload invoice.');
+                setIsLoading(false);
+                return;
+            }
+        }
+
         const payload = {
             full_name: formData.full_name.trim(),
             role: formData.role,
