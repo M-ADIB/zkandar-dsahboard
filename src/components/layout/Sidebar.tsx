@@ -27,6 +27,7 @@ import {
     SlidersHorizontal,
     Mail,
     UserCircle2,
+    CreditCard,
 } from 'lucide-react'
 import type { UserRole, UserType } from '@/types/database'
 import type { User as DbUser } from '@/types/database'
@@ -106,6 +107,7 @@ const memberNavSections: NavSection[] = [
             { icon: Film, label: 'Recordings', path: '/recordings', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
             { icon: Wrench, label: 'Toolbox', path: '/toolbox', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: CreditCard, label: 'Billing & Invoices', path: '/billing', roles: ['owner', 'admin', 'executive', 'participant'] },
         ]
     },
     {

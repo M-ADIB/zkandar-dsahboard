@@ -75,6 +75,7 @@ const TestingCredentials = import.meta.env.DEV
 // Shared internal
 const ChatPage = lazy(() => import('@/pages/ChatPage').then(module => ({ default: module.ChatPage })))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage').then(module => ({ default: module.SettingsPage })))
+const BillingPage = lazy(() => import('@/pages/BillingPage').then(module => ({ default: module.BillingPage })))
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage').then(module => ({ default: module.NotificationsPage })))
 const MyProgramPage = lazy(() => import('@/pages/MyProgramPage').then(module => ({ default: module.MyProgramPage })))
 const MyPerformancePage = lazy(() => import('@/pages/MyPerformancePage').then(module => ({ default: module.MyPerformancePage })))
@@ -375,6 +376,7 @@ function App() {
                                         }
                                     />
                                     <Route path="settings" element={<SettingsPage />} />
+                                    <Route path="billing" element={<BillingPage />} />
                                     <Route path="notifications" element={<NotificationsPage />} />
                                     <Route
                                         path="profile"
