@@ -107,11 +107,72 @@ export function SubmissionsPanel({ assignment, members, onClose }: SubmissionsPa
 
         setSavingId(userId)
         const score = draft.score.trim() ? parseInt(draft.score, 10) : null
-        await supabase.from('submissions').update({
+        
+        const { error: updateError } = await supabase.from('submissions').update({
             feedback: draft.feedback.trim() || null,
             score: Number.isNaN(score) ? null : score,
             status: 'reviewed',
         }).eq('id', sub.id)
+
+        if (!updateError) {
+            // 1. Send in-app notification
+            const { error: notifyError } = await supabase
+                .from('notifications')
+                .insert({
+                    user_id: userId,
+                    title: 'Submission Reviewed',
+                    message: `Your submission for "${assignment?.title || 'Assignment'}" has been reviewed.`,
+                    type: 'info',
+                    action_url: '/assignments'
+                })
+            
+            if (notifyError) {
+                console.error('Failed to insert in-app notification:', notifyError)
+            }
+
+            // 2. Queue Email notification
+            const member = members.find(m => m.id === userId)
+            if (member?.email) {
+                const recipientEmail = member.email
+                const recipientName = member.full_name ?? 'Attendee'
+                const feedbackVal = draft.feedback.trim()
+
+                await supabase.from('email_queue').insert({
+                    recipient_email: recipientEmail,
+                    recipient_name: recipientName,
+                    subject: `Submission Reviewed: ${assignment?.title || 'Assignment'}`,
+                    html_body: `
+                        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #000000; color: #ffffff; border: 1px solid #222222; border-radius: 24px;">
+                            <h2 style="color: #D0FF71; margin-top: 0; font-size: 22px; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;">Submission Reviewed</h2>
+                            <p style="font-size: 15px; line-height: 1.6; color: #cccccc; margin-top: 12px;">
+                                Your submission for <strong>${assignment?.title || 'Assignment'}</strong> has been reviewed by the instructor.
+                            </p>
+                            <div style="background-color: #0a0a0a; padding: 20px; border-radius: 16px; border: 1px solid #1a1a1a; margin: 24px 0;">
+                                <p style="margin: 0 0 5px 0; font-size: 11px; color: #666666; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Review Status</p>
+                                <p style="margin: 0 0 16px 0; font-size: 15px; color: #ffffff; font-weight: bold;">Reviewed</p>
+                                
+                                ${score !== null ? `
+                                <p style="margin: 0 0 5px 0; font-size: 11px; color: #666666; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Score</p>
+                                <p style="margin: 0 0 16px 0; font-size: 15px; color: #D0FF71; font-weight: bold;">${score}/100 pts</p>
+                                ` : ''}
+                                
+                                ${feedbackVal ? `
+                                <p style="margin: 0 0 5px 0; font-size: 11px; color: #666666; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Feedback</p>
+                                <p style="margin: 0; font-size: 14px; color: #cccccc; line-height: 1.5; white-space: pre-wrap;">${feedbackVal}</p>
+                                ` : ''}
+                            </div>
+                            <a href="${window.location.origin}/dashboard" style="display: inline-block; background-color: #D0FF71; color: #000000; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; transition: opacity 0.2s;">
+                                Go to Dashboard
+                            </a>
+                        </div>
+                    `,
+                    status: 'pending',
+                    campaign_id: null,
+                    attempts: 0,
+                    send_after: null
+                })
+            }
+        }
 
         setSavingId(null)
         fetchSubmissions()

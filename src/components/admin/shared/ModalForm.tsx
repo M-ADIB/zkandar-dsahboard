@@ -49,7 +49,13 @@ export function ModalForm({ isOpen, onClose, title, children, onSubmit, isLoadin
                             </button>
                         </div>
 
-                        <form onSubmit={onSubmit} className="flex-1 overflow-y-auto p-6 flex flex-col">
+                        <form 
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (onSubmit) onSubmit(e);
+                            }} 
+                            className="flex-1 overflow-y-auto p-6 flex flex-col"
+                        >
                             <div className="space-y-4 flex-1">
                                 {children}
                             </div>

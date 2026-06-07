@@ -282,47 +282,113 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
         if (updateError) { setError(updateError.message); setSavingId(null); return }
 
-        // If status changed to approved, queue email to participant
-        if (statusVal === 'approved' && !wasApprovedBefore && currentSub?.user?.email) {
-            const recipientEmail = currentSub.user.email
-            const recipientName = currentSub.user.full_name ?? 'Attendee'
+        // Status text map for display
+        const statusTextMap: Record<string, string> = {
+            approved: 'Approved',
+            resubmit: 'Resubmit Required',
+            in_review: 'In Review',
+            pending: 'Pending',
+        }
+        const statusText = statusTextMap[statusVal] || statusVal
+
+        // If status is reviewed (not pending), trigger notifications
+        if (statusVal !== 'pending' && currentSub?.user_id) {
+            // 1. Send in-app notification
+            const { error: notifyError } = await supabase
+                .from('notifications')
+                .insert({
+                    user_id: currentSub.user_id,
+                    title: 'Submission Reviewed',
+                    message: `Your submission for "${assignment?.title || 'Assignment'}" has been reviewed. Status: ${statusText}.`,
+                    type: statusVal === 'approved' ? 'success' : statusVal === 'resubmit' ? 'warning' : 'info',
+                    action_url: '/assignments'
+                })
             
-            await supabase.from('email_queue').insert({
-                recipient_email: recipientEmail,
-                recipient_name: recipientName,
-                subject: 'Khaled Zkandar - 1-on-1 + AI Certificate Unlocked!',
-                html_body: `
-                    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #000000; color: #ffffff; border: 1px solid #222222; border-radius: 24px;">
-                        <h2 style="color: #D0FF71; margin-top: 0; font-size: 22px; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;">Congratulations, ${recipientName}!</h2>
-                        <p style="font-size: 15px; line-height: 1.6; color: #cccccc; margin-top: 12px;">
-                            Khaled has reviewed and <strong>approved</strong> your Sprint Assignment! Your hard work has paid off.
-                        </p>
-                        <p style="font-size: 15px; line-height: 1.6; color: #cccccc;">
-                            You have unlocked two major achievements:
-                        </p>
-                        <div style="background-color: #0a0a0a; padding: 20px; border-radius: 16px; border: 1px solid #1a1a1a; margin: 24px 0;">
-                            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 20px;">🎓</span>
-                                <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Your AI Certificate of Completion is ready.</span>
+            if (notifyError) {
+                console.error('Failed to insert in-app notification:', notifyError)
+            }
+
+            // 2. Queue Email notification
+            if (currentSub?.user?.email) {
+                const recipientEmail = currentSub.user.email
+                const recipientName = currentSub.user.full_name ?? 'Attendee'
+
+                if (statusVal === 'approved' && !wasApprovedBefore) {
+                    // Approved / Certificate congratulations email
+                    await supabase.from('email_queue').insert({
+                        recipient_email: recipientEmail,
+                        recipient_name: recipientName,
+                        subject: 'Khaled Zkandar - 1-on-1 + AI Certificate Unlocked!',
+                        html_body: `
+                            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #000000; color: #ffffff; border: 1px solid #222222; border-radius: 24px;">
+                                <h2 style="color: #D0FF71; margin-top: 0; font-size: 22px; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;">Congratulations, ${recipientName}!</h2>
+                                <p style="font-size: 15px; line-height: 1.6; color: #cccccc; margin-top: 12px;">
+                                    Khaled has reviewed and <strong>approved</strong> your Sprint Assignment! Your hard work has paid off.
+                                </p>
+                                <p style="font-size: 15px; line-height: 1.6; color: #cccccc;">
+                                    You have unlocked two major achievements:
+                                </p>
+                                <div style="background-color: #0a0a0a; padding: 20px; border-radius: 16px; border: 1px solid #1a1a1a; margin: 24px 0;">
+                                    <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 20px;">🎓</span>
+                                        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Your AI Certificate of Completion is ready.</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 20px;">📅</span>
+                                        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Your 1-on-1 booking with Khaled is unlocked.</span>
+                                    </div>
+                                </div>
+                                <p style="font-size: 14px; color: #888888; margin-bottom: 24px; line-height: 1.5;">
+                                    Head back to your dashboard to claim your certificate, download the PDF, and book your personalized 1-on-1 session.
+                                </p>
+                                <a href="${window.location.origin}/dashboard" style="display: inline-block; background-color: #D0FF71; color: #000000; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; transition: opacity 0.2s;">
+                                    Go to Dashboard
+                                </a>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 20px;">📅</span>
-                                <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Your 1-on-1 booking with Khaled is unlocked.</span>
+                        `,
+                        status: 'pending',
+                        campaign_id: null,
+                        attempts: 0,
+                        send_after: null
+                    })
+                } else if (statusVal !== 'approved') {
+                    // General reviewed email (e.g. resubmit, in_review)
+                    await supabase.from('email_queue').insert({
+                        recipient_email: recipientEmail,
+                        recipient_name: recipientName,
+                        subject: `Submission Reviewed: ${assignment?.title || 'Assignment'}`,
+                        html_body: `
+                            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #000000; color: #ffffff; border: 1px solid #222222; border-radius: 24px;">
+                                <h2 style="color: #D0FF71; margin-top: 0; font-size: 22px; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;">Submission Reviewed</h2>
+                                <p style="font-size: 15px; line-height: 1.6; color: #cccccc; margin-top: 12px;">
+                                    Your submission for <strong>${assignment?.title || 'Assignment'}</strong> has been reviewed by the instructor.
+                                </p>
+                                <div style="background-color: #0a0a0a; padding: 20px; border-radius: 16px; border: 1px solid #1a1a1a; margin: 24px 0;">
+                                    <p style="margin: 0 0 5px 0; font-size: 11px; color: #666666; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Review Status</p>
+                                    <p style="margin: 0 0 16px 0; font-size: 15px; color: #ffffff; font-weight: bold;">${statusText}</p>
+                                    
+                                    ${scoreVal !== null ? `
+                                    <p style="margin: 0 0 5px 0; font-size: 11px; color: #666666; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Score</p>
+                                    <p style="margin: 0 0 16px 0; font-size: 15px; color: #D0FF71; font-weight: bold;">${scoreVal}/100 pts</p>
+                                    ` : ''}
+                                    
+                                    ${feedbackVal.trim() ? `
+                                    <p style="margin: 0 0 5px 0; font-size: 11px; color: #666666; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Feedback</p>
+                                    <p style="margin: 0; font-size: 14px; color: #cccccc; line-height: 1.5; white-space: pre-wrap;">${feedbackVal.trim()}</p>
+                                    ` : ''}
+                                </div>
+                                <a href="${window.location.origin}/dashboard" style="display: inline-block; background-color: #D0FF71; color: #000000; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; transition: opacity 0.2s;">
+                                    Go to Dashboard
+                                </a>
                             </div>
-                        </div>
-                        <p style="font-size: 14px; color: #888888; margin-bottom: 24px; line-height: 1.5;">
-                            Head back to your dashboard to claim your certificate, download the PDF, and book your personalized 1-on-1 session.
-                        </p>
-                        <a href="${window.location.origin}/dashboard" style="display: inline-block; background-color: #D0FF71; color: #000000; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; transition: opacity 0.2s;">
-                            Go to Dashboard
-                        </a>
-                    </div>
-                `,
-                status: 'pending',
-                campaign_id: null,
-                attempts: 0,
-                send_after: null
-            })
+                        `,
+                        status: 'pending',
+                        campaign_id: null,
+                        attempts: 0,
+                        send_after: null
+                    })
+                }
+            }
         }
 
         setSubmissions((prev) => prev.map((r) =>
@@ -447,6 +513,7 @@ export function SubmissionsModal({ isOpen, onClose, assignment }: SubmissionsMod
 
                                 <div className="flex justify-end pt-1">
                                     <button
+                                        type="button"
                                         onClick={() => handleSave(sub.id)}
                                         disabled={savingId === sub.id}
                                         className="px-4 py-2 rounded-xl gradient-lime text-black font-semibold text-xs hover:opacity-90 disabled:opacity-50 transition"
