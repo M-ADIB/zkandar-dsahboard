@@ -167,6 +167,7 @@ export function UserModal({
         } catch (err: any) {
             console.error(err);
             setError(err.message || 'Failed to upload invoice.');
+            toast.error(err.message || 'Failed to upload invoice.');
         } finally {
             setIsUploading(false);
         }
