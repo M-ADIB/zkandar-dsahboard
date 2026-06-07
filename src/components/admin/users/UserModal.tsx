@@ -3,7 +3,7 @@ import { useSupabase } from '@/hooks/useSupabase';
 import { ModalForm } from '@/components/admin/shared/ModalForm';
 import type { Cohort, Company, User, UserRole, UserType } from '@/types/database';
 import { logAudit } from '@/lib/audit';
-import { Trash2, Upload, Loader2 } from 'lucide-react';
+import { Trash2, Upload, Loader2, FileText } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 interface UserModalProps {
@@ -70,6 +70,22 @@ export function UserModal({
     const [invoiceAmount, setInvoiceAmount] = useState('');
     const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleFileChange = (file: File | null) => {
+        setInvoiceFile(file);
+        if (file && !invoiceName.trim()) {
+            const cleanName = file.name
+                .replace(/\.[^/.]+$/, "")
+                .replace(/[_-]/g, " ")
+                .trim();
+            const formattedName = cleanName
+                .split(" ")
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+            setInvoiceName(formattedName);
+        }
+    };
 
     useEffect(() => {
         if (!user) {
@@ -256,6 +272,8 @@ export function UserModal({
         setIsLoading(true);
         setError(null);
 
+        let updatedProfileData = null;
+
         if (invoiceFile) {
             try {
                 const fileExt = invoiceFile.name.split('.').pop();
@@ -290,17 +308,10 @@ export function UserModal({
                     .single() as any);
                     
                 const currentProfile = (userData?.profile_data as Record<string, any>) || {};
-                const newProfile = {
+                updatedProfileData = {
                     ...currentProfile,
                     invoices: nextInvoices
                 };
-                
-                const { error: dbErr } = await (supabase
-                    .from('users' as any)
-                    .update({ profile_data: newProfile })
-                    .eq('id', user.id) as any);
-                    
-                if (dbErr) throw dbErr;
                 
                 setInvoices(nextInvoices);
                 setInvoiceName('');
@@ -316,7 +327,7 @@ export function UserModal({
             }
         }
 
-        const payload = {
+        const payload: Record<string, any> = {
             full_name: formData.full_name.trim(),
             role: formData.role,
             user_type: formData.user_type || null,
@@ -325,6 +336,10 @@ export function UserModal({
             age: formData.age ? parseInt(formData.age, 10) : null,
             position: formData.position.trim() || null,
         };
+
+        if (updatedProfileData) {
+            payload.profile_data = updatedProfileData;
+        }
 
         const { error: updateError } = await supabase
             .from('users')
@@ -629,7 +644,7 @@ export function UserModal({
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-[11px] text-gray-400 mb-1">Invoice Label</label>
+                                    <label className="block text-[11px] text-gray-400 mb-1">Invoice Label (Auto-generated if empty)</label>
                                     <input
                                         type="text"
                                         placeholder="e.g. Invoice #2026-001"
@@ -651,33 +666,86 @@ export function UserModal({
                             </div>
                             
                             <div>
-                                <label className="block text-[11px] text-gray-400 mb-1">Select File (PDF, PNG, JPG)</label>
-                                <input
-                                    type="file"
-                                    accept=".pdf,.png,.jpg,.jpeg,.webp"
-                                    onChange={(e) => setInvoiceFile(e.target.files?.[0] || null)}
-                                    className="w-full text-xs text-gray-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-lime/10 file:text-lime hover:file:bg-lime/20 file:cursor-pointer"
-                                />
-                            </div>
-                            
-                            <button
-                                type="button"
-                                onClick={handleUploadInvoice}
-                                disabled={isUploading || !invoiceFile}
-                                className="w-full py-2 bg-lime/10 border border-lime/20 hover:bg-lime/20 text-lime rounded-xl text-xs font-semibold tracking-wider uppercase transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
-                            >
-                                {isUploading ? (
-                                    <>
-                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                        Uploading...
-                                    </>
+                                <label className="block text-[11px] text-gray-400 mb-2">Select Invoice File</label>
+                                {!invoiceFile ? (
+                                    <div
+                                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                                        onDragLeave={() => setIsDragging(false)}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            setIsDragging(false);
+                                            const file = e.dataTransfer.files?.[0];
+                                            if (file) handleFileChange(file);
+                                        }}
+                                        onClick={() => document.getElementById('invoice-file-input')?.click()}
+                                        className={`border-2 border-dashed rounded-xl p-6 transition-all text-center flex flex-col items-center justify-center cursor-pointer ${
+                                            isDragging 
+                                                ? 'border-lime bg-lime/10 text-lime scale-[0.99]' 
+                                                : 'border-white/[0.08] hover:border-lime/40 bg-white/[0.01] hover:bg-white/[0.02] text-gray-400'
+                                        }`}
+                                    >
+                                        <input
+                                            id="invoice-file-input"
+                                            type="file"
+                                            accept=".pdf,.png,.jpg,.jpeg,.webp"
+                                            onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+                                            className="hidden"
+                                        />
+                                        <Upload className={`h-7 w-7 mb-2 transition-transform duration-200 ${isDragging ? 'scale-110 text-lime' : 'text-gray-500'}`} />
+                                        <p className="text-xs font-semibold text-white">Drag & drop invoice file here or click to browse</p>
+                                        <p className="text-[10px] text-gray-500 mt-1">Supports PDF, PNG, JPG, JPEG, WEBP</p>
+                                    </div>
                                 ) : (
-                                    <>
-                                        <Upload className="h-3 w-3" />
-                                        Upload Invoice
-                                    </>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between p-3 rounded-xl bg-lime/5 border border-lime/20 animate-fade-in">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="h-8 w-8 rounded-lg bg-lime/10 flex items-center justify-center text-lime shrink-0">
+                                                    <FileText className="h-4.5 w-4.5" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-semibold text-white truncate">{invoiceFile.name}</p>
+                                                    <p className="text-[10px] text-lime/80 mt-0.5 font-mono">
+                                                        {(invoiceFile.size / 1024).toFixed(1)} KB
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setInvoiceFile(null);
+                                                    setInvoiceName('');
+                                                }}
+                                                className="p-1 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer"
+                                                title="Remove file"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between px-1 text-[10px] text-gray-500">
+                                            <span className="flex items-center gap-1 text-lime/80">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
+                                                Auto-saves when clicking "Save Changes" below
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={handleUploadInvoice}
+                                                disabled={isUploading}
+                                                className="font-bold text-lime hover:underline disabled:opacity-40 disabled:no-underline flex items-center gap-1 cursor-pointer"
+                                            >
+                                                {isUploading ? (
+                                                    <>
+                                                        <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                                                        Uploading...
+                                                    </>
+                                                ) : (
+                                                    'Upload Immediately'
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </>
