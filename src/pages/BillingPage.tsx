@@ -89,7 +89,7 @@ export function BillingPage() {
                                                 </div>
                                                 <div className="flex items-center gap-4 shrink-0">
                                                     <span className="text-sm font-mono font-semibold text-lime">
-                                                        ${((purchase.amount_total || 0) / 100).toFixed(2)}
+                                                        AED {((purchase.amount_total || 0) / 100).toFixed(2)}
                                                     </span>
                                                     <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-lime/10 text-lime uppercase tracking-wider">
                                                         {purchase.status}
@@ -124,7 +124,7 @@ export function BillingPage() {
                                                 <div className="flex items-center gap-4 shrink-0">
                                                     {inv.amount > 0 && (
                                                         <span className="text-sm font-mono font-semibold text-white mr-2">
-                                                            ${inv.amount.toFixed(2)}
+                                                            AED {inv.amount.toFixed(2)}
                                                         </span>
                                                     )}
                                                     <a

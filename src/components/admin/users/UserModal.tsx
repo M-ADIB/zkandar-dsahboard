@@ -583,7 +583,7 @@ export function UserModal({
                                             </div>
                                             <div className="flex items-center gap-3 shrink-0">
                                                 <span className="text-sm font-mono font-semibold text-lime">
-                                                    ${((purchase.amount_total || 0) / 100).toFixed(2)}
+                                                    AED {((purchase.amount_total || 0) / 100).toFixed(2)}
                                                 </span>
                                                 <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-lime/10 text-lime uppercase tracking-wider">
                                                     {purchase.status}
@@ -620,7 +620,7 @@ export function UserModal({
                                             <div className="flex items-center gap-3 shrink-0">
                                                 {inv.amount > 0 && (
                                                     <span className="text-sm font-mono font-semibold text-white">
-                                                        ${inv.amount.toFixed(2)}
+                                                        AED {inv.amount.toFixed(2)}
                                                     </span>
                                                 )}
                                                 <button
@@ -654,10 +654,10 @@ export function UserModal({
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] text-gray-400 mb-1">Amount ($ USD, optional)</label>
+                                    <label className="block text-[11px] text-gray-400 mb-1">Amount (AED, optional)</label>
                                     <input
                                         type="number"
-                                        placeholder="e.g. 816.00"
+                                        placeholder="e.g. 8750.00"
                                         value={invoiceAmount}
                                         onChange={(e) => setInvoiceAmount(e.target.value)}
                                         className="w-full px-3 py-1.5 bg-bg-elevated border border-border rounded-lg text-xs text-white focus:outline-none focus:border-lime/50"
