@@ -33,6 +33,7 @@ const CaseStudiesPage = lazy(() => import('@/pages/public/CaseStudiesPage').then
 const EventsCollabsPage = lazy(() => import('@/pages/public/EventsCollabsPage').then(module => ({ default: module.EventsCollabsPage })))
 const MasterclassMrGustavoPage = lazy(() => import('@/pages/public/MasterclassMrGustavoPage').then(module => ({ default: module.MasterclassMrGustavoPage })))
 const MasterclassAbuAbdullahPage = lazy(() => import('@/pages/public/MasterclassAbuAbdullahPage').then(module => ({ default: module.MasterclassAbuAbdullahPage })))
+const MasterclassAnneKorbienPage = lazy(() => import('@/pages/public/MasterclassAnneKorbienPage').then(module => ({ default: module.MasterclassAnneKorbienPage })))
 const PostCompletionSurvey = lazy(() => import('@/pages/public/PostCompletionSurvey').then(module => ({ default: module.PostCompletionSurvey })))
 const PublicPreSurvey = lazy(() => import('@/pages/public/PublicPreSurvey').then(module => ({ default: module.PublicPreSurvey })))
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
@@ -124,6 +125,7 @@ function App() {
                                 <Route path="/events-collabs" element={<EventsCollabsPage />} />
                                 <Route path="/masterclass-mr-gustavo" element={<MasterclassMrGustavoPage />} />
                                 <Route path="/masterclass-abu-abdullah" element={<MasterclassAbuAbdullahPage />} />
+                                <Route path="/masterclass-anne-korbien" element={<MasterclassAnneKorbienPage />} />
                                 <Route path="/find-your-path" element={<FindYourPathPage />} />
                                 <Route path="/checkout" element={<CheckoutPage />} />
                                 <Route path="/enroll" element={<EnrollPage />} />
