@@ -518,7 +518,7 @@ export function LandingPageTest() {
                                     <img
                                         src="/bio-khaled-portrait.jpg"
                                         alt="Khaled Iskandar"
-                                        className="w-full h-full object-cover object-top scale-[1.3] translate-y-[5%]"
+                                        className="w-full h-full object-cover object-top scale-[1.43] translate-y-[5%]"
                                     />
                                     {/* Name overlay at bottom */}
                                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-16 pb-5 px-5">

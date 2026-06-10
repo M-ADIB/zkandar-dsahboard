@@ -10,10 +10,12 @@ const STRIPE_PRICE_ID_SPRINT = Deno.env.get('STRIPE_PRICE_ID_SPRINT') ?? null;
 const SPRINT_INLINE_AMOUNT_CENTS = 81600; // $816.00 USD
 
 // ── Webinar product catalog (inline pricing, no Stripe Price ID needed) ──
+// ⚠️  These amounts MUST match the frontend display prices in WebinarComponents.tsx
+//     BASE_PRICE = $19, template = $17, catalog = $13
 const WEBINAR_PRODUCTS: Record<string, { name: string; amount: number }> = {
-  'webinar':           { name: '3-Day AI Design Webinar',           amount: 29700 }, // $297
-  'webinar-template':  { name: 'Professional Presentation Template', amount:  4700 }, // $47
-  'webinar-catalog':   { name: 'Interior Design Style Catalog',      amount:  2700 }, // $27
+  'webinar':           { name: '3-Day AI Design Webinar',           amount:  1900 }, // $19
+  'webinar-template':  { name: 'Professional Presentation Template', amount:  1700 }, // $17
+  'webinar-catalog':   { name: 'Interior Design Style Catalog',      amount:  1300 }, // $13
   'vip':               { name: 'VIP Access Upgrade',                 amount:  9700 }, // $97
   'vip-elite':         { name: 'VIP Elite Upgrade',                  amount: 19700 }, // $197
 };
