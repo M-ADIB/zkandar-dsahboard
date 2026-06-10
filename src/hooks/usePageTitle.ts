@@ -9,6 +9,7 @@ export const TITLE_MAP: Record<string, string> = {
     '/admin/companies': 'Companies',
     '/admin/leads': 'Leads',
     '/admin/programs': 'Programs',
+    '/admin/proposals': 'Proposals',
     '/admin/members': 'Members',
     '/admin/events': 'Events',
     '/admin/costs': 'Costs',
@@ -126,6 +127,8 @@ export function PageTitleUpdater() {
                     newTitle = `Tool · Zkandar AI`
                 } else if (location.pathname.startsWith('/epk/')) {
                     newTitle = `EPK · Zkandar AI`
+                } else if (location.pathname.startsWith('/masterclass/')) {
+                    newTitle = `Masterclass · Zkandar AI`
                 }
             }
 

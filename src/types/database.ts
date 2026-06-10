@@ -1295,6 +1295,66 @@ export interface RawDatabase {
                     submitted_at?: string
                 }
             }
+            masterclass_proposals: {
+                Row: {
+                    id: string
+                    slug: string
+                    prepared_for: string
+                    company_name: string
+                    prepared_by: string
+                    total_investment: number
+                    agreement_pdf_url: string | null
+                    duration: string
+                    delivery_format: string
+                    team_capacity: string
+                    session_style: string
+                    recommended_audience: string[] | null
+                    modules: any
+                    whats_included: string[] | null
+                    expected_outcomes: string[] | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    slug: string
+                    prepared_for: string
+                    company_name: string
+                    prepared_by?: string
+                    total_investment?: number
+                    agreement_pdf_url?: string | null
+                    duration?: string
+                    delivery_format?: string
+                    team_capacity?: string
+                    session_style?: string
+                    recommended_audience?: string[] | null
+                    modules?: any
+                    whats_included?: string[] | null
+                    expected_outcomes?: string[] | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    slug?: string
+                    prepared_for?: string
+                    company_name?: string
+                    prepared_by?: string
+                    total_investment?: number
+                    agreement_pdf_url?: string | null
+                    duration?: string
+                    delivery_format?: string
+                    team_capacity?: string
+                    session_style?: string
+                    recommended_audience?: string[] | null
+                    modules?: any
+                    whats_included?: string[] | null
+                    expected_outcomes?: string[] | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: []
+            }
         }
         Views: {
             [_ in never]: never

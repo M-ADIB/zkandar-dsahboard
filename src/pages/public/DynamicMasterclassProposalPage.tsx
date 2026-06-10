@@ -1,5 +1,6 @@
-import React, { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion, useInView } from 'framer-motion';
 import { 
     Clock, 
     Users, 
@@ -16,19 +17,23 @@ import {
     PenTool, 
     FileSpreadsheet, 
     Image as ImageIcon,
-    Award
-} from 'lucide-react'
-import { PublicNav } from '@/components/public/PublicNav'
-import { PublicFooter } from '@/components/public/PublicFooter'
-import logoSrc from '../../assets/logo.png'
+    Award,
+    HelpCircle,
+    ArrowLeft
+} from 'lucide-react';
+import { useSupabase } from '@/hooks/useSupabase';
+import { PublicNav } from '@/components/public/PublicNav';
+import { PublicFooter } from '@/components/public/PublicFooter';
+import type { MasterclassProposal } from '@/pages/admin/ProposalsPage';
+import logoSrc from '@/assets/logo.png';
 
 // ─── Animation Wrapper ────────────────────────────────────────────────────────
 
 function FadeIn({ children, delay = 0, className = '' }: {
     children: React.ReactNode; delay?: number; className?: string
 }) {
-    const ref = useRef(null)
-    const inView = useInView(ref, { once: true, margin: '-60px' })
+    const ref = useRef(null);
+    const inView = useInView(ref, { once: true, margin: '-60px' });
     return (
         <motion.div ref={ref}
             initial={{ opacity: 0, y: 24 }}
@@ -36,10 +41,105 @@ function FadeIn({ children, delay = 0, className = '' }: {
             transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
             className={className}
         >{children}</motion.div>
-    )
+    );
 }
 
-export function MasterclassAnneKorbienPage() {
+// ─── Module Icon Mapper ──────────────────────────────────────────────────────
+
+const iconMap: Record<string, React.ComponentType<any>> = {
+    Cpu,
+    PenTool,
+    FileText,
+    ImageIcon,
+    Sparkles,
+    Award,
+    FileSpreadsheet,
+    Layout
+};
+
+function getModuleIcon(iconName: string) {
+    return iconMap[iconName] || HelpCircle;
+}
+
+export function DynamicMasterclassProposalPage() {
+    const { slug } = useParams<{ slug: string }>();
+    const navigate = useNavigate();
+    const supabase = useSupabase();
+    
+    const [proposal, setProposal] = useState<MasterclassProposal | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchProposal = async () => {
+            if (!slug) return;
+            setIsLoading(true);
+            setError(null);
+            
+            try {
+                const { data, error: fetchError } = await supabase
+                    .from('masterclass_proposals')
+                    .select('*')
+                    .eq('slug', slug)
+                    .maybeSingle();
+
+                if (fetchError) {
+                    throw new Error(fetchError.message);
+                }
+                
+                if (!data) {
+                    setError('Proposal not found');
+                } else {
+                    setProposal(data as MasterclassProposal);
+                }
+            } catch (err: any) {
+                setError(err.message || 'An error occurred loading the proposal.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProposal();
+    }, [slug, supabase]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative">
+                <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
+                <div className="h-10 w-10 rounded-full border-2 border-lime border-t-transparent animate-spin relative z-10" />
+                <p className="text-gray-500 text-xs uppercase tracking-[0.2em] mt-4 font-mono animate-pulse relative z-10">
+                    Loading Tailored Proposal...
+                </p>
+            </div>
+        );
+    }
+
+    if (error || !proposal) {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center relative">
+                <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
+                <div className="max-w-md space-y-6 relative z-10">
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-[0.25em] text-red-500 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                        Proposal Status
+                    </span>
+                    <h1 className="font-heading font-black uppercase text-2xl sm:text-3xl text-white">
+                        {error === 'Proposal not found' ? 'Proposal Not Found' : 'Failed to Load Proposal'}
+                    </h1>
+                    <p className="text-gray-400 text-sm leading-relaxed font-body">
+                        The requested client proposal could not be retrieved. It may have been archived, or the link provided is incorrect.
+                    </p>
+                    <button
+                        onClick={() => navigate('/')}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-semibold hover:bg-white/10 transition-all text-gray-300 hover:text-white"
+                    >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        Return to Platform
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-black text-white font-body selection:bg-lime/30 selection:text-white relative overflow-hidden">
             <PublicNav />
@@ -94,15 +194,15 @@ export function MasterclassAnneKorbienPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                             <div>
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Prepared For</span>
-                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">Anna Korbien</span>
+                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">{proposal.prepared_for}</span>
                             </div>
                             <div className="border-t sm:border-t-0 sm:border-l border-white/[0.08] pt-4 sm:pt-0 sm:pl-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Company</span>
-                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">AAID</span>
+                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">{proposal.company_name}</span>
                             </div>
                             <div className="border-t sm:border-t-0 sm:border-l border-white/[0.08] pt-4 sm:pt-0 sm:pl-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Prepared By</span>
-                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">Zkandar L.L.C</span>
+                                <span className="text-white font-heading font-black text-sm uppercase tracking-wide">{proposal.prepared_by}</span>
                             </div>
                         </div>
                     </div>
@@ -158,139 +258,87 @@ export function MasterclassAnneKorbienPage() {
                             <div className="bg-[#111111] border border-white/[0.06] rounded-2xl p-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2">Duration</span>
                                 <p className="text-sm text-gray-300 leading-relaxed font-body">
-                                    <strong className="text-white">2 Sessions</strong> (15 Hours total) + 3rd Dedicated troubleshooting session (scheduled post-masterclass).
+                                    {proposal.duration}
                                 </p>
                             </div>
                             <div className="bg-[#111111] border border-white/[0.06] rounded-2xl p-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2">Delivery Format</span>
                                 <p className="text-sm text-gray-300 leading-relaxed font-body">
-                                    <strong className="text-white">In-Person</strong> at your studio.
+                                    {proposal.delivery_format}
                                 </p>
                             </div>
                             <div className="bg-[#111111] border border-white/[0.06] rounded-2xl p-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2">Team Capacity</span>
                                 <p className="text-sm text-gray-300 leading-relaxed font-body">
-                                    Up to <strong className="text-white">20 Participants</strong>.
+                                    {proposal.team_capacity}
                                 </p>
                             </div>
                             <div className="bg-[#111111] border border-white/[0.06] rounded-2xl p-6">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2">Session Style</span>
                                 <p className="text-sm text-gray-300 leading-relaxed font-body">
-                                    <strong className="text-white">Hands-On</strong> / Interactive / On-screen presentation.
+                                    {proposal.session_style}
                                 </p>
                             </div>
                         </div>
 
                         {/* Recommended Audience */}
-                        <div className="bg-[#0A0A0A] border border-white/[0.06] rounded-2xl p-6 space-y-4">
-                            <h4 className="text-xs uppercase tracking-wider text-lime font-bold">Recommended Audience</h4>
-                            <div className="flex flex-wrap gap-2">
-                                {[
-                                    "Architects", 
-                                    "Interior Designers", 
-                                    "FF&E Teams", 
-                                    "Visualization Teams", 
-                                    "Design Directors", 
-                                    "Creative Leads", 
-                                    "Marketing Teams", 
-                                    "Concept Development Teams"
-                                ].map((tag, i) => (
-                                    <span key={i} className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 rounded-full">
-                                        {tag}
-                                    </span>
-                                ))}
+                        {proposal.recommended_audience && proposal.recommended_audience.length > 0 && (
+                            <div className="bg-[#0A0A0A] border border-white/[0.06] rounded-2xl p-6 space-y-4">
+                                <h4 className="text-xs uppercase tracking-wider text-lime font-bold">Recommended Audience</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {proposal.recommended_audience.map((tag, i) => (
+                                        <span key={i} className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 rounded-full">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </FadeIn>
 
                 {/* ─── SCOPE OF THE MASTERCLASS (Syllabus Grid) ──────────────── */}
-                <FadeIn>
-                    <div className="space-y-8">
-                        <div className="border-l-2 border-lime pl-4">
-                            <h2 className="font-heading font-black uppercase text-xl sm:text-2xl text-white">Scope &amp; Modules</h2>
-                            <p className="text-gray-400 text-sm mt-1">Deep-dive syllabus mapping</p>
-                        </div>
+                {proposal.modules && proposal.modules.length > 0 && (
+                    <FadeIn>
+                        <div className="space-y-8">
+                            <div className="border-l-2 border-lime pl-4">
+                                <h2 className="font-heading font-black uppercase text-xl sm:text-2xl text-white">Scope &amp; Modules</h2>
+                                <p className="text-gray-400 text-sm mt-1">Deep-dive syllabus mapping</p>
+                            </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {[
-                                {
-                                    num: "01",
-                                    title: "AI Landscape & Tool Ecosystem",
-                                    icon: Cpu,
-                                    topics: ["Text tools vs image tools vs video tools", "AI workflow mapping", "Tool selection frameworks"]
-                                },
-                                {
-                                    num: "02",
-                                    title: "Claude Fundamentals & Prompt Craft",
-                                    icon: PenTool,
-                                    topics: ["Context engineering & prompt structures", "Claude Projects setup & environments", "Feeding AI presentations, PDFs, references"]
-                                },
-                                {
-                                    num: "03",
-                                    title: "Technical Specification Review Workflows",
-                                    icon: FileSpreadsheet,
-                                    topics: ["Cross-referencing workflows", "Structured review outputs", "AI-assisted discrepancy detection"]
-                                },
-                                {
-                                    num: "04",
-                                    title: "AI Image Generation Workflows",
-                                    icon: ImageIcon,
-                                    topics: ["Nano Banana + Cinematic workflows", "Prompt quality & control systems", "MaterialScaping & Moodboard creations", "Iterative output refinement"]
-                                },
-                                {
-                                    num: "05",
-                                    title: "FF&E Development",
-                                    icon: Layout,
-                                    topics: ["Bespoke furniture ideation systems", "Spatial placement workflows", "Contextual rendering systems"]
-                                },
-                                {
-                                    num: "06",
-                                    title: "The Art of Storytelling",
-                                    icon: Sparkles,
-                                    topics: [
-                                        "Narrative-driven image generation", 
-                                        "Bespoke precedents & storytelling frameworks", 
-                                        "Cinematic short films & atmosphere building",
-                                        "Emotional sequencing & storyboarding",
-                                        "Brand assets & client immersion presentations"
-                                    ]
-                                },
-                                {
-                                    num: "07",
-                                    title: "Prize Money Competition",
-                                    icon: Award,
-                                    topics: ["Moodboards & FF&E Design challenges", "Storytelling & narrative execution", "AI-generated consultant briefs"]
-                                }
-                            ].map((mod, i) => {
-                                const Icon = mod.icon;
-                                return (
-                                    <div key={i} className="bg-[#111111] border border-white/[0.06] rounded-3xl p-6 space-y-4 hover:border-lime/20 hover:shadow-[0_0_40px_rgba(208,255,113,0.03)] transition-all duration-300 flex flex-col justify-between group">
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[10px] font-bold text-lime bg-lime/10 border border-lime/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                                                    Module {mod.num}
-                                                </span>
-                                                <Icon className="w-5 h-5 text-gray-500 group-hover:text-lime transition-colors duration-300" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {proposal.modules.map((mod: any, i: number) => {
+                                    const IconComponent = getModuleIcon(mod.icon);
+                                    return (
+                                        <div key={i} className="bg-[#111111] border border-white/[0.06] rounded-3xl p-6 space-y-4 hover:border-lime/20 hover:shadow-[0_0_40px_rgba(208,255,113,0.03)] transition-all duration-300 flex flex-col justify-between group">
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[10px] font-bold text-lime bg-lime/10 border border-lime/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                                        Module {mod.num || String(i + 1).padStart(2, '0')}
+                                                    </span>
+                                                    <IconComponent className="w-5 h-5 text-gray-500 group-hover:text-lime transition-colors duration-300" />
+                                                </div>
+                                                <h3 className="font-heading font-black uppercase text-sm sm:text-base text-white tracking-wide leading-snug">
+                                                    {mod.title}
+                                                </h3>
+                                                {mod.topics && mod.topics.length > 0 && (
+                                                    <ul className="space-y-2 pt-2">
+                                                        {mod.topics.map((t: string, idx: number) => (
+                                                            <li key={idx} className="flex items-start gap-2.5 text-xs text-gray-400 font-body leading-relaxed">
+                                                                <span className="text-lime mt-0.5 shrink-0">•</span>
+                                                                <span>{t}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
                                             </div>
-                                            <h3 className="font-heading font-black uppercase text-sm sm:text-base text-white tracking-wide leading-snug">
-                                                {mod.title}
-                                            </h3>
-                                            <ul className="space-y-2 pt-2">
-                                                {mod.topics.map((t, idx) => (
-                                                    <li key={idx} className="flex items-start gap-2.5 text-xs text-gray-400 font-body leading-relaxed">
-                                                        <span className="text-lime mt-0.5 shrink-0">•</span>
-                                                        <span>{t}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
-                </FadeIn>
+                    </FadeIn>
+                )}
 
                 {/* ─── WHAT'S INCLUDED VS EXPECTED OUTCOMES ─────────────────── */}
                 <FadeIn>
@@ -300,21 +348,18 @@ export function MasterclassAnneKorbienPage() {
                             <h3 className="font-heading font-black uppercase text-base sm:text-lg text-lime tracking-wider border-b border-white/[0.06] pb-4">
                                 What's Included
                             </h3>
-                            <ul className="space-y-4">
-                                {[
-                                    "Custom case studies specific to your projects",
-                                    "Lifetime access to all session recordings",
-                                    "Free e-prompt books and template kits",
-                                    "60-day AI community support access",
-                                    "3 hours of dedicated post-masterclass troubleshooting support",
-                                    "Data-driven workflow analysis reports"
-                                ].map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-lime shrink-0 mt-0.5" />
-                                        <span className="text-xs sm:text-sm text-gray-300 leading-relaxed font-body">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                            {proposal.whats_included && proposal.whats_included.length > 0 ? (
+                                <ul className="space-y-4">
+                                    {proposal.whats_included.map((item, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-lime shrink-0 mt-0.5" />
+                                            <span className="text-xs sm:text-sm text-gray-300 leading-relaxed font-body">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-xs text-gray-500 italic">No inclusions specified.</p>
+                            )}
                         </div>
 
                         {/* Expected Outcomes */}
@@ -322,21 +367,18 @@ export function MasterclassAnneKorbienPage() {
                             <h3 className="font-heading font-black uppercase text-base sm:text-lg text-lime tracking-wider border-b border-white/[0.06] pb-4">
                                 Expected Outcomes
                             </h3>
-                            <ul className="space-y-4">
-                                {[
-                                    "Successful integration of AI workflows into daily studio operations",
-                                    "Drastically reduced concept-to-presentation timelines",
-                                    "Significantly improved design storytelling capabilities",
-                                    "Consistently higher-quality and more controlled creative outputs",
-                                    "repeatable, step-by-step systems established for the team",
-                                    "Stronger client pitch and presentation confidence"
-                                ].map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-lime shrink-0 mt-0.5" />
-                                        <span className="text-xs sm:text-sm text-gray-300 leading-relaxed font-body">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                            {proposal.expected_outcomes && proposal.expected_outcomes.length > 0 ? (
+                                <ul className="space-y-4">
+                                    {proposal.expected_outcomes.map((item, i) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-lime shrink-0 mt-0.5" />
+                                            <span className="text-xs sm:text-sm text-gray-300 leading-relaxed font-body">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-xs text-gray-500 italic">No outcomes specified.</p>
+                            )}
                         </div>
                     </div>
                 </FadeIn>
@@ -355,7 +397,7 @@ export function MasterclassAnneKorbienPage() {
                             <div className="space-y-3">
                                 <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold">Total Investment</span>
                                 <div className="text-lime font-heading text-4xl sm:text-5xl font-black tracking-wide leading-none">
-                                    AED 120,000
+                                    AED {proposal.total_investment?.toLocaleString() || '120,000'}
                                 </div>
                                 <span className="block text-xs text-gray-400 italic font-body">All-inclusive studio license package</span>
                             </div>
@@ -413,37 +455,41 @@ export function MasterclassAnneKorbienPage() {
                 </FadeIn>
 
                 {/* ─── EMBEDDED PDF SERVICE AGREEMENT ────────────────────────── */}
-                <FadeIn>
-                    <div className="space-y-6">
-                        <div className="border-l-2 border-lime pl-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div>
-                                <h2 className="font-heading font-black uppercase text-xl sm:text-2xl text-white">Services Agreement Document</h2>
-                                <p className="text-gray-400 text-sm mt-1">Full inline agreement draft view</p>
+                {proposal.agreement_pdf_url && (
+                    <FadeIn>
+                        <div className="space-y-6">
+                            <div className="border-l-2 border-lime pl-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h2 className="font-heading font-black uppercase text-xl sm:text-2xl text-white">Services Agreement Document</h2>
+                                    <p className="text-gray-400 text-sm mt-1">Full inline agreement draft view</p>
+                                </div>
+                                <div className="shrink-0">
+                                    <a 
+                                        href={proposal.agreement_pdf_url} 
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        className="text-lime hover:text-white inline-flex items-center gap-2 uppercase tracking-wider text-xs font-bold font-body transition-colors border border-lime/20 bg-lime/5 hover:bg-lime/10 px-4 py-2.5 rounded-xl"
+                                    >
+                                        <Download className="w-3.5 h-3.5" />
+                                        Download Agreement (PDF)
+                                    </a>
+                                </div>
                             </div>
-                            <div className="shrink-0">
-                                <a 
-                                    href="/zkandar-ai-masterclass-anne.pdf" 
-                                    download 
-                                    className="text-lime hover:text-white inline-flex items-center gap-2 uppercase tracking-wider text-xs font-bold font-body transition-colors border border-lime/20 bg-lime/5 hover:bg-lime/10 px-4 py-2.5 rounded-xl"
-                                >
-                                    <Download className="w-3.5 h-3.5" />
-                                    Download Agreement (PDF)
-                                </a>
-                            </div>
-                        </div>
 
-                        {/* PDF Frame */}
-                        <div className="bg-[#111111] border border-white/[0.06] rounded-3xl p-2 sm:p-4 overflow-hidden shadow-inner">
-                            <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/[0.04]">
-                                <iframe 
-                                    src="/zkandar-ai-masterclass-anne.pdf#toolbar=0" 
-                                    className="w-full h-full bg-[#111111] rounded-2xl"
-                                    title="AI Masterclass Services Agreement"
-                                />
+                            {/* PDF Frame */}
+                            <div className="bg-[#111111] border border-white/[0.06] rounded-3xl p-2 sm:p-4 overflow-hidden shadow-inner">
+                                <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/[0.04]">
+                                    <iframe 
+                                        src={`${proposal.agreement_pdf_url}#toolbar=0`} 
+                                        className="w-full h-full bg-[#111111] rounded-2xl"
+                                        title="AI Masterclass Services Agreement"
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </FadeIn>
+                    </FadeIn>
+                )}
 
                 {/* ─── ABOUT SECTION & CONTACT INFO ─────────────────────────── */}
                 <FadeIn>
@@ -523,5 +569,5 @@ export function MasterclassAnneKorbienPage() {
 
             <PublicFooter />
         </div>
-    )
+    );
 }

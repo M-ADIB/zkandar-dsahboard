@@ -41,6 +41,7 @@ const allItems: PaletteItem[] = [
     { id: 'admin-members', icon: Users, label: 'Members', path: '/admin/members', section: 'Network', roles: ['owner', 'admin'] },
     { id: 'admin-leads', icon: TrendingUp, label: 'Leads', path: '/admin/leads', section: 'Network', roles: ['owner', 'admin'] },
     { id: 'admin-programs', icon: GraduationCap, label: 'Programs', path: '/admin/programs', section: 'Operations', roles: ['owner', 'admin'] },
+    { id: 'admin-proposals', icon: FileText, label: 'Proposals', path: '/admin/proposals', section: 'Operations', roles: ['owner', 'admin'] },
     { id: 'admin-events', icon: Mic, label: 'Events', path: '/admin/events', section: 'Operations', roles: ['owner', 'admin'] },
     { id: 'admin-costs', icon: DollarSign, label: 'Costs', path: '/admin/costs', section: 'Operations', roles: ['owner', 'admin'] },
     { id: 'admin-recruiting', icon: Briefcase, label: 'Recruiting', path: '/admin/recruiting', section: 'Operations', roles: ['owner', 'admin'] },

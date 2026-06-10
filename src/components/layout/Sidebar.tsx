@@ -79,6 +79,7 @@ const adminNavSections: NavSection[] = [
         id: 'admin_operations',
         items: [
             { icon: GraduationCap, label: 'Programs', path: '/admin/programs', roles: ['owner', 'admin'] },
+            { icon: FileText, label: 'Proposals', path: '/admin/proposals', roles: ['owner', 'admin'] },
             { icon: Wrench, label: 'Toolbox', path: '/admin/toolbox', roles: ['owner', 'admin'] },
             { icon: Mic, label: 'Events', path: '/admin/events', roles: ['owner', 'admin'] },
             { icon: DollarSign, label: 'Costs', path: '/admin/costs', roles: ['owner', 'admin'] },
