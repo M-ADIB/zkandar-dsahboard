@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Check, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
+import { getWebinarPrice } from '@/components/webinar/WebinarComponents'
 import logoSrc from '@/assets/logo.png'
 
 /* ── Upsell Product Type ── */
@@ -15,7 +16,7 @@ interface UpsellProduct {
     features: string[]
 }
 
-const BASE_PRODUCT = { name: '3-Day AI Design Webinar', price: 19 }
+const BASE_PRODUCT = { name: '2-Day AI Design Webinar', get price() { return getWebinarPrice() } }
 
 const UPSELLS: UpsellProduct[] = [
     {

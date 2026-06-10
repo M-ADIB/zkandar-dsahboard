@@ -2,11 +2,12 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ArrowRight, Calendar, Mail } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
+import { getWebinarPrice } from '@/components/webinar/WebinarComponents'
 import logoSrc from '@/assets/logo.png'
 
 export default function WebinarSuccessPage() {
     useEffect(() => {
-        trackFBEvent('Purchase', { content_name: 'webinar_complete', value: 19, currency: 'USD' })
+        trackFBEvent('Purchase', { content_name: 'webinar_complete', value: getWebinarPrice(), currency: 'USD' })
     }, [])
 
     return (
@@ -33,7 +34,7 @@ export default function WebinarSuccessPage() {
                     You're in.
                 </h1>
                 <p className="text-gray-400 leading-relaxed mb-8 text-sm">
-                    Welcome to the 3-Day AI Design Webinar.
+                    Welcome to the 2-Day AI Design Webinar.
                     Check your inbox. You'll receive your confirmation, Zoom link, and pre-session materials within the next few minutes.
                 </p>
 
@@ -41,7 +42,7 @@ export default function WebinarSuccessPage() {
                     <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 mb-1">What happens next</p>
                     {[
                         { icon: Mail, text: 'Confirmation email with Zoom link and calendar invite' },
-                        { icon: Calendar, text: 'Day 1 starts June 5 at 6:00 PM GST' },
+                        { icon: Calendar, text: 'Day 1 starts July 15 at 7:00 PM Dubai time' },
                         { icon: CheckCircle2, text: 'Pre-session materials and AI tool setup guide' },
                         { icon: CheckCircle2, text: 'Access to session recordings within 24 hours' },
                     ].map((step, i) => (

@@ -125,7 +125,7 @@ export function CountdownTimer({ targetDate, compact = false }: { targetDate: Da
 
 /* ── CTA Button ────────────────────────────────────────── */
 
-export function CtaButton({ onClick, label = "RESERVE MY SEAT · $19", sub, size = 'lg' }: {
+export function CtaButton({ onClick, label, sub, size = 'lg' }: {
     onClick: () => void; label?: string; sub?: string; size?: 'lg' | 'md'
 }) {
     return (
@@ -136,23 +136,37 @@ export function CtaButton({ onClick, label = "RESERVE MY SEAT · $19", sub, size
                     size === 'lg' ? 'text-sm md:text-base px-10 py-5' : 'text-[0.8rem] md:text-sm px-8 py-4'
                 }`}
             >
-                {label}
+                {label ?? `RESERVE MY SEAT · $${getWebinarPrice()}`}
             </button>
             {sub && <p className="text-[0.7rem] text-gray-500 text-center max-w-sm leading-relaxed">{sub}</p>}
         </div>
     )
 }
 
+/* ── Webinar Pricing (Single Source of Truth) ──────────── */
+
+const WEBINAR_LAUNCH = new Date('2026-06-16T00:00:00+04:00')
+const PRICING_TIERS = [
+    { price: 19, label: 'Early Bird Offer', from: WEBINAR_LAUNCH },
+    { price: 29, label: 'After 1 Week', from: new Date(WEBINAR_LAUNCH.getTime() + 7 * 86400000) },
+    { price: 39, label: 'After 2 Weeks', from: new Date(WEBINAR_LAUNCH.getTime() + 14 * 86400000) },
+    { price: 49, label: 'Final Price', from: new Date(WEBINAR_LAUNCH.getTime() + 21 * 86400000) },
+]
+
+/** Returns the current webinar price based on weekly tier escalation */
+export function getWebinarPrice(): number {
+    const now = new Date()
+    let activeIdx = 0
+    for (let i = PRICING_TIERS.length - 1; i >= 0; i--) {
+        if (now >= PRICING_TIERS[i].from) { activeIdx = i; break }
+    }
+    return PRICING_TIERS[activeIdx].price
+}
+
 /* ── Scarcity Pricing ──────────────────────────────────── */
 
 export function ScarcityPricing({ onCta }: { currentTier?: number; targetDate?: Date; onCta: () => void }) {
-    const LAUNCH = new Date('2026-05-29T00:00:00+04:00')
-    const steps = [
-        { price: 19, label: 'Early Bird Offer', from: LAUNCH },
-        { price: 29, label: 'After 1 Week', from: new Date(LAUNCH.getTime() + 7 * 86400000) },
-        { price: 39, label: 'After 2 Weeks', from: new Date(LAUNCH.getTime() + 14 * 86400000) },
-        { price: 49, label: 'Final Price', from: new Date(LAUNCH.getTime() + 21 * 86400000) },
-    ]
+    const steps = PRICING_TIERS
 
     // Determine current step based on current date
     const now = new Date()
@@ -327,7 +341,7 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
                 <p className="text-[0.85rem] text-gray-400 leading-[1.75] max-w-xl mx-auto">
                     You won't just know how to prompt. You'll know how to <span className="text-lime font-semibold">think, direct, and execute</span> with AI — turning rough sketches into complete design projects at a speed and quality level that puts you ahead of 95% of designers still guessing.
                 </p>
-                <CtaButton onClick={onCta} label="GO BEYOND THE PROMPT · $19" size="md" />
+                <CtaButton onClick={onCta} label={`GO BEYOND THE AI PROMPT · $${getWebinarPrice()}`} size="md" />
             </div>
         </div>
     )
@@ -403,7 +417,8 @@ const UPSELLS = [
     },
 ]
 
-const BASE_PRICE = 19
+// BASE_PRICE is dynamic — driven by the weekly pricing tier system
+const BASE_PRICE = getWebinarPrice()
 
 export function LeadCaptureModal({ open, onClose }: {
     open: boolean
@@ -624,7 +639,7 @@ export function LeadCaptureModal({ open, onClose }: {
                                                 <Check className="w-3.5 h-3.5 text-lime" />
                                             </div>
                                             <div>
-                                                <span className="text-sm font-bold text-white">3-Day AI Design Webinar</span>
+                                                <span className="text-sm font-bold text-white">2-Day AI Design Webinar</span>
                                                 <p className="text-[0.6rem] text-gray-500 mt-0.5">Registered as: {name}</p>
                                             </div>
                                         </div>

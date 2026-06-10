@@ -6,16 +6,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { trackFBEvent } from '@/lib/fbpixel'
 import { WORKSHOPS, CASE_STUDIES, type CaseStudy } from '@/data/public-data'
 import {
-    FadeIn, Section, SectionHeading, SeatsCounter, CountdownTimer,
+    FadeIn, Section, SectionHeading, CountdownTimer,
     CtaButton, ScarcityPricing, FaqItem,
-    BeforeAfterSection, ValueTable, LeadCaptureModal,
+    BeforeAfterSection, ValueTable, LeadCaptureModal, getWebinarPrice,
 } from '@/components/webinar/WebinarComponents'
 
 /* ── Constants ─────────────────────────────────────────── */
-const TARGET_DATE = new Date('2026-06-05T00:00:00+04:00') // First price increase: launch (May 29) + 7 days
+const TARGET_DATE = new Date('2026-06-23T00:00:00+04:00') // First price increase: launch (June 16) + 7 days
 const VSL_ID = '1187084528'
 const TESTIMONIAL_MASHUP_ID = '1195125355'
-const WEBINAR_DATE = new Date('2026-06-05T19:00:00+04:00') // 7 PM Dubai time
+const WEBINAR_DATE = new Date('2026-07-15T19:00:00+04:00') // 7 PM Dubai time
 
 const FAQS = [
     { q: 'Do I need any AI experience to join?', a: 'If you\'ve never touched an AI tool, you\'ll be fine. If you\'ve been experimenting and hit a wall — that\'s exactly who this is for. We meet you where you are.' },
@@ -25,17 +25,17 @@ const FAQS = [
     { q: 'What tools will be covered?', a: 'We will cover all the necessary tools that are relevant to our design workflows that we will showcase to you.' },
     { q: 'Will I get a certificate?', a: 'Only participants who have registered for the Silver or Gold upgrade will receive a free AI certificate.' },
     { q: 'What\'s the schedule and time zone?', a: 'Two consecutive days at 7:00 PM Dubai time. Capped at 90 minutes per day.' },
-    { q: 'Why is it only $19?', a: 'Because we\'ve seen what happens when designers stay stuck. We\'d rather price this so every serious designer can access it — and then let the results speak for themselves. The price goes up every week.' },
+    { q: 'Why is it so affordable?', a: 'Because we\'ve seen what happens when designers stay stuck. We\'d rather price this so every serious designer can access it — and then let the results speak for themselves. The price goes up every week.' },
     { q: 'How do I access the sessions?', a: 'You will be onboarded onto our dashboard, where you will have access to the Zoom link.' },
 ]
 
 const SCHEDULE = [
     {
-        day: 'Day 1', date: 'June 5', title: 'The Gap: Where You Are vs. Where the Market Is',
+        day: 'Day 1', date: 'July 15', title: 'The Gap: Where You Are vs. Where the Market Is',
         items: ['The AI reality check: who\'s actually using it, how, and what it\'s costing you to wait', 'The skill stack beyond the prompt: taste, visual literacy, judgment, and why they matter more than any tool'],
     },
     {
-        day: 'Day 2', date: 'June 6', title: 'The Walkthrough: From Sketch to Complete Project',
+        day: 'Day 2', date: 'July 16', title: 'The Walkthrough: From Sketch to Complete Project',
         items: ['Live walkthrough: see how a rough sketch became a full concept — architecture, interiors, landscape, FF&E, marketing, and storytelling with video & animation', 'What you can achieve and why it matters — the full picture of AI-driven design at speed and quality'],
     },
 ]
@@ -205,13 +205,6 @@ function CaseStudyPresentation({
 
 /* ── Page Component ────────────────────────────────────── */
 export default function WebinarPage() {
-    // Dynamic seat counter: decays from 47 based on hours since page was built
-    const [seats] = useState(() => {
-        const launch = new Date('2026-05-29T00:00:00+04:00').getTime()
-        const now = Date.now()
-        const hoursPassed = Math.max(0, (now - launch) / (1000 * 60 * 60))
-        return Math.max(7, 47 - Math.floor(hoursPassed * 0.3))
-    })
     const [leadModalOpen, setLeadModalOpen] = useState(false)
     const [activeFaq, setActiveFaq] = useState<number | null>(null)
     const [vslPlaying, setVslPlaying] = useState(false)
@@ -255,7 +248,7 @@ export default function WebinarPage() {
                             <span className="text-lime">LIVE</span> WORKSHOP:
                         </span>
                         <span className="text-[0.65rem] sm:text-[0.7rem] font-body text-gray-300">
-                            June 5–6, 2026 · 7:00 PM Dubai
+                            July 15–16, 2026 · 7:00 PM Dubai
                         </span>
                     </div>
                     <div className="hidden sm:block w-px h-4 bg-white/[0.15]" />
@@ -352,7 +345,7 @@ export default function WebinarPage() {
             <Section>
                 <FadeIn className="text-center space-y-8">
                     <CtaButton onClick={openCta} sub="See the workflow that turns one sketch into an entire project — from macro to micro" />
-                    <SeatsCounter seats={seats} />
+
                 </FadeIn>
             </Section>
 
@@ -364,7 +357,7 @@ export default function WebinarPage() {
             {/* ═══ S4: TESTIMONIALS (Video Carousel) ═══ */}
             <Section>
                 <FadeIn>
-                    <SectionHeading>HEAR FROM DESIGNERS WHO WENT <span className="text-lime">BEYOND THE PROMPT</span></SectionHeading>
+                    <SectionHeading>HEAR FROM DESIGNERS WHO WENT <span className="text-lime">BEYOND THE AI PROMPT</span></SectionHeading>
                 </FadeIn>
                 
                 {/* 16:9 Testimonial Mashup Video */}
@@ -412,7 +405,7 @@ export default function WebinarPage() {
             <Section dark>
                 <FadeIn>
                     <SectionHeading sub="Every image below was generated by AI — not from a single prompt, but from a complete workflow. Real projects. Real participants. Zero stock imagery.">
-                        THIS IS WHAT HAPPENS WHEN YOU GO<br /><span className="text-lime">BEYOND THE PROMPT</span>
+                        THIS IS WHAT HAPPENS WHEN YOU GO<br /><span className="text-lime">BEYOND THE AI PROMPT</span>
                     </SectionHeading>
                 </FadeIn>
 
@@ -468,7 +461,7 @@ export default function WebinarPage() {
                         <span className="text-lime">DOING THIS WITHOUT YOU</span>
                     </h2>
                     <CtaButton onClick={openCta} size="md" />
-                    <SeatsCounter seats={seats} className="mt-6" />
+
                 </FadeIn>
             </Section>
 
@@ -495,7 +488,7 @@ export default function WebinarPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <CtaButton onClick={openCta} label="I'M READY TO GO BEYOND THE PROMPT" size="md" />
+                            <CtaButton onClick={openCta} label="I'M READY TO GO BEYOND THE AI PROMPT" size="md" />
                         </div>
                         <div className="hidden md:block w-full">
                             <div className="rounded-2xl overflow-hidden border border-white/[0.08] aspect-[4/5] bg-[#111] relative group">
@@ -629,7 +622,7 @@ export default function WebinarPage() {
                 <FadeIn delay={0.1}><ValueTable /></FadeIn>
                 <FadeIn delay={0.2} className="text-center mt-12 space-y-5">
                     <p className="text-[0.85rem] text-gray-400">But because our goal is to reach as many ambitious designers as possible…</p>
-                    <p className="text-2xl font-heading font-black">You can join now for just <span className="text-lime">$19</span></p>
+                    <p className="text-2xl font-heading font-black">You can join now for just <span className="text-lime">${getWebinarPrice()}</span></p>
                     <CtaButton onClick={openCta} size="md" />
                 </FadeIn>
             </Section>
@@ -664,7 +657,7 @@ export default function WebinarPage() {
                     </h2>
 
                     <div className="pt-2"><CtaButton onClick={openCta} /></div>
-                    <SeatsCounter seats={seats} className="mt-6" />
+
                 </FadeIn>
             </Section>
 
@@ -675,7 +668,7 @@ export default function WebinarPage() {
                         onClick={openCta}
                         className="w-full sm:w-auto bg-lime text-black font-heading font-black uppercase text-[0.8rem] px-8 py-3 rounded-full hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all tracking-[0.04em]"
                     >
-                        GO BEYOND THE PROMPT · $19
+                        {`GO BEYOND THE AI PROMPT · $${getWebinarPrice()}`}
                     </button>
                     <div className="flex items-center gap-2.5">
                         <span className="flex items-center gap-1.5">

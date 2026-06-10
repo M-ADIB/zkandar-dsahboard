@@ -9,16 +9,34 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const STRIPE_PRICE_ID_SPRINT = Deno.env.get('STRIPE_PRICE_ID_SPRINT') ?? null;
 const SPRINT_INLINE_AMOUNT_CENTS = 81600; // $816.00 USD
 
-// ── Webinar product catalog (inline pricing, no Stripe Price ID needed) ──
-// ⚠️  These amounts MUST match the frontend display prices in WebinarComponents.tsx
-//     BASE_PRICE = $19, template = $17, catalog = $13
-const WEBINAR_PRODUCTS: Record<string, { name: string; amount: number }> = {
-  'webinar':           { name: '3-Day AI Design Webinar',           amount:  1900 }, // $19
-  'webinar-template':  { name: 'Professional Presentation Template', amount:  1700 }, // $17
-  'webinar-catalog':   { name: 'Interior Design Style Catalog',      amount:  1300 }, // $13
-  'vip':               { name: 'VIP Access Upgrade',                 amount:  9700 }, // $97
-  'vip-elite':         { name: 'VIP Elite Upgrade',                  amount: 19700 }, // $197
-};
+// ── Webinar pricing: weekly escalation (MUST mirror frontend in WebinarComponents.tsx) ──
+const WEBINAR_LAUNCH = new Date('2026-06-16T00:00:00+04:00');
+const WEBINAR_TIERS = [
+  { price_cents: 1900, from: WEBINAR_LAUNCH },                                          // $19 — Week 1
+  { price_cents: 2900, from: new Date(WEBINAR_LAUNCH.getTime() + 7 * 86400000) },       // $29 — Week 2
+  { price_cents: 3900, from: new Date(WEBINAR_LAUNCH.getTime() + 14 * 86400000) },      // $39 — Week 3
+  { price_cents: 4900, from: new Date(WEBINAR_LAUNCH.getTime() + 21 * 86400000) },      // $49 — Week 4
+];
+
+function getWebinarPriceCents(): number {
+  const now = new Date();
+  let amount = WEBINAR_TIERS[0].price_cents;
+  for (let i = WEBINAR_TIERS.length - 1; i >= 0; i--) {
+    if (now >= WEBINAR_TIERS[i].from) { amount = WEBINAR_TIERS[i].price_cents; break; }
+  }
+  return amount;
+}
+
+// ── Webinar product catalog ──
+function getWebinarProducts(): Record<string, { name: string; amount: number }> {
+  return {
+    'webinar':           { name: '2-Day AI Design Webinar',           amount: getWebinarPriceCents() },
+    'webinar-template':  { name: 'Professional Presentation Template', amount:  1700 }, // $17
+    'webinar-catalog':   { name: 'Interior Design Style Catalog',      amount:  1300 }, // $13
+    'vip':               { name: 'VIP Access Upgrade',                 amount:  9700 }, // $97
+    'vip-elite':         { name: 'VIP Elite Upgrade',                  amount: 19700 }, // $197
+  };
+}
 
 const ALLOWED_ORIGINS = [
   'https://app.zkandar.com',
@@ -66,7 +84,8 @@ Deno.serve(async (req: Request) => {
     const primaryProduct = products[0];
     const isTestProduct = primaryProduct === 'test';
     const isSprintProduct = primaryProduct === 'sprint';
-    const isWebinarProduct = primaryProduct in WEBINAR_PRODUCTS;
+    const webinarProducts = getWebinarProducts();
+    const isWebinarProduct = primaryProduct in webinarProducts;
 
     // Sprint uses a saved price ID if available, otherwise falls back to inline pricing
     const sprintPriceId = isSprintProduct ? STRIPE_PRICE_ID_SPRINT : undefined;
@@ -101,7 +120,7 @@ Deno.serve(async (req: Request) => {
     } else if (isWebinarProduct) {
       // Webinar products — inline pricing, supports multiple line items (upsells)
       products.forEach((slug, idx) => {
-        const product = WEBINAR_PRODUCTS[slug];
+        const product = webinarProducts[slug];
         if (!product) return; // skip unknown slugs in bundle
         params.set(`line_items[${idx}][price_data][currency]`, 'usd');
         params.set(`line_items[${idx}][price_data][product_data][name]`, product.name);

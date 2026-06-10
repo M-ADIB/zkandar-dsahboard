@@ -31,9 +31,8 @@ const EnrollPage = lazy(() => import('@/pages/public/EnrollPage').then(module =>
 const CheckoutSuccessPage = lazy(() => import('@/pages/public/CheckoutSuccessPage').then(module => ({ default: module.CheckoutSuccessPage })))
 const CaseStudiesPage = lazy(() => import('@/pages/public/CaseStudiesPage').then(module => ({ default: module.CaseStudiesPage })))
 const EventsCollabsPage = lazy(() => import('@/pages/public/EventsCollabsPage').then(module => ({ default: module.EventsCollabsPage })))
-const MasterclassMrGustavoPage = lazy(() => import('@/pages/public/MasterclassMrGustavoPage').then(module => ({ default: module.MasterclassMrGustavoPage })))
-const MasterclassAbuAbdullahPage = lazy(() => import('@/pages/public/MasterclassAbuAbdullahPage').then(module => ({ default: module.MasterclassAbuAbdullahPage })))
-const MasterclassAnneKorbienPage = lazy(() => import('@/pages/public/MasterclassAnneKorbienPage').then(module => ({ default: module.MasterclassAnneKorbienPage })))
+const ProposalsPage = lazy(() => import('@/pages/admin/ProposalsPage').then(module => ({ default: module.ProposalsPage })))
+const DynamicMasterclassProposalPage = lazy(() => import('@/pages/public/DynamicMasterclassProposalPage').then(module => ({ default: module.DynamicMasterclassProposalPage })))
 const PostCompletionSurvey = lazy(() => import('@/pages/public/PostCompletionSurvey').then(module => ({ default: module.PostCompletionSurvey })))
 const PublicPreSurvey = lazy(() => import('@/pages/public/PublicPreSurvey').then(module => ({ default: module.PublicPreSurvey })))
 const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })))
@@ -123,9 +122,10 @@ function App() {
                                 <Route path="/not-sure" element={<Navigate to="/case-studies" replace />} />
                                 <Route path="/case-studies" element={<CaseStudiesPage />} />
                                 <Route path="/events-collabs" element={<EventsCollabsPage />} />
-                                <Route path="/masterclass-mr-gustavo" element={<MasterclassMrGustavoPage />} />
-                                <Route path="/masterclass-abu-abdullah" element={<MasterclassAbuAbdullahPage />} />
-                                <Route path="/masterclass-anne-korbien" element={<MasterclassAnneKorbienPage />} />
+                                <Route path="/masterclass/:slug" element={<DynamicMasterclassProposalPage />} />
+                                <Route path="/masterclass-mr-gustavo" element={<Navigate to="/masterclass/mr-gustavo" replace />} />
+                                <Route path="/masterclass-abu-abdullah" element={<Navigate to="/masterclass/abu-abdullah" replace />} />
+                                <Route path="/masterclass-anne-korbien" element={<Navigate to="/masterclass/anne-korbien" replace />} />
                                 <Route path="/find-your-path" element={<FindYourPathPage />} />
                                 <Route path="/checkout" element={<CheckoutPage />} />
                                 <Route path="/enroll" element={<EnrollPage />} />
@@ -220,6 +220,14 @@ function App() {
                                         element={
                                             <ProtectedRoute allowedRoles={['owner', 'admin']}>
                                                 <ProgramsPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="admin/proposals"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                                                <ProposalsPage />
                                             </ProtectedRoute>
                                         }
                                     />
