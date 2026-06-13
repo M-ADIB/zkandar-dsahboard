@@ -303,14 +303,14 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
         'Generating random AI images with no direction or consistency',
         'Hitting a wall after one or two outputs and not knowing where to go',
         'Using the same Pinterest references as every other designer',
-        'Clients showing YOU AI-generated images — and you can\'t do better',
+        'Clients showing YOU AI-generated images, and you can\'t do better',
         'Falling behind competitors who\'ve already figured this out',
     ]
     const after = [
         'A complete system to go from sketch to full project with AI at every stage',
         'Consistent, fingerprint-level imagery that looks like YOUR work, not generic AI',
         'The ability to direct AI toward the exact results you want',
-        'Storytelling through your imagery — from macro concept to blow-up detail shots',
+        'Storytelling through your imagery, from macro concept to blow-up detail shots',
         'The competitive edge that makes you indispensable, not replaceable',
     ]
     return (

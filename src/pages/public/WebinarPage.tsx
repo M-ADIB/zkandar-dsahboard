@@ -18,14 +18,14 @@ const TESTIMONIAL_MASHUP_ID = '1195125355'
 const WEBINAR_DATE = new Date('2026-07-15T19:00:00+04:00') // 7 PM Dubai time
 
 const FAQS = [
-    { q: 'Do I need any AI experience to join?', a: 'If you\'ve never touched an AI tool, you\'ll be fine. If you\'ve been experimenting and hit a wall — that\'s exactly who this is for. We meet you where you are.' },
-    { q: 'I already know how to prompt. Why do I need this?', a: 'That\'s exactly the point. Prompting is maybe 10% of the skill. This workshop covers the 90% nobody talks about — taste, direction, consistency, storytelling, and a complete workflow from sketch to client presentation.' },
+    { q: 'Do I need any AI experience to join?', a: 'If you\'ve never touched an AI tool, you\'ll be fine. If you\'ve been experimenting and hit a wall, that\'s exactly who this is for. We meet you where you are.' },
+    { q: 'I already know how to prompt. Why do I need this?', a: 'That\'s exactly the point. Prompting is maybe 10% of the skill. This workshop covers the 90% nobody talks about: taste, direction, consistency, storytelling, and a complete workflow from sketch to client presentation.' },
     { q: 'What if I can\'t attend one of the days?', a: 'All sessions will be recorded and shared instantly after the webinar.' },
-    { q: 'Is this only for interior designers?', a: 'Primarily, yes — and everyone else interested in knowing about these tools, because it\'s the same set of systems that they can apply to their workflows.' },
+    { q: 'Is this only for interior designers?', a: 'Primarily, yes, and everyone else interested in knowing about these tools, because it\'s the same set of systems that they can apply to their workflows.' },
     { q: 'What tools will be covered?', a: 'We will cover all the necessary tools that are relevant to our design workflows that we will showcase to you.' },
     { q: 'Will I get a certificate?', a: 'Only participants who have registered for the Silver or Gold upgrade will receive a free AI certificate.' },
     { q: 'What\'s the schedule and time zone?', a: 'Two consecutive days at 7:00 PM Dubai time. Capped at 90 minutes per day.' },
-    { q: 'Why is it so affordable?', a: 'Because we\'ve seen what happens when designers stay stuck. We\'d rather price this so every serious designer can access it — and then let the results speak for themselves. The price goes up every week.' },
+    { q: 'Why is it so affordable?', a: 'Because we\'ve seen what happens when designers stay stuck. We\'d rather price this so every serious designer can access it, and let the results speak for themselves. The price goes up every week.' },
     { q: 'How do I access the sessions?', a: 'You will be onboarded onto our dashboard, where you will have access to the Zoom link.' },
 ]
 
@@ -36,7 +36,7 @@ const SCHEDULE = [
     },
     {
         day: 'Day 2', date: 'July 16', title: 'The Walkthrough: From Sketch to Complete Project',
-        items: ['Live walkthrough: see how a rough sketch became a full concept — architecture, interiors, landscape, FF&E, marketing, and storytelling with video & animation', 'What you can achieve and why it matters — the full picture of AI-driven design at speed and quality'],
+        items: ['Live walkthrough: see how a rough sketch became a full concept: architecture, interiors, landscape, FF&E, marketing, and storytelling with video & animation', 'What you can achieve and why it matters, the full picture of AI-driven design at speed and quality'],
     },
 ]
 
@@ -270,7 +270,7 @@ export default function WebinarPage() {
                     </FadeIn>
                     <FadeIn delay={0.2}>
                         <p className="text-[0.95rem] md:text-lg text-gray-300 max-w-xl mx-auto leading-[1.75]">
-                            Everyone can type a prompt. Almost nobody knows what to do next. We'll show you the exact system that turns a single sketch into a complete design project — at 10× the speed and a fraction of the cost.
+                            Everyone can type a prompt. Almost nobody knows what to do next. We'll show you the exact system that turns a single sketch into a complete design project, at 10× the speed and a fraction of the cost.
                         </p>
                     </FadeIn>
                     <FadeIn delay={0.25}>
@@ -281,7 +281,7 @@ export default function WebinarPage() {
                             <span className="text-gray-700">·</span>
                             <span className="flex items-center gap-2"><Check className="w-4.5 h-4.5 text-lime" />Execute</span>
                         </div>
-                        <p className="text-[0.8rem] text-gray-500 mt-3">For designers who already know AI exists — but haven't cracked the workflow yet</p>
+                        <p className="text-[0.8rem] text-gray-500 mt-3">For designers who already know AI exists but haven't cracked the workflow yet</p>
                     </FadeIn>
                 </div>
             </section>
@@ -319,7 +319,7 @@ export default function WebinarPage() {
                                         className="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-700 text-sm font-body">VSL Video — Set Vimeo ID</div>
+                                    <div className="w-full h-full flex items-center justify-center text-gray-700 text-sm font-body">VSL Video: Set Vimeo ID</div>
                                 )}
                             </div>
                             {/* Bottom countdown timer */}
@@ -344,7 +344,7 @@ export default function WebinarPage() {
             {/* ═══ S2: PRIMARY CTA ═══ */}
             <Section>
                 <FadeIn className="text-center space-y-8">
-                    <CtaButton onClick={openCta} sub="See the workflow that turns one sketch into an entire project — from macro to micro" />
+                    <CtaButton onClick={openCta} sub="See the workflow that turns one sketch into an entire project, from macro to micro" />
 
                 </FadeIn>
             </Section>
@@ -404,8 +404,8 @@ export default function WebinarPage() {
             {/* ═══ S5: WHAT YOU'LL LEARN (Case Studies) ═══ */}
             <Section dark>
                 <FadeIn>
-                    <SectionHeading sub="Every image below was generated by AI — not from a single prompt, but from a complete workflow. Real projects. Real participants. Zero stock imagery.">
-                        THIS IS WHAT HAPPENS WHEN YOU GO<br /><span className="text-lime">BEYOND THE AI PROMPT</span>
+                    <SectionHeading sub="Every image below was generated by AI, not from a single prompt, but from a complete workflow. Real projects. Real participants. Zero stock imagery.">
+                        <span className="md:whitespace-nowrap">THIS IS WHAT HAPPENS WHEN YOU GO</span><br /><span className="text-lime">BEYOND THE AI PROMPT</span>
                     </SectionHeading>
                 </FadeIn>
 
@@ -480,7 +480,7 @@ export default function WebinarPage() {
                                     'You know prompting isn\'t enough but don\'t know what\'s missing',
                                     'Your competitors are producing AI visuals that look better than yours',
                                     'Your clients have started showing YOU AI-generated images',
-                                    'You want a system, not just a tool — from concept to client presentation',
+                                    'You want a system, not just a tool, from concept to client presentation',
                                     'You\'re ready to go from "I\'ve heard of it" to "I lead with it"',
                                 ].map((item, i) => (
                                     <li key={i} className="flex gap-3 text-[0.82rem] text-gray-300 leading-relaxed">
@@ -492,11 +492,11 @@ export default function WebinarPage() {
                         </div>
                         <div className="hidden md:block w-full">
                             <div className="rounded-2xl overflow-hidden border border-white/[0.08] aspect-[4/5] bg-[#111] relative group">
-                                <img src="/casestudies/aleena/1.jpg" alt="AI Interior Design" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                                <img src="/four_designers_quadrant.png" alt="AI-Generated Workspaces" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                                 <div className="absolute bottom-4 left-4 right-4">
-                                    <span className="text-[0.55rem] text-lime uppercase tracking-[0.2em] font-bold">AI-Generated Interior</span>
-                                    <p className="text-[0.7rem] text-white/80 mt-1 leading-relaxed">Complete coffee bar concept generated entirely with AI — by one of our participants.</p>
+                                    <span className="text-[0.55rem] text-lime uppercase tracking-[0.2em] font-bold">AI-Generated Workspaces</span>
+                                    <p className="text-[0.7rem] text-white/80 mt-1 leading-relaxed">Workspaces illustrating the core design roles we empower: interior designers, architects, marketeers, and design creatives.</p>
                                 </div>
                             </div>
                         </div>
@@ -507,19 +507,19 @@ export default function WebinarPage() {
             {/* ═══ S8: BENEFITS ═══ */}
             <Section>
                 <FadeIn>
-                    <SectionHeading sub="This isn't a prompt tutorial. You'll see a complete design project executed live — from a rough sketch to a client-ready presentation — with AI integrated at every stage.">
+                    <SectionHeading sub="This isn't a prompt tutorial. You'll see a complete design project executed live, from a rough sketch to a client-ready presentation, with AI integrated at every stage.">
                         WHAT EXACTLY WILL YOU <span className="text-lime">GAIN?</span>
                     </SectionHeading>
                 </FadeIn>
                 <FadeIn delay={0.1}>
                     <ul className="space-y-4 max-w-xl mx-auto">
                         {[
-                            'Why prompting alone hits a wall — and what the real skill stack is (**taste, visual literacy, storytelling**)',
-                            'How to go from a **simple sketch** to a full design concept — architecture, interiors, wayfinding, customer journey',
+                            'Why prompting alone hits a wall, and what the real skill stack is (**taste, visual literacy, storytelling**)',
+                            'How to go from a **simple sketch** to a full design concept: architecture, interiors, wayfinding, customer journey',
                             'How to develop **consistent, fingerprint-level imagery** that looks like one cohesive project, not random AI outputs',
-                            'How to **direct AI** toward the results you actually want — not just accept whatever it gives you',
-                            'How to **storytell through your imagery** — from arrival experience to blow-up detail shots',
-                            'How to turn **3 weeks of work into 3 hours** — across image generation, video, and marketing assets',
+                            'How to **direct AI** toward the results you actually want, not just accept whatever it gives you',
+                            'How to **storytell through your imagery**, from arrival experience to blow-up detail shots',
+                            'How to turn **3 weeks of work into 3 hours**, across image generation, video, and marketing assets',
                         ].map((item, i) => (
                             <li key={i} className="flex gap-3 text-[0.82rem] text-gray-300 leading-relaxed">
                                 <Check className="w-4 h-4 text-lime shrink-0 mt-0.5" />
@@ -560,11 +560,11 @@ export default function WebinarPage() {
                 <FadeIn className="text-center space-y-5">
                     <p className="text-sm text-gray-600 italic">Here's the thing nobody talks about…</p>
                     <p className="text-[0.95rem] text-gray-300 leading-[1.75] max-w-lg mx-auto">
-                        Every designer can type a prompt. That's not the skill. The skill is what happens BEFORE the prompt — and what happens AFTER. It's the taste. The visual literacy. The judgment to know what's good. It's knowing how to take one image and turn it into
+                        Every designer can type a prompt. That's not the skill. The skill is what happens BEFORE the prompt, and what happens AFTER. It's the taste. The visual literacy. The judgment to know what's good. It's knowing how to take one image and turn it into
                     </p>
                     <p className="text-lime font-heading font-black text-[clamp(2.5rem,7vw,5rem)] uppercase leading-none">AN ENTIRE PROJECT</p>
-                    <p className="text-[0.95rem] text-gray-300 max-w-lg mx-auto leading-relaxed">from macro to micro — architecture, interiors, wayfinding, arrival experience, blow-up shots — all at fingerprint-level quality that looks nothing like anyone else's work.</p>
-                    <p className="text-[0.8rem] text-gray-500 max-w-md mx-auto">4 years of real-world AI experience in the design industry — compressed into a 3-hour webinar.</p>
+                    <p className="text-[0.95rem] text-gray-300 max-w-lg mx-auto leading-relaxed">from macro to micro: architecture, interiors, wayfinding, arrival experience, blow-up shots, all at fingerprint-level quality that looks nothing like anyone else's work.</p>
+                    <p className="text-[0.8rem] text-gray-500 max-w-md mx-auto">4 years of real-world AI experience in the design industry, compressed into a 3-hour webinar.</p>
                     <div className="pt-4"><CtaButton onClick={openCta} size="md" /></div>
                 </FadeIn>
             </Section>
@@ -597,10 +597,10 @@ export default function WebinarPage() {
                         {/* Bio text */}
                         <div className="flex flex-col justify-center">
                             <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-6">
-                                Architect and Interior Designer turned AI Workflow Strategist. For the past 4 years, Khaled has been in the trenches — taking daily calls with award-winning studios, understanding exactly where designers get stuck with AI, and building the systems that get them unstuck.
+                                Architect and Interior Designer turned AI Workflow Strategist. For the past 4 years, Khaled has been in the trenches, taking daily calls with award-winning studios, understanding exactly where designers get stuck with AI, and building the systems that get them unstuck.
                             </p>
                             <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300 mb-8">
-                                What he discovered: everyone hits the same wall. They generate one image, maybe two, and then have no idea where to go. The prompt isn't the problem. The gap is everything that comes before it — taste, visual literacy, design judgment — and everything that comes after it — consistency, storytelling, iteration, and presentation.
+                                What he discovered: everyone hits the same wall. They generate one image, maybe two, and then have no idea where to go. The prompt isn't the problem. The gap is everything that comes before it: taste, visual literacy, design judgment, and everything that comes after it: consistency, storytelling, iteration, and presentation.
                             </p>
                             <p className="font-body text-[1.05rem] leading-[1.75] text-gray-300">
                                 His work has led him to headline talks and workshops for <span className="text-white font-semibold">Skidmore, Owings &amp; Merrill</span>, <span className="text-white font-semibold">LW Design Group</span>, <span className="text-white font-semibold">Sikka Art &amp; Design Festival</span>, and <span className="text-white font-semibold">Dubai Institute of Design and Innovation</span>, among others. He built this workshop to close the exact gap he sees in every call.
@@ -686,7 +686,7 @@ export default function WebinarPage() {
             {/* Bottom spacer for sticky bar */}
             <div className="h-20" />
 
-            {/* Minimal footer — no nav distractions */}
+            {/* Minimal footer: no nav distractions */}
             <div className="border-t border-white/[0.04] py-6 text-center text-[0.6rem] text-gray-700">
                 <p>© {new Date().getFullYear()} Zkandar AI · All rights reserved · <a href="/terms" className="underline hover:text-gray-500">Terms</a></p>
             </div>
