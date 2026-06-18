@@ -374,12 +374,18 @@ export function EnrollPage() {
                     <button
                         onClick={handleCheckout}
                         disabled={loading || countdown.expired}
-                        className="w-full py-4 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full h-14 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     >
                         {loading ? (
-                            <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
+                            <>
+                                <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                <span>Redirecting to Stripe...</span>
+                            </>
                         ) : (
-                            <>Secure my spot. 12,500 AED <ArrowRight className="h-5 w-5" /></>
+                            <>
+                                <span>Secure my spot. 12,500 AED</span>
+                                <ArrowRight className="h-5 w-5 shrink-0" />
+                            </>
                         )}
                     </button>
 

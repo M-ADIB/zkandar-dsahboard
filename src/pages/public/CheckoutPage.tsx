@@ -275,20 +275,29 @@ export function CheckoutPage() {
                             {error && (
                                 <p className="text-sm text-red-400 text-center">{error}</p>
                             )}
-                            <button
-                                onClick={handleCheckout}
-                                disabled={loading}
-                                className="group w-full flex items-center justify-center gap-3 px-8 py-4 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
-                            >
-                                {loading ? (
-                                    <><Loader2 className="h-5 w-5 animate-spin" /> Redirecting to Stripe...</>
-                                ) : isTestMode ? (
-                                    <>🧪 Test Payment ($2) <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
-                                ) : (
-                                    <>Pay 12,500 AED <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
-                                )}
-                            </button>
+                             <button
+                                 onClick={handleCheckout}
+                                 disabled={loading}
+                                 className="group w-full h-14 flex items-center justify-center gap-3 px-8 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap"
+                                 style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
+                             >
+                                 {loading ? (
+                                     <>
+                                         <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                                         <span>Redirecting to Stripe...</span>
+                                     </>
+                                 ) : isTestMode ? (
+                                     <>
+                                         <span>Test Payment ($2)</span>
+                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
+                                     </>
+                                 ) : (
+                                     <>
+                                         <span>Pay 12,500 AED</span>
+                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform shrink-0" />
+                                     </>
+                                 )}
+                             </button>
                             <div className="flex items-center justify-center gap-2">
                                 <Shield className="h-3.5 w-3.5 text-gray-600" />
                                 <p className="text-xs text-gray-600">Secured by Stripe · Card details never touch our servers</p>

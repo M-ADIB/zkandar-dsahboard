@@ -701,10 +701,16 @@ export function LeadCaptureModal({ open, onClose }: {
                                     <button
                                         onClick={handleCheckout}
                                         disabled={isProcessing}
-                                        className="w-full bg-lime text-black font-heading font-black uppercase text-sm py-4 rounded-xl hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="w-full h-14 bg-lime text-black font-heading font-black uppercase text-sm rounded-xl hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all disabled:opacity-50 flex items-center justify-center gap-2 whitespace-nowrap"
                                     >
-                                        {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                                        {isProcessing ? 'REDIRECTING TO STRIPE…' : `COMPLETE PURCHASE · $${total}`}
+                                        {isProcessing ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                                                <span>REDIRECTING TO STRIPE...</span>
+                                            </>
+                                        ) : (
+                                            <span>COMPLETE PURCHASE · ${total}</span>
+                                        )}
                                     </button>
 
                                     <div className="flex items-center justify-center gap-2 text-[0.6rem] text-gray-600">
