@@ -516,6 +516,16 @@ export function LeadsPage() {
                 >
                     Assessments
                 </button>
+                <button
+                    onClick={() => setActiveTab('webinar')}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                        activeTab === 'webinar'
+                            ? 'bg-white/[0.08] text-white'
+                            : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                >
+                    Webinar Leads
+                </button>
             </div>
 
             {/* Assessments tab */}

@@ -34,6 +34,7 @@ const VISIBLE_TO_OPTIONS: { value: string; label: string }[] = [
     { value: 'management', label: 'Management' },
     { value: 'team', label: 'Team' },
     { value: 'sprint_member', label: 'Sprint Workshop' },
+    { value: 'webinar_member', label: 'Webinar Member' },
 ]
 
 const SUBSCRIPTION_OPTIONS: { value: ToolboxSubscriptionType; label: string }[] = [
@@ -51,7 +52,7 @@ const defaultForm = {
     description: '',
     importance: 'recommended' as ToolboxImportance,
     tool_types: [] as string[],
-    visible_to: ['management', 'team', 'sprint_member'] as string[],
+    visible_to: ['management', 'team', 'sprint_member', 'webinar_member'] as string[],
     subscription_type: 'paid' as ToolboxSubscriptionType,
     media: [] as ToolboxMedia[],
 }
@@ -108,7 +109,7 @@ export function ToolboxItemModal({ isOpen, onClose, onSuccess, item }: ToolboxIt
                     : [item.tool_type],
                 visible_to: Array.isArray(item.visible_to)
                     ? item.visible_to
-                    : (item.is_active ? ['management', 'team', 'sprint_member'] : []),
+                    : (item.is_active ? ['management', 'team', 'sprint_member', 'webinar_member'] : []),
                 subscription_type: item.subscription_type ?? 'paid',
                 media: item.media ?? [],
             })

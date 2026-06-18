@@ -103,10 +103,10 @@ const memberNavSections: NavSection[] = [
         id: 'member_learning',
         items: [
             { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['owner', 'admin', 'executive', 'participant'] },
-            { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
+            { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
             { icon: FileText, label: 'Assignments', path: '/assignments', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: Film, label: 'Recordings', path: '/recordings', roles: ['owner', 'admin', 'executive', 'participant'] },
-            { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
+            { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
             { icon: Wrench, label: 'Toolbox', path: '/toolbox', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: CreditCard, label: 'Billing & Invoices', path: '/billing', roles: ['owner', 'admin', 'executive', 'participant'] },
         ]
@@ -115,7 +115,7 @@ const memberNavSections: NavSection[] = [
         title: 'Connect',
         id: 'member_connect',
         items: [
-            { icon: MessageSquare, label: 'Chat', path: '/chat', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member'] },
+            { icon: MessageSquare, label: 'Chat', path: '/chat', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
         ]
     },
     {
@@ -307,7 +307,7 @@ export function Sidebar({ userRole, userType }: SidebarProps) {
                                                                 }`}
                                                         />
                                                         <span className="relative z-10 font-medium text-sm flex-1">
-                                                            {item.path === '/dashboard' && userType === 'sprint_member' ? 'My Program' : item.label}
+                                                            {item.path === '/dashboard' && (userType === 'sprint_member' || userType === 'webinar_member') ? 'My Program' : item.label}
                                                         </span>
                                                         {item.label === 'Chat' && unreadCount > 0 && (
                                                             <span className="relative z-10 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">

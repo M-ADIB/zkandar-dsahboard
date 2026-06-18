@@ -105,6 +105,7 @@ Deno.serve(async (req: Request) => {
       'cancel_url': cancel_url,
       'payment_method_types[0]': 'card',
       'billing_address_collection': 'auto',
+      'allow_promotion_codes': 'true',
       // Metadata — critical for webhook to identify customer and send emails
       'metadata[customer_name]': customer_name || '',
       'metadata[customer_email]': (customer_email || '').toLowerCase(),

@@ -15,6 +15,7 @@ type StatusFilter = 'all' | CohortStatus;
 const offeringLabels: Record<OfferingType, string> = {
     sprint_workshop: 'Sprint Workshop',
     master_class: 'Master Class',
+    webinar: 'Webinar',
 };
 
 const filterBoxClass = 'bg-white/[0.02] border border-white/[0.06] rounded-[20px] p-4 flex flex-wrap gap-4';

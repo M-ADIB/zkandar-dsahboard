@@ -25,6 +25,7 @@ type SessionCard = {
 const offeringLabels: Record<OfferingType, string> = {
     sprint_workshop: 'Sprint Workshop',
     master_class: 'Master Class',
+    webinar: 'Webinar',
 }
 
 export function SessionsPage() {

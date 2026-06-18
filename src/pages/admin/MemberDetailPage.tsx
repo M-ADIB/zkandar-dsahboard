@@ -388,8 +388,8 @@ export function MemberDetailPage() {
                         {member.onboarding_completed && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 
-                                {/* Onboarding: Sprint Member Mode (direct JSON in onboarding_data) */}
-                                {member.user_type === 'sprint_member' && member.onboarding_data && (
+                                {/* Onboarding: Sprint/Webinar Member Mode (direct JSON in onboarding_data) */}
+                                {(member.user_type === 'sprint_member' || member.user_type === 'webinar_member') && member.onboarding_data && (
                                     <div className="lg:col-span-3 space-y-6">
                                         {(() => {
                                             const oData = member.onboarding_data as Record<string, any>

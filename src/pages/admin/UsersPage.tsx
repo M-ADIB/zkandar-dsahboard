@@ -321,6 +321,7 @@ export function UsersPage() {
                         <option value="management">Management</option>
                         <option value="team">Team</option>
                         <option value="sprint_member">Sprint Member</option>
+                        <option value="webinar_member">Webinar Member</option>
                         <option value="unassigned">Unassigned</option>
                     </select>
                 </div>

@@ -266,6 +266,7 @@ export function ParticipantDashboard() {
         ? previewUser.user_type
         : user?.user_type ?? null
     const isSprintMember = effectiveUserType === 'sprint_member'
+    const isWebinarMember = effectiveUserType === 'webinar_member'
 
     const [cohorts, setCohorts] = useState<Cohort[]>([])
     const [sessions, setSessions] = useState<Session[]>([])
@@ -811,7 +812,11 @@ export function ParticipantDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className={`grid grid-cols-1 gap-4 ${isSprintMember ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
+                className={`grid grid-cols-1 gap-4 ${
+                    isSprintMember || isWebinarMember
+                        ? (assignmentSummary.total > 0 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-sm')
+                        : 'md:grid-cols-3'
+                }`}
             >
                 <div className="bg-bg-card border border-border rounded-2xl p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -825,19 +830,21 @@ export function ParticipantDashboard() {
                     </div>
                     <ProgressBar current={completedSessions} total={totalSessions || 1} />
                 </div>
-                <div className="bg-bg-card border border-border rounded-2xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
-                            <FileText className="h-5 w-5 text-lime" />
+                {assignmentSummary.total > 0 && (
+                    <div className="bg-bg-card border border-border rounded-2xl p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
+                                <FileText className="h-5 w-5 text-lime" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold">{assignmentSummary.completed}/{assignmentSummary.total}</p>
+                                <p className="text-xs text-gray-500">Assignments Done</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-2xl font-bold">{assignmentSummary.completed}/{assignmentSummary.total}</p>
-                            <p className="text-xs text-gray-500">Assignments Done</p>
-                        </div>
+                        <ProgressBar current={assignmentSummary.completed} total={assignmentSummary.total || 1} />
                     </div>
-                    <ProgressBar current={assignmentSummary.completed} total={assignmentSummary.total || 1} />
-                </div>
-                {!isSprintMember && (
+                )}
+                {!isSprintMember && !isWebinarMember && (
                     <div className="bg-bg-card border border-border rounded-2xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
@@ -862,10 +869,10 @@ export function ParticipantDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className={`${isSprintMember ? 'lg:col-span-3' : 'lg:col-span-2'} bg-bg-card border border-border rounded-2xl p-6`}
+                    className={`${(isSprintMember || isWebinarMember) ? 'lg:col-span-3' : 'lg:col-span-2'} bg-bg-card border border-border rounded-2xl p-6`}
                 >
                     <h2 className="font-heading text-lg font-bold mb-6">
-                        {isSprintMember ? 'Your Sprint Journey' : 'Session Timeline'}
+                        {isSprintMember ? 'Your Sprint Journey' : isWebinarMember ? 'Your Webinar Session' : 'Session Timeline'}
                     </h2>
                     {loading ? (
                         <div className="space-y-6">
@@ -1181,8 +1188,8 @@ export function ParticipantDashboard() {
                     )}
                 </motion.div>
 
-                {/* Right Column — hidden for sprint members */}
-                {!isSprintMember && <div className="space-y-6">
+                {/* Right Column — hidden for sprint and webinar members */}
+                {!isSprintMember && !isWebinarMember && <div className="space-y-6">
                     {/* Upcoming Assignments */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

@@ -5,6 +5,7 @@ import { Copy, Check, Terminal, X } from 'lucide-react'
 const TEST_USERS = [
     { role: 'Owner / Admin', email: 'admin@zkandar.com', password: 'password123' },
     { role: 'Participant', email: 'adib@theclips.agency', password: 'password123' },
+    { role: 'Webinar Member (Run script first)', email: 'test_webinar_e2e@zkandar.com', password: 'password123' },
     { role: 'Other User', email: 'test@finasi.com', password: 'password123' },
 ]
 

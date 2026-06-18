@@ -305,7 +305,11 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
 
     // State
     const [step, setStep] = useState(isSprintWorkshop ? 1 : 0) // 0 = role selection, 1 = basic info, 2+ = questions
-    const [userType, setUserType] = useState<UserType | null>(isSprintWorkshop ? 'sprint_member' : null)
+    const [userType, setUserType] = useState<UserType | null>(
+        isSprintWorkshop 
+            ? (user?.user_type === 'webinar_member' ? 'webinar_member' : 'sprint_member') 
+            : null
+    )
     const [showPasswordChange, setShowPasswordChange] = useState(!user?.profile_data?.password_changed)
     const [passwordData, setPasswordData] = useState({
         newPassword: '',
@@ -423,7 +427,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
                 throw error
             }
 
-            if (isSprintWorkshop) {
+            if (isSprintWorkshop && userType !== 'webinar_member') {
                 const { error: rpcError } = await (supabase as any).rpc('handle_sprint_workshop_signup', {
                     user_uuid: user.id
                 });
@@ -434,7 +438,7 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
             }
 
             await refreshUser()
-            toast.success(`Welcome to Zkandar AI ${isSprintWorkshop ? 'Sprint Workshop' : 'Master Class'}!`)
+            toast.success(`Welcome to Zkandar AI ${userType === 'webinar_member' ? 'Webinar' : isSprintWorkshop ? 'Sprint Workshop' : 'Master Class'}!`)
             navigate('/welcome')
         } catch (error) {
             console.error('Error submitting survey:', error)

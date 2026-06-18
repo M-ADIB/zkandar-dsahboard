@@ -24,7 +24,7 @@ export function MemberRoute({ children }: MemberRouteProps) {
         ? previewUser.user_type
         : user.user_type
 
-    if (effectiveUserType === 'sprint_member') {
+    if (effectiveUserType === 'sprint_member' || effectiveUserType === 'webinar_member') {
         const blocked = SPRINT_BLOCKED.some(p => location.pathname.startsWith(p))
         if (blocked) return <Navigate to="/dashboard" replace />
     }

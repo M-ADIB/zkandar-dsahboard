@@ -38,6 +38,7 @@ const userTypeOptions: { value: UserType | ''; label: string }[] = [
     { value: 'management', label: 'Management' },
     { value: 'team', label: 'Team' },
     { value: 'sprint_member', label: 'Sprint Member' },
+    { value: 'webinar_member', label: 'Webinar Member' },
 ];
 
 export function UserModal({

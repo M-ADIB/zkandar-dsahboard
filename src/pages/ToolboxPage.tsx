@@ -158,7 +158,9 @@ export function ToolboxPage() {
                     Toolbox
                 </h1>
                 <p className="text-gray-400 text-sm mt-1">
-                    {effectiveUserType === 'sprint_member' ? (
+                    {effectiveUserType === 'webinar_member' ? (
+                        "Your curated AI toolkit for the Webinar. All the tools you need to succeed."
+                    ) : effectiveUserType === 'sprint_member' ? (
                         "Your curated AI toolkit for the Sprint Workshop. All the tools you need to succeed."
                     ) : effectiveUserType === 'team' || effectiveUserType === 'management' ? (
                         "Master Class for team and management-type members"

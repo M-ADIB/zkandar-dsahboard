@@ -471,7 +471,7 @@ export default function WebinarPage() {
                     <div className="grid md:grid-cols-[1fr_1fr] gap-10 items-center">
                         <div className="space-y-7">
                             <SectionHeading center={false}>
-                                IS THIS <span className="text-lime">FOR YOU?</span>
+                                IS THIS <span className="text-lime whitespace-nowrap">FOR YOU?</span>
                             </SectionHeading>
                             <p className="text-[0.82rem] text-gray-400">Yes — if any of these sound like you:</p>
                             <ul className="space-y-3.5">

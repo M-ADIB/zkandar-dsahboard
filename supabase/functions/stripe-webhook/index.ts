@@ -144,6 +144,66 @@ async function provisionSprintUser(
   return { userId, isNew: true };
 }
 
+// ── Provision Webinar user: create auth user + profile + cohort membership ──
+const WEBINAR_COHORT_ID = '773335a5-3d30-497c-a27d-f2702020e9a9';
+
+async function provisionWebinarUser(
+  supabase: ReturnType<typeof createClient>,
+  email: string,
+  fullName: string,
+  tempPassword: string
+): Promise<{ userId: string; isNew: boolean }> {
+  // Check if user already exists
+  const { data: existing } = await supabase
+    .from('users')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (existing?.id) {
+    console.log('User already exists:', existing.id);
+    // Still ensure cohort membership
+    await supabase.from('cohort_memberships').upsert(
+      { user_id: existing.id, cohort_id: WEBINAR_COHORT_ID },
+      { onConflict: 'user_id,cohort_id', ignoreDuplicates: true }
+    );
+    return { userId: existing.id, isNew: false };
+  }
+
+  // Create Supabase auth user
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { full_name: fullName },
+  });
+
+  if (authError) throw new Error(`Auth user creation failed: ${authError.message}`);
+  const userId = authData.user.id;
+  console.log('Auth user created:', userId);
+
+  // Upsert profile in users table
+  await supabase.from('users').upsert({
+    id: userId,
+    email,
+    full_name: fullName,
+    role: 'participant',
+    user_type: 'webinar_member',
+    onboarding_completed: false,
+    created_at: new Date().toISOString(),
+  }, { onConflict: 'id', ignoreDuplicates: false });
+
+  // Add cohort membership
+  await supabase.from('cohort_memberships').upsert(
+    { user_id: userId, cohort_id: WEBINAR_COHORT_ID },
+    { onConflict: 'user_id,cohort_id', ignoreDuplicates: true }
+  );
+
+  console.log('Webinar user provisioned:', userId, '| Cohort:', WEBINAR_COHORT_ID);
+  return { userId, isNew: true };
+}
+
+
 // ── Sprint credentials email ──
 async function sendSprintCredentialsEmail(email: string, fullName: string, tempPassword: string) {
   if (!RESEND_API_KEY) { console.warn('RESEND_API_KEY not set — skipping credentials email'); return; }
@@ -255,6 +315,145 @@ async function sendSprintCredentialsEmail(email: string, fullName: string, tempP
     console.error('Credentials email send failed:', err);
   }
 }
+
+// ── Webinar credentials email ──
+async function sendWebinarCredentialsEmail(email: string, fullName: string, tempPassword: string, products: string[], amountTotal: number) {
+  if (!RESEND_API_KEY) { console.warn('RESEND_API_KEY not set — skipping webinar credentials email'); return; }
+
+  const firstName = fullName.split(' ')[0] || 'there';
+  const dashboardUrl = 'https://app.zkandar.com';
+  const formattedAmount = `$${(amountTotal / 100).toFixed(2)}`;
+  const names: Record<string, string> = {
+    'webinar': '2-Day AI Design Webinar',
+    'webinar-template': 'Professional Presentation Template',
+    'webinar-catalog': 'Interior Design Style Catalog',
+    'vip': 'VIP Access Upgrade',
+    'vip-elite': 'VIP Elite Upgrade',
+  };
+  const productListHtml = products.map(p =>
+    `<tr><td style="padding:8px 0;font-size:14px;color:#D1D5DB;border-bottom:1px solid #1F2937;">✓ ${names[p] || p}</td></tr>`
+  ).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Welcome to Zkandar AI — Beyond the AI Prompt</title></head>
+<body style="margin:0;padding:0;background:#0B0B0B;font-family:Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+      <tr><td style="background:#111111;border:1px solid #1F2937;border-radius:16px;overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+
+          <!-- Header -->
+          <tr><td style="background:linear-gradient(135deg,#D0FF71 0%,#5A9F2E 100%);padding:28px 24px;text-align:center;">
+            <div style="font-size:28px;font-weight:900;color:#000;letter-spacing:0.02em;">YOU'RE IN! 🎉</div>
+            <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;font-weight:600;">Beyond the AI Prompt — Access Confirmed</div>
+          </td></tr>
+
+          <!-- Greeting -->
+          <tr><td style="padding:24px 24px 0;">
+            <div style="font-size:18px;font-weight:700;color:#FFFFFF;">Hi ${firstName},</div>
+            <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">
+              Your payment is confirmed and your Zkandar AI account is ready. Use the credentials below to sign in to your dashboard to access the live session link, materials, and chat.
+            </div>
+          </td></tr>
+
+          <!-- Order Summary -->
+          <tr><td style="padding:20px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
+              <tr><td style="padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Order Summary</div>
+                <table width="100%" cellpadding="0" cellspacing="0">${productListHtml}</table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;border-top:1px solid #374151;">
+                  <tr>
+                    <td style="padding-top:12px;font-size:14px;font-weight:700;color:#FFF;">Total Paid</td>
+                    <td style="padding-top:12px;font-size:14px;font-weight:700;color:#D0FF71;text-align:right;">${formattedAmount}</td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td></tr>
+
+          <!-- Credentials box -->
+          <tr><td style="padding:20px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:2px solid #D0FF71;border-radius:12px;">
+              <tr><td style="padding:20px;">
+                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">🔑 Your Login Credentials</div>
+                <div style="margin-bottom:10px;">
+                  <span style="font-size:11px;color:#9CA3AF;display:block;margin-bottom:4px;">EMAIL</span>
+                  <span style="font-size:14px;color:#FFFFFF;font-weight:600;">${email}</span>
+                </div>
+                <div style="margin-bottom:16px;">
+                  <span style="font-size:11px;color:#9CA3AF;display:block;margin-bottom:4px;">TEMPORARY PASSWORD</span>
+                  <span style="font-size:18px;color:#D0FF71;font-weight:900;letter-spacing:0.05em;font-family:monospace;">${tempPassword}</span>
+                </div>
+                <div style="font-size:12px;color:#9CA3AF;line-height:1.5;">
+                  ⚠️ Please change your password after your first login from the Settings page.
+                </div>
+                <div style="margin-top:16px;">
+                  <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#D0FF71,#5A9F2E);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+                    Sign In to Dashboard →
+                  </a>
+                </div>
+              </td></tr>
+            </table>
+          </td></tr>
+
+          <!-- What's Next -->
+          <tr><td style="padding:16px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
+              <tr><td style="padding:16px;">
+                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
+                <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">
+                  📅 The webinar session link and materials are in the dashboard<br/>
+                  💬 Access to the private cohort chat community is unlocked<br/>
+                  🎯 Complete assignments and surveys to earn your AI certification
+                </div>
+              </td></tr>
+            </table>
+          </td></tr>
+
+          <!-- Footer -->
+          <tr><td style="padding:24px;">
+            <div style="font-size:14px;color:#D1D5DB;line-height:1.6;">
+              Questions? Reply to this email — we're here to help.
+            </div>
+            <div style="margin-top:16px;">
+              <div style="font-size:14px;font-weight:700;color:#FFFFFF;">Zkandar AI</div>
+            </div>
+          </td></tr>
+
+        </table>
+      </td></tr>
+      <tr><td style="padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6B7280;">© ${new Date().getFullYear()} Zkandar AI. All rights reserved.</div>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
+      body: JSON.stringify({
+        from: 'Zkandar AI <hello@app.zkandar.com>',
+        reply_to: 'admin@zkandar.com',
+        to: email,
+        subject: `Welcome to Beyond the AI Prompt — Your Login Details, ${firstName}! 🚀`,
+        html,
+      }),
+    });
+    const txt = await res.text();
+    if (!res.ok) console.error('Resend error (webinar credentials):', res.status, txt);
+    else console.log('Webinar credentials email sent to:', email);
+  } catch (err) {
+    console.error('Webinar credentials email send failed:', err);
+  }
+}
+
 
 // ── Webinar booking confirmation email ──
 async function sendBookingConfirmationEmail(customerEmail: string, customerName: string, products: string[], amountTotal: number) {
@@ -485,7 +684,7 @@ Deno.serve(async (req: Request) => {
             // Non-fatal — don't block the webhook response
           }
         } else {
-          // ── Webinar: update lead + send booking confirmation ──
+          // ── Webinar: update lead + provision user + send credentials ──
           await supabase.from('webinar_leads').update({
             payment_status: 'paid',
             amount_paid: session.amount_total || 0,
@@ -494,7 +693,23 @@ Deno.serve(async (req: Request) => {
           }).eq('email', customerEmail);
           console.log('Webinar lead updated for:', customerEmail);
 
-          await sendBookingConfirmationEmail(customerEmail, customerName, products, session.amount_total || 0);
+          try {
+            const tempPassword = generateTempPassword();
+            const { isNew } = await provisionWebinarUser(supabase, customerEmail, customerName, tempPassword);
+
+            if (isNew) {
+              await sendWebinarCredentialsEmail(customerEmail, customerName, tempPassword, products, session.amount_total || 0);
+              console.log('Webinar provisioning complete — credentials sent');
+            } else {
+              // Existing user — still send them standard confirmation email so they know order went through
+              await sendBookingConfirmationEmail(customerEmail, customerName, products, session.amount_total || 0);
+              console.log('Webinar user already existed — standard confirmation sent');
+            }
+          } catch (provisionErr) {
+            console.error('Webinar provisioning error:', provisionErr);
+            // Fallback: send standard confirmation email
+            await sendBookingConfirmationEmail(customerEmail, customerName, products, session.amount_total || 0);
+          }
         }
 
         break;
