@@ -24,6 +24,8 @@ import { supabase } from '@/lib/supabase'
 import { formatDateLabel, formatRelativeTime, formatSessionDateTime } from '@/lib/time'
 import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
 import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswers, UserType } from '@/types/database'
+import toast from 'react-hot-toast'
+import { SprintCard } from '@/components/public/SprintCard'
 
 function extractVimeoId(urlOrId: string): string {
     const match = urlOrId.match(/vimeo\.com\/(\d+)/)
@@ -269,6 +271,10 @@ export function ParticipantDashboard() {
     const isWebinarMember = effectiveUserType === 'webinar_member'
 
     const [cohorts, setCohorts] = useState<Cohort[]>([])
+    const [userProfileData, setUserProfileData] = useState<Record<string, any> | null>(null)
+    const [upgradingToGold, setUpgradingToGold] = useState(false)
+    const [sprintDates, setSprintDates] = useState('June 3–5')
+    const [sprintLocation, setSprintLocation] = useState('Live Zoom')
     const [sessions, setSessions] = useState<Session[]>([])
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [submissions, setSubmissions] = useState<Submission[]>([])
@@ -294,6 +300,48 @@ export function ParticipantDashboard() {
         sessionTitle?: string;
         dubaiTimeLabel?: string;
     } | null>(null)
+
+    const isGoldWebinarMember = isWebinarMember && userProfileData?.upgrade_tier === 'gold'
+
+    const handleGoldUpgrade = async () => {
+        if (!user?.email) {
+            toast.error('Unable to verify user email.')
+            return
+        }
+        
+        setUpgradingToGold(true)
+        try {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const res = await fetch(`${supabaseUrl}/functions/v1/confirm-upgrade`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: user.email,
+                    tierId: 'gold',
+                    price: 149,
+                }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to complete one-click upgrade.');
+            }
+
+            toast.success('Successfully upgraded to Gold Tier! Your premium dashboard is unlocked.');
+            
+            setUserProfileData(prev => ({
+                ...(prev ?? {}),
+                upgrade_tier: 'gold'
+            }));
+        } catch (err: any) {
+            console.error('Gold upgrade error:', err);
+            toast.error(err.message || 'Upgrade failed. Please try again.');
+        } finally {
+            setUpgradingToGold(false);
+        }
+    }
 
     const firstName = user?.full_name?.split(' ')[0] || 'there'
 
@@ -336,7 +384,21 @@ export function ParticipantDashboard() {
             setBookingCompleted(profileRow?.sprint_booking_completed ?? false)
             setCertificateClaimed(!!profileRow?.profile_data?.certificate_claimed)
             setUserName(profileRow?.full_name || '')
+            setUserProfileData(profileRow?.profile_data || {})
             setCalendlyUrl((calendlyRes.data as { value: string } | null)?.value ?? null)
+
+            // Fetch marketing settings from Supabase CMS (for the Sprint Card upgrade)
+            supabase
+                .from('platform_settings')
+                .select('key, value')
+                .in('key', ['marketing_sprint_dates', 'marketing_sprint_location'])
+                .then(({ data }) => {
+                    if (!data) return
+                    const map: Record<string, string> = {}
+                    data.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
+                    if (map.marketing_sprint_dates) setSprintDates(map.marketing_sprint_dates)
+                    if (map.marketing_sprint_location !== undefined) setSprintLocation(map.marketing_sprint_location)
+                })
             const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
 
             const cohortIdSet = new Set<string>(membershipIds)
@@ -732,28 +794,41 @@ export function ParticipantDashboard() {
     }
 
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className={`space-y-8 animate-fade-in relative ${isGoldWebinarMember ? 'gold-theme' : ''}`}>
+            {/* Ambient gold glow for premium members */}
+            {isGoldWebinarMember && (
+                <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-gradient-radial from-amber-500/[0.08] to-transparent rounded-full blur-[100px] pointer-events-none z-0" />
+            )}
+
             {/* Welcome Banner */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border p-8"
+                className={`relative overflow-hidden rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border p-8 ${
+                    isGoldWebinarMember ? 'border-amber-500/35 shadow-[0_0_40px_rgba(245,158,11,0.08)]' : 'border-border'
+                }`}
             >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-lime/5 rounded-full blur-3xl" />
+                {isGoldWebinarMember ? (
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
+                ) : (
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-lime/5 rounded-full blur-3xl" />
+                )}
                 <div className="relative z-10 flex items-center gap-8">
                     {/* Left: text */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-4">
-                            <Sparkles className="h-5 w-5 text-lime" />
-                            <span className="text-xs uppercase tracking-widest text-lime">
-                                {isSprintWorkshop ? 'Sprint Workshop' : 'Master Class Journey'}
+                            <Sparkles className={`h-5 w-5 ${isGoldWebinarMember ? 'text-amber-400' : 'text-lime'}`} />
+                            <span className={`text-xs uppercase tracking-widest ${isGoldWebinarMember ? 'text-amber-400 font-bold' : 'text-lime'}`}>
+                                {isGoldWebinarMember ? 'Gold Premium Pass' : isWebinarMember ? 'Webinar Ticket' : isSprintWorkshop ? 'Sprint Workshop' : 'Master Class Journey'}
                             </span>
                         </div>
                         <h1 className="hero-text text-3xl md:text-4xl mb-4">
-                            Hey <span className="text-gradient">{firstName}</span>, here's your progress
+                            Hey <span className={isGoldWebinarMember ? 'bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 bg-clip-text text-transparent font-black font-heading' : 'text-gradient'}>{firstName}</span>, {isWebinarMember ? "here's your webinar overview" : "here's your progress"}
                         </h1>
                         <p className="text-gray-400 max-w-lg">
-                            {isSprintWorkshop
+                            {isWebinarMember
+                                ? `Welcome to the Zkandar AI Webinar! ${isGoldWebinarMember ? 'You have premium Gold access. Enjoy lifetime recordings, PDF slides, and your 1-on-1 call.' : 'Access your live stream and resources below.'}`
+                                : isSprintWorkshop
                                 ? "Welcome to your sprint! Follow the sessions below and engage with your program to maximize your learning."
                                 : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
                         </p>
@@ -761,19 +836,31 @@ export function ParticipantDashboard() {
                         {/* Countdown timer — shows until next session starts */}
                         {countdown && (
                             countdown.isLive ? (
-                                <div className="mt-5 inline-flex items-center gap-2 bg-lime/10 border border-lime/20 rounded-xl px-4 py-2.5 text-lime shrink-0">
+                                <div className={`mt-5 inline-flex items-center gap-2 border rounded-xl px-4 py-2.5 shrink-0 ${
+                                    isGoldWebinarMember 
+                                        ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' 
+                                        : 'bg-lime/10 border-lime/20 text-lime'
+                                }`}>
                                     <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75 animate-duration-1000"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-lime"></span>
+                                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 animate-duration-1000 ${
+                                            isGoldWebinarMember ? 'bg-amber-400' : 'bg-lime'
+                                        }`}></span>
+                                        <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                                            isGoldWebinarMember ? 'bg-amber-400' : 'bg-lime'
+                                        }`}></span>
                                     </span>
                                     <span className="text-xs font-bold uppercase tracking-[0.05em]">
-                                        Session {countdown.sessionNumber} is Live Now! Join the Zoom meeting below.
+                                        {isWebinarMember
+                                            ? `Webinar Day ${countdown.sessionNumber} is Live Now! Join the Zoom meeting below.`
+                                            : `Session ${countdown.sessionNumber} is Live Now! Join the Zoom meeting below.`}
                                     </span>
                                 </div>
                             ) : (
                                 <div className="mt-5 flex items-center gap-3 flex-wrap">
                                     <span className="text-xs text-gray-500 uppercase tracking-wider shrink-0">
-                                        {countdown.sessionNumber 
+                                        {isWebinarMember
+                                            ? `Webinar Day ${countdown.sessionNumber} starts in`
+                                            : countdown.sessionNumber 
                                             ? `Session ${countdown.sessionNumber} starts in` 
                                             : 'Next upcoming session starts in'}
                                     </span>
@@ -785,7 +872,11 @@ export function ParticipantDashboard() {
                                             { v: countdown.seconds, label: 's' },
                                         ].map(({ v, label }) => (
                                             <div key={label} className="flex flex-col items-center">
-                                                <span className="w-10 h-9 flex items-center justify-center bg-lime/10 border border-lime/20 rounded-lg text-lime font-mono font-bold text-sm tabular-nums">
+                                                <span className={`w-10 h-9 flex items-center justify-center border rounded-lg font-mono font-bold text-sm tabular-nums ${
+                                                    isGoldWebinarMember 
+                                                        ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                                        : 'bg-lime/10 border-lime/20 text-lime'
+                                                }`}>
                                                     {String(v).padStart(2, '0')}
                                                 </span>
                                                 <span className="text-[9px] text-gray-600 mt-0.5 uppercase tracking-wider">{label}</span>
@@ -793,7 +884,9 @@ export function ParticipantDashboard() {
                                         ))}
                                     </div>
                                     {countdown.dubaiTimeLabel && (
-                                        <span className="text-sm font-semibold text-lime ml-0.5">
+                                        <span className={`text-sm font-semibold ml-0.5 ${
+                                            isGoldWebinarMember ? 'text-amber-400' : 'text-lime'
+                                        }`}>
                                             {countdown.dubaiTimeLabel}
                                         </span>
                                     )}
@@ -808,59 +901,61 @@ export function ParticipantDashboard() {
             </motion.div>
 
             {/* Progress Overview */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className={`grid grid-cols-1 gap-4 ${
-                    isSprintMember || isWebinarMember
-                        ? (assignmentSummary.total > 0 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-sm')
-                        : 'md:grid-cols-3'
-                }`}
-            >
-                <div className="bg-bg-card border border-border rounded-2xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
-                            <Calendar className="h-5 w-5 text-lime" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold">{completedSessions}/{totalSessions}</p>
-                            <p className="text-xs text-gray-500">Sessions Attended</p>
-                        </div>
-                    </div>
-                    <ProgressBar current={completedSessions} total={totalSessions || 1} />
-                </div>
-                {assignmentSummary.total > 0 && (
+            {!isWebinarMember && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className={`grid grid-cols-1 gap-4 ${
+                        isSprintMember
+                            ? (assignmentSummary.total > 0 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-sm')
+                            : 'md:grid-cols-3'
+                    }`}
+                >
                     <div className="bg-bg-card border border-border rounded-2xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
-                                <FileText className="h-5 w-5 text-lime" />
+                                <Calendar className="h-5 w-5 text-lime" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">{assignmentSummary.completed}/{assignmentSummary.total}</p>
-                                <p className="text-xs text-gray-500">Assignments Done</p>
+                                <p className="text-2xl font-bold">{completedSessions}/{totalSessions}</p>
+                                <p className="text-xs text-gray-500">Sessions Attended</p>
                             </div>
                         </div>
-                        <ProgressBar current={assignmentSummary.completed} total={assignmentSummary.total || 1} />
+                        <ProgressBar current={completedSessions} total={totalSessions || 1} />
                     </div>
-                )}
-                {!isSprintMember && !isWebinarMember && (
-                    <div className="bg-bg-card border border-border rounded-2xl p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
-                                <Sparkles className="h-5 w-5 text-lime" />
+                    {assignmentSummary.total > 0 && (
+                        <div className="bg-bg-card border border-border rounded-2xl p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
+                                    <FileText className="h-5 w-5 text-lime" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold">{assignmentSummary.completed}/{assignmentSummary.total}</p>
+                                    <p className="text-xs text-gray-500">Assignments Done</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-2xl font-bold">
-                                    {aiScore === null ? <span className="inline-block w-12 h-7 bg-white/10 rounded animate-pulse" /> : `${aiScore}%`}
-                                </p>
-                                <p className="text-xs text-gray-500">AI Readiness Score</p>
-                            </div>
+                            <ProgressBar current={assignmentSummary.completed} total={assignmentSummary.total || 1} />
                         </div>
-                        <ProgressBar current={aiScore ?? 0} total={100} />
-                    </div>
-                )}
-            </motion.div>
+                    )}
+                    {!isSprintMember && (
+                        <div className="bg-bg-card border border-border rounded-2xl p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="h-10 w-10 rounded-lg bg-lime/10 flex items-center justify-center">
+                                    <Sparkles className="h-5 w-5 text-lime" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold">
+                                        {aiScore === null ? <span className="inline-block w-12 h-7 bg-white/10 rounded animate-pulse" /> : `${aiScore}%`}
+                                    </p>
+                                    <p className="text-xs text-gray-500">AI Readiness Score</p>
+                                </div>
+                            </div>
+                            <ProgressBar current={aiScore ?? 0} total={100} />
+                        </div>
+                    )}
+                </motion.div>
+            )}
 
             {/* Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -869,10 +964,12 @@ export function ParticipantDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className={`${(isSprintMember || isWebinarMember) ? 'lg:col-span-3' : 'lg:col-span-2'} bg-bg-card border border-border rounded-2xl p-6`}
+                    className={`${isSprintMember ? 'lg:col-span-3' : 'lg:col-span-2'} bg-bg-card rounded-2xl p-6 border ${
+                        isGoldWebinarMember ? 'border-amber-500/25 shadow-[0_0_30px_rgba(245,158,11,0.04)]' : 'border-border'
+                    }`}
                 >
-                    <h2 className="font-heading text-lg font-bold mb-6">
-                        {isSprintMember ? 'Your Sprint Journey' : isWebinarMember ? 'Your Webinar Session' : 'Session Timeline'}
+                    <h2 className={`font-heading text-lg font-bold mb-6 ${isGoldWebinarMember ? 'text-amber-400' : ''}`}>
+                        {isSprintMember ? 'Your Sprint Journey' : isWebinarMember ? 'Webinar Schedule' : 'Session Timeline'}
                     </h2>
                     {loading ? (
                         <div className="space-y-6">
@@ -1012,23 +1109,38 @@ export function ParticipantDashboard() {
                                     )
                                 })
                             ) : (
-                                // ── Master Class: sessions only ──────────────────────────
+                                // ── Master Class / Webinar: sessions only ──────────────────────────
                                 sessionTimeline.map((session, idx) => {
                                     const isLast = idx === sessionTimeline.length - 1
+                                    
+                                    const cleanSessionTitle = isWebinarMember
+                                        ? session.title.replace(/session\s*\d+\s*:?\s*/gi, '')
+                                        : session.title
+                                    
+                                    const titleText = isWebinarMember
+                                        ? `Webinar Day ${idx + 1}: ${cleanSessionTitle}`
+                                        : session.title
+
                                     return (
                                         <div key={session.id} className="relative group">
                                             {!isLast && (
                                                 <div className="absolute left-[35px] top-[56px] bottom-[-16px] w-px bg-border z-0" />
                                             )}
                                             <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors ${
-                                                session.current ? 'bg-lime/5 border border-lime/20' : 'hover:bg-white/5 border border-transparent'
+                                                session.current 
+                                                    ? (isGoldWebinarMember ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-lime/5 border border-lime/20')
+                                                    : 'hover:bg-white/5 border border-transparent'
                                             }`}>
                                                 <div className="flex flex-col items-center shrink-0 w-10">
                                                     <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                        session.completed ? 'bg-lime/10' : session.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                        session.completed 
+                                                            ? (isGoldWebinarMember ? 'bg-amber-500/10' : 'bg-lime/10')
+                                                            : session.current 
+                                                            ? (isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/20' : 'gradient-lime shadow-lg shadow-lime/20')
+                                                            : 'bg-white/5'
                                                     }`}>
                                                         {session.completed ? (
-                                                            <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                            <CheckCircle2 className={`h-5 w-5 ${isGoldWebinarMember ? 'text-amber-400' : 'text-lime'}`} />
                                                         ) : session.current ? (
                                                             <Play className="h-5 w-5 text-black ml-0.5" />
                                                         ) : (
@@ -1039,16 +1151,18 @@ export function ParticipantDashboard() {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center justify-between gap-4">
                                                         <div className="min-w-0">
-                                                            <p className={`font-medium truncate ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? 'text-lime' : ''}`}>
-                                                                {session.title}
+                                                            <p className={`font-medium truncate ${session.completed ? 'text-gray-400' : 'text-white'} ${session.current ? (isGoldWebinarMember ? 'text-amber-400' : 'text-lime') : ''}`}>
+                                                                {titleText}
                                                             </p>
-                                                            <p className={`text-xs mt-0.5 truncate ${session.current ? 'text-lime/70' : 'text-gray-500'}`}>{session.date}</p>
+                                                            <p className={`text-xs mt-0.5 truncate ${session.current ? (isGoldWebinarMember ? 'text-amber-400/70' : 'text-lime/70') : 'text-gray-500'}`}>{session.date}</p>
                                                         </div>
                                                         {session.completed ? (
                                                             session.recordingUrl && (
                                                                 <button
                                                                     onClick={() => setActiveVideoUrl(session.recordingUrl)}
-                                                                    className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                    className={`px-4 py-2 text-sm font-medium rounded-lg shrink-0 hover:scale-105 transition-transform ${
+                                                                        isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black' : 'gradient-lime text-black'
+                                                                    }`}
                                                                 >
                                                                     Watch Now
                                                                 </button>
@@ -1058,7 +1172,9 @@ export function ParticipantDashboard() {
                                                                 session.isLiveOrSoon ? (
                                                                     <button
                                                                         onClick={() => window.open(session.zoomLink!, '_blank')}
-                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                        className={`px-4 py-2 text-sm font-medium rounded-lg shrink-0 hover:scale-105 transition-transform ${
+                                                                            isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black' : 'gradient-lime text-black'
+                                                                        }`}
                                                                     >
                                                                         Join Now
                                                                     </button>
@@ -1282,6 +1398,83 @@ export function ParticipantDashboard() {
                         </Link>
                     </motion.div>
                 </div>}
+
+                {/* Right Column — Upgrades sidebar for Webinar members */}
+                {isWebinarMember && (
+                    <div className="space-y-6">
+                        {/* Webinar Gold Upgrade Card */}
+                        {userProfileData?.upgrade_tier !== 'gold' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="bg-bg-card border border-amber-500/20 rounded-2xl p-6 relative overflow-hidden shadow-lg shadow-amber-500/5 text-left"
+                            >
+                                {/* Ambient gold glow */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+                                
+                                <div className="relative z-10 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase font-heading">
+                                            Upgrade Option
+                                        </span>
+                                        <Sparkles className="h-4 w-4 text-amber-400" />
+                                    </div>
+                                    
+                                    <h3 className="font-heading font-black text-white uppercase text-lg">
+                                        Upgrade to <span className="text-amber-400">Gold Tier</span>
+                                    </h3>
+                                    
+                                    <p className="text-gray-400 text-xs leading-relaxed font-body">
+                                        Get lifetime recordings access, the complete system PDF, and a 1-on-1 private mentoring session with Khaled.
+                                    </p>
+                                    
+                                    <div className="border-t border-white/5 my-2" />
+                                    
+                                    <div className="space-y-2 text-xs text-gray-300 font-body">
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                                            <span>Full workshop recordings (lifetime)</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                                            <span>Complete workshop system PDF</span>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                                            <span>30-min 1-on-1 coaching call</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={handleGoldUpgrade}
+                                        disabled={upgradingToGold}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2 font-heading"
+                                    >
+                                        {upgradingToGold ? 'Processing...' : 'One-Click Gold Upgrade — $149'}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Sprint Workshop Upgrade Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="space-y-3 text-left"
+                        >
+                            <p className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase font-heading">
+                                Elite Training Workshop
+                            </p>
+                            <SprintCard 
+                                sprintDates={sprintDates} 
+                                sprintLocation={sprintLocation} 
+                                checkoutUrl={`/checkout?email=${encodeURIComponent(user?.email || '')}&name=${encodeURIComponent(user?.full_name || '')}`}
+                            />
+                        </motion.div>
+                    </div>
+                )}
             </div>
 
             {/* Booking Dialog */}

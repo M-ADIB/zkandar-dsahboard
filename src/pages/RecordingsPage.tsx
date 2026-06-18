@@ -208,7 +208,9 @@ export function RecordingsPage() {
                     </div>
                     <p className="text-gray-400 text-lg font-medium">No recordings available yet</p>
                     <p className="text-gray-600 text-sm mt-1">
-                        Recordings will appear here after your sessions are completed
+                        {user?.user_type === 'webinar_member' 
+                            ? 'Recordings will appear here after your webinar days are completed'
+                            : 'Recordings will appear here after your sessions are completed'}
                     </p>
                 </motion.div>
             ) : (
@@ -249,7 +251,9 @@ export function RecordingsPage() {
 
                                     {/* Session number badge */}
                                     <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[11px] font-medium text-gray-300 z-20">
-                                        Session {recording.sessionNumber}
+                                        {user?.user_type === 'webinar_member'
+                                            ? `Webinar Day ${recording.sessionNumber}`
+                                            : `Session ${recording.sessionNumber}`}
                                     </div>
 
                                     {/* Play or Lock button */}

@@ -2,11 +2,15 @@ import { useState } from 'react'
 import { Bell, Search } from 'lucide-react'
 import { NotificationsMenu } from '@/components/notifications/NotificationsMenu'
 import { useNotifications } from '@/context/NotificationContext'
+import { useAuth } from '@/context/AuthContext'
 
 export function Navbar() {
+    const { user } = useAuth()
     const { unreadCount } = useNotifications()
     const [isNotifOpen, setIsNotifOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
+
+    const isWebinarMember = user?.user_type === 'webinar_member'
 
     return (
         <header className="sticky top-0 z-20 bg-bg-primary backdrop-blur-xl border-b border-border">
@@ -17,7 +21,7 @@ export function Navbar() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <input
                             type="text"
-                            placeholder="Search sessions, assignments..."
+                            placeholder={isWebinarMember ? "Search webinar, tools..." : "Search sessions, assignments..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 bg-bg-card border border-border rounded-xl

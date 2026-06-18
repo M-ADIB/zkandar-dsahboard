@@ -10,6 +10,8 @@ const ALLOWED_ORIGINS = [
   'https://zkandar.com',
   'https://www.zkandar.com',
   'http://localhost:5173',
+  'http://localhost:8080',
+  'http://localhost:5175',
   'http://localhost:3000',
 ];
 

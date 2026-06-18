@@ -104,7 +104,7 @@ const memberNavSections: NavSection[] = [
         items: [
             { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: GraduationCap, label: 'My Program', path: '/my-program', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
-            { icon: FileText, label: 'Assignments', path: '/assignments', roles: ['owner', 'admin', 'executive', 'participant'] },
+            { icon: FileText, label: 'Assignments', path: '/assignments', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['webinar_member'] },
             { icon: Film, label: 'Recordings', path: '/recordings', roles: ['owner', 'admin', 'executive', 'participant'] },
             { icon: TrendingUp, label: 'My Performance', path: '/my-performance', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
             { icon: Wrench, label: 'Toolbox', path: '/toolbox', roles: ['owner', 'admin', 'executive', 'participant'] },

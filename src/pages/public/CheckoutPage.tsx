@@ -36,8 +36,8 @@ export function CheckoutPage() {
     const [error, setError] = useState<string | null>(null)
     const [sprintDates, setSprintDates] = useState('June 3–5')
     const [sprintLocation, setSprintLocation] = useState('Live Zoom')
-    const [customerName, setCustomerName] = useState('')
-    const [customerEmail, setCustomerEmail] = useState('')
+    const [customerName, setCustomerName] = useState(params.get('name') || '')
+    const [customerEmail, setCustomerEmail] = useState(params.get('email') || '')
 
     useEffect(() => {
         supabase.from('platform_settings').select('key, value')
