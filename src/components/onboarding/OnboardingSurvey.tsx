@@ -439,7 +439,11 @@ export function OnboardingSurvey({ isSprintWorkshop = false }: OnboardingSurveyP
 
             await refreshUser()
             toast.success(`Welcome to Zkandar AI ${userType === 'webinar_member' ? 'Webinar' : isSprintWorkshop ? 'Sprint Workshop' : 'Master Class'}!`)
-            navigate('/welcome')
+            if (userType === 'webinar_member') {
+                navigate('/dashboard')
+            } else {
+                navigate('/welcome')
+            }
         } catch (error) {
             console.error('Error submitting survey:', error)
             const message = error instanceof Error ? error.message : 'Failed to submit survey.'

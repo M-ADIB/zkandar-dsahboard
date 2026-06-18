@@ -39,6 +39,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     const needsOnboarding = user.role === 'participant' && !user.onboarding_completed
     const needsWelcomeVideo =
         user.role === 'participant' &&
+        user.user_type !== 'webinar_member' &&
         user.onboarding_completed &&
         !user.welcome_video_watched
 

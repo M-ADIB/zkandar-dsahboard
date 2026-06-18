@@ -803,7 +803,7 @@ export function ParticipantDashboard() {
                     </div>
 
                     {/* Right: Welcome video mini-frame */}
-                    <WelcomeVideoMiniFrame userType={user?.user_type ?? null} />
+                    {!isWebinarMember && <WelcomeVideoMiniFrame userType={user?.user_type ?? null} />}
                 </div>
             </motion.div>
 
