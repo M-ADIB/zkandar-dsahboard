@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Zap, Users, Video, Award, Rocket, FileText, X } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
 import logoSrc from '@/assets/logo.png'
+import toast from 'react-hot-toast'
 
 /* ── Tier Type ── */
 interface TierDef {
@@ -76,6 +77,11 @@ export default function WebinarUpgradePage() {
     }, [email])
 
     const handleUpgrade = async (tierId: string, price: number) => {
+        if (!email) {
+            toast.error('Email parameter is missing in the URL. Cannot proceed with one-click upgrade.');
+            return;
+        }
+
         setSelectedTier(tierId)
         setIsProcessing(true)
         trackFBEvent('Purchase', {
@@ -83,9 +89,37 @@ export default function WebinarUpgradePage() {
             value: price,
             currency: 'USD',
         })
-        // TODO: Integrate Stripe for upgrade payment
-        await new Promise(r => setTimeout(r, 1500))
-        window.location.href = '/webinar/success'
+
+        try {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const res = await fetch(`${supabaseUrl}/functions/v1/confirm-upgrade`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    tierId,
+                    price,
+                }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to complete one-click upgrade.');
+            }
+
+            toast.success(`Successfully upgraded to ${tierId === 'gold' ? 'Gold' : 'Silver'} Tier!`);
+            
+            // Redirect to success page with parameters
+            window.location.href = `/webinar/success?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&upgraded=true&tier=${tierId}`;
+        } catch (err: any) {
+            console.error('Upgrade error:', err);
+            toast.error(err.message || 'Payment failed. Please try again.');
+        } finally {
+            setIsProcessing(false)
+            setSelectedTier(null)
+        }
     }
 
     const handleSkip = () => {
