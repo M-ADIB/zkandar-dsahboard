@@ -77,6 +77,24 @@ export function SignupPage() {
 
     const onSubmit = async (data: SignupFormData) => {
         setIsLoading(true)
+
+        // Validate email uniqueness to prevent loop conflicts
+        const { data: existingUser, error: checkError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', data.email.trim().toLowerCase())
+            .maybeSingle()
+
+        if (checkError) {
+            console.error('Email check error:', checkError)
+        }
+
+        if (existingUser) {
+            toast.error('This email is already registered. Please log in or request a password reset.')
+            setIsLoading(false)
+            return
+        }
+
         const { error } = await signUp(
             data.email,
             data.password,

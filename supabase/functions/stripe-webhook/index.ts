@@ -94,15 +94,28 @@ async function provisionSprintUser(
   // Resolve sprint cohort ID dynamically
   const sprintCohortId = await getSprintCohortId(supabase);
 
-  // Check if user already exists
+  // Check if user already exists in public.users
   const { data: existing } = await supabase
     .from('users')
-    .select('id')
-    .eq('email', email)
+    .select('id, role')
+    .eq('email', email.toLowerCase())
     .maybeSingle();
 
   if (existing?.id) {
-    console.log('User already exists:', existing.id);
+    console.log('User already exists in public.users:', existing.id);
+    
+    // If they are a participant, ensure their user_type is updated to sprint_member
+    if (existing.role === 'participant') {
+      await supabase
+        .from('users')
+        .update({
+          user_type: 'sprint_member',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existing.id);
+      console.log('Updated existing participant user_type to sprint_member:', existing.id);
+    }
+
     // Still ensure cohort membership
     await supabase.from('cohort_memberships').upsert(
       { user_id: existing.id, cohort_id: sprintCohortId },
@@ -111,17 +124,34 @@ async function provisionSprintUser(
     return { userId: existing.id, isNew: false };
   }
 
-  // Create Supabase auth user
-  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-    email,
-    password: tempPassword,
-    email_confirm: true,
-    user_metadata: { full_name: fullName },
-  });
+  // Check if they exist in auth.users schema (missing profile self-healing)
+  const { data: authUser } = await supabase
+    .schema('auth')
+    .from('users')
+    .select('id')
+    .eq('email', email.toLowerCase())
+    .maybeSingle();
 
-  if (authError) throw new Error(`Auth user creation failed: ${authError.message}`);
-  const userId = authData.user.id;
-  console.log('Auth user created:', userId);
+  let userId = '';
+  let isNew = true;
+
+  if (authUser?.id) {
+    userId = authUser.id;
+    isNew = false;
+    console.log('User exists in auth.users but not public.users. Self-healing profile...', userId);
+  } else {
+    // Create Supabase auth user
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+      user_metadata: { full_name: fullName },
+    });
+
+    if (authError) throw new Error(`Auth user creation failed: ${authError.message}`);
+    userId = authData.user.id;
+    console.log('Auth user created:', userId);
+  }
 
   // Upsert profile in users table
   await supabase.from('users').upsert({
@@ -153,15 +183,28 @@ async function provisionWebinarUser(
   fullName: string,
   tempPassword: string
 ): Promise<{ userId: string; isNew: boolean }> {
-  // Check if user already exists
+  // Check if user already exists in public.users
   const { data: existing } = await supabase
     .from('users')
-    .select('id')
-    .eq('email', email)
+    .select('id, role')
+    .eq('email', email.toLowerCase())
     .maybeSingle();
 
   if (existing?.id) {
-    console.log('User already exists:', existing.id);
+    console.log('User already exists in public.users:', existing.id);
+    
+    // If they are a participant, ensure their user_type is updated to webinar_member
+    if (existing.role === 'participant') {
+      await supabase
+        .from('users')
+        .update({
+          user_type: 'webinar_member',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existing.id);
+      console.log('Updated existing participant user_type to webinar_member:', existing.id);
+    }
+
     // Still ensure cohort membership
     await supabase.from('cohort_memberships').upsert(
       { user_id: existing.id, cohort_id: WEBINAR_COHORT_ID },
@@ -170,17 +213,34 @@ async function provisionWebinarUser(
     return { userId: existing.id, isNew: false };
   }
 
-  // Create Supabase auth user
-  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-    email,
-    password: tempPassword,
-    email_confirm: true,
-    user_metadata: { full_name: fullName },
-  });
+  // Check if they exist in auth.users schema (missing profile self-healing)
+  const { data: authUser } = await supabase
+    .schema('auth')
+    .from('users')
+    .select('id')
+    .eq('email', email.toLowerCase())
+    .maybeSingle();
 
-  if (authError) throw new Error(`Auth user creation failed: ${authError.message}`);
-  const userId = authData.user.id;
-  console.log('Auth user created:', userId);
+  let userId = '';
+  let isNew = true;
+
+  if (authUser?.id) {
+    userId = authUser.id;
+    isNew = false;
+    console.log('User exists in auth.users but not public.users. Self-healing profile...', userId);
+  } else {
+    // Create Supabase auth user
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+      user_metadata: { full_name: fullName },
+    });
+
+    if (authError) throw new Error(`Auth user creation failed: ${authError.message}`);
+    userId = authData.user.id;
+    console.log('Auth user created:', userId);
+  }
 
   // Upsert profile in users table
   await supabase.from('users').upsert({
@@ -516,6 +576,21 @@ async function sendBookingConfirmationEmail(customerEmail: string, customerName:
               <tr><td style="padding:16px;">
                 <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
                 <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">📋 A pre-work brief will be shared before Day 1<br/>💬 Access to the private cohort community<br/>🎯 Come ready to transform your workflow with AI</div>
+              </td></tr>
+            </table>
+          </td></tr>
+          <tr><td style="padding:16px 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:2px solid #D0FF71;border-radius:12px;">
+              <tr><td style="padding:20px;">
+                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">🔑 Accessing Your Webinar Dashboard</div>
+                <div style="font-size:13px;color:#D1D5DB;line-height:1.6;margin-bottom:14px;">
+                  Since you already have a Zkandar AI account, webinar access has been added directly to your profile. Log in using your existing password to access your schedule, materials, and upgrades.
+                </div>
+                <div>
+                  <a href="https://app.zkandar.com" style="display:inline-block;background:linear-gradient(135deg,#D0FF71,#5A9F2E);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+                    Sign In to Dashboard →
+                  </a>
+                </div>
               </td></tr>
             </table>
           </td></tr>
