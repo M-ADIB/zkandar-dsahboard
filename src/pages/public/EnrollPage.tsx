@@ -374,7 +374,7 @@ export function EnrollPage() {
                     <button
                         onClick={handleCheckout}
                         disabled={loading || countdown.expired}
-                        className="w-full h-14 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        className="w-full h-14 rounded-2xl gradient-lime text-black font-body font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none whitespace-nowrap enabled:hover:opacity-90"
                     >
                         {loading ? (
                             <>

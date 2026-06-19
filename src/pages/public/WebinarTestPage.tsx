@@ -143,7 +143,7 @@ export default function WebinarTestPage() {
                     <button
                         onClick={handleTestCheckout}
                         disabled={isProcessing}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold uppercase tracking-wider text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold uppercase tracking-wider text-sm transition disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                         style={{
                             background: 'linear-gradient(135deg, #D0FF71, #5A9F2E)',
                             color: '#000',

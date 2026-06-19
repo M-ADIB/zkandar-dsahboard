@@ -278,7 +278,7 @@ export function CheckoutPage() {
                              <button
                                  onClick={handleCheckout}
                                  disabled={loading}
-                                 className="group w-full h-14 flex items-center justify-center gap-3 px-8 font-bold rounded-xl hover:opacity-90 transition-all text-sm uppercase tracking-wider hover:-translate-y-0.5 font-heading disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap"
+                                 className="group w-full h-14 flex items-center justify-center gap-3 px-8 font-bold rounded-xl transition-all text-sm uppercase tracking-wider font-heading disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none whitespace-nowrap enabled:hover:opacity-90 enabled:hover:-translate-y-0.5"
                                  style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.3)' }}
                              >
                                  {loading ? (

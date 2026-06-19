@@ -701,7 +701,7 @@ export function LeadCaptureModal({ open, onClose }: {
                                     <button
                                         onClick={handleCheckout}
                                         disabled={isProcessing}
-                                        className="w-full h-14 bg-lime text-black font-heading font-black uppercase text-sm rounded-xl hover:shadow-[0_0_30px_rgba(208,255,113,0.3)] transition-all disabled:opacity-50 flex items-center justify-center gap-2 whitespace-nowrap"
+                                        className="w-full h-14 bg-lime text-black font-heading font-black uppercase text-sm rounded-xl transition-all disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 whitespace-nowrap enabled:hover:shadow-[0_0_30px_rgba(208,255,113,0.3)]"
                                     >
                                         {isProcessing ? (
                                             <>
