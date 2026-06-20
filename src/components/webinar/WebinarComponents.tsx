@@ -145,7 +145,9 @@ export function CtaButton({ onClick, label, sub, size = 'lg' }: {
 
 /* ── Webinar Pricing (Single Source of Truth) ──────────── */
 
-const WEBINAR_LAUNCH = new Date('2026-06-16T00:00:00+04:00')
+export const WEBINAR_DATE = new Date('2026-07-15T19:00:00+04:00') // 7 PM Dubai
+const WEBINAR_LAUNCH = new Date(WEBINAR_DATE.getTime() - 29 * 86400000)
+
 const PRICING_TIERS = [
     { price: 19, label: 'Early Bird Offer', from: WEBINAR_LAUNCH },
     { price: 29, label: 'After 1 Week', from: new Date(WEBINAR_LAUNCH.getTime() + 7 * 86400000) },
@@ -161,6 +163,19 @@ export function getWebinarPrice(): number {
         if (now >= PRICING_TIERS[i].from) { activeIdx = i; break }
     }
     return PRICING_TIERS[activeIdx].price
+}
+
+/** Returns the next price increase date, or the webinar date if final price reached */
+export function getNextPriceIncreaseDate(): Date {
+    const now = new Date()
+    const launch = new Date(WEBINAR_DATE.getTime() - 29 * 86400000)
+    const t2 = new Date(launch.getTime() + 7 * 86400000)
+    const t3 = new Date(launch.getTime() + 14 * 86400000)
+    const t4 = new Date(launch.getTime() + 21 * 86400000)
+    if (now < t2) return t2
+    if (now < t3) return t3
+    if (now < t4) return t4
+    return WEBINAR_DATE
 }
 
 /* ── Scarcity Pricing ──────────────────────────────────── */

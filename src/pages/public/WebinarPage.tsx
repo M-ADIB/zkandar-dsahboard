@@ -4,18 +4,18 @@ import { Check, Play, ArrowRight, ChevronLeft, ChevronRight, X, Volume2 } from '
 // Nav/Footer intentionally removed
 import { motion, AnimatePresence } from 'framer-motion'
 import { trackFBEvent } from '@/lib/fbpixel'
-import { WORKSHOPS, CASE_STUDIES, type CaseStudy } from '@/data/public-data'
+import { WORKSHOPS, CASE_STUDIES, type CaseStudy, PROJECTS, EVENTS } from '@/data/public-data'
 import {
     FadeIn, Section, SectionHeading, CountdownTimer,
     CtaButton, ScarcityPricing, FaqItem,
-    BeforeAfterSection, ValueTable, LeadCaptureModal, getWebinarPrice,
+    BeforeAfterSection, ValueTable, LeadCaptureModal, getWebinarPrice, WEBINAR_DATE, getNextPriceIncreaseDate,
 } from '@/components/webinar/WebinarComponents'
+import { ProjectSection } from '@/components/public/ProjectSection'
 
 /* ── Constants ─────────────────────────────────────────── */
-const TARGET_DATE = new Date('2026-06-23T00:00:00+04:00') // First price increase: launch (June 16) + 7 days
 const VSL_ID = '1187084528'
 const TESTIMONIAL_MASHUP_ID = '1195125355'
-const WEBINAR_DATE = new Date('2026-07-15T19:00:00+04:00') // 7 PM Dubai time
+const TARGET_DATE = getNextPriceIncreaseDate()
 
 const FAQS = [
     { q: 'Do I need any AI experience to join?', a: 'If you\'ve never touched an AI tool, you\'ll be fine. If you\'ve been experimenting and hit a wall, that\'s exactly who this is for. We meet you where you are.' },
@@ -211,6 +211,7 @@ export default function WebinarPage() {
     const heroRef = useRef<HTMLElement>(null)
     const [caseStudyOpen, setCaseStudyOpen] = useState<string | null>(null)
     const [caseSlideIdx, setCaseSlideIdx] = useState(0)
+    const [eventPreview, setEventPreview] = useState<{ image: string; title: string } | null>(null)
 
     useEffect(() => { trackFBEvent('ViewContent', { content_name: 'webinar_page' }) }, [])
 
@@ -401,6 +402,20 @@ export default function WebinarPage() {
                     </div>
                     <p className="text-center text-[0.6rem] text-gray-600 uppercase tracking-[0.15em] font-bold mt-3 md:hidden">Swipe to see more →</p>
                 </FadeIn>
+            </Section>
+
+            {/* ═══ NEW: OUR AI WORKS (Portfolio Case Studies) ═══ */}
+            <Section>
+                <FadeIn>
+                    <SectionHeading sub="Every image and film below was generated entirely with AI using our internal workflows. Real-world client case studies.">
+                        Our <span className="text-lime">AI Works</span>
+                    </SectionHeading>
+                </FadeIn>
+                <div className="space-y-5">
+                    {PROJECTS.map((project) => (
+                        <ProjectSection key={project.id} project={project} />
+                    ))}
+                </div>
             </Section>
 
             {/* ═══ S5: WHAT YOU'LL LEARN (Case Studies) ═══ */}
@@ -609,6 +624,45 @@ export default function WebinarPage() {
                             </p>
                         </div>
                     </div>
+
+                    {/* Events & Collaborations heading */}
+                    <FadeIn delay={0.2} className="mt-20">
+                        <p className="text-center text-[0.6875rem] font-body uppercase tracking-[0.22em] text-gray-600 mb-8">Featured Talks & Collaborations</p>
+                    </FadeIn>
+
+                    {/* Event Cards — horizontal swipe on mobile, grid on desktop */}
+                    <FadeIn delay={0.3}>
+                        <div className="max-w-5xl mx-auto mb-16">
+                            <div
+                                className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-5 sm:px-6 pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:snap-none lg:pb-0"
+                                style={{ WebkitOverflowScrolling: 'touch' }}
+                            >
+                                {EVENTS.map((event) => (
+                                    <button
+                                        key={event.id}
+                                        onClick={() => setEventPreview({ image: event.image, title: event.title })}
+                                        className="group relative flex-shrink-0 w-[80vw] sm:w-[60vw] lg:w-auto snap-center rounded-2xl overflow-hidden border border-white/[0.08] hover:border-lime/30 bg-[#0c0c0c] transition-all duration-300 cursor-pointer hover:shadow-[0_0_30px_rgba(208,255,113,0.06)] text-left"
+                                    >
+                                        {/* Image */}
+                                        <div className="aspect-[16/10] overflow-hidden relative">
+                                            <img src={event.image} alt={event.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-black/20 to-transparent" />
+                                            {/* Venue pill */}
+                                            <div className="absolute bottom-3 left-3">
+                                                <span className="text-[0.55rem] font-bold uppercase tracking-[0.18em] text-lime bg-black/70 backdrop-blur-md border border-lime/20 px-2.5 py-1 rounded-full font-body">{event.venue}</span>
+                                            </div>
+                                        </div>
+                                        {/* Content */}
+                                        <div className="p-5 pt-3">
+                                            <h4 className="font-heading font-black uppercase text-[0.95rem] text-white leading-tight mb-2 group-hover:text-lime transition-colors duration-300">{event.title}</h4>
+                                            <p className="text-[0.7rem] text-gray-400 leading-relaxed line-clamp-2 group-hover:text-gray-300 transition-colors">{event.description}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </FadeIn>
+
                     <div className="mt-10 text-center"><CtaButton onClick={openCta} size="md" /></div>
                 </FadeIn>
             </Section>
@@ -716,6 +770,33 @@ export default function WebinarPage() {
                         />
                     )
                 })()}
+            </AnimatePresence>
+
+            {/* ── EVENT PREVIEW LIGHTBOX ──────────────────────────────── */}
+            <AnimatePresence>
+                {eventPreview && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center"
+                        onClick={() => setEventPreview(null)}
+                    >
+                        <button onClick={() => setEventPreview(null)} className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center rounded-full border border-white/15 text-gray-400 hover:text-white hover:border-white/30 transition z-10">
+                            <X className="w-5 h-5" />
+                        </button>
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[0.6rem] uppercase tracking-[0.2em] text-gray-500 font-body">
+                            {eventPreview.title}
+                        </div>
+                        <motion.img
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.25 }}
+                            src={eventPreview.image}
+                            alt={eventPreview.title}
+                            className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </motion.div>
+                )}
             </AnimatePresence>
         </div>
     )

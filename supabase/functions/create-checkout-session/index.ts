@@ -10,7 +10,8 @@ const STRIPE_PRICE_ID_SPRINT = Deno.env.get('STRIPE_PRICE_ID_SPRINT') ?? null;
 const SPRINT_INLINE_AMOUNT_CENTS = 81600; // $816.00 USD
 
 // ── Webinar pricing: weekly escalation (MUST mirror frontend in WebinarComponents.tsx) ──
-const WEBINAR_LAUNCH = new Date('2026-06-16T00:00:00+04:00');
+const WEBINAR_DATE = new Date('2026-07-15T19:00:00+04:00'); // 7 PM Dubai
+const WEBINAR_LAUNCH = new Date(WEBINAR_DATE.getTime() - 29 * 86400000);
 const WEBINAR_TIERS = [
   { price_cents: 1900, from: WEBINAR_LAUNCH },                                          // $19 — Week 1
   { price_cents: 2900, from: new Date(WEBINAR_LAUNCH.getTime() + 7 * 86400000) },       // $29 — Week 2

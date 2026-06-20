@@ -213,3 +213,142 @@ export const CASE_STUDIES: CaseStudy[] = [
         ],
     },
 ]
+
+export interface ProjectCategory {
+    id: string
+    tag: string
+    title: string
+    description: string
+    images: string[]
+    vimeoId?: string
+    filmLabel?: string
+}
+
+export const PROJECTS: ProjectCategory[] = [
+    {
+        id: 'vitra',
+        tag: 'Interior Design',
+        title: 'Vitra Showroom',
+        description: 'Complete AI-directed interior visualization and cinematic brand film for the Vitra showroom experience.',
+        images: [],
+        vimeoId: '1188971702',
+        filmLabel: 'Vitra Showroom AI Film',
+    },
+    {
+        id: 'som',
+        tag: 'Architecture',
+        title: 'SOM x Skidmore Owings & Merrill',
+        description: 'Full AI-directed architectural visualization, from an initial sketch to photorealistic renders and a cinematic brand film.',
+        images: Array.from({ length: 36 }, (_, i) => `/more-works/som/${i + 1}.jpg`),
+        vimeoId: '1187702968',
+        filmLabel: 'SOM AI Architecture Film',
+    },
+    {
+        id: 'f1',
+        tag: 'Sports & Branding',
+        title: 'F1 Sprint Campaign',
+        description: 'Cinematic Formula 1 campaign imagery, entirely AI-generated. From race-day atmosphere to hero shots.',
+        images: ['/more-works/f1/1.jpg','/more-works/f1/2.jpg','/more-works/f1/3.jpg','/more-works/f1/4.jpg'],
+        vimeoId: '1187078968',
+        filmLabel: 'F1 Sprint AI Campaign Film',
+    },
+    {
+        id: 'atelier',
+        tag: 'Luxury Brand',
+        title: 'Atelier Carrousel',
+        description: 'Product photography and cinematic brand identity, from opening scene to final product shot, no studio required.',
+        images: ['/more-works/atelier-carrousel/opening.jpg','/more-works/atelier-carrousel/product-1.webp','/more-works/atelier-carrousel/product-2.webp','/more-works/atelier-carrousel/product-3.webp','/more-works/atelier-carrousel/closing.jpg'],
+        vimeoId: '1187090835',
+        filmLabel: 'Atelier Carrousel AI Brand Film',
+    },
+    {
+        id: 'landscaping',
+        tag: 'Landscape Architecture',
+        title: 'Landscape Design',
+        description: 'From a real phone camera photo of a site in Dubai to fully AI-generated landscape concepts. Every image after the first is entirely AI-generated.',
+        images: [
+            '/more-works/landscaping/0.jpg',
+            '/more-works/landscaping/1.jpg','/more-works/landscaping/2.jpg','/more-works/landscaping/3.jpg',
+            '/more-works/landscaping/4.jpg','/more-works/landscaping/5.jpg','/more-works/landscaping/6.jpg',
+            '/more-works/landscaping/7.jpg','/more-works/landscaping/8.jpg','/more-works/landscaping/9.jpg',
+            '/more-works/landscaping/10.jpg','/more-works/landscaping/11.jpg',
+        ],
+    },
+    {
+        id: 'product',
+        tag: 'Product Design',
+        title: 'Furniture Collection',
+        description: 'From rough sketch to photorealistic product render. Each sketch is paired with its AI-generated output.',
+        images: [
+            '/more-works/product-design/sketch-1.png',
+            '/more-works/product-design/1.jpg',
+            '/more-works/product-design/sketch-2.png',
+            '/more-works/product-design/2.jpg',
+            '/more-works/product-design/sketch-3.png',
+            '/more-works/product-design/3.jpg',
+            '/more-works/product-design/4.jpg',
+        ],
+    },
+    {
+        id: 'coco',
+        tag: 'Hospitality & Retail',
+        title: 'Coco Chanel Concept',
+        description: 'Cinematic hospitality scenes and retail visualization. AI-directed atmospheres at luxury brand standard.',
+        images: ['/more-works/coco-chanel/1.jpg','/more-works/coco-chanel/2.jpg','/more-works/coco-chanel/3.jpg'],
+        vimeoId: '1187667794',
+        filmLabel: 'Coco Chanel Concept AI Brand Film',
+    },
+]
+
+export interface EventItem {
+    id: string
+    title: string
+    venue: string
+    image: string
+    description: string
+}
+
+export const EVENTS: EventItem[] = [
+    {
+        id: 'vitra',
+        title: 'Vitra Showroom',
+        venue: '300+ Attendees',
+        image: '/collabs/events/vitra/1.jpg',
+        description: 'Headlined an immersive AI experience at the Vitra Showroom for 300+ designers, architects, and industry leaders.',
+    },
+    {
+        id: 'lighting-institute',
+        title: 'The Lighting Institute',
+        venue: 'AI & Lighting Design',
+        image: '/collabs/events/lighting-institute/1.jpg',
+        description: 'Guest speaker on "Designing for future spaces with the involvement of AI and its impact on lighting design."',
+    },
+    {
+        id: 'sikka',
+        title: 'SIKKA',
+        venue: 'Dubai Culture & Arts Authority',
+        image: '/collabs/events/sikka/1.jpg',
+        description: 'Guest speaker for the "SIKKA" event exploring how AI can be of valuable use for Artists & Designers.',
+    },
+    {
+        id: 'designers-hub',
+        title: 'Designers Hub',
+        venue: 'Art of Living Mall',
+        image: '/collabs/events/designers-hub/3.jpg',
+        description: 'Headlined an engaging AI talk with 30+ business owners and award-winning design studios titled "How AI is Redefining Our Creative Process, Forever!"',
+    },
+    {
+        id: 'lau',
+        title: 'Lebanese American University',
+        venue: 'FF&E Webinar',
+        image: '/collabs/events/lau/1.jpg',
+        description: 'Invited as a guest speaker to 70+ participants to speak about how AI is shifting the next paradigm in the design process.',
+    },
+    {
+        id: 'didi',
+        title: 'Dubai Institute of Design & Innovation',
+        venue: 'Online Masterclass',
+        image: '/collabs/events/didi/1.jpg',
+        description: 'An online masterclass where knowledge meets innovation — delivering high-quality AI education that transcends borders and strengthens industry ties.',
+    },
+]

@@ -8,7 +8,7 @@ import {
 import { PublicNav } from '../../components/public/PublicNav'
 import { PublicFooter } from '../../components/public/PublicFooter'
 import { CalendlyModal } from '../../components/public/CalendlyModal'
-import { CASE_STUDIES, type CaseStudy } from '../../data/public-data'
+import { CASE_STUDIES, type CaseStudy, EVENTS } from '../../data/public-data'
 import { supabase } from '@/lib/supabase'
 import { MasterclassCard } from '../../components/public/MasterclassCard'
 import { SprintCard } from '../../components/public/SprintCard'
@@ -94,7 +94,6 @@ function GrainOverlay() {
     )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function MicroLabel({ children, center = false }: { children: React.ReactNode; center?: boolean }) {
     return <p className={`text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 ${center ? 'text-center' : ''}`}>{children}</p>
 }
@@ -568,81 +567,33 @@ export function LandingPageTest() {
 
                 {/* Event Cards — horizontal swipe on mobile, grid on desktop */}
                 <div className="max-w-5xl mx-auto">
-                    {(() => {
-                        const EVENTS = [
-                            {
-                                id: 'vitra',
-                                title: 'Vitra Showroom',
-                                venue: '300+ Attendees',
-                                image: '/collabs/events/vitra/1.jpg',
-                                description: 'Headlined an immersive AI experience at the Vitra Showroom for 300+ designers, architects, and industry leaders.',
-                            },
-                            {
-                                id: 'lighting-institute',
-                                title: 'The Lighting Institute',
-                                venue: 'AI & Lighting Design',
-                                image: '/collabs/events/lighting-institute/1.jpg',
-                                description: 'Guest speaker on "Designing for future spaces with the involvement of AI and its impact on lighting design."',
-                            },
-                            {
-                                id: 'sikka',
-                                title: 'SIKKA',
-                                venue: 'Dubai Culture & Arts Authority',
-                                image: '/collabs/events/sikka/1.jpg',
-                                description: 'Guest speaker for the "SIKKA" event exploring how AI can be of valuable use for Artists & Designers.',
-                            },
-                            {
-                                id: 'designers-hub',
-                                title: 'Designers Hub',
-                                venue: 'Art of Living Mall',
-                                image: '/collabs/events/designers-hub/3.jpg',
-                                description: 'Headlined an engaging AI talk with 30+ business owners and award-winning design studios titled "How AI is Redefining Our Creative Process, Forever!"',
-                            },
-                            {
-                                id: 'lau',
-                                title: 'Lebanese American University',
-                                venue: 'FF&E Webinar',
-                                image: '/collabs/events/lau/1.jpg',
-                                description: 'Invited as a guest speaker to 70+ participants to speak about how AI is shifting the next paradigm in the design process.',
-                            },
-                            {
-                                id: 'didi',
-                                title: 'Dubai Institute of Design & Innovation',
-                                venue: 'Online Masterclass',
-                                image: '/collabs/events/didi/1.jpg',
-                                description: 'An online masterclass where knowledge meets innovation — delivering high-quality AI education that transcends borders and strengthens industry ties.',
-                            },
-                        ]
-                        return (
-                            <div
-                                className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-5 sm:px-6 pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:snap-none lg:pb-0"
-                                style={{ WebkitOverflowScrolling: 'touch' }}
+                    <div
+                        className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-5 sm:px-6 pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:snap-none lg:pb-0"
+                        style={{ WebkitOverflowScrolling: 'touch' }}
+                    >
+                        {EVENTS.map((event) => (
+                            <button
+                                key={event.id}
+                                onClick={() => setEventPreview({ image: event.image, title: event.title })}
+                                className="group relative flex-shrink-0 w-[80vw] sm:w-[60vw] lg:w-auto snap-center rounded-2xl overflow-hidden border border-white/[0.08] hover:border-lime/30 bg-[#0c0c0c] transition-all duration-300 cursor-pointer hover:shadow-[0_0_30px_rgba(208,255,113,0.06)] text-left"
                             >
-                                {EVENTS.map((event) => (
-                                    <button
-                                        key={event.id}
-                                        onClick={() => setEventPreview({ image: event.image, title: event.title })}
-                                        className="group relative flex-shrink-0 w-[80vw] sm:w-[60vw] lg:w-auto snap-center rounded-2xl overflow-hidden border border-white/[0.08] hover:border-lime/30 bg-[#0c0c0c] transition-all duration-300 cursor-pointer hover:shadow-[0_0_30px_rgba(208,255,113,0.06)] text-left"
-                                    >
-                                        {/* Image */}
-                                        <div className="aspect-[16/10] overflow-hidden relative">
-                                            <img src={event.image} alt={event.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-black/20 to-transparent" />
-                                            {/* Venue pill */}
-                                            <div className="absolute bottom-3 left-3">
-                                                <span className="text-[0.55rem] font-bold uppercase tracking-[0.18em] text-lime bg-black/70 backdrop-blur-md border border-lime/20 px-2.5 py-1 rounded-full font-body">{event.venue}</span>
-                                            </div>
-                                        </div>
-                                        {/* Content */}
-                                        <div className="p-5 pt-3">
-                                            <h4 className="font-heading font-black uppercase text-[0.95rem] text-white leading-tight mb-2 group-hover:text-lime transition-colors duration-300">{event.title}</h4>
-                                            <p className="text-[0.7rem] text-gray-400 leading-relaxed line-clamp-2 group-hover:text-gray-300 transition-colors">{event.description}</p>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        )
-                    })()}
+                                {/* Image */}
+                                <div className="aspect-[16/10] overflow-hidden relative">
+                                    <img src={event.image} alt={event.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-black/20 to-transparent" />
+                                    {/* Venue pill */}
+                                    <div className="absolute bottom-3 left-3">
+                                        <span className="text-[0.55rem] font-bold uppercase tracking-[0.18em] text-lime bg-black/70 backdrop-blur-md border border-lime/20 px-2.5 py-1 rounded-full font-body">{event.venue}</span>
+                                    </div>
+                                </div>
+                                {/* Content */}
+                                <div className="p-5 pt-3">
+                                    <h4 className="font-heading font-black uppercase text-[0.95rem] text-white leading-tight mb-2 group-hover:text-lime transition-colors duration-300">{event.title}</h4>
+                                    <p className="text-[0.7rem] text-gray-400 leading-relaxed line-clamp-2 group-hover:text-gray-300 transition-colors">{event.description}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </section>
 
