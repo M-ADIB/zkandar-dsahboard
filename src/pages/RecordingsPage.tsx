@@ -35,7 +35,7 @@ function RecordingThumbnail({ videoUrl, hasRecording }: { videoUrl: string; hasR
                         }
                     }
                 } else if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                    const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i)
+                    const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i)
                     if (ytMatch) {
                         setThumbnailUrl(`https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`)
                     }
