@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Zap, Users, Video, Award, Rocket, FileText, X } from 'lucide-react'
+import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Zap, Users, Video, Award, Rocket, FileText, X, Star } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
-import logoSrc from '@/assets/logo.png'
 import toast from 'react-hot-toast'
 
 /* ── Tier Type ── */
@@ -12,14 +11,14 @@ interface TierDef {
     name: string
     tagline: string
     price: number
-    icon: typeof Crown
+    icon: typeof Crown | typeof Star | typeof Gem
     color: string
     gradient: string
     borderColor: string
     accentColor: string
     bgGlow: string
     badge?: string
-    features: { icon: typeof Crown; text: string }[]
+    features: { icon: typeof Crown | typeof Star | typeof Gem | typeof Video | typeof Zap | typeof Award | typeof Sparkles | typeof FileText | typeof Users | typeof Rocket; text: string }[]
 }
 
 /* ── Upgrade Tiers ── */
@@ -28,16 +27,16 @@ const SILVER_TIER: TierDef = {
     name: 'Silver',
     tagline: 'Go beyond the live sessions. Own the knowledge.',
     price: 59,
-    icon: Crown,
-    color: 'amber',
-    gradient: 'from-amber-500/20 to-amber-600/5',
-    borderColor: 'border-amber-500/30',
-    accentColor: 'text-amber-400',
-    bgGlow: 'shadow-[0_0_40px_rgba(245,158,11,0.08)]',
+    icon: Star,
+    color: 'zinc',
+    gradient: 'from-zinc-500/10 to-zinc-600/5',
+    borderColor: 'border-zinc-500/30',
+    accentColor: 'text-zinc-300',
+    bgGlow: 'shadow-[0_0_40px_rgba(228,228,231,0.05)]',
     features: [
-        { icon: Video, text: 'Full workshop recordings — rewatch both days at your own pace, forever' },
-        { icon: Zap, text: 'Live Q&A priority — your questions get answered first during the workshop' },
-        { icon: Award, text: 'AI Certificate from Zkandar — proof you went beyond the prompt' },
+        { icon: Video, text: 'Full webinar recordings: rewatch both days at your own pace, forever' },
+        { icon: Zap, text: 'Live Q&A priority: your questions get answered first during the webinar' },
+        { icon: Award, text: 'AI Certificate from Zkandar: proof you went beyond the prompt' },
     ],
 }
 
@@ -46,21 +45,21 @@ const GOLD_TIER: TierDef = {
     name: 'Gold',
     tagline: 'The full transformation. Personal mentoring included.',
     price: 149,
-    icon: Gem,
-    color: 'lime',
-    gradient: 'from-lime/20 to-green-600/5',
-    borderColor: 'border-lime/30',
-    accentColor: 'text-lime',
-    bgGlow: 'shadow-[0_0_40px_rgba(208,255,113,0.08)]',
+    icon: Star,
+    color: 'amber',
+    gradient: 'from-amber-500/20 to-amber-600/5',
+    borderColor: 'border-amber-500/30',
+    accentColor: 'text-amber-400',
+    bgGlow: 'shadow-[0_0_40px_rgba(245,158,11,0.08)]',
     badge: 'BEST VALUE',
     features: [
-        { icon: Sparkles, text: 'Everything in Silver — recordings, priority Q&A, and AI certificate' },
-        { icon: Video, text: 'Full workshop recordings — lifetime access to both days' },
-        { icon: FileText, text: 'Complete workshop PDF — the entire system documented for reference' },
-        { icon: Zap, text: 'Live Q&A priority — your questions answered first' },
-        { icon: Award, text: 'AI Certificate from Zkandar — recognized completion credential' },
-        { icon: Users, text: '1-on-1 call with Khaled (30 min) — personalized to your workflow' },
-        { icon: Rocket, text: 'Early access to the Sprint Workshop — locked-in priority registration' },
+        { icon: Sparkles, text: 'Everything in Silver: recordings, priority Q&A, and AI certificate' },
+        { icon: Video, text: 'Full webinar recordings: lifetime access to both days' },
+        { icon: FileText, text: 'Complete webinar PDF: the entire system documented for reference' },
+        { icon: Zap, text: 'Live Q&A priority: your questions answered first' },
+        { icon: Award, text: 'AI Certificate from Zkandar: recognized completion credential' },
+        { icon: Users, text: '1-on-1 call with Khaled (30 min): personalized to your workflow' },
+        { icon: Rocket, text: 'Early access to the Sprint Webinar: locked-in priority registration' },
     ],
 }
 
@@ -132,11 +131,6 @@ export default function WebinarUpgradePage() {
             {/* Ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-radial from-lime/[0.06] to-transparent rounded-full blur-[120px] pointer-events-none" />
 
-            {/* Top Nav */}
-            <div className="relative border-b border-white/[0.06] px-5 sm:px-10 py-4 flex items-center justify-center">
-                <img src={logoSrc} alt="Zkandar" className="h-7 opacity-60" />
-            </div>
-
             {/* Urgency Banner */}
             <div className="relative bg-amber-500/[0.08] border-b border-amber-500/20 py-3.5 px-4 text-center">
                 <p className="text-sm font-bold text-amber-400 flex items-center justify-center gap-2">
@@ -144,7 +138,7 @@ export default function WebinarUpgradePage() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
                     </span>
-                    WAIT — You're not done yet, {name || 'there'}.
+                    WAIT: You're not done yet, {name || 'there'}.
                 </p>
                 <p className="text-[0.7rem] text-amber-300/60 mt-1">Your seat is confirmed. But this one-time offer disappears when you leave this page.</p>
             </div>
@@ -162,10 +156,10 @@ export default function WebinarUpgradePage() {
                         EXCLUSIVE ONE-TIME OFFER
                     </p>
                     <h1 className="font-heading font-black uppercase text-[clamp(1.5rem,4vw,2.8rem)] leading-[0.93] tracking-[0.01em]">
-                        DON'T JUST WATCH.<br className="hidden sm:block" /> <span className="text-lime">OWN THE SYSTEM.</span>
+                        DON'T JUST WATCH.<br /> <span className="text-lime">OWN THE SYSTEM.</span>
                     </h1>
                     <p className="text-[0.9rem] text-gray-400 max-w-xl mx-auto leading-relaxed">
-                        You've secured your seat to Beyond the AI Prompt. Now decide how deep you want to go — do you want to <strong className="text-white">watch</strong> it, or do you want to <strong className="text-white">own</strong> it?
+                        You've secured your seat to Beyond the AI Prompt. Now decide how deep you want to go: do you want to <strong className="text-white">watch</strong> it, or do you want to <strong className="text-white">own</strong> it?
                     </p>
                     <p className="text-[0.65rem] text-red-400/70 font-bold uppercase tracking-wider">
                         ⏰ This offer disappears when you leave this page
@@ -199,7 +193,6 @@ export default function WebinarUpgradePage() {
                             isProcessing={isProcessing && selectedTier === GOLD_TIER.id}
                             disabled={isProcessing}
                             onUpgrade={() => handleUpgrade(GOLD_TIER.id, GOLD_TIER.price)}
-                            featured
                         />
                     </motion.div>
                 </div>
@@ -226,13 +219,13 @@ export default function WebinarUpgradePage() {
                             </thead>
                             <tbody className="divide-y divide-white/[0.04]">
                                 {[
-                                    { feature: '2-day live workshop access', standard: true, silver: true, gold: true },
-                                    { feature: 'Workshop recordings (lifetime)', standard: false, silver: true, gold: true },
-                                    { feature: 'Complete workshop PDF', standard: false, silver: false, gold: true },
+                                    { feature: '2-day live webinar access', standard: true, silver: true, gold: true },
+                                    { feature: 'Webinar recordings (lifetime)', standard: false, silver: true, gold: true },
+                                    { feature: 'Complete webinar PDF', standard: false, silver: false, gold: true },
                                     { feature: 'Priority Q&A', standard: false, silver: true, gold: true },
                                     { feature: 'AI Certificate from Zkandar', standard: false, silver: true, gold: true },
                                     { feature: '1-on-1 call with Khaled (30 min)', standard: false, silver: false, gold: true },
-                                    { feature: 'Early access to Sprint Workshop', standard: false, silver: false, gold: true },
+                                    { feature: 'Early access to Sprint Webinar', standard: false, silver: false, gold: true },
                                 ].map((row, i) => (
                                     <tr key={i} className="hover:bg-white/[0.01]">
                                         <td className="py-2.5 text-gray-300 pr-4">{row.feature}</td>
@@ -279,24 +272,39 @@ export default function WebinarUpgradePage() {
 
 /* ── Tier Card Component ── */
 
-function TierCard({ tier, isProcessing, disabled, onUpgrade, featured = false }: {
+function TierCard({ tier, isProcessing, disabled, onUpgrade }: {
     tier: TierDef
     isProcessing: boolean
     disabled: boolean
     onUpgrade: () => void
-    featured?: boolean
 }) {
     const Icon = tier.icon
+    const isGold = tier.id === 'gold'
+
+    // Card container classes (Silver is metallic/zinc, Gold is rich amber/gold backdrop)
+    const containerClasses = isGold
+        ? 'border-amber-400/40 bg-gradient-to-b from-amber-500/20 via-amber-950/15 to-[#0A0A0A] shadow-[0_0_60px_rgba(245,158,11,0.15)] hover:shadow-[0_0_70px_rgba(245,158,11,0.22)]'
+        : 'border-zinc-500/40 bg-gradient-to-b from-zinc-800/30 via-zinc-900/50 to-[#0A0A0A] shadow-[0_0_40px_rgba(255,255,255,0.04)] hover:shadow-[0_0_50px_rgba(255,255,255,0.08)]'
+
+    // Header icon wrapper background
+    const iconWrapperBg = isGold ? 'bg-amber-500/15' : 'bg-zinc-500/15'
+
+    // CTA button gradient and shadow classes
+    const buttonClasses = isGold
+        ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 hover:from-amber-300 hover:via-amber-400 hover:to-yellow-500 text-black hover:shadow-[0_0_35px_rgba(245,158,11,0.4)]'
+        : 'bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-400 hover:from-zinc-100 hover:via-zinc-200 hover:to-zinc-300 text-black hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]'
+
+    // Badge styling
+    const badgeStyle = isGold
+        ? 'bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+        : 'bg-zinc-300 text-black'
+
     return (
-        <div className={`relative rounded-2xl border-2 p-6 md:p-7 h-full flex flex-col transition-all ${
-            featured
-                ? `${tier.borderColor} bg-gradient-to-b ${tier.gradient} ${tier.bgGlow}`
-                : `${tier.borderColor} bg-[#0A0A0A] hover:${tier.bgGlow}`
-        }`}>
+        <div className={`relative rounded-2xl border-2 p-6 md:p-7 h-full flex flex-col transition-all duration-300 ${containerClasses}`}>
             {/* Badge */}
             {tier.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="text-[0.55rem] font-black uppercase tracking-[0.15em] bg-lime text-black px-4 py-1.5 rounded-full">
+                    <span className={`text-[0.55rem] font-black uppercase tracking-[0.15em] px-4 py-1.5 rounded-full ${badgeStyle}`}>
                         {tier.badge}
                     </span>
                 </div>
@@ -304,9 +312,7 @@ function TierCard({ tier, isProcessing, disabled, onUpgrade, featured = false }:
 
             {/* Header */}
             <div className="flex items-start gap-4 mb-5">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                    featured ? 'bg-lime/10' : 'bg-amber-500/10'
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${iconWrapperBg}`}>
                     <Icon className={`w-6 h-6 ${tier.accentColor}`} />
                 </div>
                 <div>
@@ -338,11 +344,7 @@ function TierCard({ tier, isProcessing, disabled, onUpgrade, featured = false }:
             <button
                 onClick={onUpgrade}
                 disabled={disabled}
-                className={`w-full font-heading font-black uppercase text-sm py-4 rounded-full transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${
-                    featured
-                        ? 'bg-lime text-black hover:shadow-[0_0_30px_rgba(208,255,113,0.35)]'
-                        : 'bg-amber-500/90 text-black hover:shadow-[0_0_30px_rgba(245,158,11,0.3)]'
-                }`}
+                className={`w-full font-heading font-black uppercase text-sm py-4 rounded-full transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${buttonClasses}`}
             >
                 {isProcessing ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

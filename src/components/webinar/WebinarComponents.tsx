@@ -246,7 +246,7 @@ export function ScarcityPricing({ onCta }: { currentTier?: number; targetDate?: 
             {/* Countdown to next increase */}
             {nextIncrease && (
                 <div className="text-center space-y-3">
-                    <p className="text-[0.6rem] text-red-400/80 uppercase tracking-[0.15em] font-bold">
+                    <p className="text-xs sm:text-sm text-red-500 uppercase tracking-[0.15em] font-black">
                         ⏰ Price increases to ${steps[activeIdx + 1].price} in
                     </p>
                     <CountdownTimer targetDate={nextIncrease} />
@@ -320,7 +320,7 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
             </SectionHeading>
             <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-[#0A0A0A] rounded-2xl p-6 border border-white/[0.06]">
-                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-red-400/60 mb-5">Without This Workshop</p>
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-red-400/60 mb-5">Without This Webinar</p>
                     <ul className="space-y-4">{before.map((b, i) => (
                         <li key={i} className="flex gap-3 text-[0.82rem] text-gray-500 leading-relaxed">
                             <XIcon className="w-4 h-4 text-red-500/50 shrink-0 mt-0.5" />{b}
@@ -328,7 +328,7 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
                     ))}</ul>
                 </div>
                 <div className="rounded-2xl p-6 border border-lime/[0.12] bg-lime/[0.02]">
-                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-lime mb-5">After This Workshop</p>
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-lime mb-5">After This Webinar</p>
                     <ul className="space-y-4">{after.map((a, i) => (
                         <li key={i} className="flex gap-3 text-[0.82rem] text-gray-200 leading-relaxed">
                             <Check className="w-4 h-4 text-lime shrink-0 mt-0.5" />{a}
@@ -402,6 +402,7 @@ const UPSELLS = [
             'Render showcase pages',
             'Client-ready export format',
         ],
+        image: '/upsell-template.jpg',
     },
     {
         id: 'style-catalog',
@@ -414,10 +415,37 @@ const UPSELLS = [
             'Real reference images',
             'Use as a client consultation tool',
         ],
+        image: '/upsell-catalog.jpg',
     },
 ]
 
-// BASE_PRICE is dynamic — driven by the weekly pricing tier system
+function ImageWithFallback({ src, alt }: { src: string; alt: string }) {
+    const [error, setError] = useState(false)
+    return (
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-amber-500/10 via-zinc-900 to-black border border-amber-500/20 group">
+            {error ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(245,158,11,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(245,158,11,0.05)_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                    <span className="text-[0.55rem] font-bold tracking-[0.2em] text-amber-500/60 uppercase mb-1">
+                        PREVIEW ONLY
+                    </span>
+                    <span className="text-[0.7rem] font-heading font-black uppercase text-zinc-400 group-hover:text-amber-400 transition-colors">
+                        {alt}
+                    </span>
+                </div>
+            ) : (
+                <img
+                    src={src}
+                    alt={alt}
+                    onError={() => setError(true)}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+            )}
+        </div>
+    )
+}
+
 const BASE_PRICE = getWebinarPrice()
 
 export function LeadCaptureModal({ open, onClose }: {
@@ -666,7 +694,12 @@ export function LeadCaptureModal({ open, onClose }: {
                                                         {upsell.badge}
                                                     </span>
                                                 )}
-                                                <div className="flex items-start gap-3">
+                                                <div className="flex items-start gap-3 relative pl-6">
+                                                    {!isSelected && (
+                                                        <span className="absolute left-0 top-0 text-red-500 font-bold text-sm leading-none select-none animate-flash-arrow">
+                                                            ➔
+                                                        </span>
+                                                    )}
                                                     <div className={`w-4 h-4 mt-0.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
                                                         isSelected ? 'bg-lime border-lime' : 'border-gray-600'
                                                     }`}>
@@ -677,6 +710,11 @@ export function LeadCaptureModal({ open, onClose }: {
                                                             Add "{upsell.name}" +${upsell.price}
                                                         </h4>
                                                         <p className="text-[0.7rem] text-gray-400 leading-relaxed mt-1">{upsell.description}</p>
+                                                        {upsell.image && (
+                                                            <div className="mt-3 max-w-sm">
+                                                                <ImageWithFallback src={upsell.image} alt={upsell.name} />
+                                                            </div>
+                                                        )}
                                                         <ul className="mt-2 space-y-1">
                                                             {upsell.features.map((f, i) => (
                                                                 <li key={i} className="flex items-center gap-1.5 text-[0.65rem] text-gray-300">

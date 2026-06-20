@@ -154,7 +154,7 @@ function CaseStudyPresentation({
                         <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
                         <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
                         {slide.caption && (
-                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
+                            <p className="text-sm text-gray-400 mt-1 leading-relaxed">{slide.caption}</p>
                         )}
                     </div>
                     <div className="shrink-0 flex items-center gap-3">
@@ -723,7 +723,7 @@ export function LandingPageTest() {
                                         <div className="min-w-0 flex-1">
                                             <h3 className="font-heading font-black uppercase text-base sm:text-lg text-white leading-tight">{cs.name}</h3>
                                             <p className="text-[0.6rem] uppercase tracking-[0.15em] text-gray-600 font-bold mt-0.5">{cs.role}</p>
-                                            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed line-clamp-1 max-w-sm">{cs.tagline}</p>
+                                            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">{cs.tagline}</p>
                                         </div>
                                         {/* Arrow */}
                                         <div className="shrink-0 w-9 h-9 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center">

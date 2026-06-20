@@ -19,10 +19,9 @@ const WEBINAR_DATE = new Date('2026-07-15T19:00:00+04:00') // 7 PM Dubai time
 
 const FAQS = [
     { q: 'Do I need any AI experience to join?', a: 'If you\'ve never touched an AI tool, you\'ll be fine. If you\'ve been experimenting and hit a wall, that\'s exactly who this is for. We meet you where you are.' },
-    { q: 'I already know how to prompt. Why do I need this?', a: 'That\'s exactly the point. Prompting is maybe 10% of the skill. This workshop covers the 90% nobody talks about: taste, direction, consistency, storytelling, and a complete workflow from sketch to client presentation.' },
+    { q: 'I already know how to prompt. Why do I need this?', a: 'That\'s exactly the point. Prompting is maybe 10% of the skill. This webinar covers the 90% nobody talks about: taste, direction, consistency, storytelling, and a complete workflow from sketch to client presentation.' },
     { q: 'What if I can\'t attend one of the days?', a: 'All sessions will be recorded and shared instantly after the webinar.' },
-    { q: 'Is this only for interior designers?', a: 'Primarily, yes, and everyone else interested in knowing about these tools, because it\'s the same set of systems that they can apply to their workflows.' },
-    { q: 'What tools will be covered?', a: 'We will cover all the necessary tools that are relevant to our design workflows that we will showcase to you.' },
+    { q: 'Is this only for interior designers?', a: 'No, this is applicable for anyone in the design vertical, and marketers included.' },
     { q: 'Will I get a certificate?', a: 'Only participants who have registered for the Silver or Gold upgrade will receive a free AI certificate.' },
     { q: 'What\'s the schedule and time zone?', a: 'Two consecutive days at 7:00 PM Dubai time. Capped at 90 minutes per day.' },
     { q: 'Why is it so affordable?', a: 'Because we\'ve seen what happens when designers stay stuck. We\'d rather price this so every serious designer can access it, and let the results speak for themselves. The price goes up every week.' },
@@ -90,7 +89,7 @@ function CaseStudyPresentation({
                         <p className="text-[0.7rem] uppercase tracking-[0.22em] text-lime/80 font-bold mb-0.5">{slide.category}</p>
                         <p className="font-heading font-black uppercase text-lg sm:text-xl text-white leading-tight">{slide.title}</p>
                         {slide.caption && (
-                            <p className="text-sm text-gray-400 mt-1 leading-relaxed line-clamp-2">{slide.caption}</p>
+                            <p className="text-sm text-gray-400 mt-1 leading-relaxed">{slide.caption}</p>
                         )}
                     </div>
                     <div className="shrink-0 flex items-center gap-3">
@@ -245,7 +244,7 @@ export default function WebinarPage() {
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-lime" />
                         </span>
                         <span className="text-[0.65rem] sm:text-[0.7rem] font-body uppercase tracking-[0.15em] text-white font-bold">
-                            <span className="text-lime">LIVE</span> WORKSHOP:
+                            <span className="text-lime">LIVE</span> WEBINAR:
                         </span>
                         <span className="text-[0.65rem] sm:text-[0.7rem] font-body text-gray-300">
                             July 15–16, 2026 · 7:00 PM Dubai
@@ -357,7 +356,10 @@ export default function WebinarPage() {
             {/* ═══ S4: TESTIMONIALS (Video Carousel) ═══ */}
             <Section>
                 <FadeIn>
-                    <SectionHeading>HEAR FROM DESIGNERS WHO WENT <span className="text-lime">BEYOND THE AI PROMPT</span></SectionHeading>
+                    <SectionHeading>
+                        HEAR FROM DESIGNERS WHO WENT<br className="hidden sm:inline" />{" "}
+                        <span className="text-lime whitespace-nowrap">BEYOND THE AI PROMPT</span>
+                    </SectionHeading>
                 </FadeIn>
                 
                 {/* 16:9 Testimonial Mashup Video */}
@@ -376,7 +378,7 @@ export default function WebinarPage() {
                 <FadeIn delay={0.2}>
                     <div className="relative overflow-hidden">
                         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-2 px-2">
-                            {WORKSHOPS.map((w) => (
+                            {WORKSHOPS.filter(w => w.num !== 2).map((w) => (
                                 <div
                                     key={w.id}
                                     className="shrink-0 snap-center rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/25 transition-colors duration-300"
@@ -440,7 +442,7 @@ export default function WebinarPage() {
                                     <div className="min-w-0 flex-1">
                                         <h3 className="font-heading font-black uppercase text-sm text-white leading-tight">{cs.name}</h3>
                                         <p className="text-[0.55rem] uppercase tracking-[0.15em] text-gray-600 font-bold mt-0.5">{cs.role}</p>
-                                        <p className="text-[0.65rem] text-gray-500 mt-1 leading-relaxed line-clamp-1">{cs.tagline}</p>
+                                        <p className="text-[0.65rem] text-gray-500 mt-1 leading-relaxed">{cs.tagline}</p>
                                     </div>
                                     <div className="shrink-0 w-8 h-8 rounded-full border border-white/10 group-hover:border-lime/40 group-hover:bg-lime/10 transition-all flex items-center justify-center">
                                         <ArrowRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-lime transition-colors" />
@@ -456,8 +458,8 @@ export default function WebinarPage() {
             <Section>
                 <FadeIn className="text-center space-y-6">
                     <p className="text-[0.6rem] text-gray-600 uppercase tracking-[0.2em] font-bold">Early bird pricing ends soon</p>
-                    <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.5vw,2.2rem)] leading-[0.93]">
-                        YOUR COMPETITORS ARE ALREADY<br />
+                    <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.5vw,2.2rem)] leading-[1.0] sm:leading-[0.93] max-w-xl mx-auto">
+                        YOUR COMPETITORS ARE ALREADY<br className="hidden sm:inline" />{" "}
                         <span className="text-lime">DOING THIS WITHOUT YOU</span>
                     </h2>
                     <CtaButton onClick={openCta} size="md" />
@@ -514,12 +516,12 @@ export default function WebinarPage() {
                 <FadeIn delay={0.1}>
                     <ul className="space-y-4 max-w-xl mx-auto">
                         {[
-                            'Why prompting alone hits a wall, and what the real skill stack is (**taste, visual literacy, storytelling**)',
-                            'How to go from a **simple sketch** to a full design concept: architecture, interiors, wayfinding, customer journey',
-                            'How to develop **consistent, fingerprint-level imagery** that looks like one cohesive project, not random AI outputs',
-                            'How to **direct AI** toward the results you actually want, not just accept whatever it gives you',
-                            'How to **storytell through your imagery**, from arrival experience to blow-up detail shots',
-                            'How to turn **3 weeks of work into 3 hours**, across image generation, video, and marketing assets',
+                            'The **real skill stack** beyond prompts: taste, visual direction, and storytelling.',
+                            'A complete design concept built from a **single rough sketch** including architecture, interiors, and wayfinding.',
+                            '**Cohesive, fingerprint-level imagery** that looks like one unified project, not random AI outputs.',
+                            '**Precise creative control** to direct AI toward your exact design intent instead of settling for random generations.',
+                            '**Immersive visual storytelling** that guides clients seamlessly from the arrival experience to detail shots.',
+                            '**10x faster concept execution** compressing weeks of rendering and concepting into hours.',
                         ].map((item, i) => (
                             <li key={i} className="flex gap-3 text-[0.82rem] text-gray-300 leading-relaxed">
                                 <Check className="w-4 h-4 text-lime shrink-0 mt-0.5" />

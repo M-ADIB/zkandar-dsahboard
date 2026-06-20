@@ -281,3 +281,13 @@ button {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@keyframes flash-arrow {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.1; transform: translateX(-4px); }
+}
+
+.animate-flash-arrow {
+  animation: flash-arrow 0.7s infinite ease-in-out;
+}
+

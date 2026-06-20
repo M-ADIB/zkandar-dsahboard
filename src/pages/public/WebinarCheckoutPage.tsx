@@ -14,6 +14,7 @@ interface UpsellProduct {
     price: number
     badge?: string
     features: string[]
+    image?: string
 }
 
 const BASE_PRODUCT = { name: '2-Day AI Design Webinar', get price() { return getWebinarPrice() } }
@@ -31,6 +32,7 @@ const UPSELLS: UpsellProduct[] = [
             'Render showcase pages',
             'Client-ready export format',
         ],
+        image: '/upsell-template.jpg',
     },
     {
         id: 'style-catalog',
@@ -43,8 +45,36 @@ const UPSELLS: UpsellProduct[] = [
             'Real reference images',
             'Use as a client consultation tool',
         ],
+        image: '/upsell-catalog.jpg',
     },
 ]
+
+function ImageWithFallback({ src, alt }: { src: string; alt: string }) {
+    const [error, setError] = useState(false)
+    return (
+        <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-amber-500/10 via-zinc-900 to-black border border-amber-500/20 group">
+            {error ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(245,158,11,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(245,158,11,0.05)_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                    <span className="text-[0.55rem] font-bold tracking-[0.2em] text-amber-500/60 uppercase mb-1">
+                        PREVIEW ONLY
+                    </span>
+                    <span className="text-[0.7rem] font-heading font-black uppercase text-zinc-400 group-hover:text-amber-400 transition-colors">
+                        {alt}
+                    </span>
+                </div>
+            ) : (
+                <img
+                    src={src}
+                    alt={alt}
+                    onError={() => setError(true)}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+            )}
+        </div>
+    )
+}
 
 export default function WebinarCheckoutPage() {
     const [searchParams] = useSearchParams()
@@ -206,7 +236,12 @@ export default function WebinarCheckoutPage() {
                                     </div>
                                 )}
                                 <div className="flex items-start justify-between gap-4">
-                                    <div className="flex items-start gap-3 flex-1">
+                                    <div className="flex items-start gap-3 flex-1 relative pl-7">
+                                        {!isSelected && (
+                                            <span className="absolute left-0 top-0.5 text-red-500 font-bold text-lg leading-none select-none animate-flash-arrow">
+                                                ➔
+                                            </span>
+                                        )}
                                         <div className={`w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
                                             isSelected ? 'bg-lime border-lime' : 'border-gray-600'
                                         }`}>
@@ -217,6 +252,11 @@ export default function WebinarCheckoutPage() {
                                                 Yes! Add "{upsell.name}" for just ${upsell.price}
                                             </h3>
                                             <p className="text-[0.78rem] text-gray-400 leading-relaxed">{upsell.description}</p>
+                                            {upsell.image && (
+                                                <div className="mt-3 max-w-sm">
+                                                    <ImageWithFallback src={upsell.image} alt={upsell.name} />
+                                                </div>
+                                            )}
                                             <ul className="space-y-1.5 mt-3">
                                                 {upsell.features.map((f, i) => (
                                                     <li key={i} className="flex items-center gap-2 text-xs text-gray-300">
