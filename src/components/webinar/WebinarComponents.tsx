@@ -521,20 +521,13 @@ export function LeadCaptureModal({ open, onClose }: {
         // Clean: remove spaces, dashes, parentheses
         const clean = trimmed.replace(/[\s\-()]/g, '')
 
-        // Check if starts with optional + and is followed by 7-15 digits
-        if (!/^\+?[0-9]{7,15}$/.test(clean)) {
-            return 'Please enter a valid phone number (7 to 15 digits).'
-        }
-
-        // Strip the + sign for sequence checks
-        const digitsOnly = clean.replace('+', '')
-
         // Check for all identical digits (e.g. 999999999)
+        const digitsOnly = clean.replace('+', '')
         if (/^(\d)\1+$/.test(digitsOnly)) {
-            return 'Please enter a valid, non-dummy phone number.'
+            return 'Please enter a valid phone number.'
         }
 
-        // Check for completely sequential digits (e.g. 123456789, 987654321)
+        // Check for completely sequential digits (e.g. 123456789)
         let isSeq = true
         for (let i = 1; i < digitsOnly.length; i++) {
             const diff = digitsOnly.charCodeAt(i) - digitsOnly.charCodeAt(i - 1)
@@ -544,13 +537,32 @@ export function LeadCaptureModal({ open, onClose }: {
             }
         }
         if (isSeq) {
-            return 'Please enter a valid, non-dummy phone number.'
+            return 'Please enter a valid phone number.'
         }
 
-        // Check for common fake patterns
-        const fakePatterns = ['1234567890', '123456790', '0987654321', '0123456789', '9876543210']
-        if (fakePatterns.some(pat => digitsOnly.includes(pat))) {
-            return 'Please enter a valid, non-dummy phone number.'
+        // Smart check:
+        // Must start with + or 00 (international) or 0 (local mobile)
+        const isInternational = clean.startsWith('+') || clean.startsWith('00')
+        const isLocal = clean.startsWith('0') && !clean.startsWith('00')
+
+        if (!isInternational && !isLocal) {
+            return 'Please include your country code (e.g., +971 50 123 4567).'
+        }
+
+        if (isInternational) {
+            // Strip leading + or 00
+            const intDigits = clean.startsWith('+') ? clean.substring(1) : clean.substring(2)
+            // Most country codes + number are between 8 and 15 digits
+            if (!/^[0-9]{8,15}$/.test(intDigits)) {
+                return 'Please enter a valid international phone number.'
+            }
+        }
+
+        if (isLocal) {
+            // Local mobile number (typically 9 to 11 digits starting with 0)
+            if (!/^[0-9]{9,11}$/.test(clean)) {
+                return 'Please enter a valid phone number.'
+            }
         }
 
         return null
