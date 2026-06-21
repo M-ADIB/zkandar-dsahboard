@@ -331,7 +331,7 @@ export function BeforeAfterSection({ onCta }: { onCta: () => void }) {
     return (
         <div className="space-y-12">
             <SectionHeading sub="This isn't about learning another tool. It's about closing the gap between where you are and where the market demands you to be.">
-                WHAT WILL YOU <span className="text-lime">WALK AWAY WITH?</span>
+                WHAT WILL YOU <br /><span className="text-lime">WALK AWAY WITH?</span>
             </SectionHeading>
             <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-[#0A0A0A] rounded-2xl p-6 border border-white/[0.06]">
