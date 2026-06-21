@@ -477,8 +477,8 @@ export default function WebinarPage() {
             <Section>
                 <FadeIn className="text-center space-y-6">
                     <p className="text-[0.6rem] text-gray-600 uppercase tracking-[0.2em] font-bold">Early bird pricing ends soon</p>
-                    <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.5vw,2.2rem)] leading-[1.0] sm:leading-[0.93] max-w-xl mx-auto">
-                        YOUR COMPETITORS ARE ALREADY<br className="hidden sm:inline" />{" "}
+                    <h2 className="font-heading font-black uppercase text-[clamp(1.3rem,3.5vw,2.2rem)] leading-[1.0] sm:leading-[0.93] max-w-2xl mx-auto">
+                        YOUR COMPETITORS ARE ALREADY<br />{" "}
                         <span className="text-lime">DOING THIS WITHOUT YOU</span>
                     </h2>
                     <CtaButton onClick={openCta} size="md" />
