@@ -43,7 +43,7 @@ const SILVER_TIER: TierDef = {
 const GOLD_TIER: TierDef = {
     id: 'gold',
     name: 'Gold',
-    tagline: 'The full transformation. Personal mentoring included.',
+    tagline: 'The full transformation and complete resource toolkit.',
     price: 149,
     icon: Star,
     color: 'amber',
@@ -58,7 +58,6 @@ const GOLD_TIER: TierDef = {
         { icon: FileText, text: 'Complete webinar PDF: the entire system documented for reference' },
         { icon: Zap, text: 'Live Q&A priority: your questions answered first' },
         { icon: Award, text: 'AI Certificate from Zkandar: recognized completion credential' },
-        { icon: Users, text: '1-on-1 call with Khaled (30 min): personalized to your workflow' },
         { icon: Rocket, text: 'Early access to the Sprint Webinar: locked-in priority registration' },
     ],
 }
@@ -224,7 +223,6 @@ export default function WebinarUpgradePage() {
                                     { feature: 'Complete webinar PDF', standard: false, silver: false, gold: true },
                                     { feature: 'Priority Q&A', standard: false, silver: true, gold: true },
                                     { feature: 'AI Certificate from Zkandar', standard: false, silver: true, gold: true },
-                                    { feature: '1-on-1 call with Khaled (30 min)', standard: false, silver: false, gold: true },
                                     { feature: 'Early access to Sprint Webinar', standard: false, silver: false, gold: true },
                                 ].map((row, i) => (
                                     <tr key={i} className="hover:bg-white/[0.01]">

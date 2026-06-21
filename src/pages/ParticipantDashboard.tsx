@@ -827,7 +827,7 @@ export function ParticipantDashboard() {
                         </h1>
                         <p className="text-gray-400 max-w-lg">
                             {isWebinarMember
-                                ? `Welcome to the Zkandar AI Webinar! ${isGoldWebinarMember ? 'You have premium Gold access. Enjoy lifetime recordings, PDF slides, and your 1-on-1 call.' : 'Access your live stream and resources below.'}`
+                                ? `Welcome to the Zkandar AI Webinar! ${isGoldWebinarMember ? 'You have premium Gold access. Enjoy lifetime recordings and PDF slides.' : 'Access your live stream and resources below.'}`
                                 : isSprintWorkshop
                                 ? "Welcome to your sprint! Follow the sessions below and engage with your program to maximize your learning."
                                 : "You're making great progress! Keep up the momentum and complete your assignments to earn your certificate."}
