@@ -27,7 +27,7 @@ import { formatDateLabel, formatRelativeTime, formatSessionDateTime } from '@/li
 import { computeInitialScore, computeAssignmentBoost, computeFinalScore } from '@/lib/scoring'
 import type { Assignment, ChatMessage, Cohort, Session, Submission, SurveyAnswers, UserType } from '@/types/database'
 import toast from 'react-hot-toast'
-import { SprintCard } from '@/components/public/SprintCard'
+
 
 function extractVimeoId(urlOrId: string): string {
     const match = urlOrId.match(/vimeo\.com\/(\d+)/)
@@ -277,8 +277,7 @@ export function ParticipantDashboard() {
     const [cohorts, setCohorts] = useState<Cohort[]>([])
     const [userProfileData, setUserProfileData] = useState<Record<string, any> | null>(null)
     const [upgradingToGold, setUpgradingToGold] = useState(false)
-    const [sprintDates, setSprintDates] = useState('June 3–5')
-    const [sprintLocation, setSprintLocation] = useState('Live Zoom')
+
     const [sessions, setSessions] = useState<Session[]>([])
     const [assignments, setAssignments] = useState<Assignment[]>([])
     const [submissions, setSubmissions] = useState<Submission[]>([])
@@ -392,18 +391,7 @@ export function ParticipantDashboard() {
             setUserProfileData(profileRow?.profile_data || {})
             setCalendlyUrl((calendlyRes.data as { value: string } | null)?.value ?? null)
 
-            // Fetch marketing settings from Supabase CMS (for the Sprint Card upgrade)
-            supabase
-                .from('platform_settings')
-                .select('key, value')
-                .in('key', ['marketing_sprint_dates', 'marketing_sprint_location'])
-                .then(({ data }) => {
-                    if (!data) return
-                    const map: Record<string, string> = {}
-                    data.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
-                    if (map.marketing_sprint_dates) setSprintDates(map.marketing_sprint_dates)
-                    if (map.marketing_sprint_location !== undefined) setSprintLocation(map.marketing_sprint_location)
-                })
+
             const membershipIds = ((membershipRes.data as { cohort_id: string }[] | null) ?? []).map((m) => m.cohort_id)
 
             const cohortIdSet = new Set<string>(membershipIds)
@@ -591,19 +579,6 @@ export function ParticipantDashboard() {
         return () => clearInterval(id)
     }, [sessions])
 
-    useEffect(() => {
-        if (!isWebinarMember) return
-        
-        const dismissed = localStorage.getItem('zkandar_sprint_banner_dismissed')
-        if (dismissed === 'true') return
-
-        const timer = setTimeout(() => {
-            setShowSprintBanner(true)
-        }, 2500)
-
-        return () => clearTimeout(timer)
-    }, [isWebinarMember])
-
     // ── Derived state ──────────────────────────────────────────────────────────
     const sessionTimeline = useMemo(() => {
         const now = Date.now()
@@ -629,6 +604,25 @@ export function ParticipantDashboard() {
                 }
             })
     }, [sessions])
+
+    const allWebinarsCompleted = useMemo(() => {
+        if (sessionTimeline.length === 0) return false;
+        return sessionTimeline.every(s => s.completed);
+    }, [sessionTimeline])
+
+    useEffect(() => {
+        if (!isWebinarMember) return;
+        if (!allWebinarsCompleted) return; // Only show banner after webinar is completed
+        
+        const dismissed = localStorage.getItem('zkandar_sprint_banner_dismissed')
+        if (dismissed === 'true') return;
+
+        const timer = setTimeout(() => {
+            setShowSprintBanner(true)
+        }, 2500)
+
+        return () => clearTimeout(timer)
+    }, [isWebinarMember, allWebinarsCompleted])
 
     const s1ReflectionSubmitted = useMemo(() => {
         const ass = assignments.find(a => a.title.toLowerCase().includes('session 1 reflection'))
@@ -1259,13 +1253,13 @@ export function ParticipantDashboard() {
                             {/* Certificate milestone — webinar members only */}
                             {isWebinarMember && (
                                 <div className="relative group">
-                                    <div className={`absolute left-[35px] top-[60px] bottom-[-20px] w-px z-0 ${isGoldWebinarMember ? 'bg-amber-500/20' : 'bg-lime/20'}`} />
-                                    
                                     <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all ${
                                         certificateClaimed
                                             ? (isGoldWebinarMember 
                                                 ? 'bg-black/25 border-amber-500/10 hover:border-amber-500/20' 
                                                 : 'bg-black/25 border-lime/10 hover:border-lime/20')
+                                            : !allWebinarsCompleted
+                                            ? 'opacity-40 bg-black/25 border-white/[0.04]'
                                             : (isGoldWebinarMember
                                                 ? 'bg-amber-500/[0.03] border-amber-500/35 shadow-[0_0_30px_rgba(245,158,11,0.08)]'
                                                 : 'bg-lime/[0.03] border-lime/35 shadow-[0_0_30px_rgba(208,255,113,0.08)]')
@@ -1277,10 +1271,14 @@ export function ParticipantDashboard() {
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
                                                 certificateClaimed 
                                                     ? (isGoldWebinarMember ? 'bg-amber-500/10 text-amber-400' : 'bg-lime/10 text-lime') 
+                                                    : !allWebinarsCompleted
+                                                    ? 'bg-white/5 text-gray-500'
                                                     : (isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/20 text-black' : 'gradient-lime shadow-lg shadow-lime/20 text-black')
                                             }`}>
                                                 {certificateClaimed ? (
                                                     <CheckCircle2 className="h-5 w-5" />
+                                                ) : !allWebinarsCompleted ? (
+                                                    <Lock className="h-5 w-5" />
                                                 ) : (
                                                     <GraduationCap className="h-5 w-5" />
                                                 )}
@@ -1289,59 +1287,32 @@ export function ParticipantDashboard() {
                                         <div className="flex-1 min-w-0 relative z-10">
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
-                                                    <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${certificateClaimed ? 'text-gray-400' : 'text-white'}`}>
+                                                    <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${certificateClaimed ? 'text-gray-400' : !allWebinarsCompleted ? 'text-gray-600' : 'text-white'}`}>
                                                         AI Certificate of Completion
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 uppercase tracking-wider ${certificateClaimed ? 'text-gray-655' : 'text-gray-400'}`}>
-                                                        {certificateClaimed ? 'CERTIFICATE CLAIMED!' : 'UNLOCKED FOR SILVER & GOLD TIERS'}
+                                                    <p className={`text-xs mt-0.5 uppercase tracking-wider ${certificateClaimed ? 'text-gray-655' : !allWebinarsCompleted ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                        {certificateClaimed ? 'CERTIFICATE CLAIMED!' : !allWebinarsCompleted ? 'UNLOCKS AFTER WEBINAR SESSIONS' : 'UNLOCKED FOR SILVER & GOLD TIERS'}
                                                     </p>
                                                 </div>
-                                                <button
-                                                    onClick={() => setShowCertificateModal(true)}
-                                                    className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform ${
-                                                        isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black' : 'gradient-lime text-black'
-                                                    }`}
-                                                >
-                                                    {certificateClaimed ? 'View Certificate' : 'Claim Certificate'}
-                                                </button>
+                                                {allWebinarsCompleted && (
+                                                    <button
+                                                        onClick={() => setShowCertificateModal(true)}
+                                                        className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform ${
+                                                            isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black' : 'gradient-lime text-black'
+                                                        }`}
+                                                    >
+                                                        {certificateClaimed ? 'View Certificate' : 'Claim Certificate'}
+                                                    </button>
+                                                )}
+                                                {!allWebinarsCompleted && (
+                                                    <span className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-500 border border-white/[0.06] rounded-lg shrink-0 flex items-center gap-1 bg-white/[0.02]">
+                                                        <Lock className="h-3 w-3" /> LOCKED
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="h-4" />
-                                </div>
-                            )}
-
-                            {/* Sprint Workshop milestone — webinar members only */}
-                            {isWebinarMember && (
-                                <div className="relative group">
-                                    <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all bg-gradient-to-br from-purple-500/5 to-transparent border-purple-500/10 hover:border-purple-500/35 hover:shadow-[0_0_30px_rgba(168,85,247,0.08)]`}>
-                                        <div className="absolute inset-0 opacity-[0.015] z-0 pointer-events-none rounded-2xl" style={{
-                                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                                        }} />
-                                        <div className="flex flex-col items-center shrink-0 w-10 relative z-10">
-                                            <div className="h-10 w-10 rounded-lg flex items-center justify-center relative z-10 bg-purple-500/10 text-purple-400">
-                                                <Zap className="h-5 w-5" />
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 min-w-0 relative z-10">
-                                            <div className="flex items-center justify-between gap-4">
-                                                <div className="min-w-0">
-                                                    <p className="font-heading font-bold text-sm text-white uppercase tracking-wide truncate">
-                                                        AI Sprint Workshop (Individuals)
-                                                    </p>
-                                                    <p className="text-xs mt-0.5 text-gray-400 uppercase tracking-wider">
-                                                        UPGRADE YOUR SKILLS WITH THE FULL 3-DAY LIVE SPRINT WORKSHOP
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    onClick={() => window.open('/enroll', '_blank')}
-                                                    className="px-4 py-2 text-xs font-bold bg-purple-500/10 border border-purple-500/30 text-purple-300 uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform"
-                                                >
-                                                    Check Out
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             )}
 
@@ -1658,22 +1629,7 @@ export function ParticipantDashboard() {
                             </motion.div>
                         )}
 
-                        {/* Sprint Workshop Upgrade Card */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className="space-y-3 text-left"
-                        >
-                            <p className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase font-heading">
-                                Elite Training Workshop
-                            </p>
-                            <SprintCard 
-                                sprintDates={sprintDates} 
-                                sprintLocation={sprintLocation} 
-                                checkoutUrl={`/checkout?email=${encodeURIComponent(user?.email || '')}&name=${encodeURIComponent(user?.full_name || '')}`}
-                            />
-                        </motion.div>
+
                     </div>
                 )}
             </div>
