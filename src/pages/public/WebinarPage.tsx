@@ -379,22 +379,26 @@ export default function WebinarPage() {
                 <FadeIn delay={0.2}>
                     <div className="relative overflow-hidden">
                         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-2 px-2">
-                            {WORKSHOPS.filter(w => w.num !== 2).map((w) => (
-                                <div
-                                    key={w.id}
-                                    className="shrink-0 snap-center rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/25 transition-colors duration-300"
-                                    style={{ width: '200px', aspectRatio: '9/16' }}
-                                >
-                                    <iframe
-                                        src={`https://player.vimeo.com/video/${w.id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
-                                        className="w-full h-full"
-                                        allow="autoplay; fullscreen; picture-in-picture"
-                                        allowFullScreen
-                                        title={w.label}
-                                        loading="lazy"
-                                    />
-                                </div>
-                            ))}
+                            {(() => {
+                                const orderedNums = [9, 1, 4, 5, 7, 8]
+                                const list = orderedNums.map(num => WORKSHOPS.find(w => w.num === num)).filter(Boolean) as typeof WORKSHOPS
+                                return list.map((w) => (
+                                    <div
+                                        key={w.id}
+                                        className="shrink-0 snap-center rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a] hover:border-lime/25 transition-colors duration-300"
+                                        style={{ width: '200px', aspectRatio: '9/16' }}
+                                    >
+                                        <iframe
+                                            src={`https://player.vimeo.com/video/${w.id}?autoplay=0&title=0&byline=0&portrait=0&color=d0ff71`}
+                                            className="w-full h-full"
+                                            allow="autoplay; fullscreen; picture-in-picture"
+                                            allowFullScreen
+                                            title={w.label}
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                ))
+                            })()}
                         </div>
                         {/* Fade edges */}
                         <div className="absolute top-0 left-0 bottom-4 w-8 bg-gradient-to-r from-black to-transparent pointer-events-none" />
