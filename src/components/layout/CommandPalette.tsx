@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Portal } from '@/components/shared/Portal'
 import { useAuth } from '@/context/AuthContext'
+import { useViewMode } from '@/context/ViewModeContext'
 import {
     Search,
     LayoutDashboard,
@@ -30,6 +31,7 @@ interface PaletteItem {
     path: string
     section: string
     roles: UserRole[]
+    hiddenForUserTypes?: string[]
 }
 
 const allItems: PaletteItem[] = [
@@ -47,12 +49,12 @@ const allItems: PaletteItem[] = [
     { id: 'admin-recruiting', icon: Briefcase, label: 'Recruiting', path: '/admin/recruiting', section: 'Operations', roles: ['owner', 'admin'] },
     // Member
     { id: 'member-dash', icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'] },
-    { id: 'member-program', icon: GraduationCap, label: 'My Program', path: '/my-program', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'] },
-    { id: 'member-assignments', icon: FileText, label: 'Assignments', path: '/assignments', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'] },
+    { id: 'member-program', icon: GraduationCap, label: 'My Program', path: '/my-program', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
+    { id: 'member-assignments', icon: FileText, label: 'Assignments', path: '/assignments', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['webinar_member'] },
     { id: 'member-recordings', icon: Film, label: 'Recordings', path: '/recordings', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'] },
-    { id: 'member-performance', icon: TrendingUp, label: 'My Performance', path: '/my-performance', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'] },
-    { id: 'member-toolbox', icon: Wrench, label: 'Toolbox', path: '/toolbox', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'] },
-    { id: 'member-chat', icon: MessageSquare, label: 'Chat', path: '/chat', section: 'Connect', roles: ['owner', 'admin', 'executive', 'participant'] },
+    { id: 'member-performance', icon: TrendingUp, label: 'My Performance', path: '/my-performance', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
+    { id: 'member-toolbox', icon: Wrench, label: 'Toolbox', path: '/toolbox', section: 'Learning', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
+    { id: 'member-chat', icon: MessageSquare, label: 'Chat', path: '/chat', section: 'Connect', roles: ['owner', 'admin', 'executive', 'participant'], hiddenForUserTypes: ['sprint_member', 'webinar_member'] },
     // Shared
     { id: 'settings', icon: Settings, label: 'Settings', path: '/settings', section: 'System', roles: ['owner', 'admin', 'executive', 'participant'] },
 ]
@@ -60,6 +62,7 @@ const allItems: PaletteItem[] = [
 export function CommandPalette() {
     const { user } = useAuth()
     const navigate = useNavigate()
+    const { isPreviewing, canPreview, previewUser } = useViewMode()
     const [isOpen, setIsOpen] = useState(false)
     const [query, setQuery] = useState('')
     const [activeIndex, setActiveIndex] = useState(0)
@@ -70,7 +73,14 @@ export function CommandPalette() {
 
     const filteredItems = useMemo(() => {
         if (!userRole) return []
-        const available = allItems.filter((item) => item.roles.includes(userRole))
+        const effectiveUserType = (canPreview && isPreviewing && previewUser)
+            ? previewUser.user_type
+            : user?.user_type
+
+        const available = allItems.filter((item) => 
+            item.roles.includes(userRole) &&
+            !(effectiveUserType && item.hiddenForUserTypes?.includes(effectiveUserType))
+        )
         if (!query.trim()) return available
         const q = query.toLowerCase()
         return available.filter(
@@ -79,7 +89,7 @@ export function CommandPalette() {
                 item.section.toLowerCase().includes(q) ||
                 item.path.toLowerCase().includes(q)
         )
-    }, [query, userRole])
+    }, [query, userRole, user?.user_type, isPreviewing, canPreview, previewUser])
 
     // Group items by section for rendering
     const grouped = useMemo(() => {

@@ -291,3 +291,87 @@ button {
   animation: flash-arrow 0.7s infinite ease-in-out;
 }
 
+/* ── Gold Theme Overrides ────────────────────────────────────────────────── */
+.gold-theme {
+  --lime: #fbbf24; /* amber-400 */
+  --green: #d97706; /* amber-600 */
+  --glow: rgba(245, 158, 11, 0.25);
+  --selection: rgba(245, 158, 11, 0.3);
+}
+
+/* Ambient floating gold glows behind dashboard content */
+.gold-theme::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.04) 0%, transparent 40%),
+              radial-gradient(circle at 15% 85%, rgba(217, 119, 6, 0.03) 0%, transparent 45%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gold-theme .text-lime {
+  color: #fbbf24 !important;
+}
+
+.gold-theme .bg-lime {
+  background-color: #fbbf24 !important;
+}
+
+.gold-theme .border-lime {
+  border-color: #fbbf24 !important;
+}
+
+.gold-theme .bg-lime\/5 {
+  background-color: rgba(245, 158, 11, 0.05) !important;
+}
+
+.gold-theme .bg-lime\/10 {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+.gold-theme .border-lime\/20 {
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.gold-theme .border-lime\/30 {
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.gold-theme .text-lime\/70 {
+  color: rgba(245, 158, 11, 0.7) !important;
+}
+
+.gold-theme .text-lime\/90 {
+  color: rgba(245, 158, 11, 0.9) !important;
+}
+
+.gold-theme .gradient-lime {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+}
+
+.gold-theme .text-gradient,
+.gold-theme .gradient-text {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.gold-theme .glow {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.25) !important;
+}
+
+.gold-theme .glow-lg {
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.3) !important;
+}
+
+.gold-theme .shadow-lime\/20 {
+  --tw-shadow-color: rgba(245, 158, 11, 0.2) !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color) !important;
+}
+
+

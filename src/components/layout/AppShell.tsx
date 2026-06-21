@@ -17,8 +17,15 @@ export function AppShell() {
         ? previewUser.user_type
         : user?.user_type ?? null
 
+    const effectiveProfileData = (canPreview && isPreviewing && previewUser)
+        ? previewUser.profile_data
+        : user?.profile_data
+
+    const isGoldWebinarMember = effectiveUserType === 'webinar_member' &&
+        (effectiveProfileData as Record<string, any>)?.upgrade_tier === 'gold'
+
     return (
-        <div className="flex min-h-screen bg-bg-primary">
+        <div className={`flex min-h-screen bg-bg-primary ${isGoldWebinarMember ? 'gold-theme' : ''}`}>
             {/* Sidebar */}
             <Sidebar userRole={user?.role ?? 'participant'} userType={effectiveUserType} />
 

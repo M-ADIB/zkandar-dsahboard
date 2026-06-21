@@ -6,7 +6,6 @@ interface MemberRouteProps {
     children: React.ReactNode
 }
 
-const SPRINT_BLOCKED = ['/chat', '/my-program', '/my-performance']
 
 export function MemberRoute({ children }: MemberRouteProps) {
     const { user } = useAuth()
@@ -24,8 +23,13 @@ export function MemberRoute({ children }: MemberRouteProps) {
         ? previewUser.user_type
         : user.user_type
 
-    if (effectiveUserType === 'sprint_member' || effectiveUserType === 'webinar_member') {
-        const blocked = SPRINT_BLOCKED.some(p => location.pathname.startsWith(p))
+    if (effectiveUserType === 'webinar_member') {
+        const blocked = ['/chat', '/my-program', '/my-performance', '/toolbox', '/assignments'].some(p => location.pathname.startsWith(p))
+        if (blocked) return <Navigate to="/dashboard" replace />
+    }
+
+    if (effectiveUserType === 'sprint_member') {
+        const blocked = ['/chat', '/my-program', '/my-performance', '/toolbox'].some(p => location.pathname.startsWith(p))
         if (blocked) return <Navigate to="/dashboard" replace />
     }
 
