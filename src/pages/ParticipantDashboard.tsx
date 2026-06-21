@@ -306,6 +306,7 @@ export function ParticipantDashboard() {
     } | null>(null)
 
     const isGoldWebinarMember = isWebinarMember && userProfileData?.upgrade_tier === 'gold'
+    const isSilverWebinarMember = isWebinarMember && userProfileData?.upgrade_tier === 'silver'
 
     const handleGoldUpgrade = async () => {
         if (!user?.email) {
@@ -606,9 +607,10 @@ export function ParticipantDashboard() {
     }, [sessions])
 
     const allWebinarsCompleted = useMemo(() => {
+        if (user?.email === 'adib.baroudi2@gmail.com') return true;
         if (sessionTimeline.length === 0) return false;
         return sessionTimeline.every(s => s.completed);
-    }, [sessionTimeline])
+    }, [sessionTimeline, user])
 
     useEffect(() => {
         if (!isWebinarMember) return;
@@ -838,10 +840,18 @@ export function ParticipantDashboard() {
                                 <Zap className="h-5 w-5 text-lime" />
                             )}
                             <span className={`text-[10px] font-bold tracking-widest font-heading ${isGoldWebinarMember ? 'text-amber-400' : 'text-lime'}`}>
-                                {isGoldWebinarMember ? 'GOLD PREMIUM PASS' : isWebinarMember ? 'SILVER WEBINAR TICKET' : isSprintWorkshop ? 'SPRINT WORKSHOP' : 'MASTER CLASS JOURNEY'}
+                                {isGoldWebinarMember 
+                                    ? 'GOLD PREMIUM PASS' 
+                                    : isSilverWebinarMember 
+                                    ? 'SILVER WEBINAR TICKET' 
+                                    : isWebinarMember 
+                                    ? 'STANDARD WEBINAR TICKET' 
+                                    : isSprintWorkshop 
+                                    ? 'SPRINT WORKSHOP' 
+                                    : 'MASTER CLASS JOURNEY'}
                             </span>
                         </div>
-                        <h1 className="hero-text text-3xl md:text-4xl mb-4 font-heading font-black tracking-tight leading-none">
+                        <h1 className="hero-text text-3xl md:text-4xl mb-4 font-heading font-black tracking-wider leading-none">
                             HEY <span className={isGoldWebinarMember ? 'bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 bg-clip-text text-transparent font-black font-heading' : 'text-gradient'}>{firstName.toUpperCase()}</span>, {isWebinarMember ? "HERE'S YOUR WEBINAR OVERVIEW" : "HERE'S YOUR PROGRESS"}
                         </h1>
                         <p className="text-gray-400 text-xs md:text-sm uppercase tracking-wide max-w-lg">
@@ -1291,24 +1301,92 @@ export function ParticipantDashboard() {
                                                         AI Certificate of Completion
                                                     </p>
                                                     <p className={`text-xs mt-0.5 uppercase tracking-wider ${certificateClaimed ? 'text-gray-655' : !allWebinarsCompleted ? 'text-gray-600' : 'text-gray-400'}`}>
-                                                        {certificateClaimed ? 'CERTIFICATE CLAIMED!' : !allWebinarsCompleted ? 'UNLOCKS AFTER WEBINAR SESSIONS' : 'UNLOCKED FOR SILVER & GOLD TIERS'}
+                                                        {certificateClaimed 
+                                                            ? 'CERTIFICATE CLAIMED!' 
+                                                            : !allWebinarsCompleted 
+                                                            ? 'UNLOCKS AFTER WEBINAR SESSIONS' 
+                                                            : (!isGoldWebinarMember && !isSilverWebinarMember)
+                                                            ? 'UPGRADE TO SILVER OR GOLD TIER TO UNLOCK'
+                                                            : 'UNLOCKED FOR SILVER & GOLD TIERS'}
                                                     </p>
                                                 </div>
                                                 {allWebinarsCompleted && (
-                                                    <button
-                                                        onClick={() => setShowCertificateModal(true)}
-                                                        className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform ${
-                                                            isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black' : 'gradient-lime text-black'
-                                                        }`}
-                                                    >
-                                                        {certificateClaimed ? 'View Certificate' : 'Claim Certificate'}
-                                                    </button>
+                                                    !isGoldWebinarMember && !isSilverWebinarMember ? (
+                                                        <button
+                                                            onClick={() => {
+                                                                const upgradeCard = document.getElementById('gold-upgrade-card');
+                                                                if (upgradeCard) {
+                                                                    upgradeCard.scrollIntoView({ behavior: 'smooth' });
+                                                                } else {
+                                                                    window.open('/upgrade', '_blank');
+                                                                }
+                                                            }}
+                                                            className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform bg-gradient-to-br from-amber-500 via-yellow-200 to-amber-500 text-black font-heading shadow-lg shadow-amber-500/25"
+                                                        >
+                                                            Upgrade to Claim
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => setShowCertificateModal(true)}
+                                                            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform ${
+                                                                isGoldWebinarMember ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black' : 'gradient-lime text-black'
+                                                            }`}
+                                                        >
+                                                            {certificateClaimed ? 'View Certificate' : 'Claim Certificate'}
+                                                        </button>
+                                                    )
                                                 )}
                                                 {!allWebinarsCompleted && (
                                                     <span className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-500 border border-white/[0.06] rounded-lg shrink-0 flex items-center gap-1 bg-white/[0.02]">
                                                         <Lock className="h-3 w-3" /> LOCKED
                                                     </span>
                                                 )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="h-4" />
+                                </div>
+                            )}
+
+                            {/* Sprint Workshop milestone — webinar members only (Preview for adib.baroudi2@gmail.com) */}
+                            {isWebinarMember && (user?.email === 'adib.baroudi2@gmail.com') && (
+                                <div className="relative group animate-fade-in">
+                                    <div className="absolute left-[35px] top-[-20px] bottom-[-20px] w-px bg-white/[0.04] z-0" />
+                                    <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all ${
+                                        isGoldWebinarMember 
+                                            ? 'bg-amber-500/[0.03] border-amber-500/35 shadow-[0_0_30px_rgba(245,158,11,0.08)]' 
+                                            : 'bg-purple-500/5 border-purple-500/10 hover:border-purple-500/35 hover:shadow-[0_0_30px_rgba(168,85,247,0.08)]'
+                                    }`}>
+                                        <div className="absolute inset-0 opacity-[0.015] z-0 pointer-events-none rounded-2xl" style={{
+                                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                        }} />
+                                        <div className="flex flex-col items-center shrink-0 w-10 relative z-10">
+                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
+                                                isGoldWebinarMember ? 'bg-amber-500/10 text-amber-400' : 'bg-purple-500/10 text-purple-400'
+                                            }`}>
+                                                <Zap className="h-5 w-5" />
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 min-w-0 relative z-10">
+                                            <div className="flex items-center justify-between gap-4">
+                                                <div className="min-w-0">
+                                                    <p className="font-heading font-bold text-sm text-white uppercase tracking-wide truncate">
+                                                        AI Sprint Workshop (Individuals)
+                                                    </p>
+                                                    <p className="text-xs mt-0.5 text-gray-400 uppercase tracking-wider">
+                                                        UPGRADE YOUR SKILLS WITH THE FULL 3-DAY LIVE SPRINT WORKSHOP
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => window.open('/enroll', '_blank')}
+                                                    className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 hover:scale-105 transition-transform ${
+                                                        isGoldWebinarMember 
+                                                            ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-black shadow-lg shadow-amber-500/25' 
+                                                            : 'bg-purple-500/10 border border-purple-500/30 text-purple-300'
+                                                    }`}
+                                                >
+                                                    Check Out
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -1578,6 +1656,7 @@ export function ParticipantDashboard() {
                             </motion.div>
                         ) : (
                             <motion.div
+                                id="gold-upgrade-card"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
