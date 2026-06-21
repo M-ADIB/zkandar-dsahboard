@@ -508,7 +508,51 @@ export function LeadCaptureModal({ open, onClose }: {
     const validateEmail = (val: string): string | null => {
         const trimmed = val.trim()
         if (!trimmed) return 'Please enter your email.'
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) return 'Please enter a valid email address.'
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmed)) {
+            return 'Please enter a valid email address.'
+        }
+        return null
+    }
+
+    const validatePhone = (val: string): string | null => {
+        const trimmed = val.trim()
+        if (!trimmed) return null // optional
+
+        // Clean: remove spaces, dashes, parentheses
+        const clean = trimmed.replace(/[\s\-()]/g, '')
+
+        // Check if starts with optional + and is followed by 7-15 digits
+        if (!/^\+?[0-9]{7,15}$/.test(clean)) {
+            return 'Please enter a valid phone number (7 to 15 digits).'
+        }
+
+        // Strip the + sign for sequence checks
+        const digitsOnly = clean.replace('+', '')
+
+        // Check for all identical digits (e.g. 999999999)
+        if (/^(\d)\1+$/.test(digitsOnly)) {
+            return 'Please enter a valid, non-dummy phone number.'
+        }
+
+        // Check for completely sequential digits (e.g. 123456789, 987654321)
+        let isSeq = true
+        for (let i = 1; i < digitsOnly.length; i++) {
+            const diff = digitsOnly.charCodeAt(i) - digitsOnly.charCodeAt(i - 1)
+            if (Math.abs(diff) !== 1 && diff !== 0) {
+                isSeq = false
+                break
+            }
+        }
+        if (isSeq) {
+            return 'Please enter a valid, non-dummy phone number.'
+        }
+
+        // Check for common fake patterns
+        const fakePatterns = ['1234567890', '123456790', '0987654321', '0123456789', '9876543210']
+        if (fakePatterns.some(pat => digitsOnly.includes(pat))) {
+            return 'Please enter a valid, non-dummy phone number.'
+        }
+
         return null
     }
 
@@ -519,21 +563,41 @@ export function LeadCaptureModal({ open, onClose }: {
         if (nameErr) { setError(nameErr); return }
         const emailErr = validateEmail(email)
         if (emailErr) { setError(emailErr); return }
+        const phoneErr = validatePhone(phone)
+        if (phoneErr) { setError(phoneErr); return }
 
         setLoading(true)
         try {
-            const { error: dbError } = await (supabase.from('webinar_leads') as any).insert({
-                full_name: name.trim(),
-                email: email.trim().toLowerCase(),
-                phone: phone.trim() || null,
-                source: 'webinar_landing',
-                status: 'new',
+            // Check if email already has a dashboard account
+            const { data: exists, error: checkError } = await supabase.rpc('check_user_email_exists', {
+                email_to_check: email.trim().toLowerCase()
             })
-            if (dbError && dbError.code !== '23505') {
-                console.error('Lead save error:', dbError)
+            
+            if (checkError) {
+                console.error('Email check error:', checkError)
+            } else if (exists) {
+                setError('This email is already registered to a dashboard account. Please sign in or use a different email.')
+                setLoading(false)
+                return
             }
+
+            // Save lead using our new RPC function
+            const { error: dbError } = await supabase.rpc('save_webinar_lead', {
+                p_name: name.trim(),
+                p_email: email.trim().toLowerCase(),
+                p_phone: phone.trim() || null
+            })
+            
+            if (dbError) {
+                console.error('Lead save error:', dbError)
+                setError('Failed to save registration info. Please try again.')
+                setLoading(false)
+                return
+            }
+            
             setStep(2)
-        } catch {
+        } catch (err) {
+            console.error('Step 1 error:', err)
             setError('Something went wrong. Please try again.')
         } finally {
             setLoading(false)

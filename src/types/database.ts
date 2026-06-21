@@ -1388,6 +1388,23 @@ export interface RawDatabase {
                 }
                 Returns: unknown
             }
+            check_user_email_exists: {
+                Args: {
+                    email_to_check: string
+                }
+                Returns: boolean
+            }
+            save_webinar_lead: {
+                Args: {
+                    p_name: string
+                    p_email: string
+                    p_phone?: string | null
+                    p_utm_source?: string | null
+                    p_utm_medium?: string | null
+                    p_utm_campaign?: string | null
+                }
+                Returns: unknown
+            }
         }
         Enums: {
             user_role: UserRole

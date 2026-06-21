@@ -377,7 +377,7 @@ async function sendSprintCredentialsEmail(email: string, fullName: string, tempP
 }
 
 // ── Webinar credentials email ──
-async function sendWebinarCredentialsEmail(email: string, fullName: string, tempPassword: string, products: string[], amountTotal: number) {
+async function sendWebinarCredentialsEmail(email: string, fullName: string, tempPassword: string | null, products: string[], amountTotal: number) {
   if (!RESEND_API_KEY) { console.warn('RESEND_API_KEY not set — skipping webinar credentials email'); return; }
 
   const firstName = fullName.split(' ')[0] || 'there';
@@ -415,7 +415,7 @@ async function sendWebinarCredentialsEmail(email: string, fullName: string, temp
           <tr><td style="padding:24px 24px 0;">
             <div style="font-size:18px;font-weight:700;color:#FFFFFF;">Hi ${firstName},</div>
             <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">
-              Your payment is confirmed and your Zkandar AI account is ready. Use the credentials below to sign in to your dashboard to access the live session link, materials, and chat.
+              ${tempPassword ? "Your payment is confirmed and your Zkandar AI account is ready. Use the credentials below to sign in to your dashboard to access the live session link, materials, and chat." : "Your payment is confirmed and your webinar access has been added to your profile."}
             </div>
           </td></tr>
 
@@ -439,11 +439,12 @@ async function sendWebinarCredentialsEmail(email: string, fullName: string, temp
           <tr><td style="padding:20px 24px 0;">
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:2px solid #D0FF71;border-radius:12px;">
               <tr><td style="padding:20px;">
-                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">🔑 Your Login Credentials</div>
+                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">🔑 ${tempPassword ? "Your Login Credentials" : "Accessing Your Dashboard"}</div>
                 <div style="margin-bottom:10px;">
                   <span style="font-size:11px;color:#9CA3AF;display:block;margin-bottom:4px;">EMAIL</span>
                   <span style="font-size:14px;color:#FFFFFF;font-weight:600;">${email}</span>
                 </div>
+                ${tempPassword ? `
                 <div style="margin-bottom:16px;">
                   <span style="font-size:11px;color:#9CA3AF;display:block;margin-bottom:4px;">TEMPORARY PASSWORD</span>
                   <span style="font-size:18px;color:#D0FF71;font-weight:900;letter-spacing:0.05em;font-family:monospace;">${tempPassword}</span>
@@ -451,6 +452,11 @@ async function sendWebinarCredentialsEmail(email: string, fullName: string, temp
                 <div style="font-size:12px;color:#9CA3AF;line-height:1.5;">
                   ⚠️ Please change your password after your first login from the Settings page.
                 </div>
+                ` : `
+                <div style="font-size:13px;color:#D1D5DB;line-height:1.6;margin-bottom:14px;">
+                  Since you already have a Zkandar AI account, webinar access has been added directly to your profile. Log in using your existing password to access your schedule, materials, and upgrades.
+                </div>
+                `}
                 <div style="margin-top:16px;">
                   <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#D0FF71,#5A9F2E);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
                     Sign In to Dashboard →
@@ -502,7 +508,9 @@ async function sendWebinarCredentialsEmail(email: string, fullName: string, temp
         from: 'Zkandar AI <hello@app.zkandar.com>',
         reply_to: 'admin@zkandar.com',
         to: email,
-        subject: `Welcome to Beyond the AI Prompt — Your Login Details, ${firstName}! 🚀`,
+        subject: tempPassword 
+          ? `Welcome to Beyond the AI Prompt — Your Login Details, ${firstName}! 🚀`
+          : `Booking Confirmed — You're In, ${firstName}! 🎉`,
         html,
       }),
     });
@@ -511,120 +519,6 @@ async function sendWebinarCredentialsEmail(email: string, fullName: string, temp
     else console.log('Webinar credentials email sent to:', email);
   } catch (err) {
     console.error('Webinar credentials email send failed:', err);
-  }
-}
-
-
-// ── Webinar booking confirmation email ──
-async function sendBookingConfirmationEmail(customerEmail: string, customerName: string, products: string[], amountTotal: number) {
-  if (!RESEND_API_KEY) { console.warn('RESEND_API_KEY not set — skipping confirmation email'); return; }
-
-  const firstName = customerName.split(' ')[0] || 'there';
-  const formattedAmount = `$${(amountTotal / 100).toFixed(2)}`;
-  const names: Record<string, string> = {
-    'webinar': '3-Day AI Design Webinar',
-    'webinar-template': 'Professional Presentation Template',
-    'webinar-catalog': 'Interior Design Style Catalog',
-    'vip': 'VIP Access Upgrade',
-    'vip-elite': 'VIP Elite Upgrade',
-    'test': 'Zkandar AI — Pipeline Test',
-  };
-  const productListHtml = products.map(p =>
-    `<tr><td style="padding:8px 0;font-size:14px;color:#D1D5DB;border-bottom:1px solid #1F2937;">✓ ${names[p] || p}</td></tr>`
-  ).join('');
-
-  const html = `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"/><title>Booking Confirmed — Zkandar AI</title></head>
-<body style="margin:0;padding:0;background:#0B0B0B;font-family:Arial,sans-serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;">
-  <tr><td align="center" style="padding:32px 16px;">
-    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-      <tr><td style="background:#111111;border:1px solid #1F2937;border-radius:16px;overflow:hidden;">
-        <table width="100%" cellpadding="0" cellspacing="0">
-          <tr><td style="background:linear-gradient(135deg,#D0FF71 0%,#5A9F2E 100%);padding:28px 24px;text-align:center;">
-            <div style="font-size:28px;font-weight:900;color:#000;">YOU'RE IN! 🎉</div>
-            <div style="font-size:13px;color:rgba(0,0,0,0.7);margin-top:4px;font-weight:600;">Booking Confirmed</div>
-          </td></tr>
-          <tr><td style="padding:24px 24px 0;">
-            <div style="font-size:18px;font-weight:700;color:#FFF;">Hi ${firstName},</div>
-            <div style="font-size:14px;color:#D1D5DB;margin-top:10px;line-height:1.6;">Your payment has been confirmed and your spot is secured.</div>
-          </td></tr>
-          <tr><td style="padding:20px 24px 0;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
-              <tr><td style="padding:16px;">
-                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Order Summary</div>
-                <table width="100%" cellpadding="0" cellspacing="0">${productListHtml}</table>
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;border-top:1px solid #374151;">
-                  <tr>
-                    <td style="padding-top:12px;font-size:14px;font-weight:700;color:#FFF;">Total Paid</td>
-                    <td style="padding-top:12px;font-size:14px;font-weight:700;color:#D0FF71;text-align:right;">${formattedAmount}</td>
-                  </tr>
-                </table>
-              </td></tr>
-            </table>
-          </td></tr>
-          <tr><td style="padding:16px 24px 0;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #D0FF71;border-radius:12px;">
-              <tr><td style="padding:16px;">
-                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">📅 Session Link</div>
-                <div style="font-size:13px;color:#D1D5DB;line-height:1.6;">Your Zoom link will be shared closer to the session date. Keep an eye on your inbox.</div>
-              </td></tr>
-            </table>
-          </td></tr>
-          <tr><td style="padding:16px 24px 0;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:1px solid #1F2937;border-radius:12px;">
-              <tr><td style="padding:16px;">
-                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">What Happens Next</div>
-                <div style="font-size:13px;color:#D1D5DB;line-height:1.7;">📋 A pre-work brief will be shared before Day 1<br/>💬 Access to the private cohort community<br/>🎯 Come ready to transform your workflow with AI</div>
-              </td></tr>
-            </table>
-          </td></tr>
-          <tr><td style="padding:16px 24px 0;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0B;border:2px solid #D0FF71;border-radius:12px;">
-              <tr><td style="padding:20px;">
-                <div style="font-size:11px;font-weight:700;color:#D0FF71;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">🔑 Accessing Your Webinar Dashboard</div>
-                <div style="font-size:13px;color:#D1D5DB;line-height:1.6;margin-bottom:14px;">
-                  Since you already have a Zkandar AI account, webinar access has been added directly to your profile. Log in using your existing password to access your schedule, materials, and upgrades.
-                </div>
-                <div>
-                  <a href="https://app.zkandar.com" style="display:inline-block;background:linear-gradient(135deg,#D0FF71,#5A9F2E);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
-                    Sign In to Dashboard →
-                  </a>
-                </div>
-              </td></tr>
-            </table>
-          </td></tr>
-          <tr><td style="padding:24px;">
-            <div style="font-size:14px;color:#D1D5DB;line-height:1.6;">If you have questions before the session begins, just reply to this email.</div>
-            <div style="margin-top:20px;font-size:14px;font-weight:700;color:#FFF;">Zkandar AI</div>
-          </td></tr>
-        </table>
-      </td></tr>
-      <tr><td style="padding:16px;text-align:center;">
-        <div style="font-size:11px;color:#6B7280;">© ${new Date().getFullYear()} Zkandar AI. All rights reserved.</div>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
-
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-      body: JSON.stringify({
-        from: 'Zkandar AI <hello@app.zkandar.com>',
-        reply_to: 'admin@zkandar.com',
-        to: customerEmail,
-        subject: `Booking Confirmed — You're In, ${firstName}! 🎉`,
-        html,
-      }),
-    });
-    const txt = await res.text();
-    if (!res.ok) console.error('Resend error (booking):', res.status, txt);
-    else console.log('Confirmation email sent to:', customerEmail);
-  } catch (err) {
-    console.error('Booking email send failed:', err);
   }
 }
 
@@ -776,14 +670,14 @@ Deno.serve(async (req: Request) => {
               await sendWebinarCredentialsEmail(customerEmail, customerName, tempPassword, products, session.amount_total || 0);
               console.log('Webinar provisioning complete — credentials sent');
             } else {
-              // Existing user — still send them standard confirmation email so they know order went through
-              await sendBookingConfirmationEmail(customerEmail, customerName, products, session.amount_total || 0);
-              console.log('Webinar user already existed — standard confirmation sent');
+              // Existing user — send credentials email with no temp password
+              await sendWebinarCredentialsEmail(customerEmail, customerName, null, products, session.amount_total || 0);
+              console.log('Webinar user already existed — confirmation email sent');
             }
           } catch (provisionErr) {
             console.error('Webinar provisioning error:', provisionErr);
-            // Fallback: send standard confirmation email
-            await sendBookingConfirmationEmail(customerEmail, customerName, products, session.amount_total || 0);
+            // Fallback: send credentials email with no temp password
+            await sendWebinarCredentialsEmail(customerEmail, customerName, null, products, session.amount_total || 0);
           }
         }
 
