@@ -1025,15 +1025,22 @@ export function ParticipantDashboard() {
                                     return (
                                         <div key={item.type + item.id} className="relative group">
                                             {/* Connector line — always drawn; booking milestone follows */}
-                                            <div className="absolute left-[35px] top-[48px] bottom-[-8px] w-px bg-border z-0" />
+                                            <div className="absolute left-[35px] top-[60px] bottom-[-20px] w-px bg-lime/20 z-0" />
 
                                             {item.type === 'session' ? (
-                                                <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
-                                                    item.current ? 'bg-lime/5 border-lime/20' : 'hover:bg-white/5 border-transparent'
+                                                <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all ${
+                                                    item.current 
+                                                        ? 'bg-lime/[0.03] border-lime/35 shadow-[0_0_30px_rgba(208,255,113,0.08)]'
+                                                        : item.completed
+                                                        ? 'bg-black/25 border-lime/10 hover:border-lime/20'
+                                                        : 'bg-black/25 border-white/[0.04] hover:border-white/[0.08]'
                                                 }`}>
-                                                    <div className="flex flex-col items-center shrink-0 w-10">
+                                                    <div className="absolute inset-0 opacity-[0.01] z-0 pointer-events-none rounded-2xl" style={{
+                                                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                                    }} />
+                                                    <div className="flex flex-col items-center shrink-0 w-10 relative z-10">
                                                         <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                            item.completed ? 'bg-lime/10' : item.current ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                            item.completed ? 'bg-lime/10' : item.current ? 'gradient-lime shadow-lg shadow-lime/20 text-black' : 'bg-white/5'
                                                         }`}>
                                                             {item.completed ? (
                                                                 <CheckCircle2 className="h-5 w-5 text-lime" />
@@ -1044,21 +1051,21 @@ export function ParticipantDashboard() {
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
+                                                    <div className="flex-1 min-w-0 relative z-10">
                                                         <div className="flex items-center justify-between gap-4">
                                                             <div className="min-w-0">
-                                                                <p className={`font-medium truncate ${item.completed ? 'text-gray-400' : item.current ? 'text-lime' : 'text-white'}`}>
-                                                                    {item.title}
+                                                                <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${item.completed ? 'text-gray-400' : 'text-white'} ${item.current ? 'text-lime' : ''}`}>
+                                                                    {item.title.toUpperCase()}
                                                                 </p>
-                                                                <p className={`text-xs mt-0.5 ${item.current ? 'text-lime/70' : 'text-gray-500'}`}>{item.date}</p>
+                                                                <p className={`text-xs mt-0.5 uppercase tracking-wider truncate ${item.current ? 'text-lime/70' : 'text-gray-500'}`}>{item.date.toUpperCase()}</p>
                                                             </div>
                                                             {item.completed ? (
                                                                 item.recordingUrl && (
                                                                     <button
                                                                         onClick={() => setActiveVideoUrl(item.recordingUrl)}
-                                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider gradient-lime text-black rounded-lg shrink-0 hover:scale-105 transition-transform"
                                                                     >
-                                                                        Watch Now
+                                                                        WATCH NOW
                                                                     </button>
                                                                 )
                                                             ) : (
@@ -1066,17 +1073,17 @@ export function ParticipantDashboard() {
                                                                     item.isLiveOrSoon ? (
                                                                         <button
                                                                             onClick={() => window.open(item.zoomLink!, '_blank')}
-                                                                            className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                                            className="px-4 py-2 text-xs font-bold uppercase tracking-wider gradient-lime text-black rounded-lg shrink-0 hover:scale-105 transition-transform"
                                                                         >
-                                                                            Join Now
+                                                                            JOIN NOW
                                                                         </button>
                                                                     ) : (
-                                                                        <span className="px-4 py-2 text-sm text-gray-500 border border-white/[0.06] rounded-lg shrink-0 font-medium bg-white/[0.02]">
-                                                                            Coming Up
+                                                                        <span className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-500 border border-white/[0.06] rounded-lg shrink-0 bg-white/[0.02]">
+                                                                            COMING UP
                                                                         </span>
                                                                     )
                                                                 ) : item.current ? (
-                                                                    <span className="px-4 py-2 text-sm text-gray-600 border border-white/[0.06] rounded-lg shrink-0">Coming Up</span>
+                                                                    <span className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-600 border border-white/[0.06] rounded-lg shrink-0">COMING UP</span>
                                                                 ) : null
                                                             )}
                                                         </div>
@@ -1084,56 +1091,71 @@ export function ParticipantDashboard() {
                                                 </div>
                                             ) : (
                                                 // Assignment row
-                                                <div className="relative flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-white/[0.03] border border-transparent transition-colors">
-                                                    <div className="flex flex-col items-center shrink-0 w-10">
-                                                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center relative z-10 ${
+                                                <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all ${
+                                                    item.submitted
+                                                        ? 'bg-black/25 border-lime/10 hover:border-lime/20'
+                                                        : item.locked
+                                                        ? 'opacity-40 bg-black/25 border-white/[0.04]'
+                                                        : 'bg-lime/[0.03] border-lime/35 shadow-[0_0_30px_rgba(208,255,113,0.08)]'
+                                                }`}>
+                                                    <div className="absolute inset-0 opacity-[0.01] z-0 pointer-events-none rounded-2xl" style={{
+                                                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                                    }} />
+                                                    <div className="flex flex-col items-center shrink-0 w-10 relative z-10">
+                                                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
                                                             item.submitted 
                                                                 ? (item.status === 'approved' || item.status === 'reviewed') 
-                                                                    ? 'bg-lime/10' 
+                                                                    ? 'bg-lime/10 text-lime' 
                                                                     : item.status === 'resubmit' 
-                                                                        ? 'bg-orange-500/10' 
-                                                                        : 'bg-yellow-500/10'
+                                                                        ? 'bg-orange-500/10 text-orange-400' 
+                                                                        : 'bg-yellow-500/10 text-yellow-400'
                                                                 : item.locked 
-                                                                    ? 'bg-red-500/10' 
-                                                                    : 'bg-lime/5 border border-lime/20'
+                                                                    ? 'bg-red-500/10 text-red-400' 
+                                                                    : 'gradient-lime shadow-lg shadow-lime/20 text-black'
                                                         }`}>
                                                             {item.submitted ? (
                                                                 (item.status === 'approved' || item.status === 'reviewed') ? (
-                                                                    <CheckCircle2 className="h-4 w-4 text-lime" />
+                                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
                                                                 ) : item.status === 'resubmit' ? (
-                                                                    <X className="h-4 w-4 text-orange-400" />
+                                                                    <X className="h-5 w-5 text-orange-400" />
                                                                 ) : (
-                                                                    <Clock className="h-4 w-4 text-yellow-400" />
+                                                                    <Clock className="h-5 w-5 text-yellow-400" />
                                                                 )
                                                             ) : item.locked ? (
-                                                                <Lock className="h-4 w-4 text-red-400" />
+                                                                <Lock className="h-5 w-5 text-red-400" />
                                                             ) : (
-                                                                <FileText className="h-4 w-4 text-lime" />
+                                                                <FileText className="h-5 w-5" />
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className={`text-sm truncate ${item.submitted ? 'text-gray-400' : 'text-white/80'}`}>{item.title}</p>
-                                                        <p className="text-xs text-gray-600 mt-0.5">Due: {item.dueDate}</p>
+                                                    <div className="flex-1 min-w-0 relative z-10">
+                                                        <div className="flex items-center justify-between gap-4">
+                                                            <div className="min-w-0">
+                                                                <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${item.submitted ? 'text-gray-400' : 'text-white'}`}>
+                                                                    {item.title.toUpperCase()}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">DUE: {item.dueDate.toUpperCase()}</p>
+                                                            </div>
+                                                            {item.submitted ? (
+                                                                (item.status === 'approved' || item.status === 'reviewed') ? (
+                                                                    <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-lime/10 text-lime border border-lime/20 rounded-lg shrink-0">APPROVED</span>
+                                                                ) : item.status === 'resubmit' ? (
+                                                                    <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg shrink-0">RESUBMIT</span>
+                                                                ) : (
+                                                                    <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 rounded-lg shrink-0">IN REVIEW</span>
+                                                                )
+                                                            ) : item.locked ? (
+                                                                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg shrink-0 flex items-center gap-1">
+                                                                    <Lock className="h-3 w-3" /> LOCKED
+                                                                </span>
+                                                            ) : (
+                                                                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-lime/10 text-lime border border-lime/20 rounded-lg shrink-0">AVAILABLE</span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    {item.submitted ? (
-                                                        (item.status === 'approved' || item.status === 'reviewed') ? (
-                                                            <span className="px-2 py-1 text-xs bg-lime/10 text-lime border border-lime/20 rounded-lg shrink-0">Approved</span>
-                                                        ) : item.status === 'resubmit' ? (
-                                                            <span className="px-2 py-1 text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg shrink-0">Resubmit</span>
-                                                        ) : (
-                                                            <span className="px-2 py-1 text-xs bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 rounded-lg shrink-0">In Review</span>
-                                                        )
-                                                    ) : item.locked ? (
-                                                        <span className="px-2 py-1 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg shrink-0 flex items-center gap-1">
-                                                            <Lock className="h-3 w-3" /> Locked
-                                                        </span>
-                                                    ) : (
-                                                        <span className="px-2 py-1 text-xs bg-lime/10 text-lime border border-lime/20 rounded-lg shrink-0">Available</span>
-                                                    )}
                                                 </div>
                                             )}
-                                            <div className="h-1.5" />
+                                            <div className="h-4" />
                                         </div>
                                     )
                                 })
@@ -1270,7 +1292,7 @@ export function ParticipantDashboard() {
                                                     <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${certificateClaimed ? 'text-gray-400' : 'text-white'}`}>
                                                         AI Certificate of Completion
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 uppercase tracking-wider ${certificateClaimed ? 'text-gray-650' : 'text-gray-400'}`}>
+                                                    <p className={`text-xs mt-0.5 uppercase tracking-wider ${certificateClaimed ? 'text-gray-655' : 'text-gray-400'}`}>
                                                         {certificateClaimed ? 'CERTIFICATE CLAIMED!' : 'UNLOCKED FOR SILVER & GOLD TIERS'}
                                                     </p>
                                                 </div>
@@ -1326,77 +1348,83 @@ export function ParticipantDashboard() {
                             {/* Certificate milestone — sprint members only */}
                             {isSprintMember && (
                                 <div className="relative group">
-                                    <div className="absolute left-[35px] top-[48px] bottom-[-8px] w-px bg-border z-0" />
+                                    <div className="absolute left-[35px] top-[60px] bottom-[-20px] w-px bg-lime/20 z-0" />
                                     
-                                    <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
+                                    <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all ${
                                         certificateClaimed
-                                            ? 'hover:bg-white/5 border-transparent'
+                                            ? 'bg-black/25 border-lime/10 hover:border-lime/20'
                                             : sprintAssignmentApproved
-                                            ? 'bg-lime/5 border border-lime/20'
-                                            : 'opacity-40 border border-transparent'
+                                            ? 'bg-lime/[0.03] border-lime/35 shadow-[0_0_30px_rgba(208,255,113,0.08)]'
+                                            : 'opacity-40 bg-black/25 border-white/[0.04]'
                                     }`}>
-                                        <div className="flex flex-col items-center shrink-0 w-10">
+                                        <div className="absolute inset-0 opacity-[0.015] z-0 pointer-events-none rounded-2xl" style={{
+                                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                        }} />
+                                        <div className="flex flex-col items-center shrink-0 w-10 relative z-10">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                certificateClaimed ? 'bg-lime/10' : sprintAssignmentApproved ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                certificateClaimed ? 'bg-lime/10 text-lime' : sprintAssignmentApproved ? 'gradient-lime shadow-lg shadow-lime/20 text-black' : 'bg-white/5'
                                             }`}>
                                                 {certificateClaimed ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                    <CheckCircle2 className="h-5 w-5" />
                                                 ) : sprintAssignmentApproved ? (
-                                                    <GraduationCap className="h-5 w-5 text-black" />
+                                                    <GraduationCap className="h-5 w-5" />
                                                 ) : (
                                                     <Lock className="h-5 w-5 text-gray-500" />
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
+                                        <div className="flex-1 min-w-0 relative z-10">
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
-                                                    <p className={`font-medium truncate ${certificateClaimed ? 'text-gray-400' : sprintAssignmentApproved ? 'text-lime' : 'text-gray-600'}`}>
+                                                    <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${certificateClaimed ? 'text-gray-400' : sprintAssignmentApproved ? 'text-lime' : 'text-gray-500'}`}>
                                                         AI Certificate of Completion
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 ${certificateClaimed ? 'text-gray-600' : sprintAssignmentApproved ? 'text-lime/70' : 'text-gray-600'}`}>
-                                                        {certificateClaimed ? 'Certificate claimed!' : sprintAssignmentApproved ? 'Claim your personalized certificate' : 'Unlocks after Sprint Assignment is approved'}
+                                                    <p className={`text-xs mt-0.5 uppercase tracking-wider ${certificateClaimed ? 'text-gray-600' : sprintAssignmentApproved ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {certificateClaimed ? 'CERTIFICATE CLAIMED!' : sprintAssignmentApproved ? 'CLAIM YOUR PERSONALIZED CERTIFICATE' : 'UNLOCKS AFTER SPRINT ASSIGNMENT IS APPROVED'}
                                                     </p>
                                                 </div>
                                                 {sprintAssignmentApproved && !certificateClaimed && (
                                                     <button
                                                         onClick={() => setShowCertificateModal(true)}
-                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider gradient-lime text-black rounded-lg shrink-0 hover:scale-105 transition-transform"
                                                     >
-                                                        Claim Certificate
+                                                        CLAIM CERTIFICATE
                                                     </button>
                                                 )}
                                                 {certificateClaimed && (
                                                     <button
                                                         onClick={() => setShowCertificateModal(true)}
-                                                        className="px-4 py-2 text-sm bg-white/5 hover:bg-white/10 text-white font-medium rounded-lg shrink-0 transition-all border border-border"
+                                                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-white/5 hover:bg-white/10 rounded-lg shrink-0 transition-all border border-border"
                                                     >
-                                                        View Certificate
+                                                        VIEW CERTIFICATE
                                                     </button>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="h-1.5" />
+                                    <div className="h-4" />
                                 </div>
                             )}
 
                             {/* Booking milestone — sprint members only */}
                             {isSprintMember && (
                                 <div className="relative group">
-                                    <div className={`relative flex items-center gap-4 p-4 rounded-xl transition-colors border ${
+                                    <div className={`relative flex items-center gap-5 p-5 rounded-2xl border transition-all ${
                                         bookingCompleted
-                                            ? 'hover:bg-white/5 border-transparent'
+                                            ? 'bg-black/25 border-lime/10 hover:border-lime/20'
                                             : sprintAssignmentApproved
-                                            ? 'bg-lime/5 border border-lime/20'
-                                            : 'opacity-40 border border-transparent'
+                                            ? 'bg-lime/[0.03] border-lime/35 shadow-[0_0_30px_rgba(208,255,113,0.08)]'
+                                            : 'opacity-40 bg-black/25 border-white/[0.04]'
                                     }`}>
-                                        <div className="flex flex-col items-center shrink-0 w-10">
+                                        <div className="absolute inset-0 opacity-[0.015] z-0 pointer-events-none rounded-2xl" style={{
+                                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                        }} />
+                                        <div className="flex flex-col items-center shrink-0 w-10 relative z-10">
                                             <div className={`h-10 w-10 rounded-lg flex items-center justify-center relative z-10 ${
-                                                bookingCompleted ? 'bg-lime/10' : sprintAssignmentApproved ? 'gradient-lime shadow-lg shadow-lime/20' : 'bg-white/5'
+                                                bookingCompleted ? 'bg-lime/10 text-lime' : sprintAssignmentApproved ? 'gradient-lime shadow-lg shadow-lime/20 text-black' : 'bg-white/5'
                                             }`}>
                                                 {bookingCompleted ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-lime" />
+                                                    <CheckCircle2 className="h-5 w-5" />
                                                 ) : sprintAssignmentApproved ? (
                                                     <CalendarCheck className="h-5 w-5 text-black" />
                                                 ) : (
@@ -1404,22 +1432,22 @@ export function ParticipantDashboard() {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
+                                        <div className="flex-1 min-w-0 relative z-10">
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="min-w-0">
-                                                    <p className={`font-medium truncate ${bookingCompleted ? 'text-gray-400' : sprintAssignmentApproved ? 'text-lime' : 'text-gray-600'}`}>
-                                                        Book Your 1-on-1
+                                                    <p className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${bookingCompleted ? 'text-gray-400' : sprintAssignmentApproved ? 'text-lime' : 'text-gray-500'}`}>
+                                                        Book Your 1-on-1 Coaching Session
                                                     </p>
-                                                    <p className={`text-xs mt-0.5 ${bookingCompleted ? 'text-gray-600' : sprintAssignmentApproved ? 'text-lime/70' : 'text-gray-600'}`}>
-                                                        {bookingCompleted ? 'Booked!' : sprintAssignmentApproved ? 'Schedule a call with Khaled' : 'Unlocks after Sprint Assignment is approved'}
+                                                    <p className={`text-xs mt-0.5 uppercase tracking-wider ${bookingCompleted ? 'text-gray-650' : sprintAssignmentApproved ? 'text-lime/70' : 'text-gray-600'}`}>
+                                                        {bookingCompleted ? '1-ON-1 COACHING BOOKED!' : sprintAssignmentApproved ? 'SCHEDULE A CALL WITH KHALED' : 'UNLOCKS AFTER SPRINT ASSIGNMENT IS APPROVED'}
                                                     </p>
                                                 </div>
                                                 {sprintAssignmentApproved && !bookingCompleted && (
                                                     <button
                                                         onClick={() => setShowBookingDialog(true)}
-                                                        className="px-4 py-2 text-sm gradient-lime text-black font-medium rounded-lg shrink-0 hover:scale-105 transition-transform"
+                                                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider gradient-lime text-black rounded-lg shrink-0 hover:scale-105 transition-transform"
                                                     >
-                                                        Book Now
+                                                        BOOK NOW
                                                     </button>
                                                 )}
                                             </div>
@@ -1439,51 +1467,56 @@ export function ParticipantDashboard() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="bg-bg-card border border-border rounded-2xl p-6"
+                        className="bg-black/25 border border-border rounded-2xl p-6 relative overflow-hidden"
                     >
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="font-heading text-lg font-bold">Assignments</h2>
-                            <Link to="/my-program" className="text-sm text-lime hover:underline">View all</Link>
-                        </div>
-                        {loading ? (
-                            <div className="space-y-3">
-                                {[1, 2].map(i => (
-                                    <div key={i} className="p-4 rounded-xl bg-white/5 animate-pulse flex justify-between h-20" />
-                                ))}
+                        <div className="absolute inset-0 opacity-[0.015] z-0 pointer-events-none rounded-2xl" style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                        }} />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="font-heading text-sm font-bold tracking-wider text-white uppercase">ASSIGNMENTS</h2>
+                                <Link to="/my-program" className="text-xs font-bold text-lime tracking-wider uppercase hover:underline">VIEW ALL</Link>
                             </div>
-                        ) : assignmentSummary.items.length === 0 ? (
-                            <div className="p-4 text-sm text-gray-500">No assignments yet.</div>
-                        ) : (
-                            <div className="space-y-3">
-                                {assignmentSummary.items.map((assignment) => (
-                                    <div
-                                        key={assignment.id}
-                                        className="p-4 rounded-xl bg-white/5 hover:bg-lime/5 transition"
-                                    >
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div>
-                                                <p className="font-medium text-sm">{assignment.title}</p>
-                                                <p className="text-xs text-gray-500 mt-1">Due: {assignment.dueDate}</p>
+                            {loading ? (
+                                <div className="space-y-3">
+                                    {[1, 2].map(i => (
+                                        <div key={i} className="p-4 rounded-xl bg-white/5 animate-pulse flex justify-between h-20" />
+                                    ))}
+                                </div>
+                            ) : assignmentSummary.items.length === 0 ? (
+                                <div className="p-4 text-xs text-gray-500 uppercase tracking-wider">No assignments yet.</div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {assignmentSummary.items.map((assignment) => (
+                                        <div
+                                            key={assignment.id}
+                                            className="p-4 rounded-xl border border-white/[0.04] bg-black/40 hover:bg-lime/[0.02] hover:border-lime/20 transition-all duration-300"
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0">
+                                                    <p className="font-heading font-bold text-xs text-white uppercase tracking-wide truncate">{assignment.title.toUpperCase()}</p>
+                                                    <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">DUE: {assignment.dueDate.toUpperCase()}</p>
+                                                </div>
+                                                {assignment.status === 'pending' && (
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-lg">PENDING</span>
+                                                )}
+                                                {assignment.status === 'upcoming' && (
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white/5 text-gray-400 border border-white/10 rounded-lg">UPCOMING</span>
+                                                )}
+                                                {assignment.status === 'submitted' && (
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-lime/10 text-lime border border-lime/20 rounded-lg">SUBMITTED</span>
+                                                )}
+                                                {assignment.status === 'locked' && (
+                                                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg flex items-center gap-1">
+                                                        <Lock className="h-2.5 w-2.5" /> LOCKED
+                                                    </span>
+                                                )}
                                             </div>
-                                            {assignment.status === 'pending' && (
-                                                <span className="px-2 py-1 text-xs bg-yellow-500/10 text-yellow-400 rounded-lg">Pending</span>
-                                            )}
-                                            {assignment.status === 'upcoming' && (
-                                                <span className="px-2 py-1 text-xs bg-gray-500/10 text-gray-400 rounded-lg">Upcoming</span>
-                                            )}
-                                            {assignment.status === 'submitted' && (
-                                                <span className="px-2 py-1 text-xs bg-lime/10 text-lime rounded-lg">Submitted</span>
-                                            )}
-                                            {assignment.status === 'locked' && (
-                                                <span className="px-2 py-1 text-xs bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg flex items-center gap-1">
-                                                    <Lock className="h-3 w-3" /> Locked
-                                                </span>
-                                            )}
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </motion.div>
 
                     {/* Recent Chat */}
@@ -1491,39 +1524,44 @@ export function ParticipantDashboard() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-bg-card border border-border rounded-2xl p-6"
+                        className="bg-black/25 border border-border rounded-2xl p-6 relative overflow-hidden"
                     >
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="font-heading text-lg font-bold">Chat</h2>
-                            <MessageSquare className="h-5 w-5 text-gray-500" />
-                        </div>
-                        {loading ? (
-                            <div className="space-y-3">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="p-3 rounded-xl bg-white/5 animate-pulse h-16" />
-                                ))}
+                        <div className="absolute inset-0 opacity-[0.015] z-0 pointer-events-none rounded-2xl" style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                        }} />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="font-heading text-sm font-bold tracking-wider text-white uppercase">CHAT</h2>
+                                <MessageSquare className="h-4 w-4 text-gray-500" />
                             </div>
-                        ) : chatPreview.length === 0 ? (
-                            <div className="p-4 text-sm text-gray-500">No recent messages.</div>
-                        ) : (
-                            <div className="space-y-3">
-                                {chatPreview.map((msg) => (
-                                    <div key={msg.id} className="p-3 rounded-xl bg-white/5">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <p className="text-sm font-medium">{msg.sender}</p>
-                                            <p className="text-xs text-gray-500">{msg.time}</p>
+                            {loading ? (
+                                <div className="space-y-3">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="p-3 rounded-xl bg-white/5 animate-pulse h-16" />
+                                    ))}
+                                </div>
+                            ) : chatPreview.length === 0 ? (
+                                <div className="p-4 text-xs text-gray-500 uppercase tracking-wider">No recent messages.</div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {chatPreview.map((msg) => (
+                                        <div key={msg.id} className="p-3 rounded-xl border border-white/[0.04] bg-black/40">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <p className="text-xs font-bold text-white uppercase tracking-wide">{msg.sender.toUpperCase()}</p>
+                                                <p className="text-[9px] text-gray-500 uppercase tracking-wider">{msg.time.toUpperCase()}</p>
+                                            </div>
+                                            <p className="text-[11px] text-gray-400 tracking-wide">{msg.message}</p>
                                         </div>
-                                        <p className="text-xs text-gray-400">{msg.message}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        <Link
-                            to="/chat"
-                            className="w-full mt-4 py-2 border border-border rounded-xl text-sm hover:border-lime/50 transition flex items-center justify-center gap-2"
-                        >
-                            Open Chat <ArrowRight className="h-3 w-3" />
-                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                            <Link
+                                  to="/chat"
+                                  className="w-full mt-4 py-2.5 border border-border hover:border-lime/30 rounded-xl text-xs font-bold uppercase tracking-wider text-white hover:bg-lime/5 transition duration-300 flex items-center justify-center gap-2 font-heading"
+                            >
+                                OPEN CHAT <ArrowRight className="h-3 w-3 text-lime" />
+                            </Link>
+                        </div>
                     </motion.div>
                 </div>}
 
