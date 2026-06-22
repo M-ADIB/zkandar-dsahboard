@@ -149,7 +149,7 @@ export default function WebinarUpgradePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="text-center space-y-4 mb-12"
+                    className="text-center space-y-4 mb-8"
                 >
                     <p className="text-[0.6875rem] font-body uppercase tracking-[0.2em] text-gray-500 font-bold">
                         EXCLUSIVE ONE-TIME OFFER
@@ -165,13 +165,29 @@ export default function WebinarUpgradePage() {
                     </p>
                 </motion.div>
 
+                {/* VSL Video Player */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.15 }}
+                    className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black mb-12 group hover:border-lime/30 transition-all duration-300 shadow-lime/5"
+                    style={{ aspectRatio: '16/9' }}
+                >
+                    <iframe
+                        src="https://player.vimeo.com/video/1203443175?autoplay=0&muted=0&title=0&byline=0&portrait=0"
+                        className="absolute inset-0 w-full h-full"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowFullScreen
+                    />
+                </motion.div>
+
                 {/* Tier Cards */}
                 <div className="grid md:grid-cols-2 gap-5 mb-10">
                     {/* Silver Card */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.15 }}
+                        transition={{ duration: 0.5, delay: 0.25 }}
                     >
                         <TierCard
                             tier={SILVER_TIER}
@@ -185,7 +201,7 @@ export default function WebinarUpgradePage() {
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.25 }}
+                        transition={{ duration: 0.5, delay: 0.35 }}
                     >
                         <TierCard
                             tier={GOLD_TIER}
