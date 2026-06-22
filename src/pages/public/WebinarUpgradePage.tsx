@@ -205,7 +205,7 @@ export default function WebinarUpgradePage() {
                     className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black mb-12 group hover:border-lime/30 transition-all duration-300 shadow-lime/5"
                     style={{ aspectRatio: '16/9' }}
                 >
-                    <MutedAutoplayPlayer vimeoId="1203443175" color="d0ff71" />
+                    <MutedAutoplayPlayer vimeoId="1187084528" color="d0ff71" />
                 </motion.div>
 
                 {/* Tier Cards */}

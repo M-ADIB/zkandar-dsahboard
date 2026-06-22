@@ -13,7 +13,7 @@ import {
 import { ProjectSection } from '@/components/public/ProjectSection'
 
 /* ── Constants ─────────────────────────────────────────── */
-const VSL_ID = '1187084528'
+const VSL_ID = '1203443175'
 const TESTIMONIAL_MASHUP_ID = '1195125355'
 const TARGET_DATE = getNextPriceIncreaseDate()
 
