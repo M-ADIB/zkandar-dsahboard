@@ -203,10 +203,41 @@ function CaseStudyPresentation({
 }
 
 /* ── Page Component ────────────────────────────────────── */
+function MutedAutoplayPlayer({ vimeoId, color = 'd0ff71' }: { vimeoId: string; color?: string }) {
+    const [hasInteracted, setHasInteracted] = useState(false)
+
+    const iframeSrc = hasInteracted
+        ? `https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=0&title=0&byline=0&portrait=0&color=${color}`
+        : `https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&background=1&loop=1&title=0&byline=0&portrait=0&color=${color}`
+
+    return (
+        <div className="relative w-full h-full group">
+            <iframe
+                src={iframeSrc}
+                className="absolute inset-0 w-full h-full pointer-events-auto"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+            />
+            {!hasInteracted && (
+                <div 
+                    onClick={() => setHasInteracted(true)}
+                    className="absolute inset-0 bg-black/30 group-hover:bg-black/20 flex flex-col items-center justify-center cursor-pointer z-10 transition-all duration-300"
+                >
+                    <div className="relative w-16 h-16 rounded-full bg-lime flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_50px_rgba(208,255,113,0.35)]">
+                        <Play className="w-6 h-6 text-black fill-black ml-0.5" />
+                    </div>
+                    <span className="text-[10px] font-heading font-black uppercase tracking-[0.2em] text-white mt-4 bg-black/60 px-3 py-1 rounded-full border border-white/10 backdrop-blur-sm shadow-lg">
+                        Click to Turn On Sound
+                    </span>
+                </div>
+            )}
+        </div>
+    )
+}
+
 export default function WebinarPage() {
     const [leadModalOpen, setLeadModalOpen] = useState(false)
     const [activeFaq, setActiveFaq] = useState<number | null>(null)
-    const [vslPlaying, setVslPlaying] = useState(false)
     const [showStickyBar, setShowStickyBar] = useState(false)
     const heroRef = useRef<HTMLElement>(null)
     const [caseStudyOpen, setCaseStudyOpen] = useState<string | null>(null)
@@ -300,24 +331,8 @@ export default function WebinarPage() {
                             </div>
                             {/* Video */}
                             <div className="relative aspect-video">
-                                {!vslPlaying ? (
-                                    <button onClick={() => setVslPlaying(true)} className="absolute inset-0 flex items-center justify-center group z-10">
-                                        <img
-                                            src={`https://vumbnail.com/${VSL_ID}.jpg`}
-                                            alt="Watch the webinar intro"
-                                            className="absolute inset-0 w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-300" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                        <div className="relative w-[4.5rem] h-[4.5rem] rounded-full bg-lime flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_50px_rgba(208,255,113,0.35)]">
-                                            <Play className="w-7 h-7 text-black fill-black ml-0.5" />
-                                        </div>
-                                    </button>
-                                ) : VSL_ID ? (
-                                    <iframe
-                                        src={`https://player.vimeo.com/video/${VSL_ID}?autoplay=1&title=0&byline=0&portrait=0&color=d0ff71`}
-                                        className="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen
-                                    />
+                                {VSL_ID ? (
+                                    <MutedAutoplayPlayer vimeoId={VSL_ID} color="d0ff71" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-700 text-sm font-body">VSL Video: Set Vimeo ID</div>
                                 )}

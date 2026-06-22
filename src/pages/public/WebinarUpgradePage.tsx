@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Zap, Users, Video, Award, Rocket, FileText, X, Star } from 'lucide-react'
+import { Check, Crown, Gem, ShieldCheck, Loader2, ArrowRight, Sparkles, Zap, Users, Video, Award, Rocket, FileText, X, Star, Play } from 'lucide-react'
 import { trackFBEvent } from '@/lib/fbpixel'
 import toast from 'react-hot-toast'
 
@@ -60,6 +60,38 @@ const GOLD_TIER: TierDef = {
         { icon: Award, text: 'AI Certificate from Zkandar: recognized completion credential' },
         { icon: Rocket, text: 'Early access to the Sprint Webinar: locked-in priority registration' },
     ],
+}
+
+function MutedAutoplayPlayer({ vimeoId, color = 'd0ff71' }: { vimeoId: string; color?: string }) {
+    const [hasInteracted, setHasInteracted] = useState(false)
+
+    const iframeSrc = hasInteracted
+        ? `https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=0&title=0&byline=0&portrait=0&color=${color}`
+        : `https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&background=1&loop=1&title=0&byline=0&portrait=0&color=${color}`
+
+    return (
+        <div className="relative w-full h-full group">
+            <iframe
+                src={iframeSrc}
+                className="absolute inset-0 w-full h-full pointer-events-auto"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+            />
+            {!hasInteracted && (
+                <div 
+                    onClick={() => setHasInteracted(true)}
+                    className="absolute inset-0 bg-black/30 group-hover:bg-black/20 flex flex-col items-center justify-center cursor-pointer z-10 transition-all duration-300"
+                >
+                    <div className="relative w-16 h-16 rounded-full bg-lime flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_50px_rgba(208,255,113,0.35)]">
+                        <Play className="w-6 h-6 text-black fill-black ml-0.5" />
+                    </div>
+                    <span className="text-[10px] font-heading font-black uppercase tracking-[0.2em] text-white mt-4 bg-black/60 px-3 py-1 rounded-full border border-white/10 backdrop-blur-sm shadow-lg">
+                        Click to Turn On Sound
+                    </span>
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default function WebinarUpgradePage() {
@@ -173,12 +205,7 @@ export default function WebinarUpgradePage() {
                     className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black mb-12 group hover:border-lime/30 transition-all duration-300 shadow-lime/5"
                     style={{ aspectRatio: '16/9' }}
                 >
-                    <iframe
-                        src="https://player.vimeo.com/video/1203443175?autoplay=0&muted=0&title=0&byline=0&portrait=0"
-                        className="absolute inset-0 w-full h-full"
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowFullScreen
-                    />
+                    <MutedAutoplayPlayer vimeoId="1203443175" color="d0ff71" />
                 </motion.div>
 
                 {/* Tier Cards */}
