@@ -134,12 +134,18 @@ function SubmissionContent({ sub }: { sub: SubmissionRow }) {
                             <div className="space-y-1">
                                 <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">4. Animation A</p>
                                 <video src={parsedJson.animA} controls className="w-full rounded-lg border border-white/5 aspect-video bg-black/50" />
+                                <a href={parsedJson.animA} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10px] text-lime hover:underline mt-1.5">
+                                    <ExternalLink className="h-3 w-3" /> Open / Download Animation A
+                                </a>
                             </div>
                         )}
                         {parsedJson.animB && (
                             <div className="space-y-1">
                                 <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">5. Animation B</p>
                                 <video src={parsedJson.animB} controls className="w-full rounded-lg border border-white/5 aspect-video bg-black/50" />
+                                <a href={parsedJson.animB} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10px] text-lime hover:underline mt-1.5">
+                                    <ExternalLink className="h-3 w-3" /> Open / Download Animation B
+                                </a>
                             </div>
                         )}
                     </div>

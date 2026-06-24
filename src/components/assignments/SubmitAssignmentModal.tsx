@@ -24,7 +24,7 @@ interface SubmitAssignmentModalProps {
 
 type Mode = 'file' | 'text'
 
-const MAX_FILE_MB = 200
+const MAX_FILE_MB = 50
 
 function modeForFormat(format: SubmissionFormat): Mode {
     if (format === 'text') return 'text'
