@@ -395,16 +395,19 @@ export function DynamicMasterclassProposalPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-center">
                             <div className="space-y-3">
-                                <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold">Total Investment</span>
+                                <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold">Investment</span>
                                 <div className="text-lime font-heading text-4xl sm:text-5xl font-black tracking-wide leading-none">
-                                    AED {proposal.total_investment?.toLocaleString() || '120,000'}
+                                    AED {proposal.slug === 'modon' ? '120,000' : (proposal.total_investment?.toLocaleString() || '120,000')}
                                 </div>
                                 <span className="block text-xs text-gray-400 italic font-body">
-                                    All-inclusive studio license package {proposal.slug === 'anne-korbien' && '(VAT inclusive)'}{proposal.slug === 'modon' && '(excluding VAT)'}
+                                    {proposal.slug === 'modon' ? 'per masterclass (excluding VAT)' : `All-inclusive studio license package ${proposal.slug === 'anne-korbien' ? '(VAT inclusive)' : ''}`}
                                 </span>
                                 {proposal.slug === 'modon' && (
-                                    <div className="mt-2 text-xs text-lime font-bold uppercase tracking-wider bg-lime/10 border border-lime/20 rounded-lg p-2.5 inline-block">
-                                        Note: Sign up for two masterclasses to receive a 20% discount.
+                                    <div className="mt-4 text-xs text-gray-400 leading-relaxed font-body bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 space-y-2">
+                                        <p className="font-heading font-bold text-lime uppercase tracking-wider text-[10px]">Package Offer</p>
+                                        <p>
+                                            Secure both masterclasses to receive a <strong className="text-white">20% discount</strong>, bringing the total combined investment to <strong className="text-lime">AED 200,000</strong> (excluding VAT) instead of AED 240,000.
+                                        </p>
                                     </div>
                                 )}
                             </div>
