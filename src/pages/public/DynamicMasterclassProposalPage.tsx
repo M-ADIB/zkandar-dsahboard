@@ -393,38 +393,81 @@ export function DynamicMasterclassProposalPage() {
                             <p className="text-gray-400 text-sm mt-1">Financial investment &amp; agreements</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-center">
-                            <div className="space-y-3">
-                                <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold">Investment</span>
-                                <div className="text-lime font-heading text-4xl sm:text-5xl font-black tracking-wide leading-none">
-                                    AED {proposal.slug === 'modon' ? '120,000' : (proposal.total_investment?.toLocaleString() || '120,000')}
+                        {proposal.slug === 'modon' ? (
+                            <div className="space-y-8 pt-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    {/* Card 1: Per Masterclass */}
+                                    <div className="bg-[#0A0A0A] border border-white/[0.06] rounded-2xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
+                                        <div className="space-y-2">
+                                            <span className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold">Per Masterclass · Excl. VAT</span>
+                                            <div className="text-white font-heading text-3xl sm:text-4xl font-black tracking-wide">
+                                                AED 120,000
+                                            </div>
+                                        </div>
+                                        <span className="block text-xs text-gray-400 mt-6 italic font-body">
+                                            All-inclusive studio engagement
+                                        </span>
+                                    </div>
+
+                                    {/* Card 2: Package Offer */}
+                                    <div className="bg-[#0F1A08] border border-lime/20 rounded-2xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden group hover:border-lime/30 transition-all duration-300 shadow-[0_0_30px_rgba(208,255,113,0.02)]">
+                                        <div className="absolute top-4 right-4 bg-lime text-black font-heading font-black uppercase text-[9px] tracking-widest px-2.5 py-1 rounded">
+                                            Save 20%
+                                        </div>
+                                        <div className="space-y-2">
+                                            <span className="block text-[10px] uppercase tracking-widest text-lime font-bold">2 Masterclasses · Package</span>
+                                            <div className="text-lime font-heading text-3xl sm:text-4xl font-black tracking-wide">
+                                                AED 200,000
+                                            </div>
+                                            <div className="text-xs text-gray-500 line-through font-mono">
+                                                AED 240,000
+                                            </div>
+                                        </div>
+                                        <span className="block text-xs text-gray-400 mt-6 italic font-body">
+                                            Package discount applies when both secured together
+                                        </span>
+                                    </div>
                                 </div>
-                                <span className="block text-xs text-gray-400 italic font-body">
-                                    {proposal.slug === 'modon' ? 'per masterclass (excluding VAT)' : `All-inclusive studio license package ${proposal.slug === 'anne-korbien' ? '(VAT inclusive)' : ''}`}
-                                </span>
-                                {proposal.slug === 'modon' && (
-                                    <div className="mt-4 text-xs text-gray-400 leading-relaxed font-body bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 space-y-2">
-                                        <p className="font-heading font-bold text-lime uppercase tracking-wider text-[10px]">Package Offer</p>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/[0.08] pt-6">
+                                    <div className="space-y-4 text-xs sm:text-sm text-gray-400 leading-relaxed font-body">
                                         <p>
-                                            Secure both masterclasses to receive a <strong className="text-white">20% discount</strong>, bringing the total combined investment to <strong className="text-lime">AED 200,000</strong> (excluding VAT) instead of AED 240,000.
+                                            Full payment is required in advance in order to officially secure the engagement, reserve dates, and begin the Masterclass customization and structuring phase.
                                         </p>
                                     </div>
-                                )}
-                            </div>
-                            <div className="space-y-4 text-xs sm:text-sm text-gray-400 leading-relaxed font-body border-t md:border-t-0 md:border-l border-white/[0.08] pt-6 md:pt-0 md:pl-8">
-                                <p>
-                                    Full payment is required in advance in order to officially secure the engagement, reserve dates, and begin the Masterclass customization and structuring phase.
-                                </p>
-                                <p>
-                                    Customization prep phase duration is typically <strong className="text-white">2-3 weeks</strong> prior to session kickoffs.
-                                </p>
-                                <div className="pt-2">
-                                    <a href="/terms" className="text-xs uppercase tracking-wider text-gray-500 hover:text-lime underline transition-colors">
-                                        Read terms of service
-                                    </a>
+                                    <div className="space-y-4 text-xs sm:text-sm text-gray-400 leading-relaxed font-body">
+                                        <p>
+                                            Customization prep phase duration is typically <strong className="text-white">2-3 weeks</strong> prior to session kickoffs. All services are governed by the standard terms of service.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 items-center">
+                                <div className="space-y-3">
+                                    <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold">Total Investment</span>
+                                    <div className="text-lime font-heading text-4xl sm:text-5xl font-black tracking-wide leading-none">
+                                        AED {proposal.total_investment?.toLocaleString() || '120,000'}
+                                    </div>
+                                    <span className="block text-xs text-gray-400 italic font-body">
+                                        All-inclusive studio license package {proposal.slug === 'anne-korbien' && '(VAT inclusive)'}
+                                    </span>
+                                </div>
+                                <div className="space-y-4 text-xs sm:text-sm text-gray-400 leading-relaxed font-body border-t md:border-t-0 md:border-l border-white/[0.08] pt-6 md:pt-0 md:pl-8">
+                                    <p>
+                                        Full payment is required in advance in order to officially secure the engagement, reserve dates, and begin the Masterclass customization and structuring phase.
+                                    </p>
+                                    <p>
+                                        Customization prep phase duration is typically <strong className="text-white">2-3 weeks</strong> prior to session kickoffs.
+                                    </p>
+                                    <div className="pt-2">
+                                        <a href="/terms" className="text-xs uppercase tracking-wider text-gray-500 hover:text-lime underline transition-colors">
+                                            Read terms of service
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </FadeIn>
 
