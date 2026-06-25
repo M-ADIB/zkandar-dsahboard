@@ -397,54 +397,58 @@ export function DynamicMasterclassProposalPage() {
                             <div className="space-y-8 pt-4">
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                                     {/* Huge Package Offer */}
-                                    <div className="bg-[#0F1A08] border border-lime/30 rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden group hover:border-lime/50 transition-all duration-300 shadow-[0_0_60px_rgba(208,255,113,0.05)]">
-                                        <div className="absolute top-6 right-6 bg-lime text-black font-heading font-black uppercase text-[11px] tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(208,255,113,0.4)]">
-                                            Save 20%
-                                        </div>
+                                    <div className="bg-[#0F1A08] border border-lime/30 rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden group hover:border-lime/50 transition-all duration-300 shadow-[0_0_60px_rgba(208,255,113,0.05)]">
                                         <div className="space-y-4 z-10 relative">
-                                            <span className="block text-xs uppercase tracking-widest text-lime font-bold">2 Masterclasses · Package</span>
+                                            <div className="flex justify-between items-start gap-4">
+                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-lime font-bold mt-1">2 Masterclasses · Package</span>
+                                                <div className="shrink-0 bg-lime text-black font-heading font-black uppercase text-[9px] sm:text-[10px] tracking-widest px-2.5 sm:px-3 py-1 rounded-full shadow-[0_0_15px_rgba(208,255,113,0.4)]">
+                                                    Save 20%
+                                                </div>
+                                            </div>
                                             <div>
-                                                <div className="text-gray-400 font-heading text-xl font-black tracking-wide line-through mb-1">
+                                                <div className="text-gray-400 font-heading text-lg font-black tracking-wide line-through mb-1">
                                                     AED 240,000
                                                 </div>
-                                                <div className="text-lime font-heading text-5xl xl:text-6xl font-black tracking-wide leading-none">
+                                                <div className="text-lime font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-wide leading-none whitespace-nowrap">
                                                     AED 200,000
                                                 </div>
-                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-lime/70 font-bold mt-3">Excl. VAT</span>
+                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-lime/70 font-bold mt-2">Excl. VAT</span>
                                             </div>
                                         </div>
                                         <div className="space-y-4 pt-8 z-10 relative">
-                                            <p className="text-sm text-gray-300 leading-relaxed font-body">
+                                            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-body">
                                                 Package discount applies when both Masterclasses are secured together. Maximize team upskilling and workflow integration.
                                             </p>
-                                            <div className="inline-flex items-center gap-2 bg-lime/10 border border-lime/20 rounded-lg px-3 py-1.5">
-                                                <Users className="w-4 h-4 text-lime" />
-                                                <span className="text-xs font-bold text-lime tracking-wide">5 to 10 participants per masterclass</span>
+                                            <div className="inline-flex items-center gap-2 bg-lime/10 border border-lime/20 rounded-lg px-2.5 sm:px-3 py-1.5">
+                                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-lime shrink-0" />
+                                                <span className="text-[10px] sm:text-xs font-bold text-lime tracking-wide">5 to 10 participants per masterclass</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Single Masterclass Option */}
-                                    <div className="bg-[#0A0A0A] border border-white/[0.06] rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
+                                    <div className="bg-[#0A0A0A] border border-white/[0.06] rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
                                         <div className="space-y-4 z-10 relative">
-                                            <span className="block text-xs uppercase tracking-widest text-gray-500 font-bold">Per Single Masterclass</span>
+                                            <div className="flex justify-between items-start gap-4">
+                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold mt-1">Per Single Masterclass</span>
+                                            </div>
                                             <div>
-                                                <div className="opacity-0 font-heading text-xl font-black tracking-wide mb-1 select-none" aria-hidden="true">
+                                                <div className="opacity-0 font-heading text-lg font-black tracking-wide mb-1 select-none" aria-hidden="true">
                                                     AED 000,000
                                                 </div>
-                                                <div className="text-white font-heading text-5xl xl:text-6xl font-black tracking-wide leading-none">
+                                                <div className="text-white font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-wide leading-none whitespace-nowrap">
                                                     AED 120,000
                                                 </div>
-                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold mt-3">Excl. VAT</span>
+                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold mt-2">Excl. VAT</span>
                                             </div>
                                         </div>
                                         <div className="space-y-4 pt-8 z-10 relative">
-                                            <p className="text-sm text-gray-400 italic font-body leading-relaxed">
+                                            <p className="text-xs sm:text-sm text-gray-400 italic font-body leading-relaxed">
                                                 All-inclusive standalone studio engagement.
                                             </p>
-                                            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 mt-auto">
-                                                <Users className="w-4 h-4 text-gray-400" />
-                                                <span className="text-xs font-bold text-gray-300 tracking-wide">5 to 10 participants per masterclass</span>
+                                            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-2.5 sm:px-3 py-1.5 mt-auto">
+                                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 shrink-0" />
+                                                <span className="text-[10px] sm:text-xs font-bold text-gray-300 tracking-wide">5 to 10 participants per masterclass</span>
                                             </div>
                                         </div>
                                     </div>
