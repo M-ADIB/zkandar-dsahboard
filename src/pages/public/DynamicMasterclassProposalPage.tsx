@@ -403,13 +403,18 @@ export function DynamicMasterclassProposalPage() {
                                                 <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold mt-1">Single Masterclass</span>
                                             </div>
                                             <div>
-                                                <div className="opacity-0 font-heading text-xs sm:text-sm font-bold tracking-wide mb-1 select-none" aria-hidden="true">
-                                                    Billed as AED 000,000 total
-                                                </div>
                                                 <div className="text-white font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-wide leading-none whitespace-nowrap">
                                                     AED 120,000
                                                 </div>
-                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold mt-2">Excl. VAT</span>
+                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold mt-1.5">
+                                                    per masterclass
+                                                </span>
+                                                <div className="mt-4 space-y-1">
+                                                    <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold">Excl. VAT</span>
+                                                    <div className="text-gray-500 text-xs sm:text-sm font-bold tracking-wide opacity-0 select-none" aria-hidden="true">
+                                                        Billed as AED 200,000 total
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="space-y-4 pt-8 z-10 relative">
@@ -433,18 +438,18 @@ export function DynamicMasterclassProposalPage() {
                                                 </div>
                                             </div>
                                             <div>
-                                                <div className="text-gray-400 font-heading text-xs sm:text-sm font-bold tracking-wide mb-1">
-                                                    Billed as AED 200,000 total
+                                                <div className="text-lime font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-wide leading-none whitespace-nowrap">
+                                                    AED 100,000
                                                 </div>
-                                                <div className="flex items-baseline gap-2 flex-wrap">
-                                                    <span className="text-lime font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-wide leading-none whitespace-nowrap">
-                                                        AED 100,000
-                                                    </span>
-                                                    <span className="text-lime/70 font-heading text-xs sm:text-sm font-bold tracking-wide lowercase">
-                                                        / masterclass
-                                                    </span>
+                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-lime/70 font-bold mt-1.5">
+                                                    per masterclass
+                                                </span>
+                                                <div className="mt-4 space-y-1">
+                                                    <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-lime/70 font-bold">Excl. VAT</span>
+                                                    <div className="text-gray-400 font-heading text-xs sm:text-sm font-bold tracking-wide">
+                                                        Billed as AED 200,000 total
+                                                    </div>
                                                 </div>
-                                                <span className="block text-[10px] sm:text-xs uppercase tracking-widest text-lime/70 font-bold mt-2">Excl. VAT</span>
                                             </div>
                                         </div>
                                         <div className="space-y-4 pt-8 z-10 relative">
