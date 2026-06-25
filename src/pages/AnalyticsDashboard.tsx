@@ -3,8 +3,12 @@ import { motion } from 'framer-motion'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis,
+    AreaChart, Area
 } from 'recharts'
-import { Users, Brain, Target, Building2, Filter } from 'lucide-react'
+import { 
+    Users, Brain, Target, Building2, Filter,
+    Eye, Clock, Activity, FileText, ArrowUpRight
+} from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { MetricCard } from '@/components/shared/MetricCard'
 import { RespondentListModal, type RespondentData } from '@/components/admin/shared/RespondentListModal'
@@ -437,6 +441,387 @@ function PostTeamTab({ data }: { data: PostSubmission[] }) {
     )
 }
 
+// ─── Webinar Analytics Tab ───────────────────────────────────────────────────
+
+interface WebinarAnalyticsRecord {
+    id: string
+    session_id: string
+    path: string
+    referrer: string
+    variant: string
+    duration_seconds: number
+    created_at: string
+    updated_at: string
+}
+
+function WebinarAnalyticsTab() {
+    const [records, setRecords] = useState<WebinarAnalyticsRecord[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        const fetchWebinarData = async () => {
+            setLoading(true)
+            try {
+                const { data, error: err } = await supabase
+                    .from('webinar_analytics')
+                    .select('*')
+                    .order('created_at', { ascending: true })
+
+                if (err) throw err
+                setRecords((data as WebinarAnalyticsRecord[]) || [])
+            } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : 'Failed to load webinar analytics'
+                console.error('Error fetching webinar analytics:', err)
+                setError(message)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchWebinarData()
+    }, [])
+
+    // Process statistics
+    const uniqueCount = useMemo(() => {
+        return new Set(records.map(r => r.session_id)).size
+    }, [records])
+
+    const pageviewsCount = useMemo(() => {
+        return records.length
+    }, [records])
+
+    const viewsPerVisit = useMemo(() => {
+        return uniqueCount > 0 ? (pageviewsCount / uniqueCount).toFixed(1) : '0'
+    }, [uniqueCount, pageviewsCount])
+
+    const avgVisitDuration = useMemo(() => {
+        const sessionDurations: Record<string, number> = {}
+        records.forEach(r => {
+            sessionDurations[r.session_id] = (sessionDurations[r.session_id] || 0) + r.duration_seconds
+        })
+        const durations = Object.values(sessionDurations)
+        const avgSecs = durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0
+        
+        if (avgSecs <= 0) return '0s'
+        if (avgSecs < 60) return `${Math.round(avgSecs)}s`
+        const mins = Math.floor(avgSecs / 60)
+        const secs = Math.round(avgSecs % 60)
+        return `${mins}m ${secs}s`
+    }, [records])
+
+    const bounceRate = useMemo(() => {
+        const sessionCounts: Record<string, number> = {}
+        records.forEach(r => {
+            sessionCounts[r.session_id] = (sessionCounts[r.session_id] || 0) + 1
+        })
+        const total = Object.keys(sessionCounts).length
+        const bounces = Object.values(sessionCounts).filter(c => c === 1).length
+        return total > 0 ? `${((bounces / total) * 100).toFixed(1)}%` : '0%'
+    }, [records])
+
+    // A/B Funnel calculations
+    const funnelA = useMemo(() => {
+        const variantRecords = records.filter(r => r.variant === 'A')
+        const landed = new Set(variantRecords.filter(r => r.path === '/' || r.path === '/main').map(r => r.session_id))
+        const converted = new Set(variantRecords.filter(r => r.path === '/thank-you' && landed.has(r.session_id)).map(r => r.session_id))
+        const landedCount = landed.size
+        const convertedCount = converted.size
+        const rate = landedCount > 0 ? (convertedCount / landedCount) * 100 : 0
+        return { landed: landedCount, converted: convertedCount, rate }
+    }, [records])
+
+    const funnelB = useMemo(() => {
+        const variantRecords = records.filter(r => r.variant === 'B')
+        const landed = new Set(variantRecords.filter(r => r.path === '/' || r.path === '/main').map(r => r.session_id))
+        const converted = new Set(variantRecords.filter(r => r.path === '/thank-you' && landed.has(r.session_id)).map(r => r.session_id))
+        const landedCount = landed.size
+        const convertedCount = converted.size
+        const rate = landedCount > 0 ? (convertedCount / landedCount) * 100 : 0
+        return { landed: landedCount, converted: convertedCount, rate }
+    }, [records])
+
+    const liftData = useMemo(() => {
+        if (funnelA.rate === 0 && funnelB.rate === 0) {
+            return { lift: '0.0%', text: 'No conversions yet', isGreen: false }
+        }
+        if (funnelA.rate === 0) {
+            return { lift: '+100%', text: 'Variant B Win', isGreen: true }
+        }
+        const diff = funnelB.rate - funnelA.rate
+        const liftPercent = (diff / funnelA.rate) * 100
+        if (liftPercent > 0) {
+            return { lift: `+${liftPercent.toFixed(1)}%`, text: 'Variant B Win', isGreen: true }
+        } else if (liftPercent < 0) {
+            return { lift: `${liftPercent.toFixed(1)}%`, text: 'Variant A Win', isGreen: false }
+        }
+        return { lift: '0.0%', text: 'Draw', isGreen: false }
+    }, [funnelA, funnelB])
+
+    // Daily unique visitors chart data
+    const dailyChartData = useMemo(() => {
+        const dailyMap: Record<string, Set<string>> = {}
+        records.forEach(r => {
+            const dateStr = new Date(r.created_at).toISOString().split('T')[0]
+            if (!dailyMap[dateStr]) {
+                dailyMap[dateStr] = new Set()
+            }
+            dailyMap[dateStr].add(r.session_id)
+        })
+
+        return Object.entries(dailyMap)
+            .map(([date, sessions]) => ({
+                rawDate: date,
+                date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }),
+                visitors: sessions.size
+            }))
+            .sort((a, b) => a.rawDate.localeCompare(b.rawDate))
+    }, [records])
+
+    // Referrers data
+    const referrerData = useMemo(() => {
+        const referrerMap: Record<string, Set<string>> = {}
+        records.forEach(r => {
+            const ref = r.referrer || 'Direct'
+            if (!referrerMap[ref]) {
+                referrerMap[ref] = new Set()
+            }
+            referrerMap[ref].add(r.session_id)
+        })
+
+        return Object.entries(referrerMap)
+            .map(([name, sessions]) => ({
+                name,
+                value: sessions.size,
+                percentage: uniqueCount > 0 ? parseFloat(((sessions.size / uniqueCount) * 100).toFixed(1)) : 0
+            }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 8)
+    }, [records, uniqueCount])
+
+    // Top paths data
+    const pathsData = useMemo(() => {
+        const pathMap: Record<string, number> = {}
+        records.forEach(r => {
+            pathMap[r.path] = (pathMap[r.path] || 0) + 1
+        })
+
+        return Object.entries(pathMap)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 8)
+    }, [records])
+
+    const kpiCards = [
+        { icon: Users, label: 'Unique Visitors', value: String(uniqueCount), sub: 'Active sessions tracked', delay: 0 },
+        { icon: Eye, label: 'Pageviews', value: String(pageviewsCount), sub: 'Total paths visited', delay: 0.05 },
+        { icon: FileText, label: 'Views Per Visit', value: viewsPerVisit, sub: 'Average paths / session', delay: 0.1 },
+        { icon: Clock, label: 'Visit Duration', value: avgVisitDuration, sub: 'Time spent per session', delay: 0.15 },
+        { icon: Activity, label: 'Bounce Rate', value: bounceRate, sub: 'Single pageviews / total', delay: 0.2 }
+    ]
+
+    if (loading) {
+        return <div className="p-16 text-center text-gray-500">Loading webinar statistics…</div>
+    }
+
+    if (error) {
+        return (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                {error}
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-6">
+            {/* KPI Cards Row */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {kpiCards.map(k => (
+                    <MetricCard 
+                        key={k.label} 
+                        icon={k.icon} 
+                        label={k.label} 
+                        value={k.value} 
+                        sub={k.sub} 
+                        delay={k.delay}
+                    />
+                ))}
+            </div>
+
+            {/* Row 2: A/B Testing Funnel + Daily Visitors Chart */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* A/B Testing Funnel Card */}
+                <div className="group relative overflow-hidden bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_32px_-4px_rgba(0,0,0,0.5)] hover:border-white/[0.12] transition-colors duration-500">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+                    <div className="absolute -z-10 inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(circle_at_50%_0%,rgba(208,255,113,0.03),transparent_70%)]" />
+                    
+                    <h3 className="font-heading font-bold mb-1 text-[11px] text-gray-500 uppercase tracking-[0.12em]">A/B Testing Funnel</h3>
+                    <p className="text-[11px] text-gray-500 mb-6">Conversion Rate comparison: landing on '/' vs. reaching '/thank-you'</p>
+                    
+                    <div className="space-y-6">
+                        {/* Variant A */}
+                        <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
+                            <div>
+                                <span className="text-[10px] font-semibold tracking-wider text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-md border border-cyan-400/20 uppercase">
+                                    Variant A
+                                </span>
+                                <div className="text-[11px] text-gray-500 mt-1">{funnelA.converted} / {funnelA.landed} users</div>
+                            </div>
+                            <div className="text-3xl font-bold text-white tracking-tight tabular-nums">
+                                {funnelA.rate.toFixed(1)}%
+                            </div>
+                        </div>
+
+                        {/* Variant B */}
+                        <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
+                            <div>
+                                <span className="text-[10px] font-semibold tracking-wider text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded-md border border-purple-400/20 uppercase">
+                                    Variant B
+                                </span>
+                                <div className="text-[11px] text-gray-500 mt-1">{funnelB.converted} / {funnelB.landed} users</div>
+                            </div>
+                            <div className="text-3xl font-bold text-white tracking-tight tabular-nums">
+                                {funnelB.rate.toFixed(1)}%
+                            </div>
+                        </div>
+
+                        {/* Conversion Lift */}
+                        <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                            <span className="text-[10px] uppercase font-medium tracking-[0.15em] text-gray-500">
+                                Conversion Lift
+                            </span>
+                            <div className={`text-3xl font-bold mt-1 tracking-tight tabular-nums ${liftData.isGreen ? 'text-lime drop-shadow-[0_0_12px_rgba(208,255,113,0.15)]' : 'text-gray-300'}`}>
+                                {liftData.lift}
+                            </div>
+                            <span className={`text-[10px] font-bold mt-1.5 px-2 py-0.5 rounded-full ${liftData.isGreen ? 'bg-lime/10 text-lime border border-lime/20' : 'bg-white/5 text-gray-400 border border-white/10'}`}>
+                                {liftData.isGreen && <ArrowUpRight className="inline-block h-3.5 w-3.5 mr-0.5 align-text-bottom" />}
+                                {liftData.text}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Daily Unique Visitors Chart */}
+                <div className="lg:col-span-2 group relative overflow-hidden bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_32px_-4px_rgba(0,0,0,0.5)] hover:border-white/[0.12] transition-colors duration-500">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+                    <div className="absolute -z-10 inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(circle_at_50%_0%,rgba(208,255,113,0.03),transparent_70%)]" />
+                    
+                    <h3 className="font-heading font-bold mb-1 text-[11px] text-gray-500 uppercase tracking-[0.12em]">Daily Unique Visitors</h3>
+                    <p className="text-[11px] text-gray-500 mb-6">Active user sessions tracked over this interval</p>
+                    
+                    <div className="w-full">
+                        {dailyChartData.length === 0 ? (
+                            <div className="h-60 flex items-center justify-center text-gray-600 text-sm">No visitor history yet</div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={240}>
+                                <AreaChart data={dailyChartData} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.2}/>
+                                            <stop offset="95%" stopColor="#A78BFA" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#181818" vertical={false} />
+                                    <XAxis 
+                                        dataKey="date" 
+                                        tick={{ fill: '#555', fontSize: 11 }} 
+                                        axisLine={{ stroke: '#222' }}
+                                        tickLine={false}
+                                    />
+                                    <YAxis 
+                                        tick={{ fill: '#555', fontSize: 11 }} 
+                                        axisLine={{ stroke: '#222' }}
+                                        tickLine={false}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ 
+                                            backgroundColor: 'rgba(0,0,0,0.85)', 
+                                            backdropFilter: 'blur(12px)', 
+                                            border: '1px solid rgba(255,255,255,0.08)', 
+                                            borderRadius: '12px', 
+                                            fontSize: 12, 
+                                            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)',
+                                            color: '#fff'
+                                        }}
+                                        cursor={{ stroke: 'rgba(167, 139, 250, 0.2)', strokeWidth: 1 }}
+                                    />
+                                    <Area 
+                                        type="monotone" 
+                                        dataKey="visitors" 
+                                        stroke="#A78BFA" 
+                                        fillOpacity={1} 
+                                        fill="url(#colorVisitors)" 
+                                        strokeWidth={2}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Row 3: Referrers + Paths Tables */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Referrer Channels */}
+                <div className="group relative overflow-hidden bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_32px_-4px_rgba(0,0,0,0.5)] hover:border-white/[0.12] transition-colors duration-500">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+                    <div className="absolute -z-10 inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(circle_at_50%_0%,rgba(208,255,113,0.03),transparent_70%)]" />
+                    
+                    <h3 className="font-heading font-bold mb-1 text-[11px] text-gray-500 uppercase tracking-[0.12em]">Referrer Channels</h3>
+                    <p className="text-[11px] text-gray-500 mb-6">Where your traffic originates</p>
+
+                    {referrerData.length === 0 ? (
+                        <div className="h-48 flex items-center justify-center text-gray-600 text-sm">No referrer data yet</div>
+                    ) : (
+                        <div className="space-y-4">
+                            {referrerData.map(item => (
+                                <div key={item.name} className="flex flex-col gap-1.5">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="text-gray-300 font-medium">{item.name}</span>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-white font-bold">{item.value}</span>
+                                            <span className="text-gray-500">({item.percentage}%)</span>
+                                        </div>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-white/[0.02] border border-white/[0.05] rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-[#A78BFA] rounded-full transition-all duration-500" 
+                                            style={{ width: `${item.percentage}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Top Visited Paths */}
+                <div className="group relative overflow-hidden bg-[#0a0a0a] border border-white/[0.08] rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_32px_-4px_rgba(0,0,0,0.5)] hover:border-white/[0.12] transition-colors duration-500">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+                    <div className="absolute -z-10 inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[radial-gradient(circle_at_50%_0%,rgba(208,255,113,0.03),transparent_70%)]" />
+                    
+                    <h3 className="font-heading font-bold mb-1 text-[11px] text-gray-500 uppercase tracking-[0.12em]">Top Visited Paths</h3>
+                    <p className="text-[11px] text-gray-500 mb-6">Most frequently viewed routes</p>
+
+                    {pathsData.length === 0 ? (
+                        <div className="h-48 flex items-center justify-center text-gray-600 text-sm">No path views yet</div>
+                    ) : (
+                        <div className="divide-y divide-white/[0.05]">
+                            {pathsData.map(item => (
+                                <div key={item.name} className="flex items-center justify-between py-3 text-xs">
+                                    <span className="text-gray-300 font-mono">{item.name}</span>
+                                    <span className="text-gray-400 font-medium">
+                                        <span className="text-white font-bold">{item.value}</span> views
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function AnalyticsDashboard() {
@@ -449,6 +834,7 @@ export function AnalyticsDashboard() {
     const [phaseTab, setPhaseTab] = useState<'pre' | 'post'>('pre')
     const [roleTab, setRoleTab] = useState<'management' | 'team'>('management')
     const [isDrillDownOpen, setIsDrillDownOpen] = useState(false)
+    const [activeDashboard, setActiveDashboard] = useState<'surveys' | 'webinar'>('surveys')
 
     // Data lists
     const [companyFilter, setCompanyFilter] = useState<string>('all')
@@ -586,51 +972,83 @@ export function AnalyticsDashboard() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-white">Analytics</h1>
-                    <p className="text-gray-400 text-sm mt-1">Sprint Workshop & Master Class survey insights</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                        {activeDashboard === 'surveys'
+                            ? 'Sprint Workshop & Master Class survey insights'
+                            : 'Real-time webinar traffic & conversion analytics'}
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    {/* Company filter */}
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-bg-card border border-border rounded-xl">
-                        <Filter className="h-3.5 w-3.5 text-gray-500" />
-                        <select
-                            value={companyFilter}
-                            onChange={e => setCompanyFilter(e.target.value)}
-                            className="bg-transparent text-sm text-gray-300 focus:outline-none cursor-pointer"
+                    {/* Dashboard Selector */}
+                    <div className="flex bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-1 gap-1">
+                        <button
+                            onClick={() => setActiveDashboard('surveys')}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                activeDashboard === 'surveys'
+                                    ? 'bg-lime text-black font-semibold'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
                         >
-                            <option value="all" className="bg-bg-card">All Companies</option>
-                            {companyList.map(c => (
-                                <option key={c.id} value={c.id} className="bg-bg-card">{c.name}</option>
-                            ))}
-                        </select>
+                            Surveys
+                        </button>
+                        <button
+                            onClick={() => setActiveDashboard('webinar')}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                activeDashboard === 'webinar'
+                                    ? 'bg-lime text-black font-semibold'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            Webinar Analytics
+                        </button>
                     </div>
-                    {/* Unified Smart Filter */}
-                    <div className="flex bg-bg-card border border-border rounded-xl p-1 gap-1 overflow-x-auto max-w-[calc(100vw-32px)] hide-scrollbar shrink-0">
-                        {[
-                            { id: 'pre-management', label: 'Pre: Mgmt' },
-                            { id: 'pre-team', label: 'Pre: Team' },
-                            { id: 'post-management', label: 'Post: Mgmt' },
-                            { id: 'post-team', label: 'Post: Team' },
-                        ].map(t => {
-                            const isSelected = phaseTab === (t.id.startsWith('pre') ? 'pre' : 'post') &&
-                                roleTab === (t.id.endsWith('management') ? 'management' : 'team')
 
-                            return (
-                                <button
-                                    key={t.id}
-                                    onClick={() => {
-                                        setPhaseTab(t.id.startsWith('pre') ? 'pre' : 'post')
-                                        setRoleTab(t.id.endsWith('management') ? 'management' : 'team')
-                                    }}
-                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isSelected
-                                        ? 'bg-lime text-black shadow'
-                                        : 'text-gray-400 hover:text-white'
-                                        }`}
+                    {activeDashboard === 'surveys' && (
+                        <>
+                            {/* Company filter */}
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-bg-card border border-border rounded-xl">
+                                <Filter className="h-3.5 w-3.5 text-gray-500" />
+                                <select
+                                    value={companyFilter}
+                                    onChange={e => setCompanyFilter(e.target.value)}
+                                    className="bg-transparent text-sm text-gray-300 focus:outline-none cursor-pointer"
                                 >
-                                    {t.label}
-                                </button>
-                            )
-                        })}
-                    </div>
+                                    <option value="all" className="bg-bg-card">All Companies</option>
+                                    {companyList.map(c => (
+                                        <option key={c.id} value={c.id} className="bg-bg-card">{c.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* Unified Smart Filter */}
+                            <div className="flex bg-bg-card border border-border rounded-xl p-1 gap-1 overflow-x-auto max-w-[calc(100vw-32px)] hide-scrollbar shrink-0">
+                                {[
+                                    { id: 'pre-management', label: 'Pre: Mgmt' },
+                                    { id: 'pre-team', label: 'Pre: Team' },
+                                    { id: 'post-management', label: 'Post: Mgmt' },
+                                    { id: 'post-team', label: 'Post: Team' },
+                                ].map(t => {
+                                    const isSelected = phaseTab === (t.id.startsWith('pre') ? 'pre' : 'post') &&
+                                        roleTab === (t.id.endsWith('management') ? 'management' : 'team')
+
+                                    return (
+                                        <button
+                                            key={t.id}
+                                            onClick={() => {
+                                                setPhaseTab(t.id.startsWith('pre') ? 'pre' : 'post')
+                                                setRoleTab(t.id.endsWith('management') ? 'management' : 'team')
+                                            }}
+                                            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isSelected
+                                                ? 'bg-lime text-black shadow'
+                                                : 'text-gray-400 hover:text-white'
+                                                }`}
+                                        >
+                                            {t.label}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -640,47 +1058,51 @@ export function AnalyticsDashboard() {
                 </div>
             )}
 
-            {loading ? (
-                <div className="p-16 text-center text-gray-500">Loading analytics…</div>
-            ) : (
-                <>
-                    {/* KPI row */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {kpis.map(k => <MetricCard key={k.label} {...k} />)}
-                    </div>
-
-                    {/* Survey data avg confidence banner */}
-                    {roleTab === 'team' && phaseTab === 'pre' && (
-                        <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-lime/5 border border-lime/20 text-sm text-gray-300">
-                            <Brain className="h-4 w-4 text-lime shrink-0" />
-                            Avg AI Workflow Confidence across {filteredTeam.length} team members:
-                            <span className="font-bold text-lime ml-1">{avgAiConfidencePre} / 5</span>
+            {activeDashboard === 'surveys' ? (
+                loading ? (
+                    <div className="p-16 text-center text-gray-500">Loading analytics…</div>
+                ) : (
+                    <>
+                        {/* KPI row */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            {kpis.map(k => <MetricCard key={k.label} {...k} />)}
                         </div>
-                    )}
 
-                    {/* Tab content */}
-                    {phaseTab === 'pre' ? (
-                        roleTab === 'management' ? (
-                            <ManagementTab data={filteredMgmt} />
+                        {/* Survey data avg confidence banner */}
+                        {roleTab === 'team' && phaseTab === 'pre' && (
+                            <div className="flex items-center gap-3 px-5 py-3 rounded-xl bg-lime/5 border border-lime/20 text-sm text-gray-300">
+                                <Brain className="h-4 w-4 text-lime shrink-0" />
+                                Avg AI Workflow Confidence across {filteredTeam.length} team members:
+                                <span className="font-bold text-lime ml-1">{avgAiConfidencePre} / 5</span>
+                            </div>
+                        )}
+
+                        {/* Tab content */}
+                        {phaseTab === 'pre' ? (
+                            roleTab === 'management' ? (
+                                <ManagementTab data={filteredMgmt} />
+                            ) : (
+                                <TeamTab data={filteredTeam} />
+                            )
                         ) : (
-                            <TeamTab data={filteredTeam} />
-                        )
-                    ) : (
-                        roleTab === 'management' ? (
-                            <PostManagementTab data={filteredPostMgmt} />
-                        ) : (
-                            <PostTeamTab data={filteredPostTeam} />
-                        )
-                    )}
-                </>
+                            roleTab === 'management' ? (
+                                <PostManagementTab data={filteredPostMgmt} />
+                            ) : (
+                                <PostTeamTab data={filteredPostTeam} />
+                            )
+                        )}
+
+                        <RespondentListModal
+                            isOpen={isDrillDownOpen}
+                            onClose={() => setIsDrillDownOpen(false)}
+                            title={`${roleTab === 'management' ? 'Management' : 'Team'} Respondents (${phaseTab === 'pre' ? 'Pre' : 'Post'})`}
+                            respondents={currentRespondents}
+                        />
+                    </>
+                )
+            ) : (
+                <WebinarAnalyticsTab />
             )}
-
-            <RespondentListModal
-                isOpen={isDrillDownOpen}
-                onClose={() => setIsDrillDownOpen(false)}
-                title={`${roleTab === 'management' ? 'Management' : 'Team'} Respondents (${phaseTab === 'pre' ? 'Pre' : 'Post'})`}
-                respondents={currentRespondents}
-            />
         </div>
     )
 }

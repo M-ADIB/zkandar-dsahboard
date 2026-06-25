@@ -9,6 +9,7 @@ import { NotificationProvider } from '@/context/NotificationContext'
 import { lazy } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageTitleUpdater } from '@/hooks/usePageTitle'
+import { AnalyticsTracker } from '@/components/shared/AnalyticsTracker'
 import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 import { UpdatePrompt } from '@/components/pwa/UpdatePrompt'
 import { SessionExpiryWarning } from '@/components/auth/SessionExpiryWarning'
@@ -99,6 +100,7 @@ function App() {
                             </div>
                         }>
                             <PageTitleUpdater />
+                            <AnalyticsTracker />
                             <SessionExpiryWarning />
                             <CommandPalette />
                             {!isMarketingDomain && <InstallPrompt />}
