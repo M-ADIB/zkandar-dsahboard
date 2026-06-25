@@ -400,8 +400,13 @@ export function DynamicMasterclassProposalPage() {
                                     AED {proposal.total_investment?.toLocaleString() || '120,000'}
                                 </div>
                                 <span className="block text-xs text-gray-400 italic font-body">
-                                    All-inclusive studio license package {proposal.slug === 'anne-korbien' && '(VAT inclusive)'}
+                                    All-inclusive studio license package {proposal.slug === 'anne-korbien' && '(VAT inclusive)'}{proposal.slug === 'modon' && '(excluding VAT)'}
                                 </span>
+                                {proposal.slug === 'modon' && (
+                                    <div className="mt-2 text-xs text-lime font-bold uppercase tracking-wider bg-lime/10 border border-lime/20 rounded-lg p-2.5 inline-block">
+                                        Note: Sign up for two masterclasses to receive a 20% discount.
+                                    </div>
+                                )}
                             </div>
                             <div className="space-y-4 text-xs sm:text-sm text-gray-400 leading-relaxed font-body border-t md:border-t-0 md:border-l border-white/[0.08] pt-6 md:pt-0 md:pl-8">
                                 <p>
